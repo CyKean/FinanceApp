@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             x:Class="FinanceApp.Mobile.Views.CategoriesPage"
+             Title="{Binding Title}"
+             x:Name="CategoriesPageView">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <VerticalStackLayout Spacing="16" Padding="16">
+            <!-- Tab Selector -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="4">
+                <HorizontalStackLayout Spacing="4">
+                    <Button Text="Expenses" 
+                            Command="{Binding SetTabCommand}"
+                            CommandParameter="{x:Static viewmodels:CategoryType.Expense}"
+                            Style="{Binding SelectedTab, Converter={StaticResource CategoryTabStyleConverter}, ConverterParameter=Expense}"
+                            HorizontalOptions="FillAndExpand" />
+                    <Button Text="Income" 
+                            Command="{Binding SetTabCommand}"
+                            CommandParameter="{x:Static viewmodels:CategoryType.Income}"
+                            Style="{Binding SelectedTab, Converter={StaticResource CategoryTabStyleConverter}, ConverterParameter=Income}"
+                            HorizontalOptions="FillAndExpand" />
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Categories List -->
+            <CollectionView ItemsSource="{Binding ExpenseCategories}" 
+                            IsVisible="{Binding SelectedTab, Converter={StaticResource CategoryTabVisibilityConverter}, ConverterParameter=Expense}"
+                            SelectionMode="None">
+<CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItems>
+                                        <SwipeItem Text="Edit" 
+                                                   BackgroundColor="#512BD4"
+                                                   Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
+                                                   CommandParameter="{Binding .}" />
+                                        <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}" 
+                                                   BackgroundColor="Orange"
+                                                   Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.ToggleActiveCommand}"
+                                                   CommandParameter="{Binding .}"
+                                                   IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
+                                        <SwipeItem Text="Delete" 
+                                                   BackgroundColor="Red"
+                                                   Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.DeleteCategoryCommand}"
+                                                   CommandParameter="{Binding .}"
+                                                   IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                                <Frame Style="{StaticResource CategoryItemFrameStyle}" Margin="0,8">
+                                    <HorizontalStackLayout Spacing="16">
+                                        <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24" 
+                                               BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                               HasShadow="False" BorderColor="Transparent">
+                                            <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
+                                        </Frame>
+                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="{Binding Name}" Style="{StaticResource CategoryNameLabelStyle}" />
+                                                <Label Text="🔒" IsVisible="{Binding IsSystem}" FontSize="12" />
+                                                <Label Text="Inactive" Style="{StaticResource InactiveLabelStyle}" IsVisible="{Binding IsActive, Converter={StaticResource InverseBoolConverter}}" />
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                    </HorizontalStackLayout>
+                                </Frame>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <CollectionView ItemsSource="{Binding IncomeCategories}"
+                            IsVisible="{Binding SelectedTab, Converter={StaticResource CategoryTabVisibilityConverter}, ConverterParameter=Income}"
+                            SelectionMode="None">
+<CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItems>
+                                        <SwipeItem Text="Edit" 
+                                                   BackgroundColor="#512BD4"
+                                                   Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
+                                                   CommandParameter="{Binding .}" />
+                                        <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}" 
+                                                   BackgroundColor="Orange"
+                                                   Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.ToggleActiveCommand}"
+                                                   CommandParameter="{Binding .}"
+                                                   IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
+                                        <SwipeItem Text="Delete" 
+                                                   BackgroundColor="Red"
+                                                   Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.DeleteCategoryCommand}"
+                                                   CommandParameter="{Binding .}"
+                                                   IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                                <Frame Style="{StaticResource CategoryItemFrameStyle}" Margin="0,8">
+                                    <HorizontalStackLayout Spacing="16">
+                                        <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24" 
+                                               BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                               HasShadow="False" BorderColor="Transparent">
+                                            <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
+                                        </Frame>
+                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="{Binding Name}" Style="{StaticResource CategoryNameLabelStyle}" />
+                                                <Label Text="🔒" IsVisible="{Binding IsSystem}" FontSize="12" />
+                                                <Label Text="Inactive" Style="{StaticResource InactiveLabelStyle}" IsVisible="{Binding IsActive, Converter={StaticResource InverseBoolConverter}}" />
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                    </HorizontalStackLayout>
+                                </Frame>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            <!-- Add Category Button -->
+            <Button Text="Add Category" Command="{Binding AddCategoryCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="16,0,16,16" />
+        </VerticalStackLayout>
+    </RefreshView>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add" Command="{Binding AddCategoryCommand}" IconImageSource="plus.png" Priority="0" />
+    </ContentPage.ToolbarItems>
+</ContentPage>

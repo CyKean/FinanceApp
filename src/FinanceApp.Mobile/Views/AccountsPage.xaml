@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             x:Class="FinanceApp.Mobile.Views.AccountsPage"
+             Title="{Binding Title}"
+             x:Name="AccountsPageView">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:MoneyToStringConverter x:Key="MoneyConverter" />
+            <converters:BoolToStringConverter x:Key="BoolConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <VerticalStackLayout Spacing="16" Padding="16">
+            <!-- Total Balance -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="20">
+                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <Label Text="Total Balance" Style="{StaticResource CaptionLabelStyle}" />
+                    <Label Text="{Binding TotalBalance, Converter={StaticResource MoneyConverter}}" 
+                           Style="{StaticResource BalanceLabelStyle}" FontSize="32" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Accounts List -->
+            <CollectionView ItemsSource="{Binding Accounts}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Edit" 
+                                               BackgroundColor="#512BD4"
+                                               Command="{Binding Source={x:Reference AccountsPageView}, Path=BindingContext.EditAccountCommand}"
+                                               CommandParameter="{Binding .}" />
+                                    <SwipeItem Text="Delete" 
+                                               BackgroundColor="Red"
+                                               Command="{Binding Source={x:Reference AccountsPageView}, Path=BindingContext.DeleteAccountCommand}"
+                                               CommandParameter="{Binding .}" />
+                                    <SwipeItem Text="{Binding IsDefault, Converter={StaticResource BoolConverter}, ConverterParameter='Unset Default|Set Default'}" 
+                                               BackgroundColor="#512BD4"
+                                               Command="{Binding Source={x:Reference AccountsPageView}, Path=BindingContext.SetDefaultCommand}"
+                                               CommandParameter="{Binding .}"
+                                               IsVisible="{Binding IsDefault, Converter={StaticResource InverseBoolConverter}}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Frame Style="{StaticResource AccountItemFrameStyle}" Margin="0,8">
+                                <HorizontalStackLayout Spacing="16">
+                                    <Frame WidthRequest="56" HeightRequest="56" CornerRadius="28" 
+                                           BackgroundColor="{Binding Color, Converter={StaticResource ColorConverter}}" 
+                                           HasShadow="False" BorderColor="Transparent">
+                                        <Label Text="{Binding Icon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="24" />
+                                    </Frame>
+                                    <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Label Text="{Binding Name}" Style="{StaticResource AccountNameLabelStyle}" />
+                                            <Label Text="{Binding Type}" Style="{StaticResource AccountTypeLabelStyle}" />
+                                            <Label Text="✓" TextColor="Green" IsVisible="{Binding IsDefault}" FontSize="14" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding Balance, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AccountBalanceLabelStyle}" />
+                                    </VerticalStackLayout>
+                                </HorizontalStackLayout>
+                            </Frame>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20">
+                        <Label Text="🏦" FontSize="48" />
+                        <Label Text="No accounts yet" Style="{StaticResource EmptyStateLabelStyle}" />
+                        <Label Text="Add your first account to start tracking" Style="{StaticResource EmptyStateSubLabelStyle}" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+
+            <!-- Add Account Button -->
+            <Button Text="Add Account" Command="{Binding AddAccountCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="16,0,16,16" />
+        </VerticalStackLayout>
+    </RefreshView>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add" Command="{Binding AddAccountCommand}" IconImageSource="plus.png" Priority="0" />
+    </ContentPage.ToolbarItems>
+</ContentPage>

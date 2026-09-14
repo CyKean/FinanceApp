@@ -4,11 +4,64 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:FinanceApp.Mobile"
-    Title="FinanceApp.Mobile">
+    xmlns:views="clr-namespace:FinanceApp.Mobile.Views"
+    Title="FinanceApp"
+    FlyoutBehavior="Flyout">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <Shell.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TabBar">
+                <Setter Property="BackgroundColor" Value="#FFFFFF" />
+                <Setter Property="UnselectedColor" Value="#6C757D" />
+                <Setter Property="SelectedColor" Value="#512BD4" />
+            </Style>
+            <Style TargetType="FlyoutItem">
+                <Setter Property="BackgroundColor" Value="#FFFFFF" />
+            </Style>
+        </ResourceDictionary>
+    </Shell.Resources>
+
+    <!-- Login Page (shown when not authenticated) -->
+    <ShellContent Route="Login" ContentTemplate="{DataTemplate views:LoginPage}" />
+
+    <!-- Main App (Tabbed navigation) -->
+    <TabBar Route="Main">
+        <Tab Title="Dashboard" Route="Dashboard">
+            <ShellContent Route="Dashboard" ContentTemplate="{DataTemplate views:DashboardPage}" />
+        </Tab>
+
+        <Tab Title="Transactions" Route="Transactions">
+            <ShellContent Route="Transactions" ContentTemplate="{DataTemplate views:TransactionsPage}" />
+        </Tab>
+
+        <Tab Title="Accounts" Route="Accounts">
+            <ShellContent Route="Accounts" ContentTemplate="{DataTemplate views:AccountsPage}" />
+        </Tab>
+
+        <Tab Title="Budgets" Route="Budgets">
+            <ShellContent Route="Budgets" ContentTemplate="{DataTemplate views:BudgetsPage}" />
+        </Tab>
+
+        <Tab Title="Goals" Route="Goals">
+            <ShellContent Route="Goals" ContentTemplate="{DataTemplate views:GoalsPage}" />
+        </Tab>
+    </TabBar>
+
+    <!-- Flyout Menu Items -->
+    <FlyoutItem Title="Settings" Route="Settings">
+        <ShellContent Route="Settings" ContentTemplate="{DataTemplate views:SettingsPage}" />
+    </FlyoutItem>
+
+    <!-- Modal Pages -->
+    <ShellContent Route="AddTransaction" ContentTemplate="{DataTemplate views:AddTransactionPage}" />
+    <ShellContent Route="EditTransaction" ContentTemplate="{DataTemplate views:AddTransactionPage}" />
+    <ShellContent Route="AddAccount" ContentTemplate="{DataTemplate views:AddAccountPage}" />
+    <ShellContent Route="EditAccount" ContentTemplate="{DataTemplate views:AddAccountPage}" />
+    <ShellContent Route="AddCategory" ContentTemplate="{DataTemplate views:AddCategoryPage}" />
+    <ShellContent Route="EditCategory" ContentTemplate="{DataTemplate views:AddCategoryPage}" />
+    <ShellContent Route="AddBudget" ContentTemplate="{DataTemplate views:AddBudgetPage}" />
+    <ShellContent Route="EditBudget" ContentTemplate="{DataTemplate views:AddBudgetPage}" />
+    <ShellContent Route="AddGoal" ContentTemplate="{DataTemplate views:AddGoalPage}" />
+    <ShellContent Route="EditGoal" ContentTemplate="{DataTemplate views:AddGoalPage}" />
 
 </Shell>

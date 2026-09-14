@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             x:Class="FinanceApp.Mobile.Views.SettingsPage"
+             x:DataType="viewmodels:SettingsViewModel"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Spacing="16" Padding="16">
+                <!-- User Info -->
+                <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <HorizontalStackLayout Spacing="12">
+                            <Frame WidthRequest="64" HeightRequest="64" CornerRadius="32" BackgroundColor="#512BD4" HasShadow="False" BorderColor="Transparent">
+                                <Label Text="👤" VerticalOptions="Center" HorizontalOptions="Center" FontSize="28" />
+                            </Frame>
+                            <VerticalStackLayout Spacing="4" VerticalOptions="Center">
+                                <Label Text="Signed in as" Style="{StaticResource CaptionLabelStyle}" />
+                                <Label Text="{Binding UserEmail}" Style="{StaticResource UserEmailLabelStyle}" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Sync Section -->
+                <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Synchronization" Style="{StaticResource SectionHeaderStyle}" />
+                        
+                        <HorizontalStackLayout Spacing="12">
+                            <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                                <Label Text="Pending" Style="{StaticResource SyncDetailCaptionStyle}" />
+                                <Label Text="{Binding SyncStatus.PendingCount}" Style="{StaticResource SyncDetailValueStyle}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                                <Label Text="Failed" Style="{StaticResource SyncDetailCaptionStyle}" />
+                                <Label Text="{Binding SyncStatus.FailedCount}" Style="{StaticResource SyncDetailValueStyle}" TextColor="Red" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                                <Label Text="Last Sync" Style="{StaticResource SyncDetailCaptionStyle}" />
+                                <Label Text="{Binding SyncStatus.LastSyncAt, StringFormat='{0:MMM dd, HH:mm}'}" Style="{StaticResource SyncDetailValueStyle}" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+
+                        <Button Text="Sync Now" 
+                                Command="{Binding SyncNowCommand}"
+                                IsEnabled="{Binding IsSyncing, Converter={StaticResource InverseBoolConverter}}"
+                                Style="{StaticResource PrimaryButtonStyle}" />
+
+                        <Label Text="{Binding SyncStatus.LastError}" 
+                               Style="{StaticResource SyncErrorLabelStyle}"
+                               IsVisible="{Binding SyncStatus.LastError, Converter={StaticResource NullToBoolConverter}}"
+                               TextColor="Red" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- App Info -->
+                <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="App Information" Style="{StaticResource SectionHeaderStyle}" />
+                        <HorizontalStackLayout Spacing="12">
+                            <Label Text="Version" Style="{StaticResource InfoLabelStyle}" />
+                            <Label Text="{Binding AppVersion}" Style="{StaticResource InfoValueLabelStyle}" HorizontalOptions="EndAndExpand" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Danger Zone -->
+                <Frame Style="{StaticResource CardFrameStyle}" Padding="16" BackgroundColor="#FFF5F5">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Danger Zone" Style="{StaticResource SectionHeaderStyle}" TextColor="Red" />
+                        <Button Text="Logout" 
+                                Command="{Binding LogoutCommand}"
+                                Style="{StaticResource DangerButtonStyle}" />
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

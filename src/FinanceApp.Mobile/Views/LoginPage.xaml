@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             x:Class="FinanceApp.Mobile.Views.LoginPage"
+             x:DataType="viewmodels:LoginViewModel"
+             Title="{Binding Title}">
+
+    <VerticalStackLayout Spacing="24" Padding="32" VerticalOptions="Center">
+        <!-- Logo -->
+        <Label Text="FinanceApp" Style="{StaticResource AppTitleStyle}" HorizontalOptions="Center" />
+        <Label Text="Your Personal Finance Manager" Style="{StaticResource AppSubtitleStyle}" HorizontalOptions="Center" />
+
+        <!-- Form -->
+        <Frame Style="{StaticResource CardFrameStyle}" Padding="24">
+            <VerticalStackLayout Spacing="16">
+                <!-- Email -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Email" Style="{StaticResource FormLabelStyle}" />
+                    <Entry Text="{Binding Email}" 
+                           Keyboard="Email" 
+                           Placeholder="you@example.com"
+                           Style="{StaticResource EntryStyle}"
+                           ReturnType="Next" />
+                </VerticalStackLayout>
+
+                <!-- Password -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Password" Style="{StaticResource FormLabelStyle}" />
+                    <Entry Text="{Binding Password}" 
+                           IsPassword="True" 
+                           Placeholder="••••••••"
+                           Style="{StaticResource EntryStyle}"
+                           ReturnType="Done" />
+
+                    <Label Text="Forgot Password?" 
+                           Style="{StaticResource ForgotPasswordLabelStyle}"
+                           HorizontalOptions="End"
+                           GestureRecognizers="{Binding ForgotPasswordCommand}" />
+                </VerticalStackLayout>
+
+                <!-- Error Message -->
+                <Label Text="{Binding ErrorMessage}" 
+                       Style="{StaticResource ErrorLabelStyle}"
+                       IsVisible="{Binding HasError}"
+                       TextColor="Red" />
+
+                <!-- Submit Button -->
+                <Button Text="{Binding IsRegisterMode, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Register|Login'}" 
+                        Command="{Binding SubmitCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                        Style="{StaticResource PrimaryButtonStyle}" />
+
+                <!-- Toggle Mode -->
+                <Button Text="{Binding IsRegisterMode, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Already have an account? Login|Don\'t have an account? Register'}" 
+                        Command="{Binding ToggleModeCommand}"
+                        Style="{StaticResource TextButtonStyle}" />
+            </VerticalStackLayout>
+        </Frame>
+    </VerticalStackLayout>
+</ContentPage>

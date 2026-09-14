@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             x:Class="FinanceApp.Mobile.Views.AddAccountPage"
+             x:DataType="viewmodels:AddAccountViewModel"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:MoneyToStringConverter x:Key="MoneyConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="16" Padding="16">
+            <!-- Name -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Account Name" Style="{StaticResource FormLabelStyle}" />
+                    <Entry Text="{Binding Name}" Placeholder="e.g., Main Wallet" Style="{StaticResource EntryStyle}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Type -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Account Type" Style="{StaticResource FormLabelStyle}" />
+                    <Picker Title="Select Type" 
+                            ItemsSource="{Binding Source={viewmodels:AccountTypeExtension}}" 
+                            SelectedItem="{Binding Type}"
+                            Style="{StaticResource PickerStyle}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Initial Balance -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Initial Balance" Style="{StaticResource FormLabelStyle}" />
+                    <Entry Text="{Binding InitialBalance.Amount, StringFormat='{0:N2}'}" 
+                           Keyboard="Numeric" 
+                           Placeholder="0.00"
+                           Style="{StaticResource AmountEntryStyle}"
+                           HorizontalTextAlignment="End" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Description -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Description (Optional)" Style="{StaticResource FormLabelStyle}" />
+                    <Entry Text="{Binding Description}" Placeholder="Description..." Style="{StaticResource EntryStyle}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Icon -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Icon (Emoji)" Style="{StaticResource FormLabelStyle}" />
+                    <Entry Text="{Binding Icon}" Placeholder="💰" Style="{StaticResource EntryStyle}" MaxLength="2" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Color -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Color (Hex)" Style="{StaticResource FormLabelStyle}" />
+                    <Entry Text="{Binding Color}" Placeholder="#512BD4" Style="{StaticResource EntryStyle}" MaxLength="7" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Default Account -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <HorizontalStackLayout Spacing="16" VerticalOptions="Center">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Default Account" Style="{StaticResource FormLabelStyle}" />
+                        <Label Text="Used as default for new transactions" Style="{StaticResource CaptionLabelStyle}" />
+                    </VerticalStackLayout>
+                    <Switch IsToggled="{Binding IsDefault}" HorizontalOptions="EndAndExpand" />
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Save Button -->
+            <Button Text="{Binding IsEditing, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Update|Save'}" 
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="16,24,16,16" />
+        </VerticalStackLayout>
+    </ScrollView>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Cancel" Command="{Binding CancelCommand}" Priority="0" />
+    </ContentPage.ToolbarItems>
+</ContentPage>

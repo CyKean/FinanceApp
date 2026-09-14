@@ -25,13 +25,13 @@
 		     For individual files, you can override by setting Inflator metadata:
 		       <MauiXaml Update="MyPage.xaml" Inflator="Default" /> (reverts to defaults: Runtime for Debug, XamlC for Release)
 		       <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
-		<MauiXamlInflator>SourceGen</MauiXamlInflator>
+		<!-- <MauiXamlInflator>SourceGen</MauiXamlInflator> -->
 
 		<!-- Display name -->
-		<ApplicationTitle>FinanceApp.Mobile</ApplicationTitle>
+		<ApplicationTitle>FinanceApp</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.financeapp.mobile</ApplicationId>
+		<ApplicationId>com.financeapp.mobile</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -68,12 +68,19 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\FinanceApp.Application\FinanceApp.Application.csproj" />
-	  <ProjectReference Include="..\FinanceApp.Domain\FinanceApp.Domain.csproj" />
-	  <ProjectReference Include="..\FinanceApp.Infrastructure\FinanceApp.Infrastructure.csproj" />
+		<ProjectReference Include="..\FinanceApp.Application\FinanceApp.Application.csproj" />
+		<ProjectReference Include="..\FinanceApp.Domain\FinanceApp.Domain.csproj" />
+		<ProjectReference Include="..\FinanceApp.Infrastructure\FinanceApp.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 </Project>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:Class="FinanceApp.Mobile.Views.AddTransactionPage"
+             x:DataType="viewmodels:AddTransactionViewModel"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:MoneyToStringConverter x:Key="MoneyConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="16" Padding="16">
+            <!-- Type Selector (only for new transactions) -->
+            <Frame Style="{StaticResource CardFrameStyle}" IsVisible="{Binding IsEditing, Converter={StaticResource InverseBoolConverter}}" Padding="16">
+                <HorizontalStackLayout Spacing="12">
+                    <Button Text="Expense" 
+                            Command="{Binding SetExpenseTypeCommand}"
+                            Style="{Binding TransactionType, Converter={StaticResource TransactionTypeToButtonStyleConverter}, ConverterParameter=Expense}"
+                            HorizontalOptions="FillAndExpand" />
+                    <Button Text="Income" 
+                            Command="{Binding SetIncomeTypeCommand}"
+                            Style="{Binding TransactionType, Converter={StaticResource TransactionTypeToButtonStyleConverter}, ConverterParameter=Income}"
+                            HorizontalOptions="FillAndExpand" />
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Amount -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Amount" Style="{StaticResource FormLabelStyle}" />
+                    <Entry Text="{Binding Amount.Amount, StringFormat='{0:N2}'}" 
+                           Keyboard="Numeric" 
+                           Placeholder="0.00"
+                           Style="{StaticResource AmountEntryStyle}"
+                           HorizontalTextAlignment="End" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Date -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Date" Style="{StaticResource FormLabelStyle}" />
+                    <DatePicker Date="{Binding Date}" 
+                                Format="MMM dd, yyyy"
+                                MaximumDate="{Binding Source={x:Static sys:DateTime.Today}, Path=Today}"
+                                Style="{StaticResource DatePickerStyle}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Account -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Account" Style="{StaticResource FormLabelStyle}" />
+                    <Picker Title="Select Account" 
+                            ItemsSource="{Binding Accounts}" 
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedItem="{Binding SelectedAccount}"
+                            Style="{StaticResource PickerStyle}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Category -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Category" Style="{StaticResource FormLabelStyle}" />
+                    <Picker Title="Select Category" 
+                            ItemsSource="{Binding Categories}" 
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedItem="{Binding SelectedCategory}"
+                            Style="{StaticResource PickerStyle}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Notes -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Notes (Optional)" Style="{StaticResource FormLabelStyle}" />
+                    <Editor Text="{Binding Notes}" 
+                            HeightRequest="100"
+                            Placeholder="Add a note..."
+                            Style="{StaticResource EditorStyle}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Save Button -->
+            <Button Text="{Binding IsEditing, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Update|Save'}" 
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="16,24,16,16" />
+        </VerticalStackLayout>
+    </ScrollView>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Cancel" Command="{Binding CancelCommand}" Priority="0" />
+    </ContentPage.ToolbarItems>
+</ContentPage>
