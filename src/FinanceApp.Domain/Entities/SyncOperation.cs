@@ -78,4 +78,13 @@ public class SyncOperation : Entity
     {
         return RetryCount >= maxRetries;
     }
+
+    public void ResetForRetry()
+    {
+        RetryCount = 0;
+        Status = SyncStatus.PendingCreate;
+        ErrorMessage = null;
+        LastAttemptAt = null;
+        UpdateTimestamp();
+    }
 }

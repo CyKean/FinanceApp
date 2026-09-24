@@ -2,13 +2,14 @@ namespace FinanceApp.Application.Services;
 
 using FinanceApp.Application.DTOs;
 using FinanceApp.Application.Interfaces;
+using FinanceApp.Domain.Common;
 using FinanceApp.Domain.Entities;
 using FinanceApp.Domain.Enums;
 using FinanceApp.Domain.Interfaces;
 using FinanceApp.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
 
-public class SyncService : BaseService, ISyncService
+public class SyncService : BaseService, ISyncService, IDisposable
 {
     private readonly ISyncOperationRepository _syncRepository;
     private readonly ITransactionRepository _transactionRepository;
@@ -21,6 +22,12 @@ public class SyncService : BaseService, ISyncService
     private readonly IConnectivityService _connectivityService;
     private readonly ILogger<SyncService> _logger;
     private readonly SemaphoreSlim _syncLock = new(1, 1);
+    private readonly Timer? _periodicSyncTimer;
+    private readonly TimeSpan _syncInterval = TimeSpan.FromMinutes(5);
+    private readonly int _maxRetries = 5;
+    private readonly TimeSpan _baseRetryDelay = TimeSpan.FromSeconds(2);
+    private Guid? _currentUserId;
+    private CancellationTokenSource? _syncCts;
 
     public SyncService(
         IUnitOfWork unitOfWork,
@@ -45,16 +52,19 @@ public class SyncService : BaseService, ISyncService
         _supabaseSyncService = supabaseSyncService;
         _connectivityService = connectivityService;
         _logger = logger;
+
+        _connectivityService.ConnectivityChanged += OnConnectivityChanged;
+        _periodicSyncTimer = new Timer(PeriodicSyncCallback, null, Timeout.Infinite, Timeout.Infinite);
     }
 
     public async Task<SyncStatusDto> GetStatusAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var pendingCount = await _syncRepository.GetPendingCountAsync(userId, cancellationToken);
-        var failedOperations = await _syncRepository.GetFailedByUserIdAsync(userId, 5, cancellationToken);
+        var failedOperations = await _syncRepository.GetFailedByUserIdAsync(userId, _maxRetries, cancellationToken);
         var lastSync = await GetLastSuccessfulSyncAsync(userId, cancellationToken);
 
         return new SyncStatusDto(
-            false,
+            _syncLock.CurrentCount == 0,
             lastSync,
             pendingCount,
             failedOperations.Count,
@@ -63,12 +73,15 @@ public class SyncService : BaseService, ISyncService
 
     public async Task<SyncResultDto> SyncAsync(Guid userId, CancellationToken cancellationToken = default)
     {
+        _currentUserId = userId;
+        _syncCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
         if (_connectivityService.CurrentAccess != NetworkAccess.Internet)
         {
             return new SyncResultDto(false, 0, 0, "No internet connection");
         }
 
-        if (!await _syncLock.WaitAsync(0, cancellationToken))
+        if (!await _syncLock.WaitAsync(0, _syncCts.Token))
         {
             return new SyncResultDto(false, 0, 0, "Sync already in progress");
         }
@@ -77,7 +90,7 @@ public class SyncService : BaseService, ISyncService
         {
             _logger.LogInformation("Starting sync for user {UserId}", userId);
 
-            var pendingOperations = await _syncRepository.GetPendingByUserIdAsync(userId, cancellationToken);
+            var pendingOperations = await _syncRepository.GetPendingByUserIdAsync(userId, _syncCts.Token);
             if (!pendingOperations.Any())
             {
                 _logger.LogInformation("No pending operations for user {UserId}", userId);
@@ -90,37 +103,56 @@ public class SyncService : BaseService, ISyncService
 
             foreach (var operation in pendingOperations)
             {
+                if (_syncCts.Token.IsCancellationRequested)
+                    break;
+
                 try
                 {
-                    await ProcessSyncOperationAsync(operation, userId, cancellationToken);
+                    await ProcessSyncOperationWithRetryAsync(operation, userId, _syncCts.Token);
                     operation.MarkAsSynced();
-                    await _syncRepository.UpdateAsync(operation, cancellationToken);
+                    await _syncRepository.UpdateAsync(operation, _syncCts.Token);
                     syncedCount++;
                 }
                 catch (Exception ex)
                 {
                     operation.IncrementRetry(ex.Message);
-                    await _syncRepository.UpdateAsync(operation, cancellationToken);
+                    await _syncRepository.UpdateAsync(operation, _syncCts.Token);
                     failedCount++;
                     lastError = ex.Message;
                     _logger.LogError(ex, "Failed to sync operation {OperationId} for user {UserId}", operation.Id, userId);
                 }
             }
 
-            await UnitOfWork.SaveChangesAsync(cancellationToken);
+            await UnitOfWork.SaveChangesAsync(_syncCts.Token);
 
             _logger.LogInformation("Sync completed for user {UserId}: {Synced} synced, {Failed} failed", userId, syncedCount, failedCount);
 
             return new SyncResultDto(failedCount == 0, syncedCount, failedCount, lastError);
         }
+        catch (OperationCanceledException)
+        {
+            return new SyncResultDto(false, 0, 0, "Sync cancelled");
+        }
         finally
         {
             _syncLock.Release();
+            _syncCts?.Dispose();
+            _syncCts = null;
+            _currentUserId = null;
         }
     }
 
     public async Task ForceSyncAsync(Guid userId, CancellationToken cancellationToken = default)
     {
+        // Reset retry counts for failed operations to allow retry
+        var failedOps = await _syncRepository.GetFailedByUserIdAsync(userId, _maxRetries, cancellationToken);
+        foreach (var op in failedOps)
+        {
+            op.ResetForRetry();
+            await _syncRepository.UpdateAsync(op, cancellationToken);
+        }
+        await UnitOfWork.SaveChangesAsync(cancellationToken);
+        
         await SyncAsync(userId, cancellationToken);
     }
 
@@ -129,8 +161,102 @@ public class SyncService : BaseService, ISyncService
         return _syncLock.CurrentCount == 0;
     }
 
+    public void StartPeriodicSync(Guid userId)
+    {
+        _currentUserId = userId;
+        _periodicSyncTimer?.Change(_syncInterval, _syncInterval);
+        _logger.LogInformation("Started periodic sync for user {UserId} every {Interval}", userId, _syncInterval);
+    }
+
+    public void StopPeriodicSync()
+    {
+        _periodicSyncTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+        _currentUserId = null;
+        _logger.LogInformation("Stopped periodic sync");
+    }
+
+    private async void PeriodicSyncCallback(object? state)
+    {
+        if (!_currentUserId.HasValue) return;
+
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+            await SyncAsync(_currentUserId.Value, cts.Token);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Periodic sync failed for user {UserId}", _currentUserId);
+        }
+    }
+
+    private void OnConnectivityChanged(ConnectivityChangedEventArgs e)
+    {
+        _logger.LogInformation("Connectivity changed: {Previous} -> {Current}", e.PreviousAccess, e.CurrentAccess);
+
+        if (e.CurrentAccess == NetworkAccess.Internet && _currentUserId.HasValue)
+        {
+            // Trigger sync when connectivity is restored
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await SyncAsync(_currentUserId.Value, CancellationToken.None);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Auto-sync after connectivity restored failed");
+                }
+            });
+        }
+    }
+
+    private async Task ProcessSyncOperationWithRetryAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
+    {
+        var retryDelay = _baseRetryDelay;
+        
+        for (int attempt = 0; attempt <= _maxRetries; attempt++)
+        {
+            try
+            {
+                await ProcessSyncOperationAsync(operation, userId, cancellationToken);
+                return; // Success
+            }
+            catch (Exception ex) when (attempt < _maxRetries && IsTransientError(ex))
+            {
+                operation.IncrementRetry($"Attempt {attempt + 1}: {ex.Message}");
+                await _syncRepository.UpdateAsync(operation, cancellationToken);
+                await UnitOfWork.SaveChangesAsync(cancellationToken);
+
+                _logger.LogWarning(ex, "Sync attempt {Attempt} failed for operation {OperationId}, retrying in {Delay}", 
+                    attempt + 1, operation.Id, retryDelay);
+
+                await Task.Delay(retryDelay, cancellationToken);
+                retryDelay = TimeSpan.FromSeconds(Math.Min(retryDelay.TotalSeconds * 2, 60)); // Exponential backoff, max 60s
+            }
+        }
+
+        // All retries exhausted
+        throw new InvalidOperationException($"Sync operation {operation.Id} failed after {_maxRetries} retries");
+    }
+
+    private bool IsTransientError(Exception ex)
+    {
+        return ex is HttpRequestException 
+            || ex is TaskCanceledException 
+            || ex is TimeoutException
+            || (ex is InvalidOperationException && ex.Message.Contains("transient", StringComparison.OrdinalIgnoreCase));
+    }
+
     private async Task ProcessSyncOperationAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
     {
+        // Idempotency: Check if this operation was already processed
+        if (await IsOperationProcessedAsync(operation, cancellationToken))
+        {
+            _logger.LogInformation("Operation {OperationId} already processed, skipping", operation.Id);
+            return;
+        }
+
         switch (operation.EntityType)
         {
             case "Account":
@@ -154,6 +280,39 @@ public class SyncService : BaseService, ISyncService
             default:
                 throw new InvalidOperationException($"Unknown entity type: {operation.EntityType}");
         }
+
+        // Mark operation as processed for idempotency
+        await MarkOperationProcessedAsync(operation, cancellationToken);
+    }
+
+    private async Task<bool> IsOperationProcessedAsync(SyncOperation operation, CancellationToken cancellationToken)
+    {
+        // Check if entity is already in synced state with same or higher version
+        var entity = await GetEntityAsync(operation.EntityType, operation.EntityId, cancellationToken);
+        if (entity == null) return false;
+
+        // If entity is synced and version matches or exceeds, operation was processed
+        return entity.SyncStatus == SyncStatus.Synced && entity.Version >= operation.Version;
+    }
+
+    private async Task MarkOperationProcessedAsync(SyncOperation operation, CancellationToken cancellationToken)
+    {
+        // The operation itself is marked as Synced by the caller
+        // We could also maintain a separate idempotency key store if needed
+    }
+
+    private async Task<Entity?> GetEntityAsync(string entityType, Guid entityId, CancellationToken cancellationToken)
+    {
+        return entityType switch
+        {
+            "Account" => await _accountRepository.GetByIdAsync(entityId, cancellationToken),
+            "Category" => await _categoryRepository.GetByIdAsync(entityId, cancellationToken),
+            "Transaction" => await _transactionRepository.GetByIdAsync(entityId, cancellationToken),
+            "Budget" => await _budgetRepository.GetByIdAsync(entityId, cancellationToken),
+            "RecurringTransaction" => await _recurringRepository.GetByIdAsync(entityId, cancellationToken),
+            "FinancialGoal" => await _goalRepository.GetByIdAsync(entityId, cancellationToken),
+            _ => null
+        };
     }
 
     private async Task SyncAccountAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
@@ -161,6 +320,12 @@ public class SyncService : BaseService, ISyncService
         var account = await _accountRepository.GetByIdAsync(operation.EntityId, cancellationToken);
         if (account == null || account.UserId != userId)
             throw new NotFoundException("Account", operation.EntityId);
+
+        // Conflict resolution: Check server version if update
+        if (operation.OperationType == SyncOperationType.Update)
+        {
+            await ResolveConflictAsync(account, operation, cancellationToken);
+        }
 
         await _supabaseSyncService.SyncAccountAsync(account, operation.OperationType, cancellationToken);
     }
@@ -171,6 +336,11 @@ public class SyncService : BaseService, ISyncService
         if (category == null || category.UserId != userId)
             throw new NotFoundException("Category", operation.EntityId);
 
+        if (operation.OperationType == SyncOperationType.Update)
+        {
+            await ResolveConflictAsync(category, operation, cancellationToken);
+        }
+
         await _supabaseSyncService.SyncCategoryAsync(category, operation.OperationType, cancellationToken);
     }
 
@@ -179,6 +349,11 @@ public class SyncService : BaseService, ISyncService
         var transaction = await _transactionRepository.GetByIdAsync(operation.EntityId, cancellationToken);
         if (transaction == null || transaction.UserId != userId)
             throw new NotFoundException("Transaction", operation.EntityId);
+
+        if (operation.OperationType == SyncOperationType.Update)
+        {
+            await ResolveConflictAsync(transaction, operation, cancellationToken);
+        }
 
         await _supabaseSyncService.SyncTransactionAsync(transaction, operation.OperationType, cancellationToken);
     }
@@ -189,6 +364,11 @@ public class SyncService : BaseService, ISyncService
         if (budget == null || budget.UserId != userId)
             throw new NotFoundException("Budget", operation.EntityId);
 
+        if (operation.OperationType == SyncOperationType.Update)
+        {
+            await ResolveConflictAsync(budget, operation, cancellationToken);
+        }
+
         await _supabaseSyncService.SyncBudgetAsync(budget, operation.OperationType, cancellationToken);
     }
 
@@ -197,6 +377,11 @@ public class SyncService : BaseService, ISyncService
         var recurring = await _recurringRepository.GetByIdAsync(operation.EntityId, cancellationToken);
         if (recurring == null || recurring.UserId != userId)
             throw new NotFoundException("RecurringTransaction", operation.EntityId);
+
+        if (operation.OperationType == SyncOperationType.Update)
+        {
+            await ResolveConflictAsync(recurring, operation, cancellationToken);
+        }
 
         await _supabaseSyncService.SyncRecurringTransactionAsync(recurring, operation.OperationType, cancellationToken);
     }
@@ -207,7 +392,32 @@ public class SyncService : BaseService, ISyncService
         if (goal == null || goal.UserId != userId)
             throw new NotFoundException("FinancialGoal", operation.EntityId);
 
+        if (operation.OperationType == SyncOperationType.Update)
+        {
+            await ResolveConflictAsync(goal, operation, cancellationToken);
+        }
+
         await _supabaseSyncService.SyncFinancialGoalAsync(goal, operation.OperationType, cancellationToken);
+    }
+
+    private async Task ResolveConflictAsync(Entity localEntity, SyncOperation operation, CancellationToken cancellationToken)
+    {
+        // Last-Write-Wins with version vector conflict resolution
+        // If local version is newer, push local changes
+        // If server version is newer, we'd need to fetch server state (not implemented in stub)
+        // For now, always push local (last-write-wins based on UpdatedAt)
+        
+        if (localEntity.Version < operation.Version)
+        {
+            _logger.LogWarning("Conflict detected for {EntityType} {EntityId}: local version {LocalVer} < operation version {OpVer}. Pushing local changes anyway (LWW).",
+                operation.EntityType, operation.EntityId, localEntity.Version, operation.Version);
+        }
+
+        // In a real implementation, you would:
+        // 1. Fetch server entity
+        // 2. Compare versions/timestamps
+        // 3. Merge or prompt user
+        // 4. Apply resolution
     }
 
     private async Task<DateTime?> GetLastSuccessfulSyncAsync(Guid userId, CancellationToken cancellationToken)
@@ -218,5 +428,13 @@ public class SyncService : BaseService, ISyncService
             .OrderByDescending(o => o.LastAttemptAt)
             .Select(o => o.LastAttemptAt)
             .FirstOrDefault();
+    }
+
+    public void Dispose()
+    {
+        _periodicSyncTimer?.Dispose();
+        _syncLock.Dispose();
+        _syncCts?.Dispose();
+        _connectivityService.ConnectivityChanged -= OnConnectivityChanged;
     }
 }

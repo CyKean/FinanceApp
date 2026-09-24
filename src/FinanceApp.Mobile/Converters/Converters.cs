@@ -298,3 +298,196 @@ public class GoalStatusVisibilityConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+public class SavingsRateColorConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is decimal rate)
+        {
+            if (rate >= 20) return Colors.Green;
+            if (rate >= 10) return Colors.Orange;
+            if (rate >= 0) return Colors.Yellow;
+            return Colors.Red;
+        }
+        return Colors.Gray;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class PeriodButtonStyleConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is int currentMonths && parameter is string paramMonths)
+        {
+            var param = int.Parse(paramMonths);
+            return currentMonths == param ? "PrimaryButtonStyle" : "OutlineButtonStyle";
+        }
+        return "OutlineButtonStyle";
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class PredictionConfidenceColorConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is FinanceApp.Domain.Enums.PredictionConfidence confidence)
+        {
+            return confidence switch
+            {
+                FinanceApp.Domain.Enums.PredictionConfidence.High => Colors.Green,
+                FinanceApp.Domain.Enums.PredictionConfidence.Moderate => Colors.Orange,
+                FinanceApp.Domain.Enums.PredictionConfidence.Low => Colors.Red,
+                FinanceApp.Domain.Enums.PredictionConfidence.InsufficientData => Colors.Gray,
+                _ => Colors.Gray
+            };
+        }
+        return Colors.Gray;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class PredictionConfidenceToBoolConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is FinanceApp.Domain.Enums.PredictionConfidence confidence && parameter is string param)
+        {
+            var paramEnum = Enum.Parse<FinanceApp.Domain.Enums.PredictionConfidence>(param);
+            return confidence == paramEnum;
+        }
+        return false;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class TrendToIconConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is FinanceApp.Domain.Enums.SpendingTrend trend)
+        {
+            return trend switch
+            {
+                FinanceApp.Domain.Enums.SpendingTrend.Increasing => "📈",
+                FinanceApp.Domain.Enums.SpendingTrend.Decreasing => "📉",
+                FinanceApp.Domain.Enums.SpendingTrend.Stable => "➡️",
+                _ => "➡️"
+            };
+        }
+        return "➡️";
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class TrendToColorConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is FinanceApp.Domain.Enums.SpendingTrend trend)
+        {
+            return trend switch
+            {
+                FinanceApp.Domain.Enums.SpendingTrend.Increasing => Colors.Red,
+                FinanceApp.Domain.Enums.SpendingTrend.Decreasing => Colors.Green,
+                FinanceApp.Domain.Enums.SpendingTrend.Stable => Colors.Blue,
+                _ => Colors.Black
+            };
+        }
+        return Colors.Black;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class BoolToColorConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is bool boolValue && parameter is string param)
+        {
+            var parts = param.Split('|');
+            if (parts.Length == 2)
+            {
+                return boolValue ? Color.FromArgb(parts[0]) : Color.FromArgb(parts[1]);
+            }
+        }
+        return Colors.Gray;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class InsightSeverityToIconConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is FinanceApp.Application.DTOs.InsightSeverity severity)
+        {
+            return severity switch
+            {
+                FinanceApp.Application.DTOs.InsightSeverity.Info => "ℹ️",
+                FinanceApp.Application.DTOs.InsightSeverity.Warning => "⚠️",
+                FinanceApp.Application.DTOs.InsightSeverity.Critical => "🔴",
+                _ => "ℹ️"
+            };
+        }
+        return "ℹ️";
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class InsightSeverityToColorConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is FinanceApp.Application.DTOs.InsightSeverity severity)
+        {
+            return severity switch
+            {
+                FinanceApp.Application.DTOs.InsightSeverity.Info => Colors.Blue,
+                FinanceApp.Application.DTOs.InsightSeverity.Warning => Colors.Orange,
+                FinanceApp.Application.DTOs.InsightSeverity.Critical => Colors.Red,
+                _ => Colors.Gray
+            };
+        }
+        return Colors.Gray;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

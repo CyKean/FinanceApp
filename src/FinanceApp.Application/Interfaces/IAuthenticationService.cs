@@ -2,6 +2,7 @@ namespace FinanceApp.Application.Interfaces;
 
 public interface IAuthenticationService
 {
+    Task InitializeAsync(CancellationToken cancellationToken = default);
     Task<AuthResultDto> RegisterAsync(string email, string password, CancellationToken cancellationToken = default);
     Task<AuthResultDto> LoginAsync(string email, string password, CancellationToken cancellationToken = default);
     Task LogoutAsync(CancellationToken cancellationToken = default);

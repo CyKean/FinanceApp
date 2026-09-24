@@ -194,6 +194,11 @@ PublishScripts/
 
 # NuGet Packages
 *.nupkg
+
+# App settings (contains secrets)
+**/appsettings.json
+**/appsettings.*.json
+!**/appsettings.example.json
 # NuGet Symbol Packages
 *.snupkg
 # The packages folder can be ignored because of Package Restore

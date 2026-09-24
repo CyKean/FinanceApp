@@ -17,6 +17,7 @@ public class TransactionService : BaseService, ITransactionService
     private readonly ITransactionRepository _transactionRepository;
     private readonly IAccountRepository _accountRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IBudgetService _budgetService;
     private readonly CreateTransactionDtoValidator _createValidator;
     private readonly UpdateTransactionDtoValidator _updateValidator;
     private readonly TransactionFilterDtoValidator _filterValidator;
@@ -26,6 +27,7 @@ public class TransactionService : BaseService, ITransactionService
         ITransactionRepository transactionRepository,
         IAccountRepository accountRepository,
         ICategoryRepository categoryRepository,
+        IBudgetService budgetService,
         CreateTransactionDtoValidator createValidator,
         UpdateTransactionDtoValidator updateValidator,
         TransactionFilterDtoValidator filterValidator,
@@ -34,6 +36,7 @@ public class TransactionService : BaseService, ITransactionService
         _transactionRepository = transactionRepository;
         _accountRepository = accountRepository;
         _categoryRepository = categoryRepository;
+        _budgetService = budgetService;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
         _filterValidator = filterValidator;
@@ -79,6 +82,17 @@ public class TransactionService : BaseService, ITransactionService
             await _accountRepository.UpdateAsync(account, cancellationToken);
 
             await UnitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Update budget spending for expense transactions
+            if (dto.Type == TransactionType.Expense)
+            {
+                var activeBudget = await _budgetService.GetActiveForCategoryAsync(
+                    userId, dto.CategoryId, dto.Date, cancellationToken);
+                if (activeBudget != null)
+                {
+                    await _budgetService.AddSpendingAsync(activeBudget.Id, dto.Amount, userId, cancellationToken);
+                }
+            }
 
             Logger.LogInformation("Created transaction {TransactionId} for user {UserId}", transaction.Id, userId);
             return transaction.ToDto(account.Name, category.Name, category.Icon ?? "", category.Color ?? "");

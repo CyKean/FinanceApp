@@ -8,7 +8,7 @@ public class Budget : Entity
 {
     public string Name { get; private set; }
     public Money Amount { get; private set; }
-    public Money SpentAmount { get; private set; }
+    public Money SpentAmount { get; private set; } = Money.Zero("PHP");
     public DateTime StartDate { get; private set; }
     public DateTime EndDate { get; private set; }
     public CategoryId CategoryId { get; private set; }
@@ -28,6 +28,12 @@ public class Budget : Entity
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Budget name cannot be empty", nameof(name));
+
+        if (amount == null)
+            throw new ArgumentNullException(nameof(amount));
+
+        if (string.IsNullOrWhiteSpace(amount.Currency))
+            throw new ArgumentException("Currency cannot be empty", nameof(amount));
 
         if (amount.Amount <= 0)
             throw new ArgumentException("Budget amount must be positive", nameof(amount));
@@ -60,10 +66,14 @@ public class Budget : Entity
 
     public void UpdateAmount(Money amount)
     {
+        if (amount == null)
+            throw new ArgumentNullException(nameof(amount));
+
         if (amount.Amount <= 0)
             throw new ArgumentException("Budget amount must be positive", nameof(amount));
 
         Amount = amount;
+        SpentAmount = Money.Zero(amount.Currency);
         UpdateTimestamp();
         MarkAsPendingUpdate();
     }
@@ -91,6 +101,18 @@ public class Budget : Entity
 
     public void AddSpending(Money amount)
     {
+        if (Amount == null)
+            throw new InvalidOperationException("Budget Amount is not initialized");
+
+        if (amount == null)
+            throw new ArgumentNullException(nameof(amount));
+
+        if (string.IsNullOrWhiteSpace(amount.Currency))
+            throw new ArgumentException("Amount currency cannot be empty", nameof(amount));
+
+        if (string.IsNullOrWhiteSpace(Amount.Currency))
+            throw new InvalidOperationException("Budget Amount currency is not initialized");
+
         if (amount.Currency != Amount.Currency)
             throw new InvalidOperationException("Currency mismatch");
 
@@ -100,6 +122,18 @@ public class Budget : Entity
 
     public void RemoveSpending(Money amount)
     {
+        if (Amount == null)
+            throw new InvalidOperationException("Budget Amount is not initialized");
+
+        if (amount == null)
+            throw new ArgumentNullException(nameof(amount));
+
+        if (string.IsNullOrWhiteSpace(amount.Currency))
+            throw new ArgumentException("Amount currency cannot be empty", nameof(amount));
+
+        if (string.IsNullOrWhiteSpace(Amount.Currency))
+            throw new InvalidOperationException("Budget Amount currency is not initialized");
+
         if (amount.Currency != Amount.Currency)
             throw new InvalidOperationException("Currency mismatch");
 
@@ -112,18 +146,24 @@ public class Budget : Entity
 
     public void ResetSpending()
     {
+        if (Amount == null)
+            throw new InvalidOperationException("Budget Amount is not initialized");
+
         SpentAmount = Money.Zero(Amount.Currency);
         UpdateTimestamp();
     }
 
     public Money GetRemainingAmount()
     {
+        if (Amount == null)
+            throw new InvalidOperationException("Budget Amount is not initialized");
+
         return Amount.Subtract(SpentAmount);
     }
 
     public decimal GetPercentageUsed()
     {
-        if (Amount.Amount == 0)
+        if (Amount == null || Amount.Amount == 0)
             return 0;
 
         return Math.Round((SpentAmount.Amount / Amount.Amount) * 100, 2);
@@ -131,11 +171,17 @@ public class Budget : Entity
 
     public bool IsOverBudget()
     {
+        if (Amount == null)
+            throw new InvalidOperationException("Budget Amount is not initialized");
+
         return SpentAmount > Amount;
     }
 
     public bool IsNearLimit(decimal thresholdPercent = 80)
     {
+        if (Amount == null)
+            throw new InvalidOperationException("Budget Amount is not initialized");
+
         return GetPercentageUsed() >= thresholdPercent;
     }
 
@@ -175,5 +221,40 @@ public class Budget : Entity
     {
         SyncStatus = SyncStatus.Failed;
         UpdateTimestamp();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Budget other)
+            return false;
+
+        if (ReferenceEquals(this, other))
+            return true;
+
+        if (Id == Guid.Empty || other.Id == Guid.Empty)
+            return false;
+
+        return Id == other.Id;
+    }
+
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
+    }
+
+    public static bool operator ==(Budget? a, Budget? b)
+    {
+        if (a is null && b is null)
+            return true;
+
+        if (a is null || b is null)
+            return false;
+
+        return a.Equals(b);
+    }
+
+    public static bool operator !=(Budget? a, Budget? b)
+    {
+        return !(a == b);
     }
 }

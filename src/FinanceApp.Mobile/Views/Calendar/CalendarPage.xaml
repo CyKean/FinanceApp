@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             x:Class="FinanceApp.Mobile.Views.Calendar.CalendarPage"
+             x:DataType="viewmodels:CalendarViewModel"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:MoneyToStringConverter x:Key="MoneyConverter" />
+            <converters:TransactionTypeToColorConverter x:Key="TransactionTypeColorConverter" />
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <VerticalStackLayout Spacing="0">
+            <!-- Month Header -->
+            <Frame Style="{StaticResource CardFrameStyle}" Margin="16,16,16,8" Padding="16">
+                <HorizontalStackLayout Spacing="12">
+                    <Button Text="←" Command="{Binding PreviousMonthCommand}" Style="{StaticResource IconButtonStyle}" WidthRequest="44" HeightRequest="44" />
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                        <Label Text="{Binding SelectedMonth, StringFormat='{0:MMMM yyyy}'}" Style="{StaticResource MonthLabelStyle}" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    <Button Text="Today" Command="{Binding CurrentMonthCommand}" Style="{StaticResource OutlineButtonStyle}" WidthRequest="80" HeightRequest="44" />
+                    <Button Text="→" Command="{Binding NextMonthCommand}" Style="{StaticResource IconButtonStyle}" WidthRequest="44" HeightRequest="44" />
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Calendar Grid -->
+            <Frame Style="{StaticResource CardFrameStyle}" Margin="16,8" Padding="8">
+                <VerticalStackLayout Spacing="4">
+                    <!-- Day Headers -->
+                    <HorizontalStackLayout>
+                        <Label Text="Sun" Style="{StaticResource CalendarDayHeaderStyle}" />
+                        <Label Text="Mon" Style="{StaticResource CalendarDayHeaderStyle}" />
+                        <Label Text="Tue" Style="{StaticResource CalendarDayHeaderStyle}" />
+                        <Label Text="Wed" Style="{StaticResource CalendarDayHeaderStyle}" />
+                        <Label Text="Thu" Style="{StaticResource CalendarDayHeaderStyle}" />
+                        <Label Text="Fri" Style="{StaticResource CalendarDayHeaderStyle}" />
+                        <Label Text="Sat" Style="{StaticResource CalendarDayHeaderStyle}" />
+                    </HorizontalStackLayout>
+
+                    <!-- Calendar Days -->
+                    <Grid x:Name="CalendarGrid" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,*,*,*,*,*,*">
+                        <!-- Days will be populated dynamically -->
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Selected Day Events -->
+            <Frame Style="{StaticResource CardFrameStyle}" Margin="16,8,16,16" Padding="16" IsVisible="{Binding SelectedDayEvents.Count, Converter={StaticResource NullToBoolConverter}}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{Binding SelectedDate, StringFormat='{0:MMMM dd, yyyy}'}" Style="{StaticResource SectionHeaderStyle}" />
+                    
+                    <CollectionView ItemsSource="{Binding SelectedDayEvents}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Style="{StaticResource TransactionItemFrameStyle}" Margin="0,4">
+                                    <HorizontalStackLayout Spacing="12">
+                                        <Frame WidthRequest="40" HeightRequest="40" CornerRadius="20" 
+                                               BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                               HasShadow="False" BorderColor="Transparent">
+                                            <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="16" />
+                                        </Frame>
+                                        <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                            <Label Text="{Binding CategoryName}" Style="{StaticResource TransactionNameLabelStyle}" />
+                                            <Label Text="{Binding Notes}" Style="{StaticResource TransactionNotesLabelStyle}" 
+                                                   IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
+                                        </VerticalStackLayout>
+                                        <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" 
+                                               Style="{StaticResource TransactionAmountLabelStyle}"
+                                               TextColor="{Binding Type, Converter={StaticResource TransactionTypeColorConverter}}" />
+                                    </HorizontalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Empty State for Selected Day -->
+            <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20" 
+                                 IsVisible="{Binding SelectedDayEvents.Count, Converter={StaticResource InverseBoolConverter}, ConverterParameter=true}"
+                                 IsEnabled="{Binding SelectedDate, Converter={StaticResource NullToBoolConverter}}">
+                <Label Text="📅" FontSize="48" />
+                <Label Text="No events on this day" Style="{StaticResource EmptyStateLabelStyle}" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </RefreshView>
+</ContentPage>

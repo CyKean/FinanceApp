@@ -24,7 +24,7 @@ public class CreateBudgetDtoValidator : AbstractValidator<CreateBudgetDto>
             .GreaterThanOrEqualTo(x => x.StartDate).WithMessage("End date must be after start date");
 
         RuleFor(x => x.CategoryId)
-            .NotEqual(CategoryId.From(Guid.Empty)).WithMessage("Category is required");
+            .Must(id => id.Value != Guid.Empty).WithMessage("Category is required");
     }
 }
 

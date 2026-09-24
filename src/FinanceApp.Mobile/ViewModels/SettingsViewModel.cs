@@ -26,6 +26,9 @@ public partial class SettingsViewModel : BaseViewModel
     private bool _isSyncing;
 
     [ObservableProperty]
+    private bool _isPeriodicSyncEnabled;
+
+    [ObservableProperty]
     private string _appVersion = "1.0.0";
 
     public SettingsViewModel(
@@ -62,6 +65,7 @@ public partial class SettingsViewModel : BaseViewModel
             if (userId.HasValue)
             {
                 SyncStatus = await _syncService.GetStatusAsync(userId.Value);
+                IsPeriodicSyncEnabled = _connectivityService.CurrentAccess == NetworkAccess.Internet;
             }
         }
         catch (Exception ex)
@@ -111,6 +115,62 @@ public partial class SettingsViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    private async Task TogglePeriodicSyncAsync()
+    {
+        var userId = await _authService.GetCurrentUserIdAsync();
+        if (!userId.HasValue) return;
+
+        if (IsPeriodicSyncEnabled)
+        {
+            _syncService.StopPeriodicSync();
+            IsPeriodicSyncEnabled = false;
+            await _dialogService.ShowToastAsync("Periodic sync disabled");
+        }
+        else
+        {
+            _syncService.StartPeriodicSync(userId.Value);
+            IsPeriodicSyncEnabled = true;
+            await _dialogService.ShowToastAsync("Periodic sync enabled (every 5 minutes)");
+        }
+    }
+
+    [RelayCommand]
+    private async Task ForceSyncAsync()
+    {
+        if (IsSyncing) return;
+
+        var userId = await _authService.GetCurrentUserIdAsync();
+        if (!userId.HasValue) return;
+
+        IsSyncing = true;
+
+        try
+        {
+            await _syncService.ForceSyncAsync(userId.Value);
+            var result = await _syncService.SyncAsync(userId.Value);
+            SyncStatus = await _syncService.GetStatusAsync(userId.Value);
+
+            if (result.Success)
+            {
+                await _dialogService.ShowToastAsync($"Force synced {result.SyncedCount} items");
+            }
+            else
+            {
+                await _dialogService.ShowAlertAsync("Force Sync Failed", result.ErrorMessage ?? "Unknown error");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during force sync");
+            await _dialogService.ShowAlertAsync("Force Sync Error", ex.Message);
+        }
+        finally
+        {
+            IsSyncing = false;
+        }
+    }
+
+    [RelayCommand]
     private async Task LogoutAsync()
     {
         var confirmed = await _dialogService.ShowConfirmationAsync(
@@ -123,6 +183,7 @@ public partial class SettingsViewModel : BaseViewModel
 
         try
         {
+            _syncService.StopPeriodicSync();
             await _authService.LogoutAsync();
             await _navigationService.NavigateToAsync("//Login");
         }

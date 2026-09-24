@@ -5,6 +5,7 @@ using FinanceApp.Domain.Interfaces;
 using FinanceApp.Infrastructure.Persistence;
 using FinanceApp.Infrastructure.Repositories;
 using FinanceApp.Infrastructure.Services;
+using FinanceApp.Infrastructure.Supabase;
 using FinanceApp.Infrastructure.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -41,9 +42,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConnectivityService, ConnectivityService>();
         services.AddSingleton<INotificationService, NotificationService>();
 
-        // Supabase services - using null implementation for offline-first Stage 2
-        services.AddScoped<ISupabaseSyncService, NullSupabaseSyncService>();
-        // services.AddScoped<IAuthenticationService, AuthenticationService>();
+        // Supabase services - Stage 3: Real implementation
+        services.AddScoped<ISupabaseSyncService, SupabaseSyncService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         return services;
     }

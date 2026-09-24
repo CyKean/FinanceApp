@@ -17,6 +17,7 @@ public class BudgetService : BaseService, IBudgetService
     private readonly IBudgetRepository _budgetRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly ITransactionRepository _transactionRepository;
+    private readonly INotificationService _notificationService;
     private readonly CreateBudgetDtoValidator _createValidator;
     private readonly UpdateBudgetDtoValidator _updateValidator;
 
@@ -25,6 +26,7 @@ public class BudgetService : BaseService, IBudgetService
         IBudgetRepository budgetRepository,
         ICategoryRepository categoryRepository,
         ITransactionRepository transactionRepository,
+        INotificationService notificationService,
         CreateBudgetDtoValidator createValidator,
         UpdateBudgetDtoValidator updateValidator,
         ILogger<BudgetService> logger) : base(unitOfWork, logger)
@@ -32,6 +34,7 @@ public class BudgetService : BaseService, IBudgetService
         _budgetRepository = budgetRepository;
         _categoryRepository = categoryRepository;
         _transactionRepository = transactionRepository;
+        _notificationService = notificationService;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
     }
@@ -178,6 +181,12 @@ public class BudgetService : BaseService, IBudgetService
         foreach (var budget in budgets)
         {
             await CalculateAndSetSpentAmount(budget, cancellationToken);
+            
+            // Check for budget warnings
+            if (budget.IsNearLimit(90))
+            {
+                await _notificationService.ScheduleBudgetWarningAsync(budget.Id, userId, cancellationToken);
+            }
         }
 
         await UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -214,6 +223,12 @@ public class BudgetService : BaseService, IBudgetService
         budget.MarkAsPendingUpdate();
         await _budgetRepository.UpdateAsync(budget, cancellationToken);
         await UnitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Check for budget warnings after adding spending
+        if (budget.IsNearLimit(90))
+        {
+            await _notificationService.ScheduleBudgetWarningAsync(budget.Id, userId, cancellationToken);
+        }
     }
 
     public async Task RemoveSpendingAsync(Guid budgetId, Money amount, Guid userId, CancellationToken cancellationToken = default)

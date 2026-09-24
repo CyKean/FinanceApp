@@ -5,9 +5,13 @@ using FinanceApp.Domain.Interfaces;
 using FinanceApp.Infrastructure;
 using FinanceApp.Infrastructure.Persistence;
 using FinanceApp.Infrastructure.Services;
+using FinanceApp.Infrastructure.Supabase;
 using FinanceApp.Mobile.Services;
 using FinanceApp.Mobile.ViewModels;
 using FinanceApp.Mobile.Views;
+using FinanceApp.Mobile.Views.Calendar;
+using FinanceApp.Mobile.Views.Analytics;
+using FinanceApp.Mobile.Views.Predictions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -69,6 +73,11 @@ public static class MauiProgram
         builder.Services.AddSingleton<INavigationService, NavigationService>();
         builder.Services.AddSingleton<IDialogService, DialogService>();
 
+        // Background Services
+        builder.Services.AddHostedService<SupabaseInitializer>();
+        builder.Services.AddHostedService<DatabaseInitializer>();
+        builder.Services.AddHostedService<RecurringTransactionProcessor>();
+
         // ViewModels
         builder.Services.AddTransient<DashboardViewModel>();
         builder.Services.AddTransient<TransactionsViewModel>();
@@ -83,6 +92,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AddGoalViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
+        builder.Services.AddTransient<PredictionsViewModel>();
 
         // Pages
         builder.Services.AddTransient<DashboardPage>();
@@ -92,6 +102,13 @@ public static class MauiProgram
         builder.Services.AddTransient<AddAccountPage>();
         builder.Services.AddTransient<CategoriesPage>();
         builder.Services.AddTransient<AddCategoryPage>();
+        builder.Services.AddTransient<BudgetsPage>();
+        builder.Services.AddTransient<AddBudgetPage>();
+        builder.Services.AddTransient<GoalsPage>();
+        builder.Services.AddTransient<AddGoalPage>();
+        builder.Services.AddTransient<CalendarPage>();
+        builder.Services.AddTransient<AnalyticsPage>();
+        builder.Services.AddTransient<PredictionsPage>();
 
         // Routing
         Routing.RegisterRoute("Dashboard", typeof(DashboardPage));
@@ -110,6 +127,9 @@ public static class MauiProgram
         Routing.RegisterRoute("Goals", typeof(GoalsPage));
         Routing.RegisterRoute("AddGoal", typeof(AddGoalPage));
         Routing.RegisterRoute("EditGoal", typeof(AddGoalPage));
+        Routing.RegisterRoute("Calendar", typeof(CalendarPage));
+        Routing.RegisterRoute("Analytics", typeof(AnalyticsPage));
+        Routing.RegisterRoute("Predictions", typeof(PredictionsPage));
         Routing.RegisterRoute("Settings", typeof(SettingsPage));
         Routing.RegisterRoute("Login", typeof(LoginPage));
 
@@ -146,6 +166,40 @@ public class DatabaseInitializer : IHostedService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error initializing database");
+        }
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+}
+
+public class SupabaseInitializer : IHostedService
+{
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<SupabaseInitializer> _logger;
+
+    public SupabaseInitializer(IServiceProvider serviceProvider, ILogger<SupabaseInitializer> logger)
+    {
+        _serviceProvider = serviceProvider;
+        _logger = logger;
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            _logger.LogInformation("Initializing Supabase services...");
+            
+            var authService = _serviceProvider.GetRequiredService<IAuthenticationService>();
+            await authService.InitializeAsync(cancellationToken);
+            
+            var syncService = _serviceProvider.GetRequiredService<ISupabaseSyncService>();
+            await syncService.InitializeAsync(cancellationToken);
+            
+            _logger.LogInformation("Supabase services initialized successfully");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error initializing Supabase services");
         }
     }
 

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             x:Class="FinanceApp.Mobile.Views.Predictions.PredictionsPage"
+             x:DataType="viewmodels:PredictionsViewModel"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:MoneyToStringConverter x:Key="MoneyConverter" />
+            <converters:PercentageConverter x:Key="PercentageConverter" />
+            <converters:PercentageToColorConverter x:Key="PercentageColorConverter" />
+            <converters:TransactionTypeToColorConverter x:Key="TransactionTypeColorConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <converters:ColorConverter x:Key="ColorConverter" />
+            <converters:SavingsRateColorConverter x:Key="SavingsRateColorConverter" />
+            <converters:GoalStatusVisibilityConverter x:Key="GoalStatusVisibilityConverter" />
+            <converters:GoalStatusToStringConverter x:Key="GoalStatusToStringConverter" />
+            <converters:SyncStatusToColorConverter x:Key="SyncStatusToColorConverter" />
+            <converters:SyncStatusToIconConverter x:Key="SyncStatusToIconConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Spacing="16" Padding="16">
+                <!-- Header -->
+                <Frame Style="{StaticResource CardFrameStyle}" Padding="16" IsVisible="{Binding ExpensePrediction, Converter={StaticResource NullToBoolConverter}}">
+                    <VerticalStackLayout Spacing="8">
+                        <HorizontalStackLayout Spacing="12">
+                            <Label Text="🔮" FontSize="28" VerticalOptions="Center" />
+                            <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                <Label Text="Next Month Prediction" Style="{StaticResource SectionHeaderStyle}" />
+                                <Label Text="{Binding ExpensePrediction.PredictionDate, StringFormat='Generated {0:MMM dd, yyyy}'}" Style="{StaticResource CaptionLabelStyle}" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                        
+                        <HorizontalStackLayout Spacing="16">
+                            <VerticalStackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                                <Label Text="Predicted Expenses" Style="{StaticResource CaptionLabelStyle}" />
+                                <Label Text="{Binding ExpensePrediction.TotalPredicted, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BalanceLabelStyle}" TextColor="Red" FontSize="24" />
+                            </VerticalStackLayout>
+                            
+                            <VerticalStackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                                <Label Text="Range" Style="{StaticResource CaptionLabelStyle}" />
+                                <Label Text="{Binding ExpensePrediction.MinTotal, Converter={StaticResource MoneyConverter}} - {Binding ExpensePrediction.MaxTotal, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" />
+                            </VerticalStackLayout>
+                            
+                            <VerticalStackLayout Spacing="2" HorizontalOptions="FillAndExpand">
+                                <Label Text="Confidence" Style="{StaticResource CaptionLabelStyle}" />
+                                <Frame BackgroundColor="{Binding ExpensePrediction.Confidence, Converter={StaticResource PredictionConfidenceColorConverter}}" 
+                                       Padding="8,4" CornerRadius="12" HorizontalOptions="Start">
+                                    <Label Text="{Binding ExpensePrediction.Confidence}" TextColor="White" FontSize="12" FontAttributes="Bold" />
+                                </Frame>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                        
+                        <Frame BackgroundColor="{Binding ExpensePrediction.Confidence, Converter={StaticResource PredictionConfidenceColorConverter}}" 
+                               Padding="12" CornerRadius="8" IsVisible="{Binding ExpensePrediction.Confidence, Converter={StaticResource PredictionConfidenceToBoolConverter}, ConverterParameter=InsufficientData}">
+                            <Label Text="📊 Insufficient data for reliable predictions. Add more transactions to improve accuracy." 
+                                   TextColor="White" FontSize="13" />
+                        </Frame>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Category Predictions -->
+                <Frame Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding ExpensePrediction.CategoryPredictions.Count, Converter={StaticResource NullToBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Category Breakdown" Style="{StaticResource SectionHeaderStyle}" />
+                        <CollectionView ItemsSource="{Binding ExpensePrediction.CategoryPredictions}" HeightRequest="300">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame Style="{StaticResource CategoryItemFrameStyle}" Margin="0,4">
+                                        <HorizontalStackLayout Spacing="12">
+                                            <Frame WidthRequest="44" HeightRequest="44" CornerRadius="22" 
+                                                   BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                                   HasShadow="False" BorderColor="Transparent">
+                                                <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="18" />
+                                            </Frame>
+                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                                <Label Text="{Binding CategoryName}" Style="{StaticResource CategoryNameLabelStyle}" />
+                                                <ProgressBar Progress="{Binding PredictedAmount.Amount, Converter={StaticResource PercentageConverter}, ConverterParameter=div1000}" 
+                                                             ProgressColor="{Binding PredictedAmount.Amount, Converter={StaticResource PercentageColorConverter}}" HeightRequest="6" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
+                                                <Label Text="{Binding PredictedAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource CategoryAmountLabelStyle}" />
+                                                <Label Text="{Binding MinAmount, Converter={StaticResource MoneyConverter}} - {Binding MaxAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource CategoryPercentLabelStyle}" />
+                                            </VerticalStackLayout>
+                                        </HorizontalStackLayout>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Spending Trends -->
+                <Frame Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding SpendingTrends.Count, Converter={StaticResource NullToBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Spending Trends (6 months)" Style="{StaticResource SectionHeaderStyle}" />
+                        <CollectionView ItemsSource="{Binding SpendingTrends}" HeightRequest="250">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame Style="{StaticResource TrendItemFrameStyle}" Margin="0,4">
+                                        <HorizontalStackLayout Spacing="12">
+                                            <Frame WidthRequest="40" HeightRequest="40" CornerRadius="20" 
+                                                   BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                                   HasShadow="False" BorderColor="Transparent">
+                                                <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="16" />
+                                            </Frame>
+                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                                <Label Text="{Binding CategoryName}" Style="{StaticResource CategoryNameLabelStyle}" />
+                                                <Label Text="{Binding Trend, Converter={StaticResource TrendToIconConverter}}" Style="{StaticResource TrendIconStyle}" 
+                                                   TextColor="{Binding Trend, Converter={StaticResource TrendToColorConverter}}" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
+                                                <Label Text="{Binding ChangePercentage, StringFormat='{0:+0.0;-0.0;0}%'}" 
+                                                       Style="{StaticResource TrendPercentLabelStyle}"
+                                                       TextColor="{Binding Trend, Converter={StaticResource TrendToColorConverter}}" />
+                                                <Label Text="Current: {Binding CurrentAverage, Converter={StaticResource MoneyConverter}}" Style="{StaticResource TrendCaptionLabelStyle}" />
+                                                <Label Text="Previous: {Binding PreviousAverage, Converter={StaticResource MoneyConverter}}" Style="{StaticResource TrendCaptionLabelStyle}" />
+                                            </VerticalStackLayout>
+                                        </HorizontalStackLayout>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Budget Forecasts -->
+                <Frame Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding BudgetForecasts.Count, Converter={StaticResource NullToBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Budget Forecasts" Style="{StaticResource SectionHeaderStyle}" />
+                        <CollectionView ItemsSource="{Binding BudgetForecasts}" HeightRequest="250">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame Style="{StaticResource BudgetCardFrameStyle}" Margin="0,4">
+                                        <VerticalStackLayout Spacing="8">
+                                            <HorizontalStackLayout Spacing="12">
+                                                <Frame WidthRequest="44" HeightRequest="44" CornerRadius="22" 
+                                                       BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                                       HasShadow="False" BorderColor="Transparent">
+                                                    <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="18" />
+                                                </Frame>
+                                                <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                                    <Label Text="{Binding BudgetName}" Style="{StaticResource BudgetCategoryNameLabelStyle}" />
+                                                    <ProgressBar Progress="{Binding PercentageUsed, Converter={StaticResource PercentageConverter}}" 
+                                                                 ProgressColor="{Binding PercentageUsed, Converter={StaticResource PercentageColorConverter}}" HeightRequest="8" />
+                                                </VerticalStackLayout>
+                                                <Label Text="{Binding WillExceedBudget, Converter={StaticResource BoolToStringConverter}, ConverterParameter='⚠ Will Exceed|✓ On Track'}" 
+                                                       Style="{StaticResource BudgetPercentageLabelStyle}"
+                                                       TextColor="{Binding WillExceedBudget, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Red|Green}" />
+                                            </HorizontalStackLayout>
+                                            <HorizontalStackLayout Spacing="16">
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Text="Current" Style="{StaticResource BudgetDetailCaptionStyle}" />
+                                                    <Label Text="{Binding CurrentSpent, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetDetailValueStyle}" TextColor="Red" />
+                                                </VerticalStackLayout>
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Text="Predicted" Style="{StaticResource BudgetDetailCaptionStyle}" />
+                                                    <Label Text="{Binding PredictedSpent, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetDetailValueStyle}" TextColor="Orange" />
+                                                </VerticalStackLayout>
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Text="Budget" Style="{StaticResource BudgetDetailCaptionStyle}" />
+                                                    <Label Text="{Binding BudgetAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetDetailValueStyle}" />
+                                                </VerticalStackLayout>
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding ExceedPercentage, StringFormat='Exceed by {0:F1}%'}" 
+                                                   Style="{StaticResource OverBudgetLabelStyle}"
+                                                   IsVisible="{Binding WillExceedBudget}"
+                                                   TextColor="Red" />
+                                        </VerticalStackLayout>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Smart Insights -->
+                <Frame Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding Insights.Count, Converter={StaticResource NullToBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="💡 Smart Insights" Style="{StaticResource SectionHeaderStyle}" />
+                        <CollectionView ItemsSource="{Binding Insights}" HeightRequest="250">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame Style="{StaticResource InsightCardFrameStyle}" Margin="0,4">
+                                        <VerticalStackLayout Spacing="8">
+                                            <HorizontalStackLayout Spacing="12">
+                                                <Label Text="{Binding Severity, Converter={StaticResource InsightSeverityToIconConverter}}" FontSize="20" VerticalOptions="Center" />
+                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                                    <Label Text="{Binding Title}" Style="{StaticResource InsightTitleLabelStyle}" />
+                                                    <Label Text="{Binding Message}" Style="{StaticResource InsightMessageLabelStyle}" />
+                                                </VerticalStackLayout>
+                                                <Label Text="{Binding Severity, Converter={StaticResource InsightSeverityToColorConverter}}" 
+                                                       Style="{StaticResource InsightSeverityBadgeStyle}"
+                                                       TextColor="White" />
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Anomalies -->
+                <Frame Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding Anomalies.Count, Converter={StaticResource NullToBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="⚠ Unusual Spending" Style="{StaticResource SectionHeaderStyle}" />
+                        <CollectionView ItemsSource="{Binding Anomalies}" HeightRequest="250">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame Style="{StaticResource AnomalyCardFrameStyle}" Margin="0,4">
+                                        <VerticalStackLayout Spacing="8">
+                                            <HorizontalStackLayout Spacing="12">
+                                                <Label Text="⚠" FontSize="20" VerticalOptions="Center" />
+                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                                    <Label Text="{Binding CategoryName}" Style="{StaticResource AnomalyCategoryLabelStyle}" />
+                                                    <Label Text="{Binding Message}" Style="{StaticResource AnomalyMessageLabelStyle}" />
+                                                </VerticalStackLayout>
+                                                <Label Text="{Binding DeviationPercentage, StringFormat='{0:+0;-0}%'}" 
+                                                       Style="{StaticResource AnomalyDeviationLabelStyle}" TextColor="Red" />
+                                            </HorizontalStackLayout>
+                                            <HorizontalStackLayout Spacing="16">
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Text="Amount" Style="{StaticResource AnomalyDetailCaptionStyle}" />
+                                                    <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AnomalyDetailValueStyle}" TextColor="Red" />
+                                                </VerticalStackLayout>
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Text="Typical Range" Style="{StaticResource AnomalyDetailCaptionStyle}" />
+                                                    <Label Text="{Binding TypicalMin, Converter={StaticResource MoneyConverter}} - {Binding TypicalMax, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AnomalyDetailValueStyle}" />
+                                                </VerticalStackLayout>
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Text="Date" Style="{StaticResource AnomalyDetailCaptionStyle}" />
+                                                    <Label Text="{Binding TransactionDate, StringFormat='{0:MMM dd}'}" Style="{StaticResource AnomalyDetailValueStyle}" />
+                                                </VerticalStackLayout>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Empty State -->
+                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="40" 
+                                     IsVisible="{Binding ExpensePrediction, Converter={StaticResource InverseBoolConverter}}">
+                    <Label Text="🔮" FontSize="64" />
+                    <Label Text="No Predictions Yet" Style="{StaticResource EmptyStateLabelStyle}" />
+                    <Label Text="Add more transactions to enable expense predictions" Style="{StaticResource EmptyStateSubLabelStyle}" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>
