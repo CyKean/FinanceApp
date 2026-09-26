@@ -10,6 +10,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -17,35 +18,35 @@
         <ScrollView>
             <VerticalStackLayout Spacing="16" Padding="16">
                 <!-- User Info -->
-                <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                     <VerticalStackLayout Spacing="8">
                         <HorizontalStackLayout Spacing="12">
-                            <Frame WidthRequest="64" HeightRequest="64" CornerRadius="32" BackgroundColor="#512BD4" HasShadow="False" BorderColor="Transparent">
+                            <Border WidthRequest="64" HeightRequest="64" CornerRadius="32" Background="#512BD4" HasShadow="False" BorderColor="Transparent">
                                 <Label Text="👤" VerticalOptions="Center" HorizontalOptions="Center" FontSize="28" />
-                            </Frame>
+                            </Border>
                             <VerticalStackLayout Spacing="4" VerticalOptions="Center">
                                 <Label Text="Signed in as" Style="{StaticResource CaptionLabelStyle}" />
                                 <Label Text="{Binding UserEmail}" Style="{StaticResource UserEmailLabelStyle}" />
                             </VerticalStackLayout>
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Sync Section -->
-                <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Synchronization" Style="{StaticResource SectionHeaderStyle}" />
                         
                         <HorizontalStackLayout Spacing="12">
-                            <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                            <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
                                 <Label Text="Pending" Style="{StaticResource SyncDetailCaptionStyle}" />
                                 <Label Text="{Binding SyncStatus.PendingCount}" Style="{StaticResource SyncDetailValueStyle}" />
                             </VerticalStackLayout>
-                            <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                            <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
                                 <Label Text="Failed" Style="{StaticResource SyncDetailCaptionStyle}" />
                                 <Label Text="{Binding SyncStatus.FailedCount}" Style="{StaticResource SyncDetailValueStyle}" TextColor="Red" />
                             </VerticalStackLayout>
-                            <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                            <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
                                 <Label Text="Last Sync" Style="{StaticResource SyncDetailCaptionStyle}" />
                                 <Label Text="{Binding SyncStatus.LastSyncAt, StringFormat='{0:MMM dd, HH:mm}'}" Style="{StaticResource SyncDetailValueStyle}" />
                             </VerticalStackLayout>
@@ -61,10 +62,10 @@
                                IsVisible="{Binding SyncStatus.LastError, Converter={StaticResource NullToBoolConverter}}"
                                TextColor="Red" />
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <!-- App Info -->
-                <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                     <VerticalStackLayout Spacing="8">
                         <Label Text="App Information" Style="{StaticResource SectionHeaderStyle}" />
                         <HorizontalStackLayout Spacing="12">
@@ -72,17 +73,17 @@
                             <Label Text="{Binding AppVersion}" Style="{StaticResource InfoValueLabelStyle}" HorizontalOptions="EndAndExpand" />
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Danger Zone -->
-                <Frame Style="{StaticResource CardFrameStyle}" Padding="16" BackgroundColor="#FFF5F5">
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Background="#FFF5F5">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Danger Zone" Style="{StaticResource SectionHeaderStyle}" TextColor="Red" />
                         <Button Text="Logout" 
                                 Command="{Binding LogoutCommand}"
                                 Style="{StaticResource DangerButtonStyle}" />
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>

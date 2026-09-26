@@ -27,33 +27,33 @@
                                 <SwipeView.RightItems>
                                     <SwipeItems>
                                         <SwipeItem Text="Edit" 
-                                                   BackgroundColor="#512BD4"
+                                                   Background="#512BD4"
                                                    Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.EditGoalCommand}"
                                                    CommandParameter="{Binding .}" />
                                         <SwipeItem Text="Add Progress" 
-                                                   BackgroundColor="Green"
+                                                   Background="Green"
                                                    Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.AddProgressCommand}"
                                                    CommandParameter="{Binding .}" />
                                         <SwipeItem Text="Complete" 
-                                                   BackgroundColor="Blue"
+                                                   Background="Blue"
                                                    Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.CompleteGoalCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding Status, Converter={StaticResource GoalStatusVisibilityConverter}, ConverterParameter=Active}" />
                                         <SwipeItem Text="Delete" 
-                                                   BackgroundColor="Red"
+                                                   Background="Red"
                                                    Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.DeleteGoalCommand}"
                                                    CommandParameter="{Binding .}" />
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-                            <Frame Style="{StaticResource GoalCardFrameStyle}" Margin="0,8">
+                            <Border Style="{StaticResource GoalCardFrameStyle}" Margin="0,8">
                                 <VerticalStackLayout Spacing="12">
                                     <HorizontalStackLayout Spacing="12">
-                                        <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                               BackgroundColor="{Binding Color, Converter={StaticResource ColorConverter}}" 
+                                        <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
+                                               Background="{Binding Color, Converter={StaticResource ColorConverter}}" 
                                                HasShadow="False" BorderColor="Transparent">
                                             <Label Text="{Binding Icon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
-                                        </Frame>
-                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                        </Border>
+                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
                                             <Label Text="{Binding Name}" Style="{StaticResource GoalNameLabelStyle}" />
                                             <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}" 
                                                          ProgressColor="{Binding ProgressPercentage, Converter={StaticResource PercentageColorConverter}}" HeightRequest="8" />
@@ -83,7 +83,7 @@
                                     <Label Text="{Binding Status, Converter={StaticResource GoalStatusToStringConverter}}" 
                                            Style="{StaticResource GoalStatusLabelStyle}" />
                                 </VerticalStackLayout>
-                            </Frame>
+                            </Border>
                         </SwipeView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
@@ -102,6 +102,10 @@
     </RefreshView>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Command="{Binding AddGoalCommand}" IconImageSource="plus.png" Priority="0" />
+        <ToolbarItem Text="Add" Command="{Binding AddGoalCommand}" Priority="0">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource Glyph="+" FontFamily="OpenSansRegular" Size="20" Color="White" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
 </ContentPage>

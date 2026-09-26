@@ -8,19 +8,6 @@
     Title="FinanceApp"
     FlyoutBehavior="Flyout">
 
-    <Shell.Resources>
-        <ResourceDictionary>
-            <Style TargetType="TabBar">
-                <Setter Property="BackgroundColor" Value="#FFFFFF" />
-                <Setter Property="UnselectedColor" Value="#6C757D" />
-                <Setter Property="SelectedColor" Value="#512BD4" />
-            </Style>
-            <Style TargetType="FlyoutItem">
-                <Setter Property="BackgroundColor" Value="#FFFFFF" />
-            </Style>
-        </ResourceDictionary>
-    </Shell.Resources>
-
     <!-- Login Page (shown when not authenticated) -->
     <ShellContent Route="Login" ContentTemplate="{DataTemplate views:LoginPage}" />
 

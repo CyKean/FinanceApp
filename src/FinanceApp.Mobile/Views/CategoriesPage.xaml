@@ -10,26 +10,29 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <converters:ColorConverter x:Key="ColorConverter" />
+            <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
         <VerticalStackLayout Spacing="16" Padding="16">
             <!-- Tab Selector -->
-            <Frame Style="{StaticResource CardFrameStyle}" Padding="4">
+            <Border Style="{StaticResource CardFrameStyle}" Padding="4">
                 <HorizontalStackLayout Spacing="4">
                     <Button Text="Expenses" 
                             Command="{Binding SetTabCommand}"
                             CommandParameter="{x:Static viewmodels:CategoryType.Expense}"
                             Style="{Binding SelectedTab, Converter={StaticResource CategoryTabStyleConverter}, ConverterParameter=Expense}"
-                            HorizontalOptions="FillAndExpand" />
+                            HorizontalOptions="Fill" />
                     <Button Text="Income" 
                             Command="{Binding SetTabCommand}"
                             CommandParameter="{x:Static viewmodels:CategoryType.Income}"
                             Style="{Binding SelectedTab, Converter={StaticResource CategoryTabStyleConverter}, ConverterParameter=Income}"
-                            HorizontalOptions="FillAndExpand" />
+                            HorizontalOptions="Fill" />
                 </HorizontalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Categories List -->
             <CollectionView ItemsSource="{Binding ExpenseCategories}" 
@@ -41,29 +44,29 @@
                                 <SwipeView.RightItems>
                                     <SwipeItems>
                                         <SwipeItem Text="Edit" 
-                                                   BackgroundColor="#512BD4"
+                                                   Background="#512BD4"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
                                                    CommandParameter="{Binding .}" />
                                         <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}" 
-                                                   BackgroundColor="Orange"
+                                                   Background="Orange"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.ToggleActiveCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
                                         <SwipeItem Text="Delete" 
-                                                   BackgroundColor="Red"
+                                                   Background="Red"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.DeleteCategoryCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-                                <Frame Style="{StaticResource CategoryItemFrameStyle}" Margin="0,8">
+                                <Border Style="{StaticResource CategoryItemFrameStyle}" Margin="0,8">
                                     <HorizontalStackLayout Spacing="16">
-                                        <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                               BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                        <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
+                                               Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
                                                HasShadow="False" BorderColor="Transparent">
                                             <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
-                                        </Frame>
-                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                        </Border>
+                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
                                             <HorizontalStackLayout Spacing="8">
                                                 <Label Text="{Binding Name}" Style="{StaticResource CategoryNameLabelStyle}" />
                                                 <Label Text="🔒" IsVisible="{Binding IsSystem}" FontSize="12" />
@@ -71,7 +74,7 @@
                                             </HorizontalStackLayout>
                                         </VerticalStackLayout>
                                     </HorizontalStackLayout>
-                                </Frame>
+                                </Border>
                             </SwipeView>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -86,29 +89,29 @@
                                 <SwipeView.RightItems>
                                     <SwipeItems>
                                         <SwipeItem Text="Edit" 
-                                                   BackgroundColor="#512BD4"
+                                                   Background="#512BD4"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
                                                    CommandParameter="{Binding .}" />
                                         <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}" 
-                                                   BackgroundColor="Orange"
+                                                   Background="Orange"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.ToggleActiveCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
                                         <SwipeItem Text="Delete" 
-                                                   BackgroundColor="Red"
+                                                   Background="Red"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.DeleteCategoryCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-                                <Frame Style="{StaticResource CategoryItemFrameStyle}" Margin="0,8">
+                                <Border Style="{StaticResource CategoryItemFrameStyle}" Margin="0,8">
                                     <HorizontalStackLayout Spacing="16">
-                                        <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                               BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                        <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
+                                               Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
                                                HasShadow="False" BorderColor="Transparent">
                                             <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
-                                        </Frame>
-                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                        </Border>
+                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
                                             <HorizontalStackLayout Spacing="8">
                                                 <Label Text="{Binding Name}" Style="{StaticResource CategoryNameLabelStyle}" />
                                                 <Label Text="🔒" IsVisible="{Binding IsSystem}" FontSize="12" />
@@ -116,7 +119,7 @@
                                             </HorizontalStackLayout>
                                         </VerticalStackLayout>
                                     </HorizontalStackLayout>
-                                </Frame>
+                                </Border>
                             </SwipeView>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -128,6 +131,10 @@
     </RefreshView>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Command="{Binding AddCategoryCommand}" IconImageSource="plus.png" Priority="0" />
+        <ToolbarItem Text="Add" Command="{Binding AddCategoryCommand}" Priority="0">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource Glyph="+" FontFamily="OpenSansRegular" Size="20" Color="White" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
 </ContentPage>

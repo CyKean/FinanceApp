@@ -5,106 +5,111 @@
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
              x:Class="FinanceApp.Mobile.Views.Goals.GoalsPage"
              x:DataType="viewmodels:GoalsViewModel"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             x:Name="GoalsPageView">
 
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <converters:MoneyToStringConverter x:Key="MoneyConverter" />
-            <converters:PercentageConverter x:Key="PercentageConverter" />
-            <converters:PercentageToColorConverter x:Key="PercentageColorConverter" />
-            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
-            <converters:ColorConverter x:Key="ColorConverter" />
-            <converters:GoalStatusToStringConverter x:Key="GoalStatusToStringConverter" />
-            <converters:GoalStatusVisibilityConverter x:Key="GoalStatusVisibilityConverter" />
-            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
-        </ResourceDictionary>
-    </ContentPage.Resources>
+     <ContentPage.Resources>
+         <ResourceDictionary>
+             <converters:MoneyToStringConverter x:Key="MoneyConverter" />
+             <converters:PercentageConverter x:Key="PercentageConverter" />
+             <converters:PercentageToColorConverter x:Key="PercentageColorConverter" />
+             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+             <converters:ColorConverter x:Key="ColorConverter" />
+             <converters:GoalStatusToStringConverter x:Key="GoalStatusToStringConverter" />
+             <converters:GoalStatusVisibilityConverter x:Key="GoalStatusVisibilityConverter" />
+             <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+         </ResourceDictionary>
+     </ContentPage.Resources>
 
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
-        <VerticalStackLayout Spacing="16" Padding="16">
-            <!-- Goals List -->
-            <CollectionView ItemsSource="{Binding Goals}" SelectionMode="None">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <SwipeView>
-                            <SwipeView.RightItems>
-                                <SwipeItems>
-                                    <SwipeItem Text="Edit" 
-                                               BackgroundColor="#512BD4"
-                                               Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GoalsViewModel}}, Path=EditGoalCommand}"
-                                               CommandParameter="{Binding .}" />
-                                    <SwipeItem Text="Add Progress" 
-                                               BackgroundColor="Green"
-                                               Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GoalsViewModel}}, Path=AddProgressCommand}"
-                                               CommandParameter="{Binding .}" />
-                                    <SwipeItem Text="Complete" 
-                                               BackgroundColor="Blue"
-                                               Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GoalsViewModel}}, Path=CompleteGoalCommand}"
-                                               CommandParameter="{Binding .}"
-                                               IsVisible="{Binding Status, Converter={StaticResource GoalStatusVisibilityConverter}, ConverterParameter=Active}" />
-                                    <SwipeItem Text="Delete" 
-                                               BackgroundColor="Red"
-                                               Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:GoalsViewModel}}, Path=DeleteGoalCommand}"
-                                               CommandParameter="{Binding .}" />
-                                </SwipeItems>
-                            </SwipeView.RightItems>
-                            <Frame Style="{StaticResource GoalCardFrameStyle}" Margin="0,8">
-                                <VerticalStackLayout Spacing="12">
-                                    <HorizontalStackLayout Spacing="12">
-                                        <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                               BackgroundColor="{Binding Color, Converter={StaticResource ColorConverter}}" 
-                                               HasShadow="False" BorderColor="Transparent">
-                                            <Label Text="{Binding Icon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
-                                        </Frame>
-                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
-                                            <Label Text="{Binding Name}" Style="{StaticResource GoalNameLabelStyle}" />
-                                            <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}" 
-                                                         ProgressColor="{Binding ProgressPercentage, Converter={StaticResource PercentageColorConverter}}" HeightRequest="8" />
-                                        </VerticalStackLayout>
-                                        <Label Text="{Binding ProgressPercentage, StringFormat='{0:F1}%'}" 
-                                               Style="{StaticResource GoalPercentageLabelStyle}"
-                                               TextColor="{Binding ProgressPercentage, Converter={StaticResource PercentageColorConverter}}" />
-                                    </HorizontalStackLayout>
-                                    <HorizontalStackLayout Spacing="16">
-                                        <VerticalStackLayout Spacing="2">
-                                            <Label Text="Current" Style="{StaticResource GoalDetailCaptionStyle}" />
-                                            <Label Text="{Binding CurrentAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalDetailValueStyle}" TextColor="Green" />
-                                        </VerticalStackLayout>
-                                        <VerticalStackLayout Spacing="2">
-                                            <Label Text="Target" Style="{StaticResource GoalDetailCaptionStyle}" />
-                                            <Label Text="{Binding TargetAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalDetailValueStyle}" />
-                                        </VerticalStackLayout>
-                                        <VerticalStackLayout Spacing="2">
-                                            <Label Text="Remaining" Style="{StaticResource GoalDetailCaptionStyle}" />
-                                            <Label Text="{Binding RemainingAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalDetailValueStyle}" TextColor="Red" />
-                                        </VerticalStackLayout>
-                                    </HorizontalStackLayout>
-                                    <HorizontalStackLayout Spacing="16">
-                                        <Label Text="{Binding DaysRemaining, StringFormat='{0} days left'}" Style="{StaticResource GoalDaysLabelStyle}" />
-                                        <Label Text="{Binding RequiredMonthlySavings, StringFormat='Need {0}/month', Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalMonthlyLabelStyle}" />
-                                    </HorizontalStackLayout>
-                                    <Label Text="{Binding Status, Converter={StaticResource GoalStatusToStringConverter}}" 
-                                           Style="{StaticResource GoalStatusLabelStyle}" />
-                                </VerticalStackLayout>
-                            </Frame>
-                        </SwipeView>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-                <CollectionView.EmptyView>
-                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20">
-                        <Label Text="🎯" FontSize="48" />
-                        <Label Text="No goals yet" Style="{StaticResource EmptyStateLabelStyle}" />
-                        <Label Text="Create a financial goal to start saving" Style="{StaticResource EmptyStateSubLabelStyle}" />
-                    </VerticalStackLayout>
-                </CollectionView.EmptyView>
-            </CollectionView>
+     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+         <VerticalStackLayout Spacing="16" Padding="16">
+             <!-- Goals List -->
+             <CollectionView ItemsSource="{Binding Goals}" SelectionMode="None">
+                 <CollectionView.ItemTemplate>
+                     <DataTemplate>
+                         <SwipeView>
+                             <SwipeView.RightItems>
+                                 <SwipeItems>
+                                     <SwipeItem Text="Edit" 
+                                                Background="#512BD4"
+                                                Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.EditGoalCommand}"
+                                                CommandParameter="{Binding .}" />
+                                     <SwipeItem Text="Add Progress" 
+                                                Background="Green"
+                                                Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.AddProgressCommand}"
+                                                CommandParameter="{Binding .}" />
+                                     <SwipeItem Text="Complete" 
+                                                Background="Blue"
+                                                Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.CompleteGoalCommand}"
+                                                CommandParameter="{Binding .}"
+                                                IsVisible="{Binding Status, Converter={StaticResource GoalStatusVisibilityConverter}, ConverterParameter=Active}" />
+                                     <SwipeItem Text="Delete" 
+                                                Background="Red"
+                                                Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.DeleteGoalCommand}"
+                                                CommandParameter="{Binding .}" />
+                                 </SwipeItems>
+                             </SwipeView.RightItems>
+                             <Border Style="{StaticResource GoalCardFrameStyle}" Margin="0,8">
+                                 <VerticalStackLayout Spacing="12">
+                                     <HorizontalStackLayout Spacing="12">
+                                         <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
+                                                Background="{Binding Color, Converter={StaticResource ColorConverter}}" 
+                                                HasShadow="False" BorderColor="Transparent">
+                                             <Label Text="{Binding Icon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
+                                         </Border>
+                                         <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
+                                             <Label Text="{Binding Name}" Style="{StaticResource GoalNameLabelStyle}" />
+                                             <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}" 
+                                                          ProgressColor="{Binding ProgressPercentage, Converter={StaticResource PercentageColorConverter}}" HeightRequest="8" />
+                                         </VerticalStackLayout>
+                                         <Label Text="{Binding ProgressPercentage, StringFormat='{0:F1}%'}" 
+                                                Style="{StaticResource GoalPercentageLabelStyle}"
+                                                TextColor="{Binding ProgressPercentage, Converter={StaticResource PercentageColorConverter}}" />
+                                     </HorizontalStackLayout>
+                                     <HorizontalStackLayout Spacing="16">
+                                         <VerticalStackLayout Spacing="2">
+                                             <Label Text="Current" Style="{StaticResource GoalDetailCaptionStyle}" />
+                                             <Label Text="{Binding CurrentAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalDetailValueStyle}" TextColor="Green" />
+                                         </VerticalStackLayout>
+                                         <VerticalStackLayout Spacing="2">
+                                             <Label Text="Target" Style="{StaticResource GoalDetailCaptionStyle}" />
+                                             <Label Text="{Binding TargetAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalDetailValueStyle}" />
+                                         </VerticalStackLayout>
+                                         <VerticalStackLayout Spacing="2">
+                                             <Label Text="Remaining" Style="{StaticResource GoalDetailCaptionStyle}" />
+                                             <Label Text="{Binding RemainingAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalDetailValueStyle}" TextColor="Red" />
+                                         </VerticalStackLayout>
+                                     </HorizontalStackLayout>
+                                     <HorizontalStackLayout Spacing="16">
+                                         <Label Text="{Binding DaysRemaining, StringFormat='{0} days left'}" Style="{StaticResource GoalDaysLabelStyle}" />
+                                         <Label Text="{Binding RequiredMonthlySavings, StringFormat='Need {0}/month', Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalMonthlyLabelStyle}" />
+                                     </HorizontalStackLayout>
+                                     <Label Text="{Binding Status, Converter={StaticResource GoalStatusToStringConverter}}" 
+                                            Style="{StaticResource GoalStatusLabelStyle}" />
+                                 </VerticalStackLayout>
+                             </Border>
+                         </SwipeView>
+                     </DataTemplate>
+                 </CollectionView.ItemTemplate>
+                 <CollectionView.EmptyView>
+                     <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20">
+                         <Label Text="🎯" FontSize="48" />
+                         <Label Text="No goals yet" Style="{StaticResource EmptyStateLabelStyle}" />
+                         <Label Text="Create a financial goal to start saving" Style="{StaticResource EmptyStateSubLabelStyle}" />
+                     </VerticalStackLayout>
+                 </CollectionView.EmptyView>
+             </CollectionView>
 
-            <!-- Add Goal Button -->
-            <Button Text="Add Goal" Command="{Binding AddGoalCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="16,0,16,16" />
-        </VerticalStackLayout>
-    </RefreshView>
+             <!-- Add Goal Button -->
+             <Button Text="Add Goal" Command="{Binding AddGoalCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="16,0,16,16" />
+         </VerticalStackLayout>
+     </RefreshView>
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Command="{Binding AddGoalCommand}" IconImageSource="plus.png" Priority="0" />
+<ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add" Command="{Binding AddGoalCommand}" Priority="0">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource Glyph="+" FontFamily="OpenSansRegular" Size="20" Color="White" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
-</ContentPage>
+ </ContentPage>

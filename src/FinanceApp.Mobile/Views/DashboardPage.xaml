@@ -19,68 +19,74 @@
             <VerticalStackLayout Spacing="16" Padding="16">
                 <!-- Balance Cards -->
                 <HorizontalStackLayout Spacing="12">
-                    <Frame Style="{StaticResource CardFrameStyle}" HorizontalOptions="FillAndExpand">
+                    <Border Style="{StaticResource CardFrameStyle}" HorizontalOptions="Fill">
                         <VerticalStackLayout Spacing="4">
                             <Label Text="Total Balance" Style="{StaticResource CaptionLabelStyle}" />
                             <Label Text="{Binding TotalBalance, Converter={StaticResource MoneyConverter}}" 
                                    Style="{StaticResource BalanceLabelStyle}" 
                                    TextColor="{Binding NetAmount.Amount, Converter={StaticResource MoneyConverter}, ConverterParameter=color}" />
                         </VerticalStackLayout>
-                    </Frame>
+                    </Border>
                 </HorizontalStackLayout>
 
                 <HorizontalStackLayout Spacing="12">
-                    <Frame Style="{StaticResource CardFrameStyle}" HorizontalOptions="FillAndExpand">
+                    <Border Style="{StaticResource CardFrameStyle}" HorizontalOptions="Fill">
                         <VerticalStackLayout Spacing="4">
                             <Label Text="Income" Style="{StaticResource CaptionLabelStyle}" TextColor="Green" />
                             <Label Text="{Binding TotalIncome, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" TextColor="Green" />
                         </VerticalStackLayout>
-                    </Frame>
-                    <Frame Style="{StaticResource CardFrameStyle}" HorizontalOptions="FillAndExpand">
+                    </Border>
+                    <Border Style="{StaticResource CardFrameStyle}" HorizontalOptions="Fill">
                         <VerticalStackLayout Spacing="4">
                             <Label Text="Expenses" Style="{StaticResource CaptionLabelStyle}" TextColor="Red" />
                             <Label Text="{Binding TotalExpense, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" TextColor="Red" />
                         </VerticalStackLayout>
-                    </Frame>
-                    <Frame Style="{StaticResource CardFrameStyle}" HorizontalOptions="FillAndExpand">
+                    </Border>
+                    <Border Style="{StaticResource CardFrameStyle}" HorizontalOptions="Fill">
                         <VerticalStackLayout Spacing="4">
                             <Label Text="Savings Rate" Style="{StaticResource CaptionLabelStyle}" />
                             <Label Text="{Binding SavingsRate, StringFormat='{0:F1}%'}" Style="{StaticResource AmountLabelStyle}" />
                         </VerticalStackLayout>
-                    </Frame>
+                    </Border>
                 </HorizontalStackLayout>
 
                 <!-- Quick Actions -->
-                <Frame Style="{StaticResource CardFrameStyle}">
+                <Border Style="{StaticResource CardFrameStyle}">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Quick Actions" Style="{StaticResource SectionHeaderStyle}" />
                         <HorizontalStackLayout Spacing="12">
-                            <Button Text="Add Expense" 
+<Button Text="Add Expense" 
                                     Command="{Binding NavigateToAddExpenseCommand}"
                                     Style="{StaticResource PrimaryButtonStyle}"
-                                    HorizontalOptions="FillAndExpand"
-                                    ImageSource="minus.png" />
-                            <Button Text="Add Income" 
+                                    HorizontalOptions="Fill">
+                                    <Button.ImageSource>
+                                        <FontImageSource Glyph="−" FontFamily="OpenSansRegular" Size="20" />
+                                    </Button.ImageSource>
+                                </Button>
+                                <Button Text="Add Income" 
                                     Command="{Binding NavigateToAddIncomeCommand}"
                                     Style="{StaticResource SecondaryButtonStyle}"
-                                    HorizontalOptions="FillAndExpand"
-                                    ImageSource="plus.png" />
+                                    HorizontalOptions="Fill">
+                                    <Button.ImageSource>
+                                        <FontImageSource Glyph="+" FontFamily="OpenSansRegular" Size="20" />
+                                    </Button.ImageSource>
+                                </Button>
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Spacing="12">
                             <Button Text="View Transactions" 
                                     Command="{Binding NavigateToTransactionsCommand}"
                                     Style="{StaticResource OutlineButtonStyle}"
-                                    HorizontalOptions="FillAndExpand" />
+                                    HorizontalOptions="Fill" />
                             <Button Text="Analytics" 
                                     Command="{Binding NavigateToAnalyticsCommand}"
                                     Style="{StaticResource OutlineButtonStyle}"
-                                    HorizontalOptions="FillAndExpand" />
+                                    HorizontalOptions="Fill" />
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Recent Transactions -->
-                <Frame Style="{StaticResource CardFrameStyle}">
+                <Border Style="{StaticResource CardFrameStyle}">
                     <VerticalStackLayout Spacing="12">
                         <HorizontalStackLayout>
                             <Label Text="Recent Transactions" Style="{StaticResource SectionHeaderStyle}" />
@@ -102,15 +108,15 @@
                                         HeightRequest="300">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <Frame Style="{StaticResource TransactionItemFrameStyle}" Margin="0,4">
+                                    <Border Style="{StaticResource TransactionItemFrameStyle}" Margin="0,4">
                                         <HorizontalStackLayout Spacing="12">
-                                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                                   BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                            <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
+                                                   Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
                                                    HasShadow="False" BorderColor="Transparent">
                                                 <Label Text="{Binding CategoryIcon}" 
                                                        VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
-                                            </Frame>
-                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                            </Border>
+                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                                 <Label Text="{Binding CategoryName}" Style="{StaticResource TransactionNameLabelStyle}" />
                                                 <Label Text="{Binding Notes}" Style="{StaticResource TransactionNotesLabelStyle}" 
                                                        IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
@@ -125,7 +131,7 @@
                                                        TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusToColorConverter}}" />
                                             </VerticalStackLayout>
                                         </HorizontalStackLayout>
-                                    </Frame>
+                                    </Border>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                             <CollectionView.EmptyView>
@@ -137,23 +143,23 @@
                             </CollectionView.EmptyView>
                         </CollectionView>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Spending by Category -->
-                <Frame Style="{StaticResource CardFrameStyle}" IsVisible="{Binding SpendingByCategory.Count, Converter={StaticResource NullToBoolConverter}}">
+                <Border Style="{StaticResource CardFrameStyle}" IsVisible="{Binding SpendingByCategory.Count, Converter={StaticResource NullToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Spending by Category" Style="{StaticResource SectionHeaderStyle}" />
                         <CollectionView ItemsSource="{Binding SpendingByCategory}" HeightRequest="200">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <Frame Style="{StaticResource CategoryItemFrameStyle}" Margin="0,4">
+                                    <Border Style="{StaticResource CategoryItemFrameStyle}" Margin="0,4">
                                         <HorizontalStackLayout Spacing="12">
-                                            <Frame WidthRequest="40" HeightRequest="40" CornerRadius="20" 
-                                                   BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                            <Border WidthRequest="40" HeightRequest="40" CornerRadius="20" 
+                                                   Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
                                                    HasShadow="False" BorderColor="Transparent">
                                                 <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="16" />
-                                            </Frame>
-                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                            </Border>
+                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                                 <Label Text="{Binding CategoryName}" Style="{StaticResource CategoryNameLabelStyle}" />
                                                 <ProgressBar Progress="{Binding Percentage, Converter={StaticResource PercentageConverter}}" 
                                                              ProgressColor="{Binding Percentage, Converter={StaticResource PercentageColorConverter}}" HeightRequest="6" />
@@ -163,15 +169,15 @@
                                                 <Label Text="{Binding Percentage, StringFormat='{0:F1}%'}" Style="{StaticResource CategoryPercentLabelStyle}" />
                                             </VerticalStackLayout>
                                         </HorizontalStackLayout>
-                                    </Frame>
+                                    </Border>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Active Budgets -->
-                <Frame Style="{StaticResource CardFrameStyle}" IsVisible="{Binding ActiveBudgets.Count, Converter={StaticResource NullToBoolConverter}}">
+                <Border Style="{StaticResource CardFrameStyle}" IsVisible="{Binding ActiveBudgets.Count, Converter={StaticResource NullToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
                         <HorizontalStackLayout>
                             <Label Text="Budgets" Style="{StaticResource SectionHeaderStyle}" />
@@ -190,15 +196,15 @@
                         <CollectionView ItemsSource="{Binding ActiveBudgets}" HeightRequest="200">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <Frame Style="{StaticResource BudgetItemFrameStyle}" Margin="0,4">
+                                    <Border Style="{StaticResource BudgetItemFrameStyle}" Margin="0,4">
                                         <VerticalStackLayout Spacing="8">
                                             <HorizontalStackLayout Spacing="12">
-                                                <Frame WidthRequest="40" HeightRequest="40" CornerRadius="20" 
-                                                       BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                                <Border WidthRequest="40" HeightRequest="40" CornerRadius="20" 
+                                                       Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
                                                        HasShadow="False" BorderColor="Transparent">
                                                     <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="16" />
-                                                </Frame>
-                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                                </Border>
+                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                                     <Label Text="{Binding CategoryName}" Style="{StaticResource BudgetNameLabelStyle}" />
                                                     <ProgressBar Progress="{Binding PercentageUsed, Converter={StaticResource PercentageConverter}}" 
                                                                  ProgressColor="{Binding PercentageUsed, Converter={StaticResource PercentageColorConverter}}" HeightRequest="6" />
@@ -212,15 +218,15 @@
                                                        TextColor="{Binding PercentageUsed, Converter={StaticResource PercentageColorConverter}}" />
                                             </HorizontalStackLayout>
                                         </VerticalStackLayout>
-                                    </Frame>
+                                    </Border>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Active Goals -->
-                <Frame Style="{StaticResource CardFrameStyle}" IsVisible="{Binding ActiveGoals.Count, Converter={StaticResource NullToBoolConverter}}">
+                <Border Style="{StaticResource CardFrameStyle}" IsVisible="{Binding ActiveGoals.Count, Converter={StaticResource NullToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
                         <HorizontalStackLayout>
                             <Label Text="Goals" Style="{StaticResource SectionHeaderStyle}" />
@@ -239,11 +245,11 @@
                         <CollectionView ItemsSource="{Binding ActiveGoals}" HeightRequest="200">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <Frame Style="{StaticResource GoalItemFrameStyle}" Margin="0,4">
+                                    <Border Style="{StaticResource GoalItemFrameStyle}" Margin="0,4">
                                         <VerticalStackLayout Spacing="8">
                                             <HorizontalStackLayout Spacing="12">
                                                 <Label Text="{Binding Icon}" FontSize="24" VerticalOptions="Center" />
-                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                                     <Label Text="{Binding Name}" Style="{StaticResource GoalNameLabelStyle}" />
                                                     <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}" 
                                                                  ProgressColor="{Binding ProgressPercentage, Converter={StaticResource PercentageColorConverter}}" HeightRequest="6" />
@@ -257,12 +263,12 @@
                                                 <Label Text="{Binding DaysRemaining, StringFormat='{0} days left'}" Style="{StaticResource GoalDaysLabelStyle}" />
                                             </HorizontalStackLayout>
                                         </VerticalStackLayout>
-                                    </Frame>
+                                    </Border>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>

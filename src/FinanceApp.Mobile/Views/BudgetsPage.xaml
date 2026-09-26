@@ -20,16 +20,16 @@
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
         <VerticalStackLayout Spacing="16" Padding="16">
             <!-- Month Navigation -->
-            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                 <HorizontalStackLayout Spacing="12">
                     <Button Text="←" Command="{Binding PreviousMonthCommand}" Style="{StaticResource IconButtonStyle}" WidthRequest="44" HeightRequest="44" />
-                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Fill">
                         <Label Text="{Binding CurrentMonth, StringFormat='{0:MMMM yyyy}'}" Style="{StaticResource MonthLabelStyle}" HorizontalOptions="Center" />
                     </VerticalStackLayout>
                     <Button Text="Today" Command="{Binding CurrentMonthCommand}" Style="{StaticResource OutlineButtonStyle}" WidthRequest="80" HeightRequest="44" />
                     <Button Text="→" Command="{Binding NextMonthCommand}" Style="{StaticResource IconButtonStyle}" WidthRequest="44" HeightRequest="44" />
                 </HorizontalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Budgets List -->
             <CollectionView ItemsSource="{Binding Budgets}" SelectionMode="None">
@@ -39,24 +39,24 @@
                             <SwipeView.RightItems>
                                 <SwipeItems>
                                     <SwipeItem Text="Edit" 
-                                               BackgroundColor="#512BD4"
+                                               Background="#512BD4"
                                                Command="{Binding Source={x:Reference BudgetsPageView}, Path=BindingContext.EditBudgetCommand}"
                                                CommandParameter="{Binding .}" />
                                     <SwipeItem Text="Delete" 
-                                               BackgroundColor="Red"
+                                               Background="Red"
                                                Command="{Binding Source={x:Reference BudgetsPageView}, Path=BindingContext.DeleteBudgetCommand}"
                                                CommandParameter="{Binding .}" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            <Frame Style="{StaticResource BudgetCardFrameStyle}" Margin="0,8">
+                            <Border Style="{StaticResource BudgetCardFrameStyle}" Margin="0,8">
                                 <VerticalStackLayout Spacing="12">
                                     <HorizontalStackLayout Spacing="12">
-                                        <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                               BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                        <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
+                                               Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
                                                HasShadow="False" BorderColor="Transparent">
                                             <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
-                                        </Frame>
-                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                        </Border>
+                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
                                             <Label Text="{Binding CategoryName}" Style="{StaticResource BudgetCategoryNameLabelStyle}" />
                                             <ProgressBar Progress="{Binding PercentageUsed, Converter={StaticResource PercentageConverter}}" 
                                                          ProgressColor="{Binding PercentageUsed, Converter={StaticResource PercentageColorConverter}}" HeightRequest="8" />
@@ -85,7 +85,7 @@
                                            IsVisible="{Binding IsOverBudget}"
                                            TextColor="Red" />
                                 </VerticalStackLayout>
-                            </Frame>
+                            </Border>
                         </SwipeView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
@@ -104,6 +104,10 @@
     </RefreshView>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Command="{Binding AddBudgetCommand}" IconImageSource="plus.png" Priority="0" />
+        <ToolbarItem Text="Add" Command="{Binding AddBudgetCommand}" Priority="0">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource Glyph="+" FontFamily="OpenSansRegular" Size="20" Color="White" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
 </ContentPage>

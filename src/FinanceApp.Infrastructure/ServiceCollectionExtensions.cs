@@ -7,21 +7,28 @@ using FinanceApp.Infrastructure.Repositories;
 using FinanceApp.Infrastructure.Services;
 using FinanceApp.Infrastructure.Supabase;
 using FinanceApp.Infrastructure.Configuration;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.IO;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    /// <param name="databaseDirectory">
+    /// Platform-safe folder for the SQLite file (e.g. MAUI <c>FileSystem.AppDataDirectory</c>).
+    /// Relative <c>Data Source</c> paths are resolved against it so the database
+    /// always lands in the app sandbox instead of the process working directory.
+    /// </param>
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, string? databaseDirectory = null)
     {
         services.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName));
 
         services.AddDbContext<FinanceAppDbContext>((sp, options) =>
         {
             var dbOptions = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value;
-            options.UseSqlite(dbOptions.SqliteConnectionString);
+            options.UseSqlite(ResolveConnectionString(dbOptions.SqliteConnectionString, databaseDirectory));
 
             if (dbOptions.EnableSensitiveDataLogging)
                 options.EnableSensitiveDataLogging();
@@ -43,9 +50,22 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<INotificationService, NotificationService>();
 
         // Supabase services - Stage 3: Real implementation
+        services.AddSingleton<SupabaseClientProvider>();
         services.AddScoped<ISupabaseSyncService, SupabaseSyncService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         return services;
+    }
+
+    internal static string ResolveConnectionString(string connectionString, string? databaseDirectory)
+    {
+        if (string.IsNullOrWhiteSpace(databaseDirectory))
+            return connectionString;
+
+        var builder = new SqliteConnectionStringBuilder(connectionString);
+        if (!Path.IsPathRooted(builder.DataSource))
+            builder.DataSource = Path.Combine(databaseDirectory, builder.DataSource);
+
+        return builder.ToString();
     }
 }

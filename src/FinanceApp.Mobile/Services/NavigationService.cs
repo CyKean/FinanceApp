@@ -61,14 +61,14 @@ public class DialogService : IDialogService
     {
         var page = GetMainPage();
         if (page == null) return false;
-        return await page.DisplayAlert(title, message, confirmText, cancelText);
+        return await page.DisplayAlertAsync(title, message, confirmText, cancelText);
     }
 
     public async Task ShowAlertAsync(string title, string message, string cancelText = "OK")
     {
         var page = GetMainPage();
         if (page == null) return;
-        await page.DisplayAlert(title, message, cancelText);
+        await page.DisplayAlertAsync(title, message, cancelText);
     }
 
     public async Task<string?> ShowPromptAsync(string title, string message, string placeholder = "", string confirmText = "OK", string cancelText = "Cancel")

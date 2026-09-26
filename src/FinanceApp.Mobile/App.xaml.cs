@@ -21,12 +21,12 @@ public partial class App : Microsoft.Maui.Controls.Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new AppShell());
+        return new Window(_services.GetRequiredService<AppShell>());
     }
 
     private async void OnAuthStateChanged(FinanceApp.Application.Interfaces.AuthStateChangedEventArgs e)
     {
-        if (MainPage is AppShell shell)
+        if (Windows[0].Page is AppShell shell)
         {
             if (e.IsAuthenticated)
             {

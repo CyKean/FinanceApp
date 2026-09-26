@@ -26,8 +26,23 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
 
         // Configuration
+        // appsettings.json is bundled as a MauiAsset and is gitignored (see .gitignore).
+        // Copy appsettings.example.json -> appsettings.json and fill in your own values.
+        // NOTE: the asset stream is copied to memory first because the config
+        // provider reads lazily - disposing the Android asset stream early
+        // crashes startup with ObjectDisposedException (AssetInputStream).
         var configBuilder = new ConfigurationBuilder();
-        configBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        try
+        {
+            using var assetStream = FileSystem.OpenAppPackageFileAsync("appsettings.json").GetAwaiter().GetResult();
+            using var buffer = new MemoryStream();
+            assetStream.CopyTo(buffer);
+            configBuilder.AddJsonStream(new MemoryStream(buffer.ToArray()));
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"appsettings.json not found in app package: {ex.Message}");
+        }
         var configuration = configBuilder.Build();
         builder.Configuration.AddConfiguration(configuration);
 
@@ -39,8 +54,8 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        // Infrastructure Services
-        builder.Services.AddInfrastructure(builder.Configuration);
+        // Infrastructure Services (SQLite lives in the app sandbox for offline-first)
+        builder.Services.AddInfrastructure(builder.Configuration, FileSystem.AppDataDirectory);
 
         // Application Services
         builder.Services.AddScoped<IAccountService, AccountService>();
@@ -95,6 +110,8 @@ public static class MauiProgram
         builder.Services.AddTransient<PredictionsViewModel>();
 
         // Pages
+        builder.Services.AddSingleton<AppShell>();
+        builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<DashboardPage>();
         builder.Services.AddTransient<TransactionsPage>();
         builder.Services.AddTransient<AddTransactionPage>();
@@ -132,9 +149,6 @@ public static class MauiProgram
         Routing.RegisterRoute("Predictions", typeof(PredictionsPage));
         Routing.RegisterRoute("Settings", typeof(SettingsPage));
         Routing.RegisterRoute("Login", typeof(LoginPage));
-
-        // Database Initialization
-        builder.Services.AddHostedService<DatabaseInitializer>();
 
 #if DEBUG
         builder.Logging.AddDebug();
@@ -188,6 +202,13 @@ public class SupabaseInitializer : IHostedService
         try
         {
             _logger.LogInformation("Initializing Supabase services...");
+
+            var dbOptions = _serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptions<FinanceApp.Infrastructure.Configuration.DatabaseOptions>>().Value;
+            if (string.IsNullOrWhiteSpace(dbOptions.SupabaseUrl) || string.IsNullOrWhiteSpace(dbOptions.SupabaseAnonKey))
+            {
+                _logger.LogWarning("Supabase URL/anon key are not configured in appsettings.json. The app will run offline with local SQLite only.");
+                return;
+            }
             
             var authService = _serviceProvider.GetRequiredService<IAuthenticationService>();
             await authService.InitializeAsync(cancellationToken);

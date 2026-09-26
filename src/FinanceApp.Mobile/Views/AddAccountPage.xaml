@@ -10,21 +10,22 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:MoneyToStringConverter x:Key="MoneyConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <ScrollView>
         <VerticalStackLayout Spacing="16" Padding="16">
             <!-- Name -->
-            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Account Name" Style="{StaticResource FormLabelStyle}" />
                     <Entry Text="{Binding Name}" Placeholder="e.g., Main Wallet" Style="{StaticResource EntryStyle}" />
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Type -->
-            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Account Type" Style="{StaticResource FormLabelStyle}" />
                     <Picker Title="Select Type" 
@@ -32,10 +33,10 @@
                             SelectedItem="{Binding Type}"
                             Style="{StaticResource PickerStyle}" />
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Initial Balance -->
-            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Initial Balance" Style="{StaticResource FormLabelStyle}" />
                     <Entry Text="{Binding InitialBalance.Amount, StringFormat='{0:N2}'}" 
@@ -44,34 +45,34 @@
                            Style="{StaticResource AmountEntryStyle}"
                            HorizontalTextAlignment="End" />
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Description -->
-            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Description (Optional)" Style="{StaticResource FormLabelStyle}" />
                     <Entry Text="{Binding Description}" Placeholder="Description..." Style="{StaticResource EntryStyle}" />
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Icon -->
-            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Icon (Emoji)" Style="{StaticResource FormLabelStyle}" />
                     <Entry Text="{Binding Icon}" Placeholder="💰" Style="{StaticResource EntryStyle}" MaxLength="2" />
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Color -->
-            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Color (Hex)" Style="{StaticResource FormLabelStyle}" />
                     <Entry Text="{Binding Color}" Placeholder="#512BD4" Style="{StaticResource EntryStyle}" MaxLength="7" />
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Default Account -->
-            <Frame Style="{StaticResource CardFrameStyle}" Padding="16">
+            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                 <HorizontalStackLayout Spacing="16" VerticalOptions="Center">
                     <VerticalStackLayout Spacing="4">
                         <Label Text="Default Account" Style="{StaticResource FormLabelStyle}" />
@@ -79,7 +80,7 @@
                     </VerticalStackLayout>
                     <Switch IsToggled="{Binding IsDefault}" HorizontalOptions="EndAndExpand" />
                 </HorizontalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Save Button -->
             <Button Text="{Binding IsEditing, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Update|Save'}" 

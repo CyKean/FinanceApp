@@ -16,28 +16,29 @@
             <converters:SyncStatusToIconConverter x:Key="SyncStatusIconConverter" />
             <converters:SyncStatusToColorConverter x:Key="SyncStatusColorConverter" />
             <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
         <VerticalStackLayout Spacing="0">
             <!-- Filter Bar -->
-            <Frame Style="{StaticResource FilterBarStyle}" Margin="16,16,16,0" Padding="12">
+            <Border Style="{StaticResource FilterBarStyle}" Margin="16,16,16,0" Padding="12">
                 <VerticalStackLayout Spacing="12">
                     <HorizontalStackLayout Spacing="12">
 <DatePicker Date="{Binding Filter.StartDate}" 
                                     Format="MMM dd, yyyy" 
-                                    HorizontalOptions="FillAndExpand"
+                                    HorizontalOptions="Fill"
                                     MinimumDate="2020-01-01"
                                     MaximumDate="{Binding Source={x:Static sys:DateTime.Today}, Path=Today}" />
                                 <DatePicker Date="{Binding Filter.EndDate}" 
                                             Format="MMM dd, yyyy" 
-                                            HorizontalOptions="FillAndExpand"
+                                            HorizontalOptions="Fill"
                                             MinimumDate="2020-01-01"
                                             MaximumDate="{Binding Source={x:Static sys:DateTime.Today}, Path=Today}" />
                     </HorizontalStackLayout>
                     <HorizontalStackLayout Spacing="12">
-                        <Picker Title="Type" SelectedItem="{Binding Filter.Type}" HorizontalOptions="FillAndExpand">
+                        <Picker Title="Type" SelectedItem="{Binding Filter.Type}" HorizontalOptions="Fill">
                             <Picker.ItemsSource>
                                 <x:Array Type="{x:Type enums:TransactionType}">
                                     <enums:TransactionType>Expense</enums:TransactionType>
@@ -49,29 +50,29 @@
                         <Button Text="Clear" Command="{Binding ClearFilterCommand}" Style="{StaticResource OutlineButtonStyle}" WidthRequest="100" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Summary -->
-            <Frame Style="{StaticResource CardFrameStyle}" Margin="16,12" Padding="16" IsVisible="{Binding Summary, Converter={StaticResource NullToBoolConverter}}">
+            <Border Style="{StaticResource CardFrameStyle}" Margin="16,12" Padding="16" IsVisible="{Binding Summary, Converter={StaticResource NullToBoolConverter}}">
                 <HorizontalStackLayout Spacing="16">
-                    <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                    <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
                         <Label Text="Income" Style="{StaticResource CaptionLabelStyle}" TextColor="Green" />
                         <Label Text="{Binding Summary.TotalIncome, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" TextColor="Green" />
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                    <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
                         <Label Text="Expenses" Style="{StaticResource CaptionLabelStyle}" TextColor="Red" />
                         <Label Text="{Binding Summary.TotalExpense, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" TextColor="Red" />
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                    <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
                         <Label Text="Net" Style="{StaticResource CaptionLabelStyle}" />
                         <Label Text="{Binding Summary.NetAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" />
                     </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="4" HorizontalOptions="FillAndExpand">
+                    <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
                         <Label Text="Count" Style="{StaticResource CaptionLabelStyle}" />
                         <Label Text="{Binding Summary.TransactionCount}" Style="{StaticResource AmountLabelStyle}" />
                     </VerticalStackLayout>
                 </HorizontalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Transactions List -->
             <CollectionView ItemsSource="{Binding Transactions}" 
@@ -85,23 +86,23 @@
                             <SwipeView.RightItems>
                                 <SwipeItems>
                                     <SwipeItem Text="Edit" 
-                                               BackgroundColor="#512BD4"
+                                               Background="#512BD4"
                                                Command="{Binding Source={x:Reference TransactionsPageView}, Path=BindingContext.EditTransactionCommand}"
                                                CommandParameter="{Binding .}" />
                                     <SwipeItem Text="Delete" 
-                                               BackgroundColor="Red"
+                                               Background="Red"
                                                Command="{Binding Source={x:Reference TransactionsPageView}, Path=BindingContext.DeleteTransactionCommand}"
                                                CommandParameter="{Binding .}" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            <Frame Style="{StaticResource TransactionItemFrameStyle}" Margin="16,8">
+                            <Border Style="{StaticResource TransactionItemFrameStyle}" Margin="16,8">
                                 <HorizontalStackLayout Spacing="12">
-                                    <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                           BackgroundColor="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
+                                    <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
+                                           Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
                                            HasShadow="False" BorderColor="Transparent">
                                         <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
-                                    </Frame>
-                                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
+                                    </Border>
+                                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                         <Label Text="{Binding CategoryName}" Style="{StaticResource TransactionNameLabelStyle}" />
                                         <Label Text="{Binding Notes}" Style="{StaticResource TransactionNotesLabelStyle}" 
                                                IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
@@ -120,7 +121,7 @@
                                                TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusColorConverter}}" />
                                     </VerticalStackLayout>
                                 </HorizontalStackLayout>
-                            </Frame>
+                            </Border>
                         </SwipeView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
@@ -148,7 +149,15 @@
     </RefreshView>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add Expense" Command="{Binding AddExpenseCommand}" IconImageSource="minus.png" Priority="0" />
-        <ToolbarItem Text="Add Income" Command="{Binding AddIncomeCommand}" IconImageSource="plus.png" Priority="1" />
+        <ToolbarItem Text="Add Expense" Command="{Binding AddExpenseCommand}" Priority="0">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource Glyph="−" FontFamily="OpenSansRegular" Size="20" Color="White" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+        <ToolbarItem Text="Add Income" Command="{Binding AddIncomeCommand}" Priority="1">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource Glyph="+" FontFamily="OpenSansRegular" Size="20" Color="White" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
 </ContentPage>

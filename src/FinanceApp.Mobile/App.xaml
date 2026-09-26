@@ -2,13 +2,37 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:FinanceApp.Mobile"
+             xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
              x:Class="FinanceApp.Mobile.App">
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
-                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
+     <Application.Resources>
+         <ResourceDictionary>
+             <ResourceDictionary.MergedDictionaries>
+                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+             </ResourceDictionary.MergedDictionaries>
+             <converters:BoolToStringConverter x:Key="BoolToStringConverter" TrueValue="Yes" FalseValue="No" />
+             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+             <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+             <converters:ColorConverter x:Key="ColorConverter" />
+             <converters:TransactionTypeToColorConverter x:Key="TransactionTypeToColorConverter" />
+             <converters:TransactionTypeToButtonStyleConverter x:Key="TransactionTypeToButtonStyleConverter" />
+             <converters:CategoryTabStyleConverter x:Key="CategoryTabStyleConverter" />
+             <converters:CategoryTabVisibilityConverter x:Key="CategoryTabVisibilityConverter" />
+             <converters:SyncStatusToColorConverter x:Key="SyncStatusToColorConverter" />
+             <converters:SyncStatusToIconConverter x:Key="SyncStatusToIconConverter" />
+             <converters:MoneyToStringConverter x:Key="MoneyToStringConverter" />
+             <converters:PercentageToColorConverter x:Key="PercentageToColorConverter" />
+             <converters:GoalStatusToStringConverter x:Key="GoalStatusToStringConverter" />
+             <converters:GoalStatusVisibilityConverter x:Key="GoalStatusVisibilityConverter" />
+             <converters:SavingsRateColorConverter x:Key="SavingsRateColorConverter" />
+             <converters:PeriodButtonStyleConverter x:Key="PeriodButtonStyleConverter" />
+             <converters:PredictionConfidenceColorConverter x:Key="PredictionConfidenceColorConverter" />
+             <converters:PredictionConfidenceToBoolConverter x:Key="PredictionConfidenceToBoolConverter" />
+             <converters:TrendToIconConverter x:Key="TrendToIconConverter" />
+             <converters:TrendToColorConverter x:Key="TrendToColorConverter" />
+             <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+             <converters:InsightSeverityToIconConverter x:Key="InsightSeverityToIconConverter" />
+             <converters:InsightSeverityToColorConverter x:Key="InsightSeverityToColorConverter" />
+         </ResourceDictionary>
+     </Application.Resources>
 </Application>
