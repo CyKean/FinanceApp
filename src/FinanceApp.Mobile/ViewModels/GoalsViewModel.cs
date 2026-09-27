@@ -70,13 +70,13 @@ public partial class GoalsViewModel : BaseViewModel
     [RelayCommand]
     private async Task AddGoalAsync()
     {
-        await _navigationService.NavigateToAsync("//AddGoal");
+        await _navigationService.NavigateToAsync("///AddGoal");
     }
 
     [RelayCommand]
     private async Task EditGoalAsync(FinancialGoalDto goal)
     {
-        await _navigationService.NavigateToAsync($"//EditGoal?id={goal.Id}");
+        await _navigationService.NavigateToAsync($"///EditGoal?id={goal.Id}");
     }
 
     [RelayCommand]

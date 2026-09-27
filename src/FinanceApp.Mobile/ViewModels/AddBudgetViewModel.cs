@@ -136,7 +136,7 @@ public partial class AddBudgetViewModel : BaseViewModel
                 await _dialogService.ShowToastAsync("Budget created");
             }
 
-            await _navigationService.GoBackAsync();
+            await _navigationService.NavigateToAsync("//Budgets");
         }
         catch (Exception ex)
         {
@@ -152,7 +152,7 @@ public partial class AddBudgetViewModel : BaseViewModel
     [RelayCommand]
     private async Task CancelAsync()
     {
-        await _navigationService.GoBackAsync();
+        await _navigationService.NavigateToAsync("//Budgets");
     }
 
     private bool ValidateInput()

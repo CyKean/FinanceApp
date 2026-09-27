@@ -10,6 +10,13 @@ public interface IAuthenticationService
     Task<bool> IsAuthenticatedAsync(CancellationToken cancellationToken = default);
     Task<Guid?> GetCurrentUserIdAsync(CancellationToken cancellationToken = default);
     Task<string?> GetCurrentUserEmailAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// When true (default), successful login/register persists the session
+    /// so the user is automatically signed in on next launch.
+    /// </summary>
+    bool RememberMe { get; set; }
+
     event Action<AuthStateChangedEventArgs>? AuthStateChanged;
 }
 

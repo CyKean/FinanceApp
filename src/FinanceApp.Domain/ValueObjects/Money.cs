@@ -7,9 +7,8 @@ public sealed class Money : IEquatable<Money>, IComparable<Money>
 
     public Money(decimal amount, string currency = "PHP")
     {
-        if (amount < 0)
-            throw new ArgumentException("Money amount cannot be negative", nameof(amount));
-
+        // Balances may legitimately go negative (overdrafts, credit cards, debts).
+        // Input-level positivity is enforced by validators and view-models instead.
         if (string.IsNullOrWhiteSpace(currency))
             throw new ArgumentException("Currency cannot be empty", nameof(currency));
 

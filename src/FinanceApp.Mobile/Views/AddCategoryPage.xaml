@@ -42,11 +42,45 @@
                 </HorizontalStackLayout>
             </Border>
 
-            <!-- Icon -->
+            <!-- Icon picker -->
             <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Icon (Emoji)" Style="{StaticResource FormLabelStyle}" />
-                    <Entry Text="{Binding Icon}" Placeholder="🍔" Style="{StaticResource EntryStyle}" MaxLength="2" />
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Icon" Style="{StaticResource FormLabelStyle}" />
+                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                        <Border WidthRequest="52" HeightRequest="52"
+                                Background="{Binding Color, Converter={StaticResource ColorConverter}}"
+                                StrokeThickness="0"
+                                VerticalOptions="Center">
+                            <Border.StrokeShape>
+                                <Ellipse />
+                            </Border.StrokeShape>
+                            <Label Text="{Binding Icon}" TargetNullValue="🏷️" FontSize="26" VerticalOptions="Center" HorizontalOptions="Center" />
+                        </Border>
+                        <Label Text="Tap an icon below"
+                               Style="{StaticResource MutedLabelStyle}"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Fill" />
+                    </HorizontalStackLayout>
+                    <FlexLayout BindableLayout.ItemsSource="{Binding IconChoices}"
+                                Direction="Row"
+                                Wrap="Wrap"
+                                Justify="Start">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Border WidthRequest="48" HeightRequest="48" Margin="3"
+                                        BackgroundColor="Transparent" StrokeThickness="0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="14" />
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectIconCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{Binding .}" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
                 </VerticalStackLayout>
             </Border>
 

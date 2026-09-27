@@ -112,19 +112,29 @@ public partial class TransactionsViewModel : BaseViewModel
     [RelayCommand]
     private async Task AddExpenseAsync()
     {
-        await _navigationService.NavigateToAsync("//AddTransaction?type=Expense");
+        await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Expense");
     }
 
     [RelayCommand]
     private async Task AddIncomeAsync()
     {
-        await _navigationService.NavigateToAsync("//AddTransaction?type=Income");
+        await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Income");
+    }
+
+    [RelayCommand]
+    private async Task AddTransactionAsync()
+    {
+        var choice = await _dialogService.ShowActionSheetAsync("Add Transaction", "Cancel", null, "Expense", "Income");
+        if (choice == "Expense")
+            await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Expense");
+        else if (choice == "Income")
+            await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Income");
     }
 
     [RelayCommand]
     private async Task EditTransactionAsync(TransactionDto transaction)
     {
-        await _navigationService.NavigateToAsync($"//EditTransaction?id={transaction.Id}&type={transaction.Type}");
+        await _navigationService.NavigateToAsync($"///EditTransaction?id={transaction.Id}&type={transaction.Type}");
     }
 
     [RelayCommand]

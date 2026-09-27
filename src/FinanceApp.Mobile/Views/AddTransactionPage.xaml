@@ -36,7 +36,7 @@
             <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Amount" Style="{StaticResource FormLabelStyle}" />
-                    <Entry Text="{Binding Amount.Amount, StringFormat='{0:N2}'}" 
+                    <Entry Text="{Binding AmountText}" 
                            Keyboard="Numeric" 
                            Placeholder="0.00"
                            Style="{StaticResource AmountEntryStyle}"

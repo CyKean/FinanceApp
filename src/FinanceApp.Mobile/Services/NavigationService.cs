@@ -17,11 +17,23 @@ public class NavigationService : INavigationService
         _services = services;
     }
 
-    public Task NavigateToAsync(string route, IDictionary<string, object>? parameters = null)
+    public async Task NavigateToAsync(string route, IDictionary<string, object>? parameters = null)
     {
         _logger.LogInformation("Navigating to {Route}", route);
         var shell = _services.GetRequiredService<AppShell>();
-        return shell.GoToAsync(route, parameters);
+        try
+        {
+            if (parameters == null)
+                await shell.GoToAsync(route);
+            else
+                await shell.GoToAsync(route, parameters);
+            _logger.LogInformation("Navigated to {Route}", route);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Navigation to {Route} failed", route);
+            throw;
+        }
     }
 
     public Task GoBackAsync()
@@ -69,6 +81,13 @@ public class DialogService : IDialogService
         var page = GetMainPage();
         if (page == null) return;
         await page.DisplayAlertAsync(title, message, cancelText);
+    }
+
+    public async Task<string?> ShowActionSheetAsync(string title, string cancel, string? destruction, params string[] buttons)
+    {
+        var page = GetMainPage();
+        if (page == null) return null;
+        return await page.DisplayActionSheet(title, cancel, destruction, buttons);
     }
 
     public async Task<string?> ShowPromptAsync(string title, string message, string placeholder = "", string confirmText = "OK", string cancelText = "Cancel")

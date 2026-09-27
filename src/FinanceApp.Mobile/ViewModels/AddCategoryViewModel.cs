@@ -35,6 +35,8 @@ public partial class AddCategoryViewModel : BaseViewModel
     [ObservableProperty]
     private Guid? _editingCategoryId;
 
+    public IReadOnlyList<string> IconChoices => Helpers.EmojiPalette.Icons;
+
     public AddCategoryViewModel(
         ICategoryService categoryService,
         IAuthenticationService authService,
@@ -71,6 +73,7 @@ public partial class AddCategoryViewModel : BaseViewModel
         if (category == null) return;
 
         Name = category.Name;
+        Type = category.Type;
         Icon = category.Icon ?? string.Empty;
         Color = category.Color ?? "#512BD4";
     }
@@ -91,6 +94,9 @@ public partial class AddCategoryViewModel : BaseViewModel
             var userId = await _authService.GetCurrentUserIdAsync();
             if (!userId.HasValue) return;
 
+            if (string.IsNullOrWhiteSpace(Icon))
+                Icon = "🏷️";
+
             if (IsEditing && EditingCategoryId.HasValue)
             {
                 var updateDto = new UpdateCategoryDto(Name, Icon, Color, null, null, null);
@@ -104,7 +110,7 @@ public partial class AddCategoryViewModel : BaseViewModel
                 await _dialogService.ShowToastAsync("Category added");
             }
 
-            await _navigationService.GoBackAsync();
+            await _navigationService.NavigateToAsync("//Categories");
         }
         catch (Exception ex)
         {
@@ -120,7 +126,14 @@ public partial class AddCategoryViewModel : BaseViewModel
     [RelayCommand]
     private async Task CancelAsync()
     {
-        await _navigationService.GoBackAsync();
+        await _navigationService.NavigateToAsync("//Categories");
+    }
+
+    [RelayCommand]
+    private void SelectIcon(string icon)
+    {
+        if (!string.IsNullOrEmpty(icon))
+            Icon = icon;
     }
 
     private bool ValidateInput()

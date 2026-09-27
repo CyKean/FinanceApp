@@ -45,9 +45,12 @@
 		<TrimMode>partial</TrimMode>
 		<SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
 		
-		<!-- Enable AOT for better startup performance (Android/iOS) -->
-		<RunAOTCompilation Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">true</RunAOTCompilation>
-		<RunAOTCompilation Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">true</RunAOTCompilation>
+		<!-- Full AOT disabled: prime suspect for release-only startup crashes
+		     (EF Core expression compilation, JSON serializers and validators
+		     do not survive aggressive ahead-of-time compilation on device).
+		     Re-enable only after a clean Release test pass. -->
+		<RunAOTCompilation Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">false</RunAOTCompilation>
+		<RunAOTCompilation Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">false</RunAOTCompilation>
 		
 		<!-- Enable XAML compilation for Release -->
 		<XamlCompilation>Compile</XamlCompilation>

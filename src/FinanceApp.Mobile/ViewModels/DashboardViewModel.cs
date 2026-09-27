@@ -107,13 +107,13 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task NavigateToAddExpenseAsync()
     {
-        await _navigationService.NavigateToAsync("//AddTransaction?type=Expense");
+        await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Expense");
     }
 
     [RelayCommand]
     private async Task NavigateToAddIncomeAsync()
     {
-        await _navigationService.NavigateToAsync("//AddTransaction?type=Income");
+        await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Income");
     }
 
     [RelayCommand]

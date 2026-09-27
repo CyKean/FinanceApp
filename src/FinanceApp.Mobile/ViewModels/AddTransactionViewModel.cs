@@ -8,6 +8,7 @@ using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 public partial class AddTransactionViewModel : BaseViewModel
 {
@@ -24,6 +25,13 @@ public partial class AddTransactionViewModel : BaseViewModel
 
     [ObservableProperty]
     private Money _amount = Money.Zero();
+
+    /// <summary>
+    /// Text-bound amount input. (Money.Amount is read-only so the Entry
+    /// cannot bind to it directly; validated + parsed into <see cref="Amount"/>.)
+    /// </summary>
+    [ObservableProperty]
+    private string _amountText = string.Empty;
 
     [ObservableProperty]
     private DateTime _date = DateTime.Today;
@@ -48,6 +56,35 @@ public partial class AddTransactionViewModel : BaseViewModel
 
     [ObservableProperty]
     private Guid? _editingTransactionId;
+
+    [ObservableProperty]
+    private bool _isAddingAccount;
+
+    [ObservableProperty]
+    private string _newAccountName = string.Empty;
+
+    [ObservableProperty]
+    private AccountType _newAccountType = AccountType.Cash;
+
+    [ObservableProperty]
+    private bool _isAddingCategory;
+
+    [ObservableProperty]
+    private string _newCategoryName = string.Empty;
+
+    public IReadOnlyList<AccountType> AccountTypes { get; } =
+        Enum.GetValues<AccountType>();
+
+    /// <summary>
+    /// Optional override invoked after a successful save instead of navigating back.
+    /// Used by bottom-sheet hosts, which close themselves.
+    /// </summary>
+    public Func<Task>? OnSavedCallback { get; set; }
+
+    /// <summary>
+    /// Optional override invoked on cancel instead of navigating back.
+    /// </summary>
+    public Func<Task>? OnCancelledCallback { get; set; }
 
     public AddTransactionViewModel(
         ITransactionService transactionService,
@@ -158,7 +195,10 @@ public partial class AddTransactionViewModel : BaseViewModel
                 await _dialogService.ShowToastAsync("Transaction added");
             }
 
-            await _navigationService.GoBackAsync();
+            if (OnSavedCallback != null)
+                await OnSavedCallback();
+            else
+                await _navigationService.NavigateToAsync("//Transactions");
         }
         catch (Exception ex)
         {
@@ -174,7 +214,109 @@ public partial class AddTransactionViewModel : BaseViewModel
     [RelayCommand]
     private async Task CancelAsync()
     {
-        await _navigationService.GoBackAsync();
+        if (OnCancelledCallback != null)
+            await OnCancelledCallback();
+        else
+            await _navigationService.NavigateToAsync("//Transactions");
+    }
+
+    [RelayCommand]
+    private void ShowAddAccount()
+    {
+        NewAccountName = string.Empty;
+        IsAddingAccount = true;
+    }
+
+    [RelayCommand]
+    private void CancelAddAccount()
+    {
+        IsAddingAccount = false;
+    }
+
+    [RelayCommand]
+    private async Task SaveNewAccountAsync()
+    {
+        if (string.IsNullOrWhiteSpace(NewAccountName))
+        {
+            SetError("Account name is required");
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var userId = await _authService.GetCurrentUserIdAsync();
+            if (!userId.HasValue) return;
+
+            var created = await _accountService.CreateAsync(
+                new CreateAccountDto(NewAccountName.Trim(), NewAccountType, Money.Zero()),
+                userId.Value);
+
+            Accounts = await _accountService.GetAllAsync(userId.Value);
+            SelectedAccount = Accounts.FirstOrDefault(a => a.Id == created.Id);
+            IsAddingAccount = false;
+            NewAccountName = string.Empty;
+            await _dialogService.ShowToastAsync("Account added");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error adding account inline");
+            SetError("Failed to add account");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private void ShowAddCategory()
+    {
+        NewCategoryName = string.Empty;
+        IsAddingCategory = true;
+    }
+
+    [RelayCommand]
+    private void CancelAddCategory()
+    {
+        IsAddingCategory = false;
+    }
+
+    [RelayCommand]
+    private async Task SaveNewCategoryAsync()
+    {
+        if (string.IsNullOrWhiteSpace(NewCategoryName))
+        {
+            SetError("Category name is required");
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var userId = await _authService.GetCurrentUserIdAsync();
+            if (!userId.HasValue) return;
+
+            var categoryType = TransactionType == TransactionType.Income ? CategoryType.Income : CategoryType.Expense;
+            var created = await _categoryService.CreateAsync(
+                new CreateCategoryDto(NewCategoryName.Trim(), categoryType),
+                userId.Value);
+
+            Categories = await _categoryService.GetActiveByTypeAsync(userId.Value, categoryType);
+            SelectedCategory = Categories.FirstOrDefault(c => c.Id == created.Id);
+            IsAddingCategory = false;
+            NewCategoryName = string.Empty;
+            await _dialogService.ShowToastAsync("Category added");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error adding category inline");
+            SetError("Failed to add category");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
@@ -206,19 +348,21 @@ public partial class AddTransactionViewModel : BaseViewModel
 
     private bool ValidateInput()
     {
-        if (Amount.Amount <= 0)
+        if (!decimal.TryParse(AmountText, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsedAmount) || parsedAmount <= 0)
         {
             SetError("Amount must be greater than zero");
             return false;
         }
 
-        if (SelectedAccount == null)
+        Amount = new Money(parsedAmount, Amount?.Currency ?? "PHP");
+
+        if (SelectedAccount == null || SelectedAccount.Id == Guid.Empty)
         {
             SetError("Please select an account");
             return false;
         }
 
-        if (SelectedCategory == null)
+        if (SelectedCategory == null || SelectedCategory.Id == Guid.Empty)
         {
             SetError("Please select a category");
             return false;

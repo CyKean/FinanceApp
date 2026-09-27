@@ -85,6 +85,7 @@ public static class MauiProgram
         builder.Services.AddScoped<GoalProgressDtoValidator>();
 
         // Mobile Services
+        builder.Services.AddSingleton<ISessionStore, MauiSessionStore>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
         builder.Services.AddSingleton<IDialogService, DialogService>();
 
@@ -126,6 +127,9 @@ public static class MauiProgram
         builder.Services.AddTransient<CalendarPage>();
         builder.Services.AddTransient<AnalyticsPage>();
         builder.Services.AddTransient<PredictionsPage>();
+        builder.Services.AddTransient<SettingsPage>();
+        builder.Services.AddTransient<MorePage>();
+        builder.Services.AddTransient<AddTransactionSheetPage>();
 
         // Routing
         Routing.RegisterRoute("Dashboard", typeof(DashboardPage));

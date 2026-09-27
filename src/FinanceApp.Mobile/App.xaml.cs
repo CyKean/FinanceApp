@@ -16,6 +16,15 @@ public partial class App : Microsoft.Maui.Controls.Application
         _authService = authService;
         _services = services;
 
+        // Capture full .NET stacks for otherwise faceless JavaProxyThrowable crashes.
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+            System.Diagnostics.Debug.WriteLine($"[FATAL] Unhandled: {e.ExceptionObject}");
+        TaskScheduler.UnobservedTaskException += (_, e) =>
+        {
+            System.Diagnostics.Debug.WriteLine($"[FATAL] Unobserved task: {e.Exception}");
+            e.SetObserved();
+        };
+
         _authService.AuthStateChanged += e => OnAuthStateChanged(e);
     }
 

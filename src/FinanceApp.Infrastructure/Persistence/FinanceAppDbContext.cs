@@ -14,6 +14,10 @@ public class FinanceAppDbContext : DbContext
         : base(options)
     {
         _currentUserId = currentUserId;
+        // Offline-first guarantee: hosted-service startup is not a reliable place
+        // to create the schema on every platform, so ensure it before first use.
+        // Idempotent - a no-op when tables already exist.
+        Database.EnsureCreated();
     }
 
     public DbSet<Account> Accounts => Set<Account>();
@@ -91,8 +95,8 @@ public class FinanceAppDbContext : DbContext
             });
             entity.Property(e => e.Date).HasColumnType("date").IsRequired();
             entity.Property(e => e.Notes).HasMaxLength(1000);
-            entity.Property(e => e.AccountId).IsRequired();
-            entity.Property(e => e.CategoryId).IsRequired();
+            entity.Property(e => e.AccountId).HasConversion(v => v.Value, v => v == Guid.Empty ? default : new AccountId(v)).IsRequired();
+            entity.Property(e => e.CategoryId).HasConversion(v => v.Value, v => v == Guid.Empty ? default : new CategoryId(v)).IsRequired();
             entity.Property(e => e.UserId).IsRequired();
             entity.Property(e => e.RecurringTransactionId);
             entity.Property(e => e.SyncStatus).HasConversion<int>().HasDefaultValue(SyncStatus.PendingCreate);
@@ -129,7 +133,7 @@ public class FinanceAppDbContext : DbContext
             });
             entity.Property(e => e.StartDate).HasColumnType("date").IsRequired();
             entity.Property(e => e.EndDate).HasColumnType("date").IsRequired();
-            entity.Property(e => e.CategoryId).IsRequired();
+            entity.Property(e => e.CategoryId).HasConversion(v => v.Value, v => v == Guid.Empty ? default : new CategoryId(v)).IsRequired();
             entity.Property(e => e.UserId).IsRequired();
             entity.Property(e => e.SyncStatus).HasConversion<int>().HasDefaultValue(SyncStatus.PendingCreate);
             entity.Property(e => e.LastSyncedAt);
@@ -159,8 +163,8 @@ public class FinanceAppDbContext : DbContext
             entity.Property(e => e.Frequency).HasConversion<int>().IsRequired();
             entity.Property(e => e.StartDate).HasColumnType("date").IsRequired();
             entity.Property(e => e.EndDate).HasColumnType("date");
-            entity.Property(e => e.AccountId).IsRequired();
-            entity.Property(e => e.CategoryId).IsRequired();
+            entity.Property(e => e.AccountId).HasConversion(v => v.Value, v => v == Guid.Empty ? default : new AccountId(v)).IsRequired();
+            entity.Property(e => e.CategoryId).HasConversion(v => v.Value, v => v == Guid.Empty ? default : new CategoryId(v)).IsRequired();
             entity.Property(e => e.UserId).IsRequired();
             entity.Property(e => e.Notes).HasMaxLength(1000);
             entity.Property(e => e.LastGeneratedAt);
@@ -202,7 +206,7 @@ public class FinanceAppDbContext : DbContext
             entity.Property(e => e.Icon).HasMaxLength(50);
             entity.Property(e => e.Color).HasMaxLength(7);
             entity.Property(e => e.UserId).IsRequired();
-            entity.Property(e => e.LinkedAccountId);
+            entity.Property(e => e.LinkedAccountId).HasConversion(v => v == null ? (Guid?)null : v.Value.Value, v => v == null || v.Value == Guid.Empty ? (AccountId?)null : new AccountId(v.Value));
             entity.Property(e => e.SyncStatus).HasConversion<int>().HasDefaultValue(SyncStatus.PendingCreate);
             entity.Property(e => e.LastSyncedAt);
             entity.Property(e => e.CreatedAt).IsRequired();

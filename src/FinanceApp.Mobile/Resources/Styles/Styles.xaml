@@ -302,6 +302,34 @@
         <Setter Property="Padding" Value="12"/>
     </Style>
 
+    <Style TargetType="Border" x:Key="BudgetItemFrameStyle">
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SurfaceContainer}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="16" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Padding" Value="12"/>
+    </Style>
+
+    <Style TargetType="Border" x:Key="GoalItemFrameStyle">
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SurfaceContainer}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="16" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Padding" Value="12"/>
+    </Style>
+
+    <Style TargetType="Label" x:Key="BudgetNameLabelStyle" BasedOn="{StaticResource CategoryNameLabelStyle}"/>
+
+    <Style TargetType="Label" x:Key="GoalPercentLabelStyle" BasedOn="{StaticResource BudgetPercentLabelStyle}"/>
+
     <!-- Modern input container: wrap an Entry in this Border -->
     <Style TargetType="Border" x:Key="FieldBorderStyle">
         <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource SurfaceContainerLowestDark}}" />
@@ -726,9 +754,9 @@
         <Setter Property="Shell.UnselectedColor" Value="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource OutlineDark}}" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
         <Setter Property="Shell.TabBarBackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="Shell.TabBarForegroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+        <Setter Property="Shell.TabBarForegroundColor" Value="{AppThemeBinding Light={StaticResource PrimaryDark}, Dark={StaticResource PrimaryLight}}" />
         <Setter Property="Shell.TabBarTitleColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
-        <Setter Property="Shell.TabBarUnselectedColor" Value="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource OutlineDark}}" />
+        <Setter Property="Shell.TabBarUnselectedColor" Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
     </Style>
 
     <Style TargetType="NavigationPage">

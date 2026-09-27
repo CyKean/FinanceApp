@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             x:Class="FinanceApp.Mobile.Views.AddTransactionSheetPage"
+             x:DataType="viewmodels:AddTransactionViewModel"
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#80000000">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:MoneyToStringConverter x:Key="MoneyConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:TransactionTypeToButtonStyleConverter x:Key="TransactionTypeToButtonStyleConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*,Auto">
+        <!-- Scrim: tap to cancel -->
+        <Grid Grid.Row="0" Grid.RowSpan="2" BackgroundColor="Transparent">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CancelCommand}" />
+            </Grid.GestureRecognizers>
+        </Grid>
+
+        <!-- Bottom sheet -->
+        <Border Grid.Row="1"
+                Background="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
+                Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}"
+                StrokeThickness="1"
+                Padding="20,12,20,28">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="28,28,0,0" />
+            </Border.StrokeShape>
+            <ScrollView MaximumHeightRequest="620">
+                <VerticalStackLayout Spacing="14">
+                    <BoxView Color="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}"
+                             HeightRequest="5"
+                             WidthRequest="48"
+                             CornerRadius="3"
+                             HorizontalOptions="Center" />
+                    <!-- Type banner: color-distinct per mode -->
+                    <Border Background="{Binding TransactionType, Converter={StaticResource TransactionTypeToColorConverter}}"
+                            Padding="14,10">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <HorizontalStackLayout VerticalOptions="Center">
+                            <Label Text="{Binding Title}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Fill" />
+                            <Button Text="✕"
+                                    Command="{Binding CancelCommand}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="White"
+                                    FontSize="16"
+                                    HeightRequest="40"
+                                    WidthRequest="40"
+                                    VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <Label Text="{Binding ErrorMessage}"
+                           Style="{StaticResource ErrorLabelStyle}"
+                           IsVisible="{Binding HasError}" />
+
+                    <!-- Amount -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Amount" Style="{StaticResource FormLabelStyle}" />
+                        <Border Style="{StaticResource FieldBorderStyle}"
+                                Stroke="{Binding TransactionType, Converter={StaticResource TransactionTypeToColorConverter}}">
+                            <Entry Text="{Binding AmountText}"
+                                   Keyboard="Numeric"
+                                   Placeholder="0.00"
+                                   BackgroundColor="Transparent"
+                                   TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                   HeightRequest="48"
+                                   HorizontalTextAlignment="End" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Date -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Date" Style="{StaticResource FormLabelStyle}" />
+                        <DatePicker Date="{Binding Date}" Format="MMM dd, yyyy" />
+                    </VerticalStackLayout>
+
+                    <!-- Account -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Account" Style="{StaticResource FormLabelStyle}" />
+                        <Border Style="{StaticResource FieldBorderStyle}">
+                            <Picker Title="Select Account"
+                                    ItemsSource="{Binding Accounts}"
+                                    ItemDisplayBinding="{Binding Name}"
+                                    SelectedItem="{Binding SelectedAccount}"
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="48" />
+                        </Border>
+                        <Button Text="+ New account"
+                                Command="{Binding ShowAddAccountCommand}"
+                                IsVisible="{Binding IsAddingAccount, Converter={StaticResource InverseBoolConverter}}"
+                                Style="{StaticResource TextButtonStyle}"
+                                HorizontalOptions="Start"
+                                Padding="0" />
+                        <Border Style="{StaticResource FieldBorderStyle}"
+                                IsVisible="{Binding IsAddingAccount}"
+                                Padding="12">
+                            <VerticalStackLayout Spacing="8">
+                                <Entry Text="{Binding NewAccountName}"
+                                       Placeholder="Account name"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                       HeightRequest="48" />
+                                <Picker Title="Account type"
+                                        ItemsSource="{Binding AccountTypes}"
+                                        SelectedItem="{Binding NewAccountType}"
+                                        BackgroundColor="Transparent"
+                                        HeightRequest="48" />
+                                <HorizontalStackLayout Spacing="8">
+                                    <Button Text="Add"
+                                            Command="{Binding SaveNewAccountCommand}"
+                                            Style="{StaticResource PrimaryButtonStyle}"
+                                            TextColor="White"
+                                            HorizontalOptions="Fill" />
+                                    <Button Text="Cancel"
+                                            Command="{Binding CancelAddAccountCommand}"
+                                            Style="{StaticResource OutlineButtonStyle}"
+                                            HorizontalOptions="Fill" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Category -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Category" Style="{StaticResource FormLabelStyle}" />
+                        <Border Style="{StaticResource FieldBorderStyle}">
+                            <Picker Title="Select Category"
+                                    ItemsSource="{Binding Categories}"
+                                    ItemDisplayBinding="{Binding Name}"
+                                    SelectedItem="{Binding SelectedCategory}"
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="48" />
+                        </Border>
+                        <Button Text="+ New category"
+                                Command="{Binding ShowAddCategoryCommand}"
+                                IsVisible="{Binding IsAddingCategory, Converter={StaticResource InverseBoolConverter}}"
+                                Style="{StaticResource TextButtonStyle}"
+                                HorizontalOptions="Start"
+                                Padding="0" />
+                        <Border Style="{StaticResource FieldBorderStyle}"
+                                IsVisible="{Binding IsAddingCategory}"
+                                Padding="12">
+                            <VerticalStackLayout Spacing="8">
+                                <Entry Text="{Binding NewCategoryName}"
+                                       Placeholder="Category name"
+                                       BackgroundColor="Transparent"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                       HeightRequest="48" />
+                                <HorizontalStackLayout Spacing="8">
+                                    <Button Text="Add"
+                                            Command="{Binding SaveNewCategoryCommand}"
+                                            Style="{StaticResource PrimaryButtonStyle}"
+                                            TextColor="White"
+                                            HorizontalOptions="Fill" />
+                                    <Button Text="Cancel"
+                                            Command="{Binding CancelAddCategoryCommand}"
+                                            Style="{StaticResource OutlineButtonStyle}"
+                                            HorizontalOptions="Fill" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Notes -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Notes (Optional)" Style="{StaticResource FormLabelStyle}" />
+                        <Border Style="{StaticResource FieldBorderStyle}">
+                            <Editor Text="{Binding Notes}"
+                                    HeightRequest="80"
+                                    Placeholder="Add a note..."
+                                    BackgroundColor="Transparent"
+                                    TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Save -->
+                    <Button Text="Save"
+                            Command="{Binding SaveCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            BackgroundColor="{Binding TransactionType, Converter={StaticResource TransactionTypeToColorConverter}}"
+                            TextColor="White" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+    </Grid>
+</ContentPage>

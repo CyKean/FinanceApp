@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinanceApp.Mobile.Views.Controls.LoadingOverlay"
+             x:Name="Root"
+             IsVisible="{Binding Source={x:Reference Root}, Path=IsLoading}">
+    <Grid BackgroundColor="#80000000"
+          Padding="48"
+          VerticalOptions="Fill"
+          HorizontalOptions="Fill">
+        <Border Style="{StaticResource CardFrameStyle}"
+                Padding="28,24"
+                VerticalOptions="Center"
+                HorizontalOptions="Center">
+            <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
+                <ActivityIndicator IsRunning="{Binding Source={x:Reference Root}, Path=IsLoading}"
+                                   Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                   HeightRequest="48"
+                                   WidthRequest="48"
+                                   HorizontalOptions="Center" />
+                <Label Text="{Binding Source={x:Reference Root}, Path=Text}"
+                       Style="{StaticResource BodyLabelStyle}"
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentView>

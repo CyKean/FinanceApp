@@ -10,6 +10,9 @@ public partial class BaseViewModel : ObservableObject
     private bool _isBusy;
 
     [ObservableProperty]
+    private string _busyMessage = "Please wait...";
+
+    [ObservableProperty]
     private string _title = string.Empty;
 
     [ObservableProperty]

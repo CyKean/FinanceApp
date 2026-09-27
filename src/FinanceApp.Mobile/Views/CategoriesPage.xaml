@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:enums="clr-namespace:FinanceApp.Domain.Enums;assembly=FinanceApp.Domain"
              x:Class="FinanceApp.Mobile.Views.CategoriesPage"
              Title="{Binding Title}"
              x:Name="CategoriesPageView">
@@ -23,12 +24,12 @@
                 <HorizontalStackLayout Spacing="4">
                     <Button Text="Expenses" 
                             Command="{Binding SetTabCommand}"
-                            CommandParameter="{x:Static viewmodels:CategoryType.Expense}"
+                            CommandParameter="{x:Static enums:CategoryType.Expense}"
                             Style="{Binding SelectedTab, Converter={StaticResource CategoryTabStyleConverter}, ConverterParameter=Expense}"
                             HorizontalOptions="Fill" />
                     <Button Text="Income" 
                             Command="{Binding SetTabCommand}"
-                            CommandParameter="{x:Static viewmodels:CategoryType.Income}"
+                            CommandParameter="{x:Static enums:CategoryType.Income}"
                             Style="{Binding SelectedTab, Converter={StaticResource CategoryTabStyleConverter}, ConverterParameter=Income}"
                             HorizontalOptions="Fill" />
                 </HorizontalStackLayout>
@@ -44,7 +45,7 @@
                                 <SwipeView.RightItems>
                                     <SwipeItems>
                                         <SwipeItem Text="Edit" 
-                                                   Background="#512BD4"
+                                                   Background="#0E6B4F"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
                                                    CommandParameter="{Binding .}" />
                                         <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}" 
@@ -61,9 +62,13 @@
                                 </SwipeView.RightItems>
                                 <Border Style="{StaticResource CategoryItemFrameStyle}" Margin="0,8">
                                     <HorizontalStackLayout Spacing="16">
-                                        <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                               Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
-                                               HasShadow="False" BorderColor="Transparent">
+                                        <Border WidthRequest="48" HeightRequest="48"
+                                               Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
+                                               StrokeThickness="0"
+                                               VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <Ellipse />
+                                            </Border.StrokeShape>
                                             <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
                                         </Border>
                                         <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
@@ -89,7 +94,7 @@
                                 <SwipeView.RightItems>
                                     <SwipeItems>
                                         <SwipeItem Text="Edit" 
-                                                   Background="#512BD4"
+                                                   Background="#0E6B4F"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
                                                    CommandParameter="{Binding .}" />
                                         <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}" 
@@ -106,9 +111,13 @@
                                 </SwipeView.RightItems>
                                 <Border Style="{StaticResource CategoryItemFrameStyle}" Margin="0,8">
                                     <HorizontalStackLayout Spacing="16">
-                                        <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                               Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
-                                               HasShadow="False" BorderColor="Transparent">
+                                        <Border WidthRequest="48" HeightRequest="48"
+                                               Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
+                                               StrokeThickness="0"
+                                               VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <Ellipse />
+                                            </Border.StrokeShape>
                                             <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
                                         </Border>
                                         <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">

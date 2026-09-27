@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
-             xmlns:sys="clr-namespace:System;assembly=netstandard"
              xmlns:enums="clr-namespace:FinanceApp.Domain.Enums;assembly=FinanceApp.Domain"
              x:Class="FinanceApp.Mobile.Views.TransactionsPage"
              Title="{Binding Title}"
@@ -20,144 +19,174 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
-        <VerticalStackLayout Spacing="0">
-            <!-- Filter Bar -->
-            <Border Style="{StaticResource FilterBarStyle}" Margin="16,16,16,0" Padding="12">
-                <VerticalStackLayout Spacing="12">
-                    <HorizontalStackLayout Spacing="12">
-<DatePicker Date="{Binding Filter.StartDate}" 
-                                    Format="MMM dd, yyyy" 
-                                    HorizontalOptions="Fill"
-                                    MinimumDate="2020-01-01"
-                                    MaximumDate="{Binding Source={x:Static sys:DateTime.Today}, Path=Today}" />
-                                <DatePicker Date="{Binding Filter.EndDate}" 
-                                            Format="MMM dd, yyyy" 
-                                            HorizontalOptions="Fill"
-                                            MinimumDate="2020-01-01"
-                                            MaximumDate="{Binding Source={x:Static sys:DateTime.Today}, Path=Today}" />
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Spacing="12">
-                        <Picker Title="Type" SelectedItem="{Binding Filter.Type}" HorizontalOptions="Fill">
-                            <Picker.ItemsSource>
-                                <x:Array Type="{x:Type enums:TransactionType}">
-                                    <enums:TransactionType>Expense</enums:TransactionType>
-                                    <enums:TransactionType>Income</enums:TransactionType>
-                                </x:Array>
-                            </Picker.ItemsSource>
-                        </Picker>
-                        <Button Text="Apply" Command="{Binding ApplyFilterCommand}" Style="{StaticResource PrimaryButtonStyle}" WidthRequest="100" />
-                        <Button Text="Clear" Command="{Binding ClearFilterCommand}" Style="{StaticResource OutlineButtonStyle}" WidthRequest="100" />
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
+    <Grid>
+        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+            <VerticalStackLayout Spacing="16" Padding="20,16,20,100">
+                    <!-- Header -->
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="Transactions" Style="{StaticResource TitleLabelStyle}" />
+                        <Label Text="History of money in and out" Style="{StaticResource MutedLabelStyle}" />
+                    </VerticalStackLayout>
 
-            <!-- Summary -->
-            <Border Style="{StaticResource CardFrameStyle}" Margin="16,12" Padding="16" IsVisible="{Binding Summary, Converter={StaticResource NullToBoolConverter}}">
-                <HorizontalStackLayout Spacing="16">
-                    <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
-                        <Label Text="Income" Style="{StaticResource CaptionLabelStyle}" TextColor="Green" />
-                        <Label Text="{Binding Summary.TotalIncome, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" TextColor="Green" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
-                        <Label Text="Expenses" Style="{StaticResource CaptionLabelStyle}" TextColor="Red" />
-                        <Label Text="{Binding Summary.TotalExpense, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" TextColor="Red" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
-                        <Label Text="Net" Style="{StaticResource CaptionLabelStyle}" />
-                        <Label Text="{Binding Summary.NetAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" />
-                    </VerticalStackLayout>
-                    <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
-                        <Label Text="Count" Style="{StaticResource CaptionLabelStyle}" />
-                        <Label Text="{Binding Summary.TransactionCount}" Style="{StaticResource AmountLabelStyle}" />
-                    </VerticalStackLayout>
-                </HorizontalStackLayout>
-            </Border>
-
-            <!-- Transactions List -->
-            <CollectionView ItemsSource="{Binding Transactions}" 
-                            SelectionMode="None"
-                            RemainingItemsThreshold="5"
-                            RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
-                            IsVisible="{Binding Transactions.Count, Converter={StaticResource NullToBoolConverter}}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <SwipeView>
-                            <SwipeView.RightItems>
-                                <SwipeItems>
-                                    <SwipeItem Text="Edit" 
-                                               Background="#512BD4"
-                                               Command="{Binding Source={x:Reference TransactionsPageView}, Path=BindingContext.EditTransactionCommand}"
-                                               CommandParameter="{Binding .}" />
-                                    <SwipeItem Text="Delete" 
-                                               Background="Red"
-                                               Command="{Binding Source={x:Reference TransactionsPageView}, Path=BindingContext.DeleteTransactionCommand}"
-                                               CommandParameter="{Binding .}" />
-                                </SwipeItems>
-                            </SwipeView.RightItems>
-                            <Border Style="{StaticResource TransactionItemFrameStyle}" Margin="16,8">
-                                <HorizontalStackLayout Spacing="12">
-                                    <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                           Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
-                                           HasShadow="False" BorderColor="Transparent">
-                                        <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
+                    <!-- Filter Bar -->
+                    <Border Style="{StaticResource FilterBarStyle}" Padding="16">
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="From" Style="{StaticResource CaptionLabelStyle}" />
+                                    <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
+                                        <DatePicker Date="{Binding Filter.StartDate}"
+                                                    Format="MMM dd, yyyy"
+                                                    MinimumDate="2020-01-01" />
                                     </Border>
-                                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                        <Label Text="{Binding CategoryName}" Style="{StaticResource TransactionNameLabelStyle}" />
-                                        <Label Text="{Binding Notes}" Style="{StaticResource TransactionNotesLabelStyle}" 
-                                               IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
-                                        <HorizontalStackLayout Spacing="8">
-                                            <Label Text="{Binding AccountName}" Style="{StaticResource TransactionAccountLabelStyle}" />
-                                            <Label Text="•" Style="{StaticResource TransactionSeparatorLabelStyle}" />
-                                            <Label Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" Style="{StaticResource TransactionDateLabelStyle}" />
-                                        </HorizontalStackLayout>
-                                    </VerticalStackLayout>
-                                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
-                                        <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" 
-                                               Style="{StaticResource TransactionAmountLabelStyle}"
-                                               TextColor="{Binding Type, Converter={StaticResource TransactionTypeColorConverter}}" />
-                                        <Label Text="{Binding SyncStatus, Converter={StaticResource SyncStatusIconConverter}}" 
-                                               Style="{StaticResource SyncStatusLabelStyle}"
-                                               TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusColorConverter}}" />
-                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                    <Label Text="To" Style="{StaticResource CaptionLabelStyle}" />
+                                    <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
+                                        <DatePicker Date="{Binding Filter.EndDate}"
+                                                    Format="MMM dd, yyyy"
+                                                    MinimumDate="2020-01-01" />
+                                    </Border>
+                                </VerticalStackLayout>
+                            </Grid>
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="Type" Style="{StaticResource CaptionLabelStyle}" />
+                                <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
+                                    <Picker SelectedItem="{Binding Filter.Type}" HeightRequest="48" BackgroundColor="Transparent">
+                                        <Picker.ItemsSource>
+                                            <x:Array Type="{x:Type enums:TransactionType}">
+                                                <enums:TransactionType>Expense</enums:TransactionType>
+                                                <enums:TransactionType>Income</enums:TransactionType>
+                                            </x:Array>
+                                        </Picker.ItemsSource>
+                                    </Picker>
+                                </Border>
+                            </VerticalStackLayout>
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                                <Button Text="Apply" Command="{Binding ApplyFilterCommand}" Style="{StaticResource PrimaryButtonStyle}" TextColor="White" HorizontalOptions="Fill" />
+                                <Button Grid.Column="1" Text="Clear" Command="{Binding ClearFilterCommand}" Style="{StaticResource OutlineButtonStyle}" HorizontalOptions="Fill" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Summary -->
+                    <Border Style="{StaticResource CardFrameStyle}" IsVisible="{Binding Summary, Converter={StaticResource NullToBoolConverter}}">
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="Income" Style="{StaticResource CaptionLabelStyle}" TextColor="{StaticResource Success}" />
+                                <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                    <Label Text="{Binding Summary.TotalIncome.Amount, StringFormat='{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Success}" VerticalOptions="End" />
+                                    <Label Text="{Binding Summary.TotalIncome.Currency}" FontSize="10" TextColor="{StaticResource Success}" Opacity="0.8" VerticalOptions="End" Margin="0,0,0,2" />
                                 </HorizontalStackLayout>
-                            </Border>
-                        </SwipeView>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-                <CollectionView.Footer>
-                    <ActivityIndicator IsRunning="{Binding IsLoadingMore}" IsVisible="{Binding IsLoadingMore}" 
-                                       HorizontalOptions="Center" VerticalOptions="Center" Margin="16" />
-                </CollectionView.Footer>
-                <CollectionView.EmptyView>
-                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20">
-                        <Label Text="📭" FontSize="48" />
-                        <Label Text="No transactions found" Style="{StaticResource EmptyStateLabelStyle}" />
-                        <Label Text="Try adjusting your filters or add a new transaction" Style="{StaticResource EmptyStateSubLabelStyle}" />
-                    </VerticalStackLayout>
-                </CollectionView.EmptyView>
-            </CollectionView>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Expenses" Style="{StaticResource CaptionLabelStyle}" TextColor="{StaticResource Error}" />
+                                <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                    <Label Text="{Binding Summary.TotalExpense.Amount, StringFormat='{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Error}" VerticalOptions="End" />
+                                    <Label Text="{Binding Summary.TotalExpense.Currency}" FontSize="10" TextColor="{StaticResource Error}" Opacity="0.8" VerticalOptions="End" Margin="0,0,0,2" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="1" Spacing="2">
+                                <Label Text="Net" Style="{StaticResource CaptionLabelStyle}" />
+                                <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                    <Label Text="{Binding Summary.NetAmount.Amount, StringFormat='{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" VerticalOptions="End" />
+                                    <Label Text="{Binding Summary.NetAmount.Currency}" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="End" Margin="0,0,0,2" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="2">
+                                <Label Text="Count" Style="{StaticResource CaptionLabelStyle}" />
+                                <Label Text="{Binding Summary.TransactionCount}" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
 
-            <!-- Empty State -->
-            <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20" 
-                                 IsVisible="{Binding Transactions.Count, Converter={StaticResource InverseBoolConverter}}">
-                <Label Text="📭" FontSize="48" />
-                <Label Text="No transactions yet" Style="{StaticResource EmptyStateLabelStyle}" />
-                <Label Text="Tap the + button to add your first transaction" Style="{StaticResource EmptyStateSubLabelStyle}" />
-            </VerticalStackLayout>
-        </VerticalStackLayout>
-    </RefreshView>
+                    <!-- Transactions List -->
+                    <CollectionView ItemsSource="{Binding Transactions}"
+                                    SelectionMode="None"
+                                    RemainingItemsThreshold="5"
+                                    RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <SwipeView>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Edit"
+                                                       Background="#0E6B4F"
+                                                       Command="{Binding Source={x:Reference TransactionsPageView}, Path=BindingContext.EditTransactionCommand}"
+                                                       CommandParameter="{Binding .}" />
+                                            <SwipeItem Text="Delete"
+                                                       Background="Red"
+                                                       Command="{Binding Source={x:Reference TransactionsPageView}, Path=BindingContext.DeleteTransactionCommand}"
+                                                       CommandParameter="{Binding .}" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Border Style="{StaticResource TransactionItemFrameStyle}" Margin="0,4">
+                                        <HorizontalStackLayout Spacing="12">
+                                            <Border WidthRequest="48" HeightRequest="48"
+                                                    Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
+                                                    StrokeThickness="0"
+                                                    VerticalOptions="Center">
+                                                <Border.StrokeShape>
+                                                    <Ellipse />
+                                                </Border.StrokeShape>
+                                                <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
+                                            </Border>
+                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                                                <Label Text="{Binding CategoryName}" Style="{StaticResource TransactionNameLabelStyle}" />
+                                                <Label Text="{Binding Notes}" Style="{StaticResource TransactionNotesLabelStyle}"
+                                                       IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
+                                                <HorizontalStackLayout Spacing="8">
+                                                    <Label Text="{Binding AccountName}" Style="{StaticResource TransactionAccountLabelStyle}" />
+                                                    <Label Text="•" Style="{StaticResource TransactionSeparatorLabelStyle}" />
+                                                    <Label Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" Style="{StaticResource TransactionDateLabelStyle}" />
+                                                </HorizontalStackLayout>
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
+                                                <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}"
+                                                       Style="{StaticResource TransactionAmountLabelStyle}"
+                                                       TextColor="{Binding Type, Converter={StaticResource TransactionTypeColorConverter}}" />
+                                                <Label Text="{Binding SyncStatus, Converter={StaticResource SyncStatusIconConverter}}"
+                                                       Style="{StaticResource SyncStatusLabelStyle}"
+                                                       TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusColorConverter}}" />
+                                            </VerticalStackLayout>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                        <CollectionView.Footer>
+                            <ActivityIndicator IsRunning="{Binding IsLoadingMore}" IsVisible="{Binding IsLoadingMore}"
+                                               HorizontalOptions="Center" VerticalOptions="Center" Margin="16" />
+                        </CollectionView.Footer>
+                        <CollectionView.EmptyView>
+                            <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20">
+                                <Label Text="📭" FontSize="48" HorizontalOptions="Center" />
+                                <Label Text="No transactions found" Style="{StaticResource EmptyStateLabelStyle}" />
+                                <Label Text="Tap + to add your first transaction" Style="{StaticResource EmptyStateSubLabelStyle}" />
+                            </VerticalStackLayout>
+                        </CollectionView.EmptyView>
+                    </CollectionView>
+                </VerticalStackLayout>
+        </RefreshView>
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add Expense" Command="{Binding AddExpenseCommand}" Priority="0">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource Glyph="−" FontFamily="OpenSansRegular" Size="20" Color="White" />
-            </ToolbarItem.IconImageSource>
-        </ToolbarItem>
-        <ToolbarItem Text="Add Income" Command="{Binding AddIncomeCommand}" Priority="1">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource Glyph="+" FontFamily="OpenSansRegular" Size="20" Color="White" />
-            </ToolbarItem.IconImageSource>
-        </ToolbarItem>
-    </ContentPage.ToolbarItems>
+        <!-- Add FAB -->
+        <Border HeightRequest="62"
+                WidthRequest="62"
+                Background="{StaticResource Primary}"
+                StrokeThickness="0"
+                VerticalOptions="End"
+                HorizontalOptions="End"
+                Margin="20">
+            <Border.StrokeShape>
+                <Ellipse />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="Black" Opacity="0.25" Radius="12" Offset="0,6" />
+            </Border.Shadow>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding AddTransactionCommand}" />
+            </Border.GestureRecognizers>
+            <Label Text="+" FontSize="32" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,-4,0,0" />
+        </Border>
+    </Grid>
 </ContentPage>

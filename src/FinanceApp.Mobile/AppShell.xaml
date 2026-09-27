@@ -6,49 +6,50 @@
     xmlns:local="clr-namespace:FinanceApp.Mobile"
     xmlns:views="clr-namespace:FinanceApp.Mobile.Views"
     Title="FinanceApp"
-    FlyoutBehavior="Flyout">
+    FlyoutBehavior="Disabled">
 
     <!-- Login Page (shown when not authenticated) -->
     <ShellContent Route="Login" ContentTemplate="{DataTemplate views:LoginPage}" />
 
-    <!-- Main App (Tabbed navigation) -->
-    <TabBar Route="Main">
-        <Tab Title="Dashboard" Route="Dashboard">
+    <!-- Main App (icon + tiny-label tab navigation, no top headers) -->
+    <TabBar Route="Main" Shell.NavBarIsVisible="False">
+        <Tab Title="Dashboard" Route="Dashboard" Icon="tab_home">
             <ShellContent Route="Dashboard" ContentTemplate="{DataTemplate views:DashboardPage}" />
         </Tab>
 
-        <Tab Title="Transactions" Route="Transactions">
+        <Tab Title="Transactions" Route="Transactions" Icon="tab_transactions">
             <ShellContent Route="Transactions" ContentTemplate="{DataTemplate views:TransactionsPage}" />
         </Tab>
 
-        <Tab Title="Accounts" Route="Accounts">
+        <Tab Title="Accounts" Route="Accounts" Icon="tab_accounts">
             <ShellContent Route="Accounts" ContentTemplate="{DataTemplate views:AccountsPage}" />
         </Tab>
 
-        <Tab Title="Budgets" Route="Budgets">
+        <Tab Title="Budgets" Route="Budgets" Icon="tab_budgets">
             <ShellContent Route="Budgets" ContentTemplate="{DataTemplate views:BudgetsPage}" />
         </Tab>
 
-        <Tab Title="Goals" Route="Goals">
-            <ShellContent Route="Goals" ContentTemplate="{DataTemplate views:GoalsPage}" />
+        <Tab Title="More" Route="More" Icon="tab_more">
+            <ShellContent Route="MorePage" ContentTemplate="{DataTemplate views:MorePage}" />
         </Tab>
     </TabBar>
 
-    <!-- Flyout Menu Items -->
-    <FlyoutItem Title="Settings" Route="Settings">
-        <ShellContent Route="Settings" ContentTemplate="{DataTemplate views:SettingsPage}" />
-    </FlyoutItem>
+    <!-- Goals + Settings live outside the tab bar so all 5 tabs fit.
+         They are pushed from the More sheet with a Shell back button. -->
+    <ShellContent Route="Goals" ContentTemplate="{DataTemplate views:GoalsPage}" />
+    <ShellContent Route="Settings" ContentTemplate="{DataTemplate views:SettingsPage}" />
 
-    <!-- Modal Pages -->
-    <ShellContent Route="AddTransaction" ContentTemplate="{DataTemplate views:AddTransactionPage}" />
-    <ShellContent Route="EditTransaction" ContentTemplate="{DataTemplate views:AddTransactionPage}" />
-    <ShellContent Route="AddAccount" ContentTemplate="{DataTemplate views:AddAccountPage}" />
-    <ShellContent Route="EditAccount" ContentTemplate="{DataTemplate views:AddAccountPage}" />
-    <ShellContent Route="AddCategory" ContentTemplate="{DataTemplate views:AddCategoryPage}" />
-    <ShellContent Route="EditCategory" ContentTemplate="{DataTemplate views:AddCategoryPage}" />
-    <ShellContent Route="AddBudget" ContentTemplate="{DataTemplate views:AddBudgetPage}" />
-    <ShellContent Route="EditBudget" ContentTemplate="{DataTemplate views:AddBudgetPage}" />
-    <ShellContent Route="AddGoal" ContentTemplate="{DataTemplate views:AddGoalPage}" />
-    <ShellContent Route="EditGoal" ContentTemplate="{DataTemplate views:AddGoalPage}" />
+    <!-- Modal Pages (pushed with a Shell back button) -->
+    <ShellContent Route="AddTransaction" ContentTemplate="{DataTemplate views:AddTransactionPage}" Shell.NavBarIsVisible="True" />
+    <ShellContent Route="AddTransactionSheet" ContentTemplate="{DataTemplate views:AddTransactionSheetPage}" />
+    <ShellContent Route="EditTransaction" ContentTemplate="{DataTemplate views:AddTransactionPage}" Shell.NavBarIsVisible="True" />
+    <ShellContent Route="AddAccount" ContentTemplate="{DataTemplate views:AddAccountPage}" Shell.NavBarIsVisible="True" />
+    <ShellContent Route="EditAccount" ContentTemplate="{DataTemplate views:AddAccountPage}" Shell.NavBarIsVisible="True" />
+    <ShellContent Route="AddCategory" ContentTemplate="{DataTemplate views:AddCategoryPage}" Shell.NavBarIsVisible="True" />
+    <ShellContent Route="EditCategory" ContentTemplate="{DataTemplate views:AddCategoryPage}" Shell.NavBarIsVisible="True" />
+    <ShellContent Route="AddBudget" ContentTemplate="{DataTemplate views:AddBudgetPage}" Shell.NavBarIsVisible="True" />
+    <ShellContent Route="EditBudget" ContentTemplate="{DataTemplate views:AddBudgetPage}" Shell.NavBarIsVisible="True" />
+    <ShellContent Route="AddGoal" ContentTemplate="{DataTemplate views:AddGoalPage}" Shell.NavBarIsVisible="True" />
+    <ShellContent Route="EditGoal" ContentTemplate="{DataTemplate views:AddGoalPage}" Shell.NavBarIsVisible="True" />
 
 </Shell>

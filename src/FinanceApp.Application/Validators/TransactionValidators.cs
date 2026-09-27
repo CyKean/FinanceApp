@@ -20,10 +20,10 @@ public class CreateTransactionDtoValidator : AbstractValidator<CreateTransaction
             .LessThanOrEqualTo(DateTime.Today.AddDays(1)).WithMessage("Date cannot be in the future");
 
         RuleFor(x => x.AccountId)
-            .NotEqual(AccountId.From(Guid.Empty)).WithMessage("Account is required");
+            .NotEqual(default(AccountId)).WithMessage("Account is required");
 
         RuleFor(x => x.CategoryId)
-            .NotEqual(CategoryId.From(Guid.Empty)).WithMessage("Category is required");
+            .NotEqual(default(CategoryId)).WithMessage("Category is required");
 
         RuleFor(x => x.Notes)
             .MaximumLength(1000).WithMessage("Notes cannot exceed 1000 characters")
@@ -45,11 +45,11 @@ public class UpdateTransactionDtoValidator : AbstractValidator<UpdateTransaction
             .When(x => x.Date.HasValue);
 
         RuleFor(x => x.AccountId)
-            .Must(id => id.HasValue && id.Value != AccountId.From(Guid.Empty)).WithMessage("Account is required")
+            .Must(id => id.HasValue && id.Value != default(AccountId)).WithMessage("Account is required")
             .When(x => x.AccountId.HasValue);
 
         RuleFor(x => x.CategoryId)
-            .Must(id => id.HasValue && id.Value != CategoryId.From(Guid.Empty)).WithMessage("Category is required")
+            .Must(id => id.HasValue && id.Value != default(CategoryId)).WithMessage("Category is required")
             .When(x => x.CategoryId.HasValue);
 
         RuleFor(x => x.Notes)

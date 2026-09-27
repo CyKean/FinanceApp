@@ -70,13 +70,13 @@ public partial class BudgetsViewModel : BaseViewModel
     [RelayCommand]
     private async Task AddBudgetAsync()
     {
-        await _navigationService.NavigateToAsync("//AddBudget");
+        await _navigationService.NavigateToAsync("///AddBudget");
     }
 
     [RelayCommand]
     private async Task EditBudgetAsync(BudgetDto budget)
     {
-        await _navigationService.NavigateToAsync($"//EditBudget?id={budget.Id}");
+        await _navigationService.NavigateToAsync($"///EditBudget?id={budget.Id}");
     }
 
     [RelayCommand]

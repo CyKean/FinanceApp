@@ -19,6 +19,14 @@
 
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
         <VerticalStackLayout Spacing="16" Padding="16">
+            <!-- Back to More -->
+            <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                <HorizontalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnBackTapped" />
+                </HorizontalStackLayout.GestureRecognizers>
+                <Label Text="‹" FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" VerticalOptions="Center" />
+                <Label Text="Back" FontSize="15" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" VerticalOptions="Center" />
+            </HorizontalStackLayout>
             <!-- Goals List -->
             <CollectionView ItemsSource="{Binding Goals}" SelectionMode="None">
 <CollectionView.ItemTemplate>

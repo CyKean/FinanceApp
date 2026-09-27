@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.LoginPage"
              x:DataType="viewmodels:LoginViewModel"
              Title="{Binding Title}"
@@ -21,7 +22,8 @@
         </LinearGradientBrush>
     </ContentPage.Background>
 
-    <ScrollView>
+    <Grid>
+        <ScrollView>
         <VerticalStackLayout Spacing="0" Padding="20,44,20,24" VerticalOptions="Fill">
             <!-- Logo mark on white tile for contrast -->
             <Border HorizontalOptions="Center"
@@ -105,22 +107,28 @@
                             </Grid>
                         </Border>
 
-                        <Label Text="Forgot Password?"
-                               Style="{StaticResource ForgotPasswordLabelStyle}"
-                               HorizontalOptions="End">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
-                            </Label.GestureRecognizers>
-                        </Label>
+                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center" Margin="0,4,0,0">
+                            <CheckBox IsChecked="{Binding IsRememberMe}"
+                                      Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                      VerticalOptions="Center" />
+                            <Label Text="Remember me"
+                                   Style="{StaticResource BodyLabelStyle}"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Fill" />
+                            <Label Text="Forgot Password?"
+                                   Style="{StaticResource ForgotPasswordLabelStyle}"
+                                   VerticalOptions="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </HorizontalStackLayout>
                     </VerticalStackLayout>
 
                     <!-- Error Message -->
                     <Label Text="{Binding ErrorMessage}"
                            Style="{StaticResource ErrorLabelStyle}"
                            IsVisible="{Binding HasError}" />
-
-                    <!-- Busy indicator -->
-                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
                     <!-- Login submit (visible in login mode) -->
                     <Button Text="Login"
@@ -159,7 +167,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Label Text="Secure • Private • Yours"
+            <Label Text="Secure • Private • Yours • build 20260927d"
                    FontSize="12"
                    TextColor="White"
                    Opacity="0.7"
@@ -167,4 +175,8 @@
                    Margin="0,20,0,0" />
         </VerticalStackLayout>
     </ScrollView>
+
+        <!-- Loading overlay -->
+        <controls:LoadingOverlay IsLoading="{Binding IsBusy}" Text="{Binding BusyMessage}" />
+    </Grid>
 </ContentPage>

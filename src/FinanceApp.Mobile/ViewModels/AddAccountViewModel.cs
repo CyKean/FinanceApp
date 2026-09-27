@@ -27,13 +27,16 @@ public partial class AddAccountViewModel : BaseViewModel
     private Money _initialBalance = Money.Zero();
 
     [ObservableProperty]
+    private string _initialBalanceText = string.Empty;
+
+    [ObservableProperty]
     private string _description = string.Empty;
 
     [ObservableProperty]
     private string _icon = string.Empty;
 
     [ObservableProperty]
-    private string _color = "#512BD4";
+    private string _color = "#0E6B4F";
 
     [ObservableProperty]
     private bool _isDefault;
@@ -43,6 +46,11 @@ public partial class AddAccountViewModel : BaseViewModel
 
     [ObservableProperty]
     private Guid? _editingAccountId;
+
+    public IReadOnlyList<AccountType> AccountTypes { get; } =
+        Enum.GetValues<AccountType>();
+
+    public IReadOnlyList<string> IconChoices => Helpers.EmojiPalette.Icons;
 
     public AddAccountViewModel(
         IAccountService accountService,
@@ -81,9 +89,10 @@ public partial class AddAccountViewModel : BaseViewModel
         Name = account.Name;
         Type = account.Type;
         InitialBalance = account.Balance;
+        InitialBalanceText = account.Balance.Amount.ToString("N2", System.Globalization.CultureInfo.InvariantCulture);
         Description = account.Description ?? string.Empty;
         Icon = account.Icon ?? string.Empty;
-        Color = account.Color ?? "#512BD4";
+        Color = account.Color ?? "#0E6B4F";
         IsDefault = account.IsDefault;
     }
 
@@ -102,6 +111,9 @@ public partial class AddAccountViewModel : BaseViewModel
         {
             var userId = await _authService.GetCurrentUserIdAsync();
             if (!userId.HasValue) return;
+
+            if (string.IsNullOrWhiteSpace(Icon))
+                Icon = "💰";
 
             if (IsEditing && EditingAccountId.HasValue)
             {
@@ -132,7 +144,7 @@ public partial class AddAccountViewModel : BaseViewModel
                 await _dialogService.ShowToastAsync("Account added");
             }
 
-            await _navigationService.GoBackAsync();
+            await _navigationService.NavigateToAsync("//Accounts");
         }
         catch (Exception ex)
         {
@@ -148,7 +160,14 @@ public partial class AddAccountViewModel : BaseViewModel
     [RelayCommand]
     private async Task CancelAsync()
     {
-        await _navigationService.GoBackAsync();
+        await _navigationService.NavigateToAsync("//Accounts");
+    }
+
+    [RelayCommand]
+    private void SelectIcon(string icon)
+    {
+        if (!string.IsNullOrEmpty(icon))
+            Icon = icon;
     }
 
     private bool ValidateInput()
@@ -159,12 +178,13 @@ public partial class AddAccountViewModel : BaseViewModel
             return false;
         }
 
-        if (InitialBalance.Amount < 0)
+        if (!decimal.TryParse(InitialBalanceText, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var parsedBalance) || parsedBalance < 0)
         {
-            SetError("Initial balance cannot be negative");
+            SetError("Initial balance must be zero or more");
             return false;
         }
 
+        InitialBalance = new Money(parsedBalance, InitialBalance?.Currency ?? "PHP");
         return true;
     }
 }

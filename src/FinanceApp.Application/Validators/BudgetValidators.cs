@@ -55,7 +55,7 @@ public class UpdateBudgetDtoValidator : AbstractValidator<UpdateBudgetDto>
             .When(x => x.StartDate.HasValue && x.EndDate.HasValue);
 
         RuleFor(x => x.CategoryId)
-            .Must(id => id.HasValue && id.Value != CategoryId.From(Guid.Empty)).WithMessage("Category is required")
+            .Must(id => id.HasValue && id.Value != default(CategoryId)).WithMessage("Category is required")
             .When(x => x.CategoryId.HasValue);
     }
 }

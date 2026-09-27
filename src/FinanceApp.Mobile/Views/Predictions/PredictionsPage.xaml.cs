@@ -1,9 +1,19 @@
 namespace FinanceApp.Mobile.Views.Predictions;
 
+using FinanceApp.Mobile.ViewModels;
+
 public partial class PredictionsPage : ContentPage
 {
-    public PredictionsPage()
+    public PredictionsPage(PredictionsViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = viewModel;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is PredictionsViewModel vm && vm.LoadCommand.CanExecute(null))
+            await vm.LoadCommand.ExecuteAsync(null);
     }
 }

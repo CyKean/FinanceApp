@@ -22,6 +22,9 @@ public partial class LoginViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isRegisterMode;
 
+    [ObservableProperty]
+    private bool _isRememberMe = true;
+
     public LoginViewModel(
         IAuthenticationService authService,
         INavigationService navigationService,
@@ -44,7 +47,13 @@ public partial class LoginViewModel : BaseViewModel
             return;
 
         IsBusy = true;
+        BusyMessage = IsRegisterMode ? "Creating your account..." : "Logging in...";
         ClearError();
+        _authService.RememberMe = IsRememberMe;
+
+        // Minimum visible loading time so the busy state is perceptible
+        // (auth currently resolves locally; real network calls will take longer).
+        var minBusyDelay = Task.Delay(1200);
 
         try
         {
@@ -58,6 +67,8 @@ public partial class LoginViewModel : BaseViewModel
             {
                 result = await _authService.LoginAsync(Email, Password);
             }
+
+            await minBusyDelay;
 
             if (result.Success)
             {
@@ -77,6 +88,7 @@ public partial class LoginViewModel : BaseViewModel
         finally
         {
             IsBusy = false;
+            BusyMessage = "Please wait...";
         }
     }
 
@@ -92,6 +104,28 @@ public partial class LoginViewModel : BaseViewModel
     private async Task ForgotPasswordAsync()
     {
         await _dialogService.ShowAlertAsync("Reset Password", "Password reset functionality will be implemented in a future update.");
+    }
+
+    /// <summary>
+    /// Called when the login page appears: a remembered session skips login.
+    /// Returns true when navigation away happened.
+    /// </summary>
+    public async Task<bool> CheckSavedSessionAsync()
+    {
+        try
+        {
+            if (await _authService.IsAuthenticatedAsync())
+            {
+                await _navigationService.NavigateToAsync("//Dashboard");
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Saved session check failed");
+        }
+
+        return false;
     }
 
     private bool ValidateInput()

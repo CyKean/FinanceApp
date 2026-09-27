@@ -156,7 +156,7 @@ public partial class AddGoalViewModel : BaseViewModel
                 await _dialogService.ShowToastAsync("Goal created");
             }
 
-            await _navigationService.GoBackAsync();
+            await _navigationService.NavigateToAsync("//Goals");
         }
         catch (Exception ex)
         {
@@ -172,7 +172,7 @@ public partial class AddGoalViewModel : BaseViewModel
     [RelayCommand]
     private async Task CancelAsync()
     {
-        await _navigationService.GoBackAsync();
+        await _navigationService.NavigateToAsync("//Goals");
     }
 
     private bool ValidateInput()

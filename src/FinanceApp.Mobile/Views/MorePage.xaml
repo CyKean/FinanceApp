@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinanceApp.Mobile.Views.MorePage"
+             Title="More"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#80000000">
+
+    <Grid RowDefinitions="*,Auto">
+        <!-- Scrim: tap to go back to Dashboard -->
+        <Grid Grid.Row="0" Grid.RowSpan="2" BackgroundColor="Transparent">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnScrimTapped" />
+            </Grid.GestureRecognizers>
+        </Grid>
+
+        <!-- Bottom sheet -->
+        <Border Grid.Row="1"
+                Background="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
+                Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}"
+                StrokeThickness="1"
+                Padding="20,12,20,28">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="28,28,0,0" />
+            </Border.StrokeShape>
+            <VerticalStackLayout Spacing="4">
+                <BoxView Color="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}"
+                         HeightRequest="5"
+                         WidthRequest="48"
+                         CornerRadius="3"
+                         HorizontalOptions="Center"
+                         Margin="0,0,0,8" />
+                <Label Text="More" Style="{StaticResource TitleLabelStyle}" Margin="0,0,0,8" />
+
+                <HorizontalStackLayout Spacing="14" Padding="4,12">
+                    <Image Source="tab_goals" HeightRequest="28" WidthRequest="28" VerticalOptions="Center" />
+                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Label Text="Goals" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
+                        <Label Text="Track your savings targets" Style="{StaticResource MutedLabelStyle}" />
+                    </VerticalStackLayout>
+                    <Label Text="›" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
+                    <HorizontalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnGoalsTapped" />
+                    </HorizontalStackLayout.GestureRecognizers>
+                </HorizontalStackLayout>
+
+                <BoxView Style="{StaticResource DividerStyle}" />
+
+                <HorizontalStackLayout Spacing="14" Padding="4,12">
+                    <Image Source="tab_categories" HeightRequest="28" WidthRequest="28" VerticalOptions="Center" />
+                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Label Text="Categories" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
+                        <Label Text="Organize expenses and income" Style="{StaticResource MutedLabelStyle}" />
+                    </VerticalStackLayout>
+                    <Label Text="›" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
+                    <HorizontalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCategoriesTapped" />
+                    </HorizontalStackLayout.GestureRecognizers>
+                </HorizontalStackLayout>
+
+                <BoxView Style="{StaticResource DividerStyle}" />
+
+                <HorizontalStackLayout Spacing="14" Padding="4,12">
+                    <Image Source="tab_profile" HeightRequest="28" WidthRequest="28" VerticalOptions="Center" />
+                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Label Text="Profile &amp; Settings" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
+                        <Label Text="Account, sync and preferences" Style="{StaticResource MutedLabelStyle}" />
+                    </VerticalStackLayout>
+                    <Label Text="›" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
+                    <HorizontalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnProfileTapped" />
+                    </HorizontalStackLayout.GestureRecognizers>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>
