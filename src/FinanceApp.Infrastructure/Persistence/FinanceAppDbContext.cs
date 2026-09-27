@@ -18,6 +18,8 @@ public class FinanceAppDbContext : DbContext
         // to create the schema on every platform, so ensure it before first use.
         // Idempotent - a no-op when tables already exist.
         Database.EnsureCreated();
+        // Adds columns introduced after v1 (EnsureCreated never alters tables).
+        DatabaseInitializer.EnsureExtraColumns(this);
     }
 
     public DbSet<Account> Accounts => Set<Account>();
@@ -134,6 +136,8 @@ public class FinanceAppDbContext : DbContext
             entity.Property(e => e.StartDate).HasColumnType("date").IsRequired();
             entity.Property(e => e.EndDate).HasColumnType("date").IsRequired();
             entity.Property(e => e.CategoryId).HasConversion(v => v.Value, v => v == Guid.Empty ? default : new CategoryId(v)).IsRequired();
+            entity.Property(e => e.Icon).HasMaxLength(50);
+            entity.Property(e => e.Color).HasMaxLength(7);
             entity.Property(e => e.UserId).IsRequired();
             entity.Property(e => e.SyncStatus).HasConversion<int>().HasDefaultValue(SyncStatus.PendingCreate);
             entity.Property(e => e.LastSyncedAt);
@@ -264,6 +268,71 @@ public class FinanceAppDbContext : DbContext
             }
         }
 
+        EnqueueSyncOperations();
+
         return await base.SaveChangesAsync(cancellationToken);
     }
+
+    /// <summary>
+    /// Offline-first outbox: every user-driven insert/update/delete queues a
+    /// <see cref="SyncOperation"/> in the same transaction so the background
+    /// sync can push it when online. Sync bookkeeping itself (Synced/Failed
+    /// rows) and SyncOperation rows never enqueue.
+    /// </summary>
+    private void EnqueueSyncOperations()
+    {
+        foreach (var entry in ChangeTracker.Entries().ToList())
+        {
+            if (entry.Entity is not Entity entity)
+                continue;
+
+            if (entry.Entity is SyncOperation)
+                continue;
+
+            SyncOperationType operationType;
+            if (entry.State == EntityState.Deleted)
+            {
+                operationType = SyncOperationType.Delete;
+            }
+            else if (entry.State == EntityState.Added)
+            {
+                operationType = SyncOperationType.Create;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                if (entity.SyncStatus == SyncStatus.PendingDelete)
+                    operationType = SyncOperationType.Delete;
+                else if (entity.SyncStatus == SyncStatus.PendingCreate ||
+                         entity.SyncStatus == SyncStatus.PendingUpdate)
+                    operationType = SyncOperationType.Update;
+                else
+                    continue; // Synced/Failed bookkeeping - not user changes.
+            }
+            else
+            {
+                continue;
+            }
+
+            var userId = GetEntityUserId(entity);
+            if (userId == Guid.Empty)
+                continue;
+
+            Set<SyncOperation>().Add(new SyncOperation(
+                entity.GetType().Name,
+                entity.Id,
+                operationType,
+                userId));
+        }
+    }
+
+    private static Guid GetEntityUserId(Entity entity) => entity switch
+    {
+        Account a => a.UserId,
+        Category c => c.UserId,
+        Transaction t => t.UserId,
+        Budget b => b.UserId,
+        RecurringTransaction r => r.UserId,
+        FinancialGoal g => g.UserId,
+        _ => Guid.Empty
+    };
 }

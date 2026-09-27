@@ -93,6 +93,7 @@ public static class MauiProgram
         builder.Services.AddHostedService<SupabaseInitializer>();
         builder.Services.AddHostedService<DatabaseInitializer>();
         builder.Services.AddHostedService<RecurringTransactionProcessor>();
+        builder.Services.AddHostedService<SyncBackgroundService>();
 
         // ViewModels
         builder.Services.AddTransient<DashboardViewModel>();

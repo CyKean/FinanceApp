@@ -110,6 +110,10 @@ public partial class AddTransactionViewModel : BaseViewModel
         Title = type == TransactionType.Expense ? "Add Expense" : "Add Income";
         IsEditing = transactionId.HasValue;
         EditingTransactionId = transactionId;
+        IsAddingAccount = false;
+        IsAddingCategory = false;
+        NewAccountName = string.Empty;
+        NewCategoryName = string.Empty;
 
         if (IsEditing && transactionId.HasValue)
         {

@@ -77,6 +77,20 @@ public abstract class Entity
         UpdateTimestamp();
     }
 
+    /// <summary>
+    /// Adopts server state during pull-merge (last-write-wins).
+    /// Marks the row synced so the outbox does not re-push it.
+    /// </summary>
+    public void AdoptRemoteState(DateTime createdAt, DateTime updatedAt, int version, bool isDeleted)
+    {
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
+        Version = version;
+        IsDeleted = isDeleted;
+        SyncStatus = SyncStatus.Synced;
+        LastSyncedAt = DateTime.UtcNow;
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not Entity other)

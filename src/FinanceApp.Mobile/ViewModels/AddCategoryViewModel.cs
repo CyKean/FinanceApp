@@ -27,7 +27,7 @@ public partial class AddCategoryViewModel : BaseViewModel
     private string _icon = string.Empty;
 
     [ObservableProperty]
-    private string _color = "#512BD4";
+    private string _color = "#0E6B4F";
 
     [ObservableProperty]
     private bool _isEditing;
@@ -36,6 +36,8 @@ public partial class AddCategoryViewModel : BaseViewModel
     private Guid? _editingCategoryId;
 
     public IReadOnlyList<string> IconChoices => Helpers.EmojiPalette.Icons;
+
+    public IReadOnlyList<string> ColorChoices => Helpers.ColorPalette.Swatches;
 
     public AddCategoryViewModel(
         ICategoryService categoryService,
@@ -75,7 +77,7 @@ public partial class AddCategoryViewModel : BaseViewModel
         Name = category.Name;
         Type = category.Type;
         Icon = category.Icon ?? string.Empty;
-        Color = category.Color ?? "#512BD4";
+        Color = category.Color ?? "#0E6B4F";
     }
 
     [RelayCommand]
@@ -134,6 +136,13 @@ public partial class AddCategoryViewModel : BaseViewModel
     {
         if (!string.IsNullOrEmpty(icon))
             Icon = icon;
+    }
+
+    [RelayCommand]
+    private void SelectColor(string color)
+    {
+        if (!string.IsNullOrEmpty(color))
+            Color = color;
     }
 
     private bool ValidateInput()

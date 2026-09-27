@@ -61,34 +61,35 @@
                                VerticalOptions="Center"
                                HorizontalOptions="Fill" />
                     </HorizontalStackLayout>
-                    <FlexLayout BindableLayout.ItemsSource="{Binding IconChoices}"
+                    <FlexLayout x:Name="EmojiContainer"
                                 Direction="Row"
                                 Wrap="Wrap"
-                                Justify="Start">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate>
-                                <Border WidthRequest="48" HeightRequest="48" Margin="3"
-                                        BackgroundColor="Transparent" StrokeThickness="0">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="14" />
-                                    </Border.StrokeShape>
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectIconCommand}"
-                                                              CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
-                                    <Label Text="{Binding .}" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
-                                </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </FlexLayout>
+                                Justify="Start" />
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Color -->
+            <!-- Color picker -->
             <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Color (Hex)" Style="{StaticResource FormLabelStyle}" />
-                    <Entry Text="{Binding Color}" Placeholder="#512BD4" Style="{StaticResource EntryStyle}" MaxLength="7" />
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Color" Style="{StaticResource FormLabelStyle}" />
+                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                        <Border WidthRequest="40" HeightRequest="40"
+                                Background="{Binding Color, Converter={StaticResource ColorConverter}}"
+                                StrokeThickness="0"
+                                VerticalOptions="Center">
+                            <Border.StrokeShape>
+                                <Ellipse />
+                            </Border.StrokeShape>
+                        </Border>
+                        <Label Text="{Binding Color}"
+                               Style="{StaticResource MutedLabelStyle}"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Fill" />
+                    </HorizontalStackLayout>
+                    <FlexLayout x:Name="ColorContainer"
+                                Direction="Row"
+                                Wrap="Wrap"
+                                Justify="Start" />
                 </VerticalStackLayout>
             </Border>
 

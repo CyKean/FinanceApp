@@ -37,6 +37,10 @@ public partial class AddTransactionSheetPage : ContentPage
     {
         try
         {
+            // Always start collapsed even when the page instance is reused.
+            _viewModel.IsAddingAccount = false;
+            _viewModel.IsAddingCategory = false;
+
             if (!Enum.TryParse(TransactionTypeParam, ignoreCase: true, out TransactionType type))
                 type = TransactionType.Expense;
 

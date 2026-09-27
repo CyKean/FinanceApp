@@ -13,6 +13,8 @@ public class Budget : Entity
     public DateTime EndDate { get; private set; }
     public CategoryId CategoryId { get; private set; }
     public Guid UserId { get; private set; }
+    public string? Icon { get; private set; }
+    public string? Color { get; private set; }
     public SyncStatus SyncStatus { get; private set; }
     public DateTime? LastSyncedAt { get; private set; }
 
@@ -24,7 +26,9 @@ public class Budget : Entity
         DateTime startDate,
         DateTime endDate,
         CategoryId categoryId,
-        Guid userId) : base()
+        Guid userId,
+        string? icon = null,
+        string? color = null) : base()
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Budget name cannot be empty", nameof(name));
@@ -51,6 +55,8 @@ public class Budget : Entity
         EndDate = endDate.Date;
         CategoryId = categoryId;
         UserId = userId;
+        Icon = icon?.Trim();
+        Color = color?.Trim();
         SyncStatus = SyncStatus.PendingCreate;
     }
 
@@ -62,6 +68,28 @@ public class Budget : Entity
         Name = name.Trim();
         UpdateTimestamp();
         MarkAsPendingUpdate();
+    }
+
+    public void UpdateIcon(string? icon)
+    {
+        Icon = icon?.Trim();
+        UpdateTimestamp();
+        MarkAsPendingUpdate();
+    }
+
+    public void UpdateColor(string? color)
+    {
+        Color = color?.Trim();
+        UpdateTimestamp();
+        MarkAsPendingUpdate();
+    }
+
+    /// <summary>
+    /// Sets the spent total from a synced snapshot (pull-merge only).
+    /// </summary>
+    public void SetSpentAmount(Money spentAmount)
+    {
+        SpentAmount = spentAmount;
     }
 
     public void UpdateAmount(Money amount)

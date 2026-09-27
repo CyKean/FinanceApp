@@ -1,6 +1,7 @@
 namespace FinanceApp.Infrastructure;
 
 using FinanceApp.Application.Interfaces;
+using FinanceApp.Application.Services;
 using FinanceApp.Domain.Interfaces;
 using FinanceApp.Infrastructure.Persistence;
 using FinanceApp.Infrastructure.Repositories;
@@ -52,6 +53,7 @@ public static class ServiceCollectionExtensions
         // Supabase services - Stage 3: Real implementation
         services.AddSingleton<SupabaseClientProvider>();
         services.AddScoped<ISupabaseSyncService, SupabaseSyncService>();
+        services.AddScoped<ISyncService, SyncService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         return services;

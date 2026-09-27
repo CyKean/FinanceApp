@@ -5,6 +5,7 @@
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
              x:Class="FinanceApp.Mobile.Views.AddAccountPage"
              x:DataType="viewmodels:AddAccountViewModel"
+             Shell.NavBarIsVisible="False"
              Title="{Binding Title}">
 
     <ContentPage.Resources>
@@ -92,40 +93,38 @@
                                    VerticalOptions="Center"
                                    HorizontalOptions="Fill" />
                         </HorizontalStackLayout>
-                        <FlexLayout BindableLayout.ItemsSource="{Binding IconChoices}"
+                        <FlexLayout x:Name="EmojiContainer"
                                     Direction="Row"
                                     Wrap="Wrap"
-                                    Justify="Start">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate>
-                                    <Border WidthRequest="48" HeightRequest="48" Margin="3"
-                                            BackgroundColor="Transparent" StrokeThickness="0">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="14" />
-                                        </Border.StrokeShape>
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectIconCommand}"
-                                                                  CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <Label Text="{Binding .}" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
-                                    </Border>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </FlexLayout>
+                                    Justify="Start" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>
 
-            <!-- Color -->
+            <!-- Color picker -->
             <VerticalStackLayout Spacing="6">
                 <Label Text="Color" Style="{StaticResource FormLabelStyle}" />
-                <Border Style="{StaticResource FieldBorderStyle}">
-                    <Entry Text="{Binding Color}"
-                           Placeholder="#0E6B4F"
-                           BackgroundColor="Transparent"
-                           TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
-                           HeightRequest="48"
-                           MaxLength="7" />
+                <Border Style="{StaticResource FieldBorderStyle}" Padding="12">
+                    <VerticalStackLayout Spacing="10">
+                        <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                            <Border WidthRequest="40" HeightRequest="40"
+                                    Background="{Binding Color, Converter={StaticResource ColorConverter}}"
+                                    StrokeThickness="0"
+                                    VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <Ellipse />
+                                </Border.StrokeShape>
+                            </Border>
+                            <Label Text="{Binding Color}"
+                                   Style="{StaticResource MutedLabelStyle}"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Fill" />
+                        </HorizontalStackLayout>
+                        <FlexLayout x:Name="ColorContainer"
+                                    Direction="Row"
+                                    Wrap="Wrap"
+                                    Justify="Start" />
+                    </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>
 
@@ -149,6 +148,11 @@
                     Style="{StaticResource PrimaryButtonStyle}"
                     TextColor="White"
                     Margin="0,8,0,0" />
+
+            <!-- Cancel Button -->
+            <Button Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    Style="{StaticResource OutlineButtonStyle}" />
         </VerticalStackLayout>
     </ScrollView>
 

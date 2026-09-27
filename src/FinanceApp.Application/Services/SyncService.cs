@@ -76,7 +76,7 @@ public class SyncService : BaseService, ISyncService, IDisposable
         _currentUserId = userId;
         _syncCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        if (_connectivityService.CurrentAccess != NetworkAccess.Internet)
+        if (await _connectivityService.CheckConnectivityAsync(cancellationToken) != NetworkAccess.Internet)
         {
             return new SyncResultDto(false, 0, 0, "No internet connection");
         }
@@ -124,6 +124,21 @@ public class SyncService : BaseService, ISyncService, IDisposable
             }
 
             await UnitOfWork.SaveChangesAsync(_syncCts.Token);
+
+            // Pull after pushing: server rows newer than local (and not locally
+            // pending) overwrite SQLite, so the UI - which reads SQLite only -
+            // always shows the merged result.
+            try
+            {
+                var pulled = await _supabaseSyncService.PullAsync(userId, _syncCts.Token);
+                syncedCount += pulled;
+            }
+            catch (Exception ex)
+            {
+                failedCount++;
+                lastError = ex.Message;
+                _logger.LogError(ex, "Pull failed for user {UserId}", userId);
+            }
 
             _logger.LogInformation("Sync completed for user {UserId}: {Synced} synced, {Failed} failed", userId, syncedCount, failedCount);
 
@@ -328,6 +343,8 @@ public class SyncService : BaseService, ISyncService, IDisposable
         }
 
         await _supabaseSyncService.SyncAccountAsync(account, operation.OperationType, cancellationToken);
+        account.MarkAsSynced();
+        await _accountRepository.UpdateAsync(account, cancellationToken);
     }
 
     private async Task SyncCategoryAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
@@ -342,6 +359,8 @@ public class SyncService : BaseService, ISyncService, IDisposable
         }
 
         await _supabaseSyncService.SyncCategoryAsync(category, operation.OperationType, cancellationToken);
+        category.MarkAsSynced();
+        await _categoryRepository.UpdateAsync(category, cancellationToken);
     }
 
     private async Task SyncTransactionAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
@@ -356,6 +375,8 @@ public class SyncService : BaseService, ISyncService, IDisposable
         }
 
         await _supabaseSyncService.SyncTransactionAsync(transaction, operation.OperationType, cancellationToken);
+        transaction.MarkAsSynced();
+        await _transactionRepository.UpdateAsync(transaction, cancellationToken);
     }
 
     private async Task SyncBudgetAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
@@ -370,6 +391,8 @@ public class SyncService : BaseService, ISyncService, IDisposable
         }
 
         await _supabaseSyncService.SyncBudgetAsync(budget, operation.OperationType, cancellationToken);
+        budget.MarkAsSynced();
+        await _budgetRepository.UpdateAsync(budget, cancellationToken);
     }
 
     private async Task SyncRecurringTransactionAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
@@ -384,6 +407,8 @@ public class SyncService : BaseService, ISyncService, IDisposable
         }
 
         await _supabaseSyncService.SyncRecurringTransactionAsync(recurring, operation.OperationType, cancellationToken);
+        recurring.MarkAsSynced();
+        await _recurringRepository.UpdateAsync(recurring, cancellationToken);
     }
 
     private async Task SyncFinancialGoalAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
@@ -398,6 +423,8 @@ public class SyncService : BaseService, ISyncService, IDisposable
         }
 
         await _supabaseSyncService.SyncFinancialGoalAsync(goal, operation.OperationType, cancellationToken);
+        goal.MarkAsSynced();
+        await _goalRepository.UpdateAsync(goal, cancellationToken);
     }
 
     private async Task ResolveConflictAsync(Entity localEntity, SyncOperation operation, CancellationToken cancellationToken)

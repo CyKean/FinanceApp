@@ -52,6 +52,8 @@ public partial class AddAccountViewModel : BaseViewModel
 
     public IReadOnlyList<string> IconChoices => Helpers.EmojiPalette.Icons;
 
+    public IReadOnlyList<string> ColorChoices => Helpers.ColorPalette.Swatches;
+
     public AddAccountViewModel(
         IAccountService accountService,
         IAuthenticationService authService,
@@ -168,6 +170,13 @@ public partial class AddAccountViewModel : BaseViewModel
     {
         if (!string.IsNullOrEmpty(icon))
             Icon = icon;
+    }
+
+    [RelayCommand]
+    private void SelectColor(string color)
+    {
+        if (!string.IsNullOrEmpty(color))
+            Color = color;
     }
 
     private bool ValidateInput()

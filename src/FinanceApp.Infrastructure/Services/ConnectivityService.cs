@@ -6,7 +6,11 @@ using Microsoft.Extensions.Logging;
 public class ConnectivityService : IConnectivityService
 {
     private readonly ILogger<ConnectivityService> _logger;
-    private NetworkAccess _currentAccess = NetworkAccess.Internet;
+    private static readonly HttpClient s_probeClient = new() { Timeout = TimeSpan.FromSeconds(5) };
+
+    // Fail closed: assume offline until a probe proves otherwise, so the
+    // sync engine never burns retries against a dead network.
+    private NetworkAccess _currentAccess = NetworkAccess.None;
 
     public NetworkAccess CurrentAccess => _currentAccess;
 
@@ -21,8 +25,7 @@ public class ConnectivityService : IConnectivityService
     {
         try
         {
-            using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
-            var response = await httpClient.GetAsync("https://www.google.com", cancellationToken);
+            var response = await s_probeClient.GetAsync("https://www.google.com", cancellationToken);
             var newAccess = response.IsSuccessStatusCode ? NetworkAccess.Internet : NetworkAccess.Local;
             UpdateAccess(newAccess);
             return newAccess;

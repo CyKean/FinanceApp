@@ -190,6 +190,12 @@ public class BudgetRecord : PostgrestModels.BaseModel
 
     [PostgrestAttributes.Column("user_id")]
     public Guid UserId { get; set; }
+
+    [PostgrestAttributes.Column("icon")]
+    public string? Icon { get; set; }
+
+    [PostgrestAttributes.Column("color")]
+    public string? Color { get; set; }
 }
 
 [PostgrestAttributes.Table("recurring_transactions")]

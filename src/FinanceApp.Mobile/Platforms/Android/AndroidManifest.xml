@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-	<application android:allowBackup="true" android:icon="@mipmap/financeapp_fg" android:roundIcon="@mipmap/financeapp_fg_round" android:supportsRtl="true"></application>
+	<!-- Auto-backup OFF: with stub auth the restored snapshot (old DB + old
+	     session id) otherwise resurrects stale/empty data over fresh installs,
+	     making it look like saved rows vanished. Revisit with backup rules
+	     once real Supabase Auth owns identity. -->
+	<application android:allowBackup="false" android:icon="@mipmap/financeapp_fg" android:roundIcon="@mipmap/financeapp_fg_round" android:supportsRtl="true"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
 </manifest>

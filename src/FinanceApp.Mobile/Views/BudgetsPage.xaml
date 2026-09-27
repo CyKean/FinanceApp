@@ -18,14 +18,18 @@
     </ContentPage.Resources>
 
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
-        <VerticalStackLayout Spacing="16" Padding="16">
+        <VerticalStackLayout Spacing="16" Padding="20,16,20,28">
+            <!-- Header -->
+            <VerticalStackLayout Spacing="2">
+                <Label Text="Budgets" Style="{StaticResource TitleLabelStyle}" />
+                <Label Text="Keep spending inside the lines" Style="{StaticResource MutedLabelStyle}" />
+            </VerticalStackLayout>
+
             <!-- Month Navigation -->
-            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                <HorizontalStackLayout Spacing="12">
+            <Border Style="{StaticResource FilterBarStyle}" Padding="12">
+                <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
                     <Button Text="←" Command="{Binding PreviousMonthCommand}" Style="{StaticResource IconButtonStyle}" WidthRequest="44" HeightRequest="44" />
-                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Fill">
-                        <Label Text="{Binding CurrentMonth, StringFormat='{0:MMMM yyyy}'}" Style="{StaticResource MonthLabelStyle}" HorizontalOptions="Center" />
-                    </VerticalStackLayout>
+                    <Label Text="{Binding CurrentMonth, StringFormat='{0:MMMM yyyy}'}" Style="{StaticResource MonthLabelStyle}" VerticalOptions="Center" HorizontalOptions="Fill" HorizontalTextAlignment="Center" />
                     <Button Text="Today" Command="{Binding CurrentMonthCommand}" Style="{StaticResource OutlineButtonStyle}" WidthRequest="80" HeightRequest="44" />
                     <Button Text="→" Command="{Binding NextMonthCommand}" Style="{StaticResource IconButtonStyle}" WidthRequest="44" HeightRequest="44" />
                 </HorizontalStackLayout>
@@ -38,52 +42,56 @@
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>
-                                    <SwipeItem Text="Edit" 
-                                               Background="#512BD4"
+                                    <SwipeItem Text="Edit"
+                                               Background="#0E6B4F"
                                                Command="{Binding Source={x:Reference BudgetsPageView}, Path=BindingContext.EditBudgetCommand}"
                                                CommandParameter="{Binding .}" />
-                                    <SwipeItem Text="Delete" 
+                                    <SwipeItem Text="Delete"
                                                Background="Red"
                                                Command="{Binding Source={x:Reference BudgetsPageView}, Path=BindingContext.DeleteBudgetCommand}"
                                                CommandParameter="{Binding .}" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            <Border Style="{StaticResource BudgetCardFrameStyle}" Margin="0,8">
-                                <VerticalStackLayout Spacing="12">
-                                    <HorizontalStackLayout Spacing="12">
-                                        <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                               Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
-                                               HasShadow="False" BorderColor="Transparent">
-                                            <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
+                            <Border Style="{StaticResource BudgetCardFrameStyle}" Margin="0,4">
+                                <VerticalStackLayout Spacing="10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
+                                        <Border Grid.Column="0" WidthRequest="48" HeightRequest="48"
+                                                Background="{Binding Color, Converter={StaticResource ColorConverter}}"
+                                                StrokeThickness="0"
+                                                VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <Ellipse />
+                                            </Border.StrokeShape>
+                                            <Label Text="{Binding Icon}" TargetNullValue="🎯" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
                                         </Border>
-                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
-                                            <Label Text="{Binding CategoryName}" Style="{StaticResource BudgetCategoryNameLabelStyle}" />
-                                            <ProgressBar Progress="{Binding PercentageUsed, Converter={StaticResource PercentageConverter}}" 
+                                        <VerticalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                            <Label Text="{Binding Name}" Style="{StaticResource BudgetCategoryNameLabelStyle}" />
+                                            <ProgressBar Progress="{Binding PercentageUsed, Converter={StaticResource PercentageConverter}}"
                                                          ProgressColor="{Binding PercentageUsed, Converter={StaticResource PercentageColorConverter}}" HeightRequest="8" />
                                         </VerticalStackLayout>
-                                        <Label Text="{Binding PercentageUsed, StringFormat='{0:F1}%'}" 
+                                        <Label Grid.Column="2" Text="{Binding PercentageUsed, StringFormat='{0:F1}%'}"
                                                Style="{StaticResource BudgetPercentageLabelStyle}"
-                                               TextColor="{Binding PercentageUsed, Converter={StaticResource PercentageColorConverter}}" />
-                                    </HorizontalStackLayout>
-                                    <HorizontalStackLayout Spacing="16">
+                                               TextColor="{Binding PercentageUsed, Converter={StaticResource PercentageColorConverter}}"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
                                         <VerticalStackLayout Spacing="2">
                                             <Label Text="Spent" Style="{StaticResource BudgetDetailCaptionStyle}" />
-                                            <Label Text="{Binding SpentAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetDetailValueStyle}" TextColor="Red" />
+                                            <Label Text="{Binding SpentAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetDetailValueStyle}" TextColor="{StaticResource Error}" />
                                         </VerticalStackLayout>
-                                        <VerticalStackLayout Spacing="2">
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2">
                                             <Label Text="Remaining" Style="{StaticResource BudgetDetailCaptionStyle}" />
-                                            <Label Text="{Binding RemainingAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetDetailValueStyle}" 
-                                                   TextColor="{Binding RemainingAmount.Amount, Converter={StaticResource MoneyToStringConverter}, ConverterParameter=color}" />
+                                            <Label Text="{Binding RemainingAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetDetailValueStyle}" TextColor="{StaticResource Success}" />
                                         </VerticalStackLayout>
-                                        <VerticalStackLayout Spacing="2">
+                                        <VerticalStackLayout Grid.Column="2" Spacing="2">
                                             <Label Text="Budget" Style="{StaticResource BudgetDetailCaptionStyle}" />
                                             <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetDetailValueStyle}" />
                                         </VerticalStackLayout>
-                                    </HorizontalStackLayout>
-                                    <Label Text="{Binding IsOverBudget, Converter={StaticResource BoolToStringConverter}, ConverterParameter='⚠ Over Budget|'}" 
+                                    </Grid>
+                                    <Label Text="{Binding IsOverBudget, Converter={StaticResource BoolToStringConverter}, ConverterParameter='⚠ Over Budget|'}"
                                            Style="{StaticResource OverBudgetLabelStyle}"
                                            IsVisible="{Binding IsOverBudget}"
-                                           TextColor="Red" />
+                                           TextColor="{StaticResource Error}" />
                                 </VerticalStackLayout>
                             </Border>
                         </SwipeView>
@@ -91,7 +99,7 @@
                 </CollectionView.ItemTemplate>
                 <CollectionView.EmptyView>
                     <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20">
-                        <Label Text="📊" FontSize="48" />
+                        <Label Text="🎯" FontSize="48" HorizontalOptions="Center" />
                         <Label Text="No budgets for this month" Style="{StaticResource EmptyStateLabelStyle}" />
                         <Label Text="Create a budget to track your spending" Style="{StaticResource EmptyStateSubLabelStyle}" />
                     </VerticalStackLayout>
@@ -99,15 +107,10 @@
             </CollectionView>
 
             <!-- Add Budget Button -->
-            <Button Text="Add Budget" Command="{Binding AddBudgetCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="16,0,16,16" />
+            <Button Text="Add Budget"
+                    Command="{Binding AddBudgetCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    TextColor="White" />
         </VerticalStackLayout>
     </RefreshView>
-
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Command="{Binding AddBudgetCommand}" Priority="0">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource Glyph="+" FontFamily="OpenSansRegular" Size="20" Color="White" />
-            </ToolbarItem.IconImageSource>
-        </ToolbarItem>
-    </ContentPage.ToolbarItems>
 </ContentPage>

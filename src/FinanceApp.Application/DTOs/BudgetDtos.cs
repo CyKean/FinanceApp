@@ -16,6 +16,8 @@ public record BudgetDto(
     string CategoryName,
     string CategoryIcon,
     string CategoryColor,
+    string? Icon,
+    string? Color,
     bool IsOverBudget,
     bool IsNearLimit,
     SyncStatus SyncStatus,
@@ -30,7 +32,9 @@ public record CreateBudgetDto(
     Money Amount,
     DateTime StartDate,
     DateTime EndDate,
-    CategoryId CategoryId
+    CategoryId CategoryId,
+    string? Icon = null,
+    string? Color = null
 );
 
 public record UpdateBudgetDto(
@@ -38,5 +42,7 @@ public record UpdateBudgetDto(
     Money? Amount = null,
     DateTime? StartDate = null,
     DateTime? EndDate = null,
-    CategoryId? CategoryId = null
+    CategoryId? CategoryId = null,
+    string? Icon = null,
+    string? Color = null
 );

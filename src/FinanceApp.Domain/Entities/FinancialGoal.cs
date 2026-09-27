@@ -190,10 +190,18 @@ public class FinancialGoal : Entity
     }
 
     public void Cancel()
+      {
+          Status = GoalStatus.Cancelled;
+          UpdateTimestamp();
+          MarkAsPendingUpdate();
+      }
+
+    /// <summary>
+    /// Sets status directly from a synced snapshot (pull-merge only).
+    /// </summary>
+    public void SetStatus(GoalStatus status)
     {
-        Status = GoalStatus.Cancelled;
-        UpdateTimestamp();
-        MarkAsPendingUpdate();
+        Status = status;
     }
 
     public Money GetRemainingAmount()

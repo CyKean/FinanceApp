@@ -56,13 +56,15 @@ public class BudgetService : BaseService, IBudgetService
         if (existingBudget != null)
             throw new DomainExceptions.ValidationException("An active budget already exists for this category in the selected period", "BUDGET_EXISTS");
 
-        var budget = new Budget(
-            dto.Name,
-            dto.Amount,
-            dto.StartDate,
-            dto.EndDate,
-            dto.CategoryId,
-            userId);
+            var budget = new Budget(
+                dto.Name,
+                dto.Amount,
+                dto.StartDate,
+                dto.EndDate,
+                dto.CategoryId,
+                userId,
+                dto.Icon,
+                dto.Color);
 
         await CalculateAndSetSpentAmount(budget, cancellationToken);
 
@@ -88,6 +90,12 @@ public class BudgetService : BaseService, IBudgetService
 
         if (dto.Amount != null)
             budget.UpdateAmount(dto.Amount);
+
+        if (dto.Icon != null)
+            budget.UpdateIcon(dto.Icon);
+
+        if (dto.Color != null)
+            budget.UpdateColor(dto.Color);
 
         if (dto.StartDate.HasValue || dto.EndDate.HasValue)
         {

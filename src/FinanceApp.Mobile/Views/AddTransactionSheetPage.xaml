@@ -121,17 +121,17 @@
                                         SelectedItem="{Binding NewAccountType}"
                                         BackgroundColor="Transparent"
                                         HeightRequest="48" />
-                                <HorizontalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                                     <Button Text="Add"
                                             Command="{Binding SaveNewAccountCommand}"
                                             Style="{StaticResource PrimaryButtonStyle}"
                                             TextColor="White"
                                             HorizontalOptions="Fill" />
-                                    <Button Text="Cancel"
+                                    <Button Grid.Column="1" Text="Cancel"
                                             Command="{Binding CancelAddAccountCommand}"
                                             Style="{StaticResource OutlineButtonStyle}"
                                             HorizontalOptions="Fill" />
-                                </HorizontalStackLayout>
+                                </Grid>
                             </VerticalStackLayout>
                         </Border>
                     </VerticalStackLayout>
@@ -162,17 +162,17 @@
                                        BackgroundColor="Transparent"
                                        TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
                                        HeightRequest="48" />
-                                <HorizontalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                                     <Button Text="Add"
                                             Command="{Binding SaveNewCategoryCommand}"
                                             Style="{StaticResource PrimaryButtonStyle}"
                                             TextColor="White"
                                             HorizontalOptions="Fill" />
-                                    <Button Text="Cancel"
+                                    <Button Grid.Column="1" Text="Cancel"
                                             Command="{Binding CancelAddCategoryCommand}"
                                             Style="{StaticResource OutlineButtonStyle}"
                                             HorizontalOptions="Fill" />
-                                </HorizontalStackLayout>
+                                </Grid>
                             </VerticalStackLayout>
                         </Border>
                     </VerticalStackLayout>

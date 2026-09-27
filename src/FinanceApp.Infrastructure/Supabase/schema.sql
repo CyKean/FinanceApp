@@ -67,7 +67,9 @@ create table if not exists budgets (
     start_date date not null,
     end_date date not null,
     category_id uuid not null,
-    user_id uuid not null
+    user_id uuid not null,
+    icon text,
+    color text
 );
 
 create table if not exists recurring_transactions (

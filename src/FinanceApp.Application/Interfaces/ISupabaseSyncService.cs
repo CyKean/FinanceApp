@@ -13,4 +13,10 @@ public interface ISupabaseSyncService
     Task SyncRecurringTransactionAsync(RecurringTransaction entity, SyncOperationType operationType, CancellationToken cancellationToken = default);
     Task SyncFinancialGoalAsync(FinancialGoal entity, SyncOperationType operationType, CancellationToken cancellationToken = default);
     Task SyncSyncOperationAsync(SyncOperation entity, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Downloads server rows and merges them into SQLite (last-write-wins).
+    /// Returns the number of rows applied locally.
+    /// </summary>
+    Task<int> PullAsync(Guid userId, CancellationToken cancellationToken = default);
 }
