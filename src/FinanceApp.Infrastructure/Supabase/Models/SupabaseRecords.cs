@@ -196,6 +196,9 @@ public class BudgetRecord : PostgrestModels.BaseModel
 
     [PostgrestAttributes.Column("color")]
     public string? Color { get; set; }
+
+    [PostgrestAttributes.Column("linked_account_id")]
+    public Guid? LinkedAccountId { get; set; }
 }
 
 [PostgrestAttributes.Table("recurring_transactions")]

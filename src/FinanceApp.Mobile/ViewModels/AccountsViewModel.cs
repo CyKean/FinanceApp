@@ -68,13 +68,13 @@ public partial class AccountsViewModel : BaseViewModel
     [RelayCommand]
     private async Task AddAccountAsync()
     {
-        await _navigationService.NavigateToAsync("///AddAccount");
+        await _navigationService.NavigateToAsync("//AddAccount");
     }
 
     [RelayCommand]
     private async Task EditAccountAsync(AccountDto account)
     {
-        await _navigationService.NavigateToAsync($"///EditAccount?id={account.Id}");
+        await _navigationService.NavigateToAsync($"//EditAccount?id={account.Id}");
     }
 
     [RelayCommand]

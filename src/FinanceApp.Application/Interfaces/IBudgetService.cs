@@ -13,5 +13,6 @@ public interface IBudgetService
     Task<IReadOnlyList<BudgetDto>> GetActiveAsync(Guid userId, DateTime asOfDate, CancellationToken cancellationToken = default);
     Task<BudgetDto?> GetActiveForCategoryAsync(Guid userId, CategoryId categoryId, DateTime asOfDate, CancellationToken cancellationToken = default);
     Task AddSpendingAsync(Guid budgetId, Money amount, Guid userId, CancellationToken cancellationToken = default);
+    Task RecalculateSpentAsync(Guid budgetId, Guid userId, CancellationToken cancellationToken = default);
     Task RemoveSpendingAsync(Guid budgetId, Money amount, Guid userId, CancellationToken cancellationToken = default);
 }

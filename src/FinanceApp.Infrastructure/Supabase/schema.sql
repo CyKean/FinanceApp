@@ -69,7 +69,8 @@ create table if not exists budgets (
     category_id uuid not null,
     user_id uuid not null,
     icon text,
-    color text
+    color text,
+    linked_account_id uuid
 );
 
 create table if not exists recurring_transactions (

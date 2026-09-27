@@ -62,6 +62,7 @@ public static class DatabaseInitializer
 
             EnsureColumn(connection, "Budgets", "Icon", "TEXT");
             EnsureColumn(connection, "Budgets", "Color", "TEXT");
+            EnsureColumn(connection, "Budgets", "LinkedAccountId", "TEXT");
         }
         finally
         {

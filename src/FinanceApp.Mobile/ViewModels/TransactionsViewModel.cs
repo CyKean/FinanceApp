@@ -16,6 +16,7 @@ public partial class TransactionsViewModel : BaseViewModel
     private readonly IAccountService _accountService;
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
+    private readonly TransactionSheetRequest _sheetRequest;
     private readonly IDialogService _dialogService;
     private readonly ILogger<TransactionsViewModel> _logger;
 
@@ -39,16 +40,18 @@ public partial class TransactionsViewModel : BaseViewModel
         ICategoryService categoryService,
         IAccountService accountService,
         IAuthenticationService authService,
-        INavigationService navigationService,
-        IDialogService dialogService,
-        ILogger<TransactionsViewModel> logger)
+          INavigationService navigationService,
+          TransactionSheetRequest sheetRequest,
+          IDialogService dialogService,
+          ILogger<TransactionsViewModel> logger)
     {
         _transactionService = transactionService;
         _categoryService = categoryService;
         _accountService = accountService;
         _authService = authService;
-        _navigationService = navigationService;
-        _dialogService = dialogService;
+          _navigationService = navigationService;
+          _sheetRequest = sheetRequest;
+          _dialogService = dialogService;
         _logger = logger;
         Title = "Transactions";
     }
@@ -112,29 +115,35 @@ public partial class TransactionsViewModel : BaseViewModel
     [RelayCommand]
     private async Task AddExpenseAsync()
     {
-        await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Expense");
+        await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Expense");
     }
 
     [RelayCommand]
     private async Task AddIncomeAsync()
     {
-        await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Income");
+        await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Income");
     }
 
     [RelayCommand]
     private async Task AddTransactionAsync()
     {
-        var choice = await _dialogService.ShowActionSheetAsync("Add Transaction", "Cancel", null, "Expense", "Income");
-        if (choice == "Expense")
-            await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Expense");
-        else if (choice == "Income")
-            await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Income");
+          var choice = await _dialogService.ShowActionSheetAsync("Add Transaction", "Cancel", null, "Expense", "Income");
+          if (choice == "Expense")
+          {
+              _sheetRequest.Request(TransactionType.Expense);
+              await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Expense");
+          }
+          else if (choice == "Income")
+          {
+              _sheetRequest.Request(TransactionType.Income);
+              await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Income");
+          }
     }
 
     [RelayCommand]
     private async Task EditTransactionAsync(TransactionDto transaction)
     {
-        await _navigationService.NavigateToAsync($"///EditTransaction?id={transaction.Id}&type={transaction.Type}");
+        await _navigationService.NavigateToAsync($"//EditTransaction?id={transaction.Id}&type={transaction.Type}");
     }
 
     [RelayCommand]

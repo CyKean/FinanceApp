@@ -2,6 +2,7 @@ namespace FinanceApp.Mobile.ViewModels;
 
 using FinanceApp.Application.DTOs;
 using FinanceApp.Application.Interfaces;
+using FinanceApp.Domain.Enums;
 using FinanceApp.Domain.ValueObjects;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,6 +14,7 @@ public partial class DashboardViewModel : BaseViewModel
     private readonly IDashboardService _dashboardService;
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
+    private readonly TransactionSheetRequest _sheetRequest;
     private readonly ILogger<DashboardViewModel> _logger;
 
     [ObservableProperty]
@@ -49,11 +51,13 @@ public partial class DashboardViewModel : BaseViewModel
         IDashboardService dashboardService,
         IAuthenticationService authService,
         INavigationService navigationService,
+        TransactionSheetRequest sheetRequest,
         ILogger<DashboardViewModel> logger)
     {
         _dashboardService = dashboardService;
         _authService = authService;
         _navigationService = navigationService;
+        _sheetRequest = sheetRequest;
         _logger = logger;
         Title = "Dashboard";
     }
@@ -107,13 +111,15 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task NavigateToAddExpenseAsync()
     {
-        await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Expense");
+        _sheetRequest.Request(TransactionType.Expense);
+        await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Expense");
     }
 
     [RelayCommand]
     private async Task NavigateToAddIncomeAsync()
     {
-        await _navigationService.NavigateToAsync("///AddTransactionSheet?type=Income");
+        _sheetRequest.Request(TransactionType.Income);
+        await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Income");
     }
 
     [RelayCommand]

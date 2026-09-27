@@ -11,6 +11,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:TransactionTypeToButtonStyleConverter x:Key="TransactionTypeToButtonStyleConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -47,6 +48,18 @@
                            HorizontalTextAlignment="End" />
                 </Border>
             </VerticalStackLayout>
+
+            <!-- Budget Type -->
+            <HorizontalStackLayout Spacing="12">
+                <Button Text="Expense"
+                        Command="{Binding SetExpenseTypeCommand}"
+                        Style="{Binding TransactionType, Converter={StaticResource TransactionTypeToButtonStyleConverter}, ConverterParameter=Expense}"
+                        HorizontalOptions="Fill" />
+                <Button Text="Income"
+                        Command="{Binding SetIncomeTypeCommand}"
+                        Style="{Binding TransactionType, Converter={StaticResource TransactionTypeToButtonStyleConverter}, ConverterParameter=Income}"
+                        HorizontalOptions="Fill" />
+            </HorizontalStackLayout>
 
             <!-- Category -->
             <VerticalStackLayout Spacing="6">
@@ -87,6 +100,20 @@
                                     HorizontalOptions="Fill" />
                         </Grid>
                     </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Linked Account (Optional) -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Account (Optional)" Style="{StaticResource FormLabelStyle}" />
+                <Border Style="{StaticResource FieldBorderStyle}">
+                    <Picker Title="All accounts"
+                            ItemsSource="{Binding Accounts}"
+                            ItemDisplayBinding="{Binding Name}"
+                            SelectedItem="{Binding SelectedAccount}"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                            HeightRequest="48" />
                 </Border>
             </VerticalStackLayout>
 

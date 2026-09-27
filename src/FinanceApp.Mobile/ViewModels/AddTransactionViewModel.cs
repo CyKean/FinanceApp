@@ -18,6 +18,7 @@ public partial class AddTransactionViewModel : BaseViewModel
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly TransactionSheetRequest _sheetRequest;
     private readonly ILogger<AddTransactionViewModel> _logger;
 
     [ObservableProperty]
@@ -93,6 +94,7 @@ public partial class AddTransactionViewModel : BaseViewModel
         IAuthenticationService authService,
         INavigationService navigationService,
         IDialogService dialogService,
+        TransactionSheetRequest sheetRequest,
         ILogger<AddTransactionViewModel> logger)
     {
         _transactionService = transactionService;
@@ -101,11 +103,17 @@ public partial class AddTransactionViewModel : BaseViewModel
         _authService = authService;
         _navigationService = navigationService;
         _dialogService = dialogService;
+        _sheetRequest = sheetRequest;
         _logger = logger;
     }
 
     public async Task InitializeAsync(TransactionType type, Guid? transactionId = null)
     {
+        // The explicit in-app request wins over the URI query, which Shell
+        // does not reliably deliver to reused pages.
+        if (_sheetRequest.TryTake(out var requested))
+            type = requested;
+
         TransactionType = type;
         Title = type == TransactionType.Expense ? "Add Expense" : "Add Income";
         IsEditing = transactionId.HasValue;

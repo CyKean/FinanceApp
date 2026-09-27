@@ -138,6 +138,7 @@ public class FinanceAppDbContext : DbContext
             entity.Property(e => e.CategoryId).HasConversion(v => v.Value, v => v == Guid.Empty ? default : new CategoryId(v)).IsRequired();
             entity.Property(e => e.Icon).HasMaxLength(50);
             entity.Property(e => e.Color).HasMaxLength(7);
+            entity.Property(e => e.LinkedAccountId).HasConversion(v => v == null ? (Guid?)null : v.Value.Value, v => v == null || v.Value == Guid.Empty ? (AccountId?)null : new AccountId(v.Value));
             entity.Property(e => e.UserId).IsRequired();
             entity.Property(e => e.SyncStatus).HasConversion<int>().HasDefaultValue(SyncStatus.PendingCreate);
             entity.Property(e => e.LastSyncedAt);

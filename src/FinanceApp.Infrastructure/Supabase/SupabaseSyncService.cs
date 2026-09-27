@@ -181,7 +181,8 @@ public class SupabaseSyncService : ISupabaseSyncService
                 CategoryId = entity.CategoryId,
                 UserId = entity.UserId,
                 Icon = entity.Icon,
-                Color = entity.Color
+                Color = entity.Color,
+                LinkedAccountId = entity.LinkedAccountId?.Value
             });
         }
 
@@ -516,6 +517,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                     created.SetSpentAmount(new Money(record.SpentAmount, record.Currency));
                     created.UpdateIcon(record.Icon);
                     created.UpdateColor(record.Color);
+                    created.UpdateLinkedAccount(record.LinkedAccountId.HasValue ? new AccountId(record.LinkedAccountId.Value) : null);
                     created.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
                     merged++;
                 }
@@ -536,6 +538,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                         local.UpdateCategory(new CategoryId(record.CategoryId));
                         local.UpdateIcon(record.Icon);
                         local.UpdateColor(record.Color);
+                        local.UpdateLinkedAccount(record.LinkedAccountId.HasValue ? new AccountId(record.LinkedAccountId.Value) : null);
                         local.SetSpentAmount(new Money(record.SpentAmount, record.Currency));
                         local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, false);
                         await _unitOfWork.Budgets.UpdateAsync(local, ct);

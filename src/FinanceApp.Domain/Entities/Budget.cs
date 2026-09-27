@@ -13,6 +13,7 @@ public class Budget : Entity
     public DateTime EndDate { get; private set; }
     public CategoryId CategoryId { get; private set; }
     public Guid UserId { get; private set; }
+    public AccountId? LinkedAccountId { get; private set; }
     public string? Icon { get; private set; }
     public string? Color { get; private set; }
     public SyncStatus SyncStatus { get; private set; }
@@ -28,7 +29,8 @@ public class Budget : Entity
         CategoryId categoryId,
         Guid userId,
         string? icon = null,
-        string? color = null) : base()
+        string? color = null,
+        AccountId? linkedAccountId = null) : base()
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Budget name cannot be empty", nameof(name));
@@ -57,6 +59,7 @@ public class Budget : Entity
         UserId = userId;
         Icon = icon?.Trim();
         Color = color?.Trim();
+        LinkedAccountId = linkedAccountId;
         SyncStatus = SyncStatus.PendingCreate;
     }
 
@@ -80,6 +83,13 @@ public class Budget : Entity
     public void UpdateColor(string? color)
     {
         Color = color?.Trim();
+        UpdateTimestamp();
+        MarkAsPendingUpdate();
+    }
+
+    public void UpdateLinkedAccount(AccountId? accountId)
+    {
+        LinkedAccountId = accountId;
         UpdateTimestamp();
         MarkAsPendingUpdate();
     }

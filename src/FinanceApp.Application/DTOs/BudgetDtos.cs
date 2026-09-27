@@ -24,7 +24,8 @@ public record BudgetDto(
     DateTime? LastSyncedAt,
     DateTime CreatedAt,
     DateTime UpdatedAt,
-    bool IsDeleted
+    bool IsDeleted,
+    Guid? LinkedAccountId
 );
 
 public record CreateBudgetDto(
@@ -34,7 +35,8 @@ public record CreateBudgetDto(
     DateTime EndDate,
     CategoryId CategoryId,
     string? Icon = null,
-    string? Color = null
+    string? Color = null,
+    AccountId? LinkedAccountId = null
 );
 
 public record UpdateBudgetDto(
@@ -44,5 +46,6 @@ public record UpdateBudgetDto(
     DateTime? EndDate = null,
     CategoryId? CategoryId = null,
     string? Icon = null,
-    string? Color = null
+    string? Color = null,
+    AccountId? LinkedAccountId = null
 );

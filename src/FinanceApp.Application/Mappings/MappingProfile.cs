@@ -89,7 +89,8 @@ public static class MappingExtensions
             entity.LastSyncedAt,
             entity.CreatedAt,
             entity.UpdatedAt,
-            entity.IsDeleted
+            entity.IsDeleted,
+            entity.LinkedAccountId?.Value
         );
     }
 

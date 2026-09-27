@@ -16,6 +16,7 @@ public class BudgetService : BaseService, IBudgetService
 {
     private readonly IBudgetRepository _budgetRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
     private readonly INotificationService _notificationService;
     private readonly CreateBudgetDtoValidator _createValidator;
@@ -25,6 +26,7 @@ public class BudgetService : BaseService, IBudgetService
         IUnitOfWork unitOfWork,
         IBudgetRepository budgetRepository,
         ICategoryRepository categoryRepository,
+        IAccountRepository accountRepository,
         ITransactionRepository transactionRepository,
         INotificationService notificationService,
         CreateBudgetDtoValidator createValidator,
@@ -33,6 +35,7 @@ public class BudgetService : BaseService, IBudgetService
     {
         _budgetRepository = budgetRepository;
         _categoryRepository = categoryRepository;
+        _accountRepository = accountRepository;
         _transactionRepository = transactionRepository;
         _notificationService = notificationService;
         _createValidator = createValidator;
@@ -49,12 +52,16 @@ public class BudgetService : BaseService, IBudgetService
         if (category.UserId != userId)
             throw new DomainExceptions.NotFoundException("Category", dto.CategoryId.Value);
 
-        if (category.Type != CategoryType.Expense)
-            throw new DomainExceptions.ValidationException("Budgets can only be created for expense categories", "INVALID_CATEGORY_TYPE");
-
         var existingBudget = await _budgetRepository.GetActiveForCategoryAsync(userId, dto.CategoryId, dto.StartDate, cancellationToken);
         if (existingBudget != null)
             throw new DomainExceptions.ValidationException("An active budget already exists for this category in the selected period", "BUDGET_EXISTS");
+
+        if (dto.LinkedAccountId.HasValue)
+        {
+            var linkedAccount = await _accountRepository.GetByIdAsync(dto.LinkedAccountId.Value.Value, cancellationToken);
+            if (linkedAccount == null || linkedAccount.UserId != userId)
+                throw new DomainExceptions.NotFoundException("Account", dto.LinkedAccountId.Value.Value);
+        }
 
             var budget = new Budget(
                 dto.Name,
@@ -64,7 +71,8 @@ public class BudgetService : BaseService, IBudgetService
                 dto.CategoryId,
                 userId,
                 dto.Icon,
-                dto.Color);
+                dto.Color,
+                dto.LinkedAccountId);
 
         await CalculateAndSetSpentAmount(budget, cancellationToken);
 
@@ -97,6 +105,15 @@ public class BudgetService : BaseService, IBudgetService
         if (dto.Color != null)
             budget.UpdateColor(dto.Color);
 
+        if (dto.LinkedAccountId.HasValue)
+        {
+            var linkedAccount = await _accountRepository.GetByIdAsync(dto.LinkedAccountId.Value.Value, cancellationToken);
+            if (linkedAccount == null || linkedAccount.UserId != userId)
+                throw new DomainExceptions.NotFoundException("Account", dto.LinkedAccountId.Value.Value);
+
+            budget.UpdateLinkedAccount(dto.LinkedAccountId.Value);
+        }
+
         if (dto.StartDate.HasValue || dto.EndDate.HasValue)
         {
             var startDate = dto.StartDate ?? budget.StartDate;
@@ -108,14 +125,10 @@ public class BudgetService : BaseService, IBudgetService
         {
             var newCategory = await _categoryRepository.GetByIdAsync(dto.CategoryId.Value.Value, cancellationToken)
                 ?? throw new DomainExceptions.NotFoundException("Category", dto.CategoryId.Value.Value);
+              if (newCategory.UserId != userId)
+                  throw new DomainExceptions.NotFoundException("Category", dto.CategoryId.Value.Value);
 
-            if (newCategory.UserId != userId)
-                throw new DomainExceptions.NotFoundException("Category", dto.CategoryId.Value.Value);
-
-            if (newCategory.Type != CategoryType.Expense)
-                throw new DomainExceptions.ValidationException("Budgets can only be created for expense categories", "INVALID_CATEGORY_TYPE");
-
-            budget.UpdateCategory(dto.CategoryId.Value);
+              budget.UpdateCategory(dto.CategoryId.Value);
         }
 
         await CalculateAndSetSpentAmount(budget, cancellationToken);
@@ -248,6 +261,20 @@ public class BudgetService : BaseService, IBudgetService
             throw new DomainExceptions.NotFoundException("Budget", budgetId);
 
         budget.RemoveSpending(amount);
+        budget.MarkAsPendingUpdate();
+        await _budgetRepository.UpdateAsync(budget, cancellationToken);
+        await UnitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task RecalculateSpentAsync(Guid budgetId, Guid userId, CancellationToken cancellationToken = default)
+    {
+        var budget = await _budgetRepository.GetByIdAsync(budgetId, cancellationToken)
+            ?? throw new DomainExceptions.NotFoundException("Budget", budgetId);
+
+        if (budget.UserId != userId)
+            throw new DomainExceptions.NotFoundException("Budget", budgetId);
+
+        await CalculateAndSetSpentAmount(budget, cancellationToken);
         budget.MarkAsPendingUpdate();
         await _budgetRepository.UpdateAsync(budget, cancellationToken);
         await UnitOfWork.SaveChangesAsync(cancellationToken);

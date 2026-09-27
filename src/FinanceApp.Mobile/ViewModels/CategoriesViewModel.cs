@@ -71,13 +71,13 @@ public partial class CategoriesViewModel : BaseViewModel
     [RelayCommand]
     private async Task AddCategoryAsync()
     {
-        await _navigationService.NavigateToAsync($"///AddCategory?type={SelectedTab}");
+        await _navigationService.NavigateToAsync($"//AddCategory?type={SelectedTab}");
     }
 
     [RelayCommand]
     private async Task EditCategoryAsync(CategoryDto category)
     {
-        await _navigationService.NavigateToAsync($"///EditCategory?id={category.Id}");
+        await _navigationService.NavigateToAsync($"//EditCategory?id={category.Id}");
     }
 
     [RelayCommand]

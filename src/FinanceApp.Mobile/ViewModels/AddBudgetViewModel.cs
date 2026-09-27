@@ -13,6 +13,7 @@ public partial class AddBudgetViewModel : BaseViewModel
 {
     private readonly IBudgetService _budgetService;
     private readonly ICategoryService _categoryService;
+    private readonly IAccountService _accountService;
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
@@ -32,6 +33,15 @@ public partial class AddBudgetViewModel : BaseViewModel
 
     [ObservableProperty]
     private DateTime _endDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(1).AddDays(-1);
+
+    [ObservableProperty]
+    private TransactionType _transactionType = TransactionType.Expense;
+
+    [ObservableProperty]
+    private AccountDto? _selectedAccount;
+
+    [ObservableProperty]
+    private IReadOnlyList<AccountDto> _accounts = Array.Empty<AccountDto>();
 
     [ObservableProperty]
     private CategoryDto? _selectedCategory;
@@ -64,6 +74,7 @@ public partial class AddBudgetViewModel : BaseViewModel
     public AddBudgetViewModel(
         IBudgetService budgetService,
         ICategoryService categoryService,
+        IAccountService accountService,
         IAuthenticationService authService,
         INavigationService navigationService,
         IDialogService dialogService,
@@ -71,6 +82,7 @@ public partial class AddBudgetViewModel : BaseViewModel
     {
         _budgetService = budgetService;
         _categoryService = categoryService;
+        _accountService = accountService;
         _authService = authService;
         _navigationService = navigationService;
         _dialogService = dialogService;
@@ -86,6 +98,7 @@ public partial class AddBudgetViewModel : BaseViewModel
         NewCategoryName = string.Empty;
 
         await LoadCategoriesAsync();
+        await LoadAccountsAsync();
 
         if (IsEditing && budgetId.HasValue)
         {
@@ -93,12 +106,51 @@ public partial class AddBudgetViewModel : BaseViewModel
         }
     }
 
+    private async Task LoadAccountsAsync()
+    {
+        var userId = await _authService.GetCurrentUserIdAsync();
+        if (!userId.HasValue) return;
+
+        Accounts = await _accountService.GetAllAsync(userId.Value);
+    }
+
     private async Task LoadCategoriesAsync()
     {
         var userId = await _authService.GetCurrentUserIdAsync();
         if (!userId.HasValue) return;
 
-        Categories = await _categoryService.GetActiveByTypeAsync(userId.Value, CategoryType.Expense);
+        var categoryType = TransactionType == TransactionType.Income ? CategoryType.Income : CategoryType.Expense;
+        Categories = await _categoryService.GetActiveByTypeAsync(userId.Value, categoryType);
+    }
+
+    partial void OnTransactionTypeChanged(TransactionType value)
+    {
+        SelectedCategory = null;
+        _ = ReloadCategoriesForTypeAsync();
+    }
+
+    private async Task ReloadCategoriesForTypeAsync()
+    {
+        try
+        {
+            await LoadCategoriesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not reload categories for type {Type}", TransactionType);
+        }
+    }
+
+    [RelayCommand]
+    private void SetExpenseType()
+    {
+        TransactionType = TransactionType.Expense;
+    }
+
+    [RelayCommand]
+    private void SetIncomeType()
+    {
+        TransactionType = TransactionType.Income;
     }
 
     private async Task LoadBudgetAsync(Guid budgetId)
@@ -117,6 +169,11 @@ public partial class AddBudgetViewModel : BaseViewModel
         StartDate = budget.StartDate;
         EndDate = budget.EndDate;
         SelectedCategory = Categories.FirstOrDefault(c => c.Id == budget.CategoryId.Value);
+        if (SelectedCategory != null)
+            TransactionType = SelectedCategory.Type == CategoryType.Income ? TransactionType.Income : TransactionType.Expense;
+        SelectedAccount = budget.LinkedAccountId.HasValue
+            ? Accounts.FirstOrDefault(a => a.Id == budget.LinkedAccountId.Value)
+            : null;
     }
 
     [RelayCommand]
@@ -147,7 +204,8 @@ public partial class AddBudgetViewModel : BaseViewModel
                     EndDate,
                     SelectedCategory != null ? new CategoryId(SelectedCategory.Id) : null,
                     Icon,
-                    Color);
+                    Color,
+                    SelectedAccount != null ? new AccountId(SelectedAccount.Id) : null);
 
                 await _budgetService.UpdateAsync(EditingBudgetId.Value, updateDto, userId.Value);
                 await _dialogService.ShowToastAsync("Budget updated");
@@ -161,7 +219,8 @@ public partial class AddBudgetViewModel : BaseViewModel
                     EndDate,
                     new CategoryId(SelectedCategory!.Id),
                     Icon,
-                    Color);
+                    Color,
+                    SelectedAccount != null ? new AccountId(SelectedAccount.Id) : null);
 
                 await _budgetService.CreateAsync(createDto, userId.Value);
                 await _dialogService.ShowToastAsync("Budget created");

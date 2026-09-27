@@ -47,22 +47,11 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="14" />
                         </Border.StrokeShape>
-                        <HorizontalStackLayout VerticalOptions="Center">
-                            <Label Text="{Binding Title}"
-                                   FontSize="18"
-                                   FontAttributes="Bold"
-                                   TextColor="White"
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="Fill" />
-                            <Button Text="✕"
-                                    Command="{Binding CancelCommand}"
-                                    BackgroundColor="Transparent"
-                                    TextColor="White"
-                                    FontSize="16"
-                                    HeightRequest="40"
-                                    WidthRequest="40"
-                                    VerticalOptions="Center" />
-                        </HorizontalStackLayout>
+                        <Label Text="{Binding Title}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               VerticalOptions="Center" />
                     </Border>
 
                     <Label Text="{Binding ErrorMessage}"
@@ -196,6 +185,11 @@
                             Style="{StaticResource PrimaryButtonStyle}"
                             BackgroundColor="{Binding TransactionType, Converter={StaticResource TransactionTypeToColorConverter}}"
                             TextColor="White" />
+
+                    <!-- Cancel -->
+                    <Button Text="Cancel"
+                            Command="{Binding CancelCommand}"
+                            Style="{StaticResource OutlineButtonStyle}" />
                 </VerticalStackLayout>
             </ScrollView>
         </Border>

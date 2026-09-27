@@ -113,6 +113,7 @@ public class TransactionService : BaseService, ITransactionService
 
             var oldAmount = transaction.Amount;
             var oldType = transaction.Type;
+            var oldDate = transaction.Date;
             var oldAccountId = transaction.AccountId;
             var oldCategoryId = transaction.CategoryId;
 
@@ -158,6 +159,13 @@ public class TransactionService : BaseService, ITransactionService
 
             await UnitOfWork.SaveChangesAsync(cancellationToken);
 
+            // Keep budget spending accurate when an expense moves or changes size.
+            if (oldType == TransactionType.Expense)
+                await RefreshBudgetSpendingAsync(userId, oldCategoryId, oldDate, cancellationToken);
+            if (transaction.Type == TransactionType.Expense &&
+                (transaction.CategoryId != oldCategoryId || transaction.Date != oldDate))
+                await RefreshBudgetSpendingAsync(userId, transaction.CategoryId, transaction.Date, cancellationToken);
+
             var account = await _accountRepository.GetByIdAsync(transaction.AccountId.Value, cancellationToken);
             var cat = await _categoryRepository.GetByIdAsync(transaction.CategoryId.Value, cancellationToken);
 
@@ -196,6 +204,10 @@ public class TransactionService : BaseService, ITransactionService
             await _transactionRepository.UpdateAsync(transaction, cancellationToken);
 
             await UnitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Deleting an expense frees its budget back up.
+            if (transaction.Type == TransactionType.Expense)
+                await RefreshBudgetSpendingAsync(userId, transaction.CategoryId, transaction.Date, cancellationToken);
 
             Logger.LogInformation("Deleted transaction {TransactionId} for user {UserId}", transaction.Id, userId);
         }, cancellationToken);
@@ -364,6 +376,21 @@ public class TransactionService : BaseService, ITransactionService
 
         if (!category.IsActive)
             throw new DomainExceptions.ValidationException("Category is not active", "CATEGORY_INACTIVE");
+    }
+
+    /// <summary>
+    /// Recomputes the active budget for an expense category so edits and
+    /// deletes keep budget spending accurate. No-op for income categories.
+    /// </summary>
+    private async Task RefreshBudgetSpendingAsync(Guid userId, CategoryId categoryId, DateTime date, CancellationToken cancellationToken)
+    {
+        var category = await _categoryRepository.GetByIdAsync(categoryId.Value, cancellationToken);
+        if (category == null || category.Type != CategoryType.Expense)
+            return;
+
+        var budget = await _budgetService.GetActiveForCategoryAsync(userId, categoryId, date, cancellationToken);
+        if (budget != null)
+            await _budgetService.RecalculateSpentAsync(budget.Id, userId, cancellationToken);
     }
 
     private async Task AdjustAccountBalancesAsync(
