@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              xmlns:enums="clr-namespace:FinanceApp.Domain.Enums;assembly=FinanceApp.Domain"
              x:Class="FinanceApp.Mobile.Views.CategoriesPage"
              Title="{Binding Title}"
@@ -17,6 +18,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
+    <Grid>
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
         <VerticalStackLayout Spacing="16" Padding="16">
             <!-- Tab Selector -->
@@ -138,6 +140,10 @@
             <Button Text="Add Category" Command="{Binding AddCategoryCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="16,0,16,16" />
         </VerticalStackLayout>
     </RefreshView>
+
+        <!-- Toasts -->
+        <controls:ToastHost />
+    </Grid>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Add" Command="{Binding AddCategoryCommand}" Priority="0">

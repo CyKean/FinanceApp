@@ -114,7 +114,8 @@ public partial class CategoriesViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting category");
-            SetError("Failed to delete category");
+            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex) await _dialogService.ShowErrorToastAsync(vex.Message);
+            else await _dialogService.ShowToastAsync("Delete failed. Please try again.");
         }
     }
 

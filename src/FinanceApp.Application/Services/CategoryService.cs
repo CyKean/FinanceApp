@@ -5,6 +5,7 @@ using FinanceApp.Application.Interfaces;
 using FinanceApp.Application.Validators;
 using FinanceApp.Domain.Entities;
 using FinanceApp.Domain.Enums;
+using FinanceApp.Domain.ValueObjects;
 using FinanceApp.Domain.Interfaces;
 using DomainExceptions = FinanceApp.Domain.Exceptions;
 using FinanceApp.Application.Mappings;
@@ -14,6 +15,8 @@ using Microsoft.Extensions.Logging;
 public class CategoryService : BaseService, ICategoryService
 {
     private readonly ICategoryRepository _categoryRepository;
+    private readonly ITransactionRepository _transactionRepository;
+    private readonly IBudgetRepository _budgetRepository;
     private readonly CreateCategoryDtoValidator _createValidator;
     private readonly UpdateCategoryDtoValidator _updateValidator;
 
@@ -45,11 +48,15 @@ public class CategoryService : BaseService, ICategoryService
     public CategoryService(
         IUnitOfWork unitOfWork,
         ICategoryRepository categoryRepository,
+        ITransactionRepository transactionRepository,
+        IBudgetRepository budgetRepository,
         CreateCategoryDtoValidator createValidator,
         UpdateCategoryDtoValidator updateValidator,
         ILogger<CategoryService> logger) : base(unitOfWork, logger)
     {
         _categoryRepository = categoryRepository;
+        _transactionRepository = transactionRepository;
+        _budgetRepository = budgetRepository;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
     }
@@ -143,6 +150,20 @@ public class CategoryService : BaseService, ICategoryService
 
         if (category.IsSystem)
             throw new DomainExceptions.InvalidOperationDomainException("Cannot delete system categories");
+
+        // Connection guards: transactions and budgets cannot live without their category.
+        var categoryId = new CategoryId(id);
+        var transactions = await _transactionRepository.GetByCategoryIdAsync(userId, categoryId, cancellationToken);
+        if (transactions.Any())
+            throw new DomainExceptions.ValidationException(
+                $"Cannot delete '{category.Name}' because it has {transactions.Count} transaction(s). Delete or recategorize them first.",
+                "CATEGORY_IN_USE");
+
+        var budgets = await _budgetRepository.GetByCategoryIdAsync(userId, categoryId, cancellationToken);
+        if (budgets.Any())
+            throw new DomainExceptions.ValidationException(
+                $"Cannot delete '{category.Name}' because it has {budgets.Count} budget(s). Delete them first.",
+                "CATEGORY_IN_USE");
 
         category.MarkAsDeleted();
         category.MarkAsPendingDelete();

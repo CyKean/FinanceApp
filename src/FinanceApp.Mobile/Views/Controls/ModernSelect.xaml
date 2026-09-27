@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinanceApp.Mobile.Views.Controls.ModernSelect"
+             x:Name="Root">
+    <VerticalStackLayout Spacing="0" VerticalOptions="Start">
+        <!-- Closed field -->
+        <Border Style="{StaticResource FieldBorderStyle}" HeightRequest="52">
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnFieldTapped" />
+            </Border.GestureRecognizers>
+            <HorizontalStackLayout VerticalOptions="Center" Padding="2,0" Spacing="10">
+                <Label x:Name="DisplayLabel"
+                       FontSize="15"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Fill" />
+                <Label x:Name="ChevronLabel"
+                       Text="⌄"
+                       FontSize="18"
+                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}"
+                       VerticalOptions="Center" />
+            </HorizontalStackLayout>
+        </Border>
+
+        <!-- Expanded options -->
+        <Border x:Name="DropBorder"
+                IsVisible="False"
+                Style="{StaticResource CardFrameStyle}"
+                Padding="6"
+                Margin="0,6,0,0">
+            <VerticalStackLayout x:Name="OptionsContainer" Spacing="2" />
+        </Border>
+    </VerticalStackLayout>
+</ContentView>

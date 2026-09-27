@@ -101,7 +101,8 @@ public partial class AccountsViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting account");
-            SetError("Failed to delete account");
+            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex) await _dialogService.ShowErrorToastAsync(vex.Message);
+            else await _dialogService.ShowToastAsync("Delete failed. Please try again.");
         }
     }
 

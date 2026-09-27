@@ -4,6 +4,7 @@
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
              xmlns:enums="clr-namespace:FinanceApp.Domain.Enums;assembly=FinanceApp.Domain"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.TransactionsPage"
              Title="{Binding Title}"
              x:Name="TransactionsPageView">
@@ -188,5 +189,8 @@
             </Border.GestureRecognizers>
             <Label Text="+" FontSize="32" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,-4,0,0" />
         </Border>
+
+        <!-- Toasts -->
+        <controls:ToastHost />
     </Grid>
 </ContentPage>

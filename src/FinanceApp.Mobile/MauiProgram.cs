@@ -87,6 +87,7 @@ public static class MauiProgram
         // Mobile Services
         builder.Services.AddSingleton<ISessionStore, MauiSessionStore>();
         builder.Services.AddSingleton<TransactionSheetRequest>();
+        builder.Services.AddSingleton<ToastService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
         builder.Services.AddSingleton<IDialogService, DialogService>();
 

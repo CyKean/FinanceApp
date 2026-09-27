@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.AddBudgetPage"
              x:DataType="viewmodels:AddBudgetViewModel"
              Shell.NavBarIsVisible="False"
@@ -15,6 +16,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
+    <Grid>
     <ScrollView>
         <VerticalStackLayout Spacing="14" Padding="20,24,20,28">
             <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
@@ -64,15 +66,12 @@
             <!-- Category -->
             <VerticalStackLayout Spacing="6">
                 <Label Text="Category" Style="{StaticResource FormLabelStyle}" />
-                <Border Style="{StaticResource FieldBorderStyle}">
-                    <Picker Title="Select Category"
-                            ItemsSource="{Binding Categories}"
-                            ItemDisplayBinding="{Binding Name}"
-                            SelectedItem="{Binding SelectedCategory}"
-                            BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
-                            HeightRequest="48" />
-                </Border>
+                <controls:ModernSelect ItemsSource="{Binding Categories}"
+                                       SelectedItem="{Binding SelectedCategory}"
+                                       Placeholder="Select Category"
+                                       DisplayMemberPath="Name"
+                                       IconMemberPath="Icon"
+                                       ColorMemberPath="Color" />
                 <Button Text="+ New category"
                         Command="{Binding ShowAddCategoryCommand}"
                         IsVisible="{Binding IsAddingCategory, Converter={StaticResource InverseBoolConverter}}"
@@ -106,15 +105,12 @@
             <!-- Linked Account (Optional) -->
             <VerticalStackLayout Spacing="6">
                 <Label Text="Account (Optional)" Style="{StaticResource FormLabelStyle}" />
-                <Border Style="{StaticResource FieldBorderStyle}">
-                    <Picker Title="All accounts"
-                            ItemsSource="{Binding Accounts}"
-                            ItemDisplayBinding="{Binding Name}"
-                            SelectedItem="{Binding SelectedAccount}"
-                            BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
-                            HeightRequest="48" />
-                </Border>
+                <controls:ModernSelect ItemsSource="{Binding Accounts}"
+                                       SelectedItem="{Binding SelectedAccount}"
+                                       Placeholder="All accounts"
+                                       DisplayMemberPath="Name"
+                                       IconMemberPath="Icon"
+                                       ColorMemberPath="Color" />
             </VerticalStackLayout>
 
             <!-- Icon picker -->
@@ -206,4 +202,8 @@
                     Style="{StaticResource OutlineButtonStyle}" />
         </VerticalStackLayout>
     </ScrollView>
+
+        <!-- Toasts -->
+        <controls:ToastHost />
+    </Grid>
 </ContentPage>

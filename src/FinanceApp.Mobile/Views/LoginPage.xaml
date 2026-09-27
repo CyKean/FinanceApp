@@ -178,5 +178,8 @@
 
         <!-- Loading overlay -->
         <controls:LoadingOverlay IsLoading="{Binding IsBusy}" Text="{Binding BusyMessage}" />
+
+        <!-- Toasts -->
+        <controls:ToastHost />
     </Grid>
 </ContentPage>

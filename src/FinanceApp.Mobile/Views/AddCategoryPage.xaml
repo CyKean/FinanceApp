@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.AddCategoryPage"
              Title="{Binding Title}"
              x:Name="AddCategoryPageView">
@@ -18,6 +19,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
+    <Grid>
     <ScrollView>
         <VerticalStackLayout Spacing="16" Padding="16">
             <!-- Name -->
@@ -101,6 +103,10 @@
                     Margin="16,24,16,16" />
         </VerticalStackLayout>
     </ScrollView>
+
+        <!-- Toasts -->
+        <controls:ToastHost />
+    </Grid>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Cancel" Command="{Binding CancelCommand}" Priority="0" />

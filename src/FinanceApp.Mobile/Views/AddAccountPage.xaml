@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.AddAccountPage"
              x:DataType="viewmodels:AddAccountViewModel"
              Shell.NavBarIsVisible="False"
@@ -14,6 +15,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
+    <Grid>
     <ScrollView>
         <VerticalStackLayout Spacing="14" Padding="20,16,20,28">
             <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
@@ -37,14 +39,9 @@
             <!-- Type -->
             <VerticalStackLayout Spacing="6">
                 <Label Text="Account Type" Style="{StaticResource FormLabelStyle}" />
-                <Border Style="{StaticResource FieldBorderStyle}">
-                    <Picker Title="Select Type"
-                            ItemsSource="{Binding AccountTypes}"
-                            SelectedItem="{Binding Type}"
-                            BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
-                            HeightRequest="48" />
-                </Border>
+                <controls:ModernSelect ItemsSource="{Binding AccountTypes}"
+                                       SelectedItem="{Binding Type}"
+                                       Placeholder="Select Type" />
             </VerticalStackLayout>
 
             <!-- Initial Balance -->
@@ -155,6 +152,10 @@
                     Style="{StaticResource OutlineButtonStyle}" />
         </VerticalStackLayout>
     </ScrollView>
+
+        <!-- Toasts -->
+        <controls:ToastHost />
+    </Grid>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Cancel" Command="{Binding CancelCommand}" Priority="0" />

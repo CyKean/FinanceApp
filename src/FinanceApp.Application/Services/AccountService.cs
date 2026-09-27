@@ -7,6 +7,7 @@ using FinanceApp.Domain.Entities;
 using FinanceApp.Domain.Enums;
 using FinanceApp.Domain.Interfaces;
 using FinanceApp.Domain.Exceptions;
+using DomainExceptions = FinanceApp.Domain.Exceptions;
 using FinanceApp.Domain.ValueObjects;
 using FinanceApp.Application.Mappings;
 using FluentValidation;
@@ -15,17 +16,26 @@ using Microsoft.Extensions.Logging;
 public class AccountService : BaseService, IAccountService
 {
     private readonly IAccountRepository _accountRepository;
+    private readonly ITransactionRepository _transactionRepository;
+    private readonly IBudgetRepository _budgetRepository;
+    private readonly IFinancialGoalRepository _goalRepository;
     private readonly CreateAccountDtoValidator _createValidator;
     private readonly UpdateAccountDtoValidator _updateValidator;
 
     public AccountService(
         IUnitOfWork unitOfWork,
         IAccountRepository accountRepository,
+        ITransactionRepository transactionRepository,
+        IBudgetRepository budgetRepository,
+        IFinancialGoalRepository goalRepository,
         CreateAccountDtoValidator createValidator,
         UpdateAccountDtoValidator updateValidator,
         ILogger<AccountService> logger) : base(unitOfWork, logger)
     {
         _accountRepository = accountRepository;
+        _transactionRepository = transactionRepository;
+        _budgetRepository = budgetRepository;
+        _goalRepository = goalRepository;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
     }
@@ -114,6 +124,44 @@ public class AccountService : BaseService, IAccountService
 
         if (account.UserId != userId)
             throw new NotFoundException("Account", id);
+
+        // Connection guard: transactions live and die with their account.
+        var accountId = new AccountId(id);
+        var transactions = await _transactionRepository.GetByAccountIdAsync(userId, accountId, cancellationToken);
+        if (transactions.Any())
+            throw new DomainExceptions.ValidationException(
+                $"Cannot delete '{account.Name}' because it has {transactions.Count} transaction(s). Delete or move them first.",
+                "ACCOUNT_IN_USE");
+
+        // Unlink budgets and goals so they don't point at a deleted account.
+        var budgets = await _budgetRepository.GetByUserIdAsync(userId, cancellationToken);
+        foreach (var budget in budgets.Where(b => b.LinkedAccountId.HasValue && b.LinkedAccountId.Value == accountId))
+        {
+            budget.UpdateLinkedAccount(null);
+            await _budgetRepository.UpdateAsync(budget, cancellationToken);
+        }
+
+        var goals = await _goalRepository.GetByUserIdAsync(userId, cancellationToken);
+        foreach (var goal in goals.Where(g => g.LinkedAccountId.HasValue && g.LinkedAccountId.Value == accountId))
+        {
+            goal.UpdateLinkedAccount(null);
+            await _goalRepository.UpdateAsync(goal, cancellationToken);
+        }
+
+        // Promote the oldest remaining account when deleting the default.
+        if (account.IsDefault)
+        {
+            var successor = (await _accountRepository.GetByUserIdAsync(userId, cancellationToken))
+                .Where(a => a.Id != id && !a.IsDeleted)
+                .OrderBy(a => a.SortOrder)
+                .ThenBy(a => a.CreatedAt)
+                .FirstOrDefault();
+            if (successor != null)
+            {
+                successor.SetAsDefault();
+                await _accountRepository.UpdateAsync(successor, cancellationToken);
+            }
+        }
 
         account.MarkAsDeleted();
         account.MarkAsPendingDelete();

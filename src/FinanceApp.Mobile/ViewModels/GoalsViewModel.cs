@@ -159,7 +159,8 @@ public partial class GoalsViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting goal");
-            SetError("Failed to delete goal");
+            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex) await _dialogService.ShowErrorToastAsync(vex.Message);
+            else await _dialogService.ShowToastAsync("Delete failed. Please try again.");
         }
     }
 

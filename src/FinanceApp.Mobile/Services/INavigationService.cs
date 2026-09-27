@@ -16,6 +16,7 @@ public interface IDialogService
     Task<string?> ShowPromptAsync(string title, string message, string placeholder = "", string confirmText = "OK", string cancelText = "Cancel");
     Task<string?> ShowActionSheetAsync(string title, string cancel, string? destruction, params string[] buttons);
     Task ShowToastAsync(string message, ToastDuration duration = ToastDuration.Short);
+    Task ShowErrorToastAsync(string message);
 }
 
 public enum ToastDuration

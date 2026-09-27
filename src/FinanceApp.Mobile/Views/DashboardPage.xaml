@@ -4,6 +4,7 @@
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
              xmlns:dtos="clr-namespace:FinanceApp.Application.DTOs;assembly=FinanceApp.Application"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.DashboardPage"
              x:DataType="viewmodels:DashboardViewModel"
              Title="{Binding Title}">
@@ -16,6 +17,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
+    <Grid>
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
         <ScrollView>
             <VerticalStackLayout Spacing="16" Padding="20,16,20,24">
@@ -368,4 +370,8 @@
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>
+
+        <!-- Toasts -->
+        <controls:ToastHost />
+    </Grid>
 </ContentPage>

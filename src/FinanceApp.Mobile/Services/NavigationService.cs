@@ -54,10 +54,12 @@ public class NavigationService : INavigationService
 public class DialogService : IDialogService
 {
     private readonly ILogger<DialogService> _logger;
+    private readonly ToastService _toastService;
 
-    public DialogService(ILogger<DialogService> logger)
+    public DialogService(ILogger<DialogService> logger, ToastService toastService)
     {
         _logger = logger;
+        _toastService = toastService;
     }
 
     private static Page? GetMainPage()
@@ -100,6 +102,12 @@ public class DialogService : IDialogService
     public async Task ShowToastAsync(string message, ToastDuration duration = ToastDuration.Short)
     {
         _logger.LogInformation("Toast: {Message}", message);
-        await Task.CompletedTask;
+        await _toastService.ShowAsync(message, ToastKind.Success);
+    }
+
+    public async Task ShowErrorToastAsync(string message)
+    {
+        _logger.LogWarning("Error toast: {Message}", message);
+        await _toastService.ShowAsync(message, ToastKind.Error);
     }
 }
