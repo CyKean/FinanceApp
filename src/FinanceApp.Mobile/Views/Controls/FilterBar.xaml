@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:enums="clr-namespace:FinanceApp.Domain.Enums;assembly=FinanceApp.Domain"
+             x:Class="FinanceApp.Mobile.Views.Controls.FilterBar"
+             x:Name="Root">
+    <Border Style="{StaticResource FilterBarStyle}" Padding="16">
+        <VerticalStackLayout Spacing="12">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="From" Style="{StaticResource CaptionLabelStyle}" />
+                    <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
+                        <DatePicker Date="{Binding StartDate, Source={x:Reference Root}, Mode=TwoWay}"
+                                    Format="MMM dd, yyyy"
+                                    MinimumDate="2020-01-01"
+                                    HeightRequest="46"
+                                    TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+                    </Border>
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                    <Label Text="To" Style="{StaticResource CaptionLabelStyle}" />
+                    <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
+                        <DatePicker Date="{Binding EndDate, Source={x:Reference Root}, Mode=TwoWay}"
+                                    Format="MMM dd, yyyy"
+                                    MinimumDate="2020-01-01"
+                                    HeightRequest="46"
+                                    TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Grid>
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Type" Style="{StaticResource CaptionLabelStyle}" />
+                <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
+                    <Picker SelectedItem="{Binding SelectedType, Source={x:Reference Root}, Mode=TwoWay}"
+                            HeightRequest="46"
+                            TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type enums:TransactionType}">
+                                <enums:TransactionType>Expense</enums:TransactionType>
+                                <enums:TransactionType>Income</enums:TransactionType>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </Border>
+            </VerticalStackLayout>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <Button Text="Apply"
+                        Command="{Binding ApplyCommand, Source={x:Reference Root}}"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        TextColor="White"
+                        HorizontalOptions="Fill" />
+                <Button Grid.Column="1"
+                        Text="Clear"
+                        Command="{Binding ClearCommand, Source={x:Reference Root}}"
+                        Style="{StaticResource OutlineButtonStyle}"
+                        HorizontalOptions="Fill" />
+            </Grid>
+        </VerticalStackLayout>
+    </Border>
+</ContentView>

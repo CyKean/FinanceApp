@@ -55,11 +55,13 @@ public class DialogService : IDialogService
 {
     private readonly ILogger<DialogService> _logger;
     private readonly ToastService _toastService;
+    private readonly ChoiceSheetService _choiceSheetService;
 
-    public DialogService(ILogger<DialogService> logger, ToastService toastService)
+    public DialogService(ILogger<DialogService> logger, ToastService toastService, ChoiceSheetService choiceSheetService)
     {
         _logger = logger;
         _toastService = toastService;
+        _choiceSheetService = choiceSheetService;
     }
 
     private static Page? GetMainPage()
@@ -90,6 +92,12 @@ public class DialogService : IDialogService
         var page = GetMainPage();
         if (page == null) return null;
         return await page.DisplayActionSheet(title, cancel, destruction, buttons);
+    }
+
+    public Task<string?> ShowChoiceSheetAsync(string title, params string[] options)
+    {
+        _logger.LogInformation("Choice sheet: {Title}", title);
+        return _choiceSheetService.ShowAsync(title, options);
     }
 
     public async Task<string?> ShowPromptAsync(string title, string message, string placeholder = "", string confirmText = "OK", string cancelText = "Cancel")

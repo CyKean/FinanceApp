@@ -109,8 +109,8 @@ public partial class ModernSelect : ContentView
         var selected = SelectedItem;
         DisplayLabel.Text = GetDisplayText(selected);
         DisplayLabel.TextColor = selected == null
-            ? Color.FromArgb("#94A3B8")
-            : Color.FromArgb("#0F172A");
+            ? ThemeResources.GetColor("OnSurfaceVariant", "OnSurfaceVariantDark")
+            : ThemeResources.GetColor("OnSurface", "OnSurfaceDark");
 
         OptionsContainer.Children.Clear();
         var items = ItemsSource;
@@ -120,7 +120,7 @@ public partial class ModernSelect : ContentView
             {
                 Text = "No options yet",
                 FontSize = 13,
-                TextColor = Color.FromArgb("#94A3B8"),
+                TextColor = ThemeResources.GetColor("OnSurfaceVariant", "OnSurfaceVariantDark"),
                 Margin = new Thickness(12, 8)
             });
             return;
@@ -131,7 +131,8 @@ public partial class ModernSelect : ContentView
         {
             var captured = item;
             var isSelected = Equals(item, selected);
-            var row = new HorizontalStackLayout { Spacing = 12, Padding = new Thickness(10, 9) };
+            var content = new Grid { ColumnSpacing = 12 };
+            var column = 0;
 
             if (hasIcon)
             {
@@ -148,11 +149,11 @@ public partial class ModernSelect : ContentView
                 {
                     badge.BackgroundColor = !string.IsNullOrEmpty(colorHex)
                         ? Color.FromArgb(colorHex)
-                        : Color.FromArgb("#E2E8F0");
+                        : ThemeResources.GetColor("SurfaceContainerHighest", "SurfaceContainerHighestDark");
                 }
                 catch
                 {
-                    badge.BackgroundColor = Color.FromArgb("#E2E8F0");
+                    badge.BackgroundColor = ThemeResources.GetColor("SurfaceContainerHighest", "SurfaceContainerHighestDark");
                 }
                 badge.Content = new Label
                 {
@@ -161,30 +162,46 @@ public partial class ModernSelect : ContentView
                     HorizontalOptions = LayoutOptions.Center,
                     VerticalOptions = LayoutOptions.Center
                 };
-                row.Children.Add(badge);
+                Grid.SetColumn(badge, 0);
+                content.Children.Add(badge);
+                column = 1;
             }
 
-            row.Children.Add(new Label
+            var label = new Label
             {
                 Text = GetDisplayText(item),
                 FontSize = 15,
-                TextColor = Color.FromArgb("#0F172A"),
+                TextColor = ThemeResources.GetColor("OnSurface", "OnSurfaceDark"),
                 VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.Fill
-            });
+                LineBreakMode = LineBreakMode.TailTruncation
+            };
+            Grid.SetColumn(label, column);
+            content.Children.Add(label);
 
-            row.Children.Add(new Label
+            var check = new Label
             {
                 Text = "✓",
                 FontSize = 16,
                 FontAttributes = FontAttributes.Bold,
-                TextColor = Color.FromArgb("#0E6B4F"),
+                TextColor = ThemeResources.GetColor("Primary", "PrimaryLight"),
                 VerticalOptions = LayoutOptions.Center,
                 IsVisible = isSelected
-            });
+            };
+            Grid.SetColumn(check, column + 1);
+            content.Children.Add(check);
 
-            var tapRow = row;
-            tapRow.GestureRecognizers.Add(new TapGestureRecognizer
+            var row = new Border
+            {
+                Padding = new Thickness(10, 9),
+                StrokeThickness = 0,
+                StrokeShape = new RoundRectangle { CornerRadius = 12 },
+                Background = isSelected
+                    ? ThemeResources.GetBrush("PrimaryContainer", "PrimaryContainerDark")
+                    : Brush.Transparent,
+                Content = content
+            };
+
+            row.GestureRecognizers.Add(new TapGestureRecognizer
             {
                 Command = new Command(() =>
                 {

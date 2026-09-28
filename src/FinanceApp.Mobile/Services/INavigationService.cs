@@ -15,6 +15,7 @@ public interface IDialogService
     Task ShowAlertAsync(string title, string message, string cancelText = "OK");
     Task<string?> ShowPromptAsync(string title, string message, string placeholder = "", string confirmText = "OK", string cancelText = "Cancel");
     Task<string?> ShowActionSheetAsync(string title, string cancel, string? destruction, params string[] buttons);
+    Task<string?> ShowChoiceSheetAsync(string title, params string[] options);
     Task ShowToastAsync(string message, ToastDuration duration = ToastDuration.Short);
     Task ShowErrorToastAsync(string message);
 }

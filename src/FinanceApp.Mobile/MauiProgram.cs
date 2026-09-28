@@ -54,6 +54,18 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
+#if ANDROID
+        builder.ConfigureMauiHandlers(handlers =>
+        {
+            Microsoft.Maui.Handlers.DatePickerHandler.Mapper.AppendToMapping("FlatField",
+                (handler, view) => StripFieldUnderline(handler.PlatformView, view as Microsoft.Maui.Controls.Element));
+            Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("FlatField",
+                (handler, view) => StripFieldUnderline(handler.PlatformView, view as Microsoft.Maui.Controls.Element));
+            Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("FlatField",
+                (handler, view) => StripFieldUnderline(handler.PlatformView, view as Microsoft.Maui.Controls.Element));
+        });
+#endif
+
         // Infrastructure Services (SQLite lives in the app sandbox for offline-first)
         builder.Services.AddInfrastructure(builder.Configuration, FileSystem.AppDataDirectory);
 
@@ -88,6 +100,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ISessionStore, MauiSessionStore>();
         builder.Services.AddSingleton<TransactionSheetRequest>();
         builder.Services.AddSingleton<ToastService>();
+        builder.Services.AddSingleton<ChoiceSheetService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
         builder.Services.AddSingleton<IDialogService, DialogService>();
 
@@ -163,6 +176,14 @@ public static class MauiProgram
 
         return builder.Build();
     }
+
+#if ANDROID
+    private static void StripFieldUnderline(object? platformView, Microsoft.Maui.Controls.Element? element)
+    {
+        if (element?.Parent is Microsoft.Maui.Controls.Border && platformView is Android.Views.View view)
+            view.Background = null;
+    }
+#endif
 }
 
 public class DatabaseInitializer : IHostedService

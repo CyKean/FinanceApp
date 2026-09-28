@@ -127,7 +127,7 @@ public partial class TransactionsViewModel : BaseViewModel
     [RelayCommand]
     private async Task AddTransactionAsync()
     {
-          var choice = await _dialogService.ShowActionSheetAsync("Add Transaction", "Cancel", null, "Expense", "Income");
+          var choice = await _dialogService.ShowChoiceSheetAsync("Add Transaction", "Expense", "Income");
           if (choice == "Expense")
           {
               _sheetRequest.Request(TransactionType.Expense);

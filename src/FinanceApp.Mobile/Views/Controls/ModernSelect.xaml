@@ -9,17 +9,21 @@
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnFieldTapped" />
             </Border.GestureRecognizers>
-            <HorizontalStackLayout VerticalOptions="Center" Padding="2,0" Spacing="10">
+            <Grid ColumnDefinitions="*,Auto"
+                  ColumnSpacing="10"
+                  Padding="2,0"
+                  VerticalOptions="Center">
                 <Label x:Name="DisplayLabel"
                        FontSize="15"
-                       VerticalOptions="Center"
-                       HorizontalOptions="Fill" />
+                       LineBreakMode="TailTruncation"
+                       VerticalOptions="Center" />
                 <Label x:Name="ChevronLabel"
+                       Grid.Column="1"
                        Text="⌄"
                        FontSize="18"
-                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}"
-                       VerticalOptions="Center" />
-            </HorizontalStackLayout>
+                       VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+            </Grid>
         </Border>
 
         <!-- Expanded options -->
@@ -28,7 +32,9 @@
                 Style="{StaticResource CardFrameStyle}"
                 Padding="6"
                 Margin="0,6,0,0">
-            <VerticalStackLayout x:Name="OptionsContainer" Spacing="2" />
+            <ScrollView MaximumHeightRequest="280">
+                <VerticalStackLayout x:Name="OptionsContainer" Spacing="2" />
+            </ScrollView>
         </Border>
     </VerticalStackLayout>
 </ContentView>
