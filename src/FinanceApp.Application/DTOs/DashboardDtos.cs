@@ -31,7 +31,10 @@ public record MonthlyTrendDto(
     Money Income,
     Money Expense,
     Money Net
-);
+)
+{
+    public DateTime Date => new(Year, Month, 1);
+}
 
 public record CalendarEventDto(
     DateTime Date,

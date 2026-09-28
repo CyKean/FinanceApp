@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.Analytics.AnalyticsPage"
              x:DataType="viewmodels:AnalyticsViewModel"
              Title="{Binding Title}">
@@ -78,6 +79,7 @@
                 <Border Style="{StaticResource CardFrameStyle}" Margin="0,16,0,0" Padding="16" IsVisible="{Binding Analytics.CategoryBreakdown.Count, Converter={StaticResource NullToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Spending by Category" Style="{StaticResource SectionHeaderStyle}" />
+                        <controls:CategoryDonutChart Items="{Binding Analytics.CategoryBreakdown}" HeightRequest="210" />
                         <CollectionView ItemsSource="{Binding Analytics.CategoryBreakdown}" HeightRequest="300">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
@@ -109,13 +111,34 @@
                 <Border Style="{StaticResource CardFrameStyle}" Margin="0,16,0,0" Padding="16" IsVisible="{Binding Analytics.SpendingTrends.Count, Converter={StaticResource NullToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Monthly Trends" Style="{StaticResource SectionHeaderStyle}" />
+                        <VerticalStackLayout Spacing="8">
+                            <controls:MonthlyTrendChart Items="{Binding Analytics.SpendingTrends}" HeightRequest="200" />
+                            <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
+                                <HorizontalStackLayout Spacing="6">
+                                    <Border WidthRequest="10" HeightRequest="10" StrokeThickness="0" Background="#15803D">
+                                        <Border.StrokeShape>
+                                            <Ellipse />
+                                        </Border.StrokeShape>
+                                    </Border>
+                                    <Label Text="Income" Style="{StaticResource CaptionLabelStyle}" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="6">
+                                    <Border WidthRequest="10" HeightRequest="10" StrokeThickness="0" Background="#DC2626">
+                                        <Border.StrokeShape>
+                                            <Ellipse />
+                                        </Border.StrokeShape>
+                                    </Border>
+                                    <Label Text="Expense" Style="{StaticResource CaptionLabelStyle}" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
                         <CollectionView ItemsSource="{Binding Analytics.SpendingTrends}" HeightRequest="250">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
                                     <Border Style="{StaticResource TrendItemFrameStyle}" Margin="0,4">
                                         <HorizontalStackLayout Spacing="12">
                                             <VerticalStackLayout VerticalOptions="Center" WidthRequest="80">
-                                                <Label Text="{Binding Month, StringFormat='{0:MMM yyyy}'}" Style="{StaticResource TrendMonthLabelStyle}" HorizontalOptions="Center" />
+                                                <Label Text="{Binding Date, StringFormat='{0:MMM yyyy}'}" Style="{StaticResource TrendMonthLabelStyle}" HorizontalOptions="Center" />
                                             </VerticalStackLayout>
                                             <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                                 <HorizontalStackLayout Spacing="8">

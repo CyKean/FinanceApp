@@ -61,6 +61,20 @@
                 <BoxView Style="{StaticResource DividerStyle}" />
 
                 <HorizontalStackLayout Spacing="14" Padding="4,12">
+                    <Label Text="📊" FontSize="24" WidthRequest="28" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Label Text="Analytics" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
+                        <Label Text="Charts and spending insights" Style="{StaticResource MutedLabelStyle}" />
+                    </VerticalStackLayout>
+                    <Label Text="›" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
+                    <HorizontalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnAnalyticsTapped" />
+                    </HorizontalStackLayout.GestureRecognizers>
+                </HorizontalStackLayout>
+
+                <BoxView Style="{StaticResource DividerStyle}" />
+
+                <HorizontalStackLayout Spacing="14" Padding="4,12">
                     <Image Source="tab_profile" HeightRequest="28" WidthRequest="28" VerticalOptions="Center" />
                     <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                         <Label Text="Profile &amp; Settings" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
