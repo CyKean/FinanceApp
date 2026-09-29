@@ -9,9 +9,21 @@ using Microsoft.Maui.Graphics;
 public partial class AddAccountPage : ContentPage
 {
     private readonly AddAccountViewModel _viewModel;
+    private bool _hasInitialized;
     private Guid? _initializedFor;
+    private string _accountIdParam = string.Empty;
 
-    public string AccountIdParam { get; set; } = string.Empty;
+    public string AccountIdParam
+    {
+        get => _accountIdParam;
+        set
+        {
+            if (_accountIdParam == value) return;
+            _accountIdParam = value;
+            if (_viewModel is not null)
+                _ = EnsureInitializedAsync();
+        }
+    }
 
     public AddAccountPage(AddAccountViewModel viewModel)
     {
@@ -107,11 +119,12 @@ public partial class AddAccountPage : ContentPage
     {
         try
         {
-            Guid? accountId = Guid.TryParse(AccountIdParam, out var parsedId) ? parsedId : null;
+            Guid? accountId = Guid.TryParse(_accountIdParam, out var parsedId) ? parsedId : null;
 
-            if (_initializedFor == accountId)
+            if (_hasInitialized && _initializedFor == accountId)
                 return;
 
+            _hasInitialized = true;
             _initializedFor = accountId;
             await _viewModel.InitializeAsync(accountId);
         }

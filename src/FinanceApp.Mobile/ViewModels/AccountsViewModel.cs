@@ -15,28 +15,50 @@ public partial class AccountsViewModel : BaseViewModel
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly AccountHistoryStore _historyStore;
     private readonly ILogger<AccountsViewModel> _logger;
 
     [ObservableProperty]
     private IReadOnlyList<AccountDto> _accounts = Array.Empty<AccountDto>();
 
     [ObservableProperty]
+    private IReadOnlyList<AccountHistoryEntryDto> _history = Array.Empty<AccountHistoryEntryDto>();
+
+    [ObservableProperty]
+    private bool _showHistory;
+
+    [ObservableProperty]
     private Money _totalBalance = Money.Zero();
+
+    public bool IsAccountsTab => !ShowHistory;
 
     public AccountsViewModel(
         IAccountService accountService,
         IAuthenticationService authService,
         INavigationService navigationService,
         IDialogService dialogService,
+        AccountHistoryStore historyStore,
         ILogger<AccountsViewModel> logger)
     {
         _accountService = accountService;
         _authService = authService;
         _navigationService = navigationService;
         _dialogService = dialogService;
+        _historyStore = historyStore;
         _logger = logger;
         Title = "Accounts";
     }
+
+    partial void OnShowHistoryChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsAccountsTab));
+    }
+
+    [RelayCommand]
+    private void ShowAccountsTab() => ShowHistory = false;
+
+    [RelayCommand]
+    private void ShowHistoryTab() => ShowHistory = true;
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -53,6 +75,7 @@ public partial class AccountsViewModel : BaseViewModel
 
             Accounts = await _accountService.GetAllAsync(userId.Value);
             TotalBalance = await _accountService.GetTotalBalanceAsync(userId.Value);
+            History = await _historyStore.GetAllAsync(userId.Value);
         }
         catch (Exception ex)
         {
@@ -78,6 +101,32 @@ public partial class AccountsViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    private async Task AccountActionsAsync(AccountDto account)
+    {
+        var options = new List<string> { "Edit" };
+        if (!account.IsDefault)
+            options.Add("Set as default");
+        options.Add("Delete");
+
+        var choice = await _dialogService.ShowChoiceSheetAsync(account.Name, options.ToArray());
+        if (string.IsNullOrEmpty(choice))
+            return;
+
+        switch (choice)
+        {
+            case "Edit":
+                await EditAccountAsync(account);
+                break;
+            case "Set as default":
+                await SetDefaultAsync(account);
+                break;
+            case "Delete":
+                await DeleteAccountAsync(account);
+                break;
+        }
+    }
+
+    [RelayCommand]
     private async Task DeleteAccountAsync(AccountDto account)
     {
         var confirmed = await _dialogService.ShowConfirmationAsync(
@@ -95,8 +144,11 @@ public partial class AccountsViewModel : BaseViewModel
             if (!userId.HasValue) return;
 
             await _accountService.DeleteAsync(account.Id, userId.Value);
+            await _historyStore.AddAsync(userId.Value, account.Name, AccountHistoryStore.DeletedAction, BuildDetails(account));
+
             Accounts = Accounts.Where(a => a.Id != account.Id).ToList();
             TotalBalance = await _accountService.GetTotalBalanceAsync(userId.Value);
+            History = await _historyStore.GetAllAsync(userId.Value);
             await _dialogService.ShowToastAsync("Account deleted");
         }
         catch (Exception ex)
@@ -106,6 +158,9 @@ public partial class AccountsViewModel : BaseViewModel
             else await _dialogService.ShowToastAsync("Delete failed. Please try again.");
         }
     }
+
+    private static string BuildDetails(AccountDto account) =>
+        $"{account.Type} · {account.Balance.Amount:N2} {account.Balance.Currency}";
 
     [RelayCommand]
     private async Task SetDefaultAsync(AccountDto account)

@@ -15,6 +15,7 @@ public partial class AddAccountViewModel : BaseViewModel
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly AccountHistoryStore _historyStore;
     private readonly ILogger<AddAccountViewModel> _logger;
 
     [ObservableProperty]
@@ -59,12 +60,14 @@ public partial class AddAccountViewModel : BaseViewModel
         IAuthenticationService authService,
         INavigationService navigationService,
         IDialogService dialogService,
+        AccountHistoryStore historyStore,
         ILogger<AddAccountViewModel> logger)
     {
         _accountService = accountService;
         _authService = authService;
         _navigationService = navigationService;
         _dialogService = dialogService;
+        _historyStore = historyStore;
         _logger = logger;
     }
 
@@ -83,10 +86,18 @@ public partial class AddAccountViewModel : BaseViewModel
     private async Task LoadAccountAsync(Guid accountId)
     {
         var userId = await _authService.GetCurrentUserIdAsync();
-        if (!userId.HasValue) return;
+        if (!userId.HasValue)
+        {
+            SetError("Could not verify your session. Please sign in again.");
+            return;
+        }
 
         var account = await _accountService.GetByIdAsync(accountId, userId.Value);
-        if (account == null) return;
+        if (account == null)
+        {
+            SetError("Account not found. It may have been deleted.");
+            return;
+        }
 
         Name = account.Name;
         Type = account.Type;
@@ -129,6 +140,7 @@ public partial class AddAccountViewModel : BaseViewModel
                     null);
 
                 await _accountService.UpdateAsync(EditingAccountId.Value, updateDto, userId.Value);
+                await _historyStore.AddAsync(userId.Value, Name, AccountHistoryStore.EditedAction, "Account details updated");
                 await _dialogService.ShowToastAsync("Account updated");
             }
             else
@@ -143,6 +155,7 @@ public partial class AddAccountViewModel : BaseViewModel
                     IsDefault);
 
                 await _accountService.CreateAsync(createDto, userId.Value);
+                await _historyStore.AddAsync(userId.Value, Name, AccountHistoryStore.CreatedAction, BuildDetails());
                 await _dialogService.ShowToastAsync("Account added");
             }
 
@@ -178,6 +191,9 @@ public partial class AddAccountViewModel : BaseViewModel
         if (!string.IsNullOrEmpty(color))
             Color = color;
     }
+
+    private string BuildDetails() =>
+        $"{Type} · {InitialBalance.Amount:N2} {InitialBalance.Currency}";
 
     private bool ValidateInput()
     {

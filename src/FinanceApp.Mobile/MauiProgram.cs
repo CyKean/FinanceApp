@@ -107,6 +107,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IDialogService, DialogService>();
         builder.Services.AddSingleton<DevDataSeeder>();
         builder.Services.AddSingleton<GoalHistoryStore>();
+        builder.Services.AddSingleton<AccountHistoryStore>();
 
         // Background Services
         builder.Services.AddHostedService<SupabaseInitializer>();

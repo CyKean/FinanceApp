@@ -83,7 +83,7 @@
                                 <Border.StrokeShape>
                                     <Ellipse />
                                 </Border.StrokeShape>
-                                <Label Text="{Binding Icon}" TargetNullValue="💰" FontSize="26" VerticalOptions="Center" HorizontalOptions="Center" />
+                                <Label Text="{Binding Icon, TargetNullValue=&#x1F4B0;}" FontSize="26" VerticalOptions="Center" HorizontalOptions="Center" />
                             </Border>
                             <Label Text="Tap an icon below"
                                    Style="{StaticResource MutedLabelStyle}"
@@ -92,8 +92,7 @@
                         </HorizontalStackLayout>
                         <FlexLayout x:Name="EmojiContainer"
                                     Direction="Row"
-                                    Wrap="Wrap"
-                                    Justify="Start" />
+                                    Wrap="Wrap" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>
@@ -119,8 +118,7 @@
                         </HorizontalStackLayout>
                         <FlexLayout x:Name="ColorContainer"
                                     Direction="Row"
-                                    Wrap="Wrap"
-                                    Justify="Start" />
+                                    Wrap="Wrap" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>
