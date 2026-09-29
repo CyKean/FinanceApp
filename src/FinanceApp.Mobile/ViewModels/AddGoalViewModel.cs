@@ -181,7 +181,7 @@ public partial class AddGoalViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving goal");
-            SetError("Failed to save goal");
+            await _dialogService.ShowFailureAsync("Failed to save goal");
         }
         finally
         {

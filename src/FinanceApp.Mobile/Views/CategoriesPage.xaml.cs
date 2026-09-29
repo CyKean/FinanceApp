@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.ViewModels;
 
 public partial class CategoriesPage : ContentPage
@@ -7,6 +8,7 @@ public partial class CategoriesPage : ContentPage
     public CategoriesPage(CategoriesViewModel viewModel)
     {
         InitializeComponent();
+        viewModel.AnimateDeleteAsync = DeletionAnimator.Create(this);
         BindingContext = viewModel;
     }
 

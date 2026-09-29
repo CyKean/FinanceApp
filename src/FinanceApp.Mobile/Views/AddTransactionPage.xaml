@@ -4,6 +4,7 @@
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
              xmlns:sys="clr-namespace:System;assembly=netstandard"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.AddTransactionPage"
              x:DataType="viewmodels:AddTransactionViewModel"
              Title="{Binding Title}">
@@ -16,6 +17,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
+    <Grid>
     <ScrollView>
         <VerticalStackLayout Spacing="16" Padding="16">
             <!-- Type Selector (only for new transactions) -->
@@ -98,6 +100,13 @@
                     Margin="16,24,16,16" />
         </VerticalStackLayout>
     </ScrollView>
+
+        <!-- Toasts -->
+        <controls:ToastHost />
+
+        <!-- Create / edit animation -->
+        <controls:SuccessOverlayHost />
+    </Grid>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Cancel" Command="{Binding CancelCommand}" Priority="0" />

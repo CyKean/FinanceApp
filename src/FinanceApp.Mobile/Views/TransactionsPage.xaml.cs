@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.ViewModels;
 
 public partial class TransactionsPage : ContentPage
@@ -7,6 +8,7 @@ public partial class TransactionsPage : ContentPage
     public TransactionsPage(TransactionsViewModel viewModel)
     {
         InitializeComponent();
+        viewModel.AnimateDeleteAsync = DeletionAnimator.Create(this);
         BindingContext = viewModel;
     }
 

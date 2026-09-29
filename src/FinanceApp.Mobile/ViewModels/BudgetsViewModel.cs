@@ -24,6 +24,8 @@ public partial class BudgetsViewModel : BaseViewModel
     [ObservableProperty]
     private DateTime _currentMonth = DateTime.Today;
 
+    public Func<object, Task>? AnimateDeleteAsync { get; set; }
+
     public BudgetsViewModel(
         IBudgetService budgetService,
         ICategoryService categoryService,
@@ -97,14 +99,27 @@ public partial class BudgetsViewModel : BaseViewModel
             if (!userId.HasValue) return;
 
             await _budgetService.DeleteAsync(budget.Id, userId.Value);
+
+            if (AnimateDeleteAsync is not null)
+            {
+                try
+                {
+                    await AnimateDeleteAsync(budget);
+                }
+                catch (Exception animEx)
+                {
+                    _logger.LogWarning(animEx, "Delete animation failed for budget {BudgetId}", budget.Id);
+                }
+            }
+
             Budgets = Budgets.Where(b => b.Id != budget.Id).ToList();
             await _dialogService.ShowToastAsync("Budget deleted");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting budget");
-            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex) await _dialogService.ShowErrorToastAsync(vex.Message);
-            else await _dialogService.ShowToastAsync("Delete failed. Please try again.");
+            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex) await _dialogService.ShowFailureAsync(vex.Message);
+            else await _dialogService.ShowFailureAsync("Delete failed. Please try again.");
         }
     }
 

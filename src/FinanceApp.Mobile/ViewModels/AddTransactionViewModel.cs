@@ -191,7 +191,7 @@ public partial class AddTransactionViewModel : BaseViewModel
                     SelectedCategory != null ? new CategoryId(SelectedCategory.Id) : null);
 
                 await _transactionService.UpdateAsync(EditingTransactionId.Value, updateDto, userId.Value);
-                await _dialogService.ShowToastAsync("Transaction updated");
+                await _dialogService.ShowSuccessAsync("Transaction updated");
             }
             else
             {
@@ -204,7 +204,7 @@ public partial class AddTransactionViewModel : BaseViewModel
                     string.IsNullOrWhiteSpace(Notes) ? null : Notes);
 
                 await _transactionService.CreateAsync(createDto, userId.Value);
-                await _dialogService.ShowToastAsync("Transaction added");
+                await _dialogService.ShowSuccessAsync("Transaction added");
             }
 
             if (OnSavedCallback != null)
@@ -215,7 +215,7 @@ public partial class AddTransactionViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving transaction");
-            SetError("Failed to save transaction");
+            await _dialogService.ShowFailureAsync("Failed to save transaction");
         }
         finally
         {
@@ -268,12 +268,12 @@ public partial class AddTransactionViewModel : BaseViewModel
             SelectedAccount = Accounts.FirstOrDefault(a => a.Id == created.Id);
             IsAddingAccount = false;
             NewAccountName = string.Empty;
-            await _dialogService.ShowToastAsync("Account added");
+            await _dialogService.ShowSuccessAsync("Account added");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding account inline");
-            SetError("Failed to add account");
+            await _dialogService.ShowFailureAsync("Failed to add account");
         }
         finally
         {
@@ -318,12 +318,12 @@ public partial class AddTransactionViewModel : BaseViewModel
             SelectedCategory = Categories.FirstOrDefault(c => c.Id == created.Id);
             IsAddingCategory = false;
             NewCategoryName = string.Empty;
-            await _dialogService.ShowToastAsync("Category added");
+            await _dialogService.ShowSuccessAsync("Category added");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding category inline");
-            SetError("Failed to add category");
+            await _dialogService.ShowFailureAsync("Failed to add category");
         }
         finally
         {

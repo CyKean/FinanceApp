@@ -137,8 +137,19 @@ public class DialogService : IDialogService
             return;
 
         if (_successAnimationService.HasHost)
-            await _successAnimationService.ShowAsync(message);
+            await _successAnimationService.ShowAsync(message, AnimationKind.Success);
         else
             await _toastService.ShowAsync(message, ToastKind.Success);
+    }
+
+    public async Task ShowFailureAsync(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            return;
+
+        if (_successAnimationService.HasHost)
+            await _successAnimationService.ShowAsync(message, AnimationKind.Failure);
+        else
+            await _toastService.ShowAsync(message, ToastKind.Error);
     }
 }

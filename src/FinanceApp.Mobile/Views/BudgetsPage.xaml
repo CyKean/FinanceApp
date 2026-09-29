@@ -121,5 +121,8 @@
 
         <!-- Custom confirmation modal -->
         <controls:ConfirmModalHost />
+
+        <!-- Success / failure animation -->
+        <controls:SuccessOverlayHost />
     </Grid>
 </ContentPage>

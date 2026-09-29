@@ -141,7 +141,7 @@ public partial class AddAccountViewModel : BaseViewModel
 
                 await _accountService.UpdateAsync(EditingAccountId.Value, updateDto, userId.Value);
                 await _historyStore.AddAsync(userId.Value, Name, AccountHistoryStore.EditedAction, "Account details updated");
-                await _dialogService.ShowToastAsync("Account updated");
+                await _dialogService.ShowSuccessAsync("Account updated");
             }
             else
             {
@@ -156,7 +156,7 @@ public partial class AddAccountViewModel : BaseViewModel
 
                 await _accountService.CreateAsync(createDto, userId.Value);
                 await _historyStore.AddAsync(userId.Value, Name, AccountHistoryStore.CreatedAction, BuildDetails());
-                await _dialogService.ShowToastAsync("Account added");
+                await _dialogService.ShowSuccessAsync("Account added");
             }
 
             await _navigationService.NavigateToAsync("//Accounts");
@@ -164,7 +164,7 @@ public partial class AddAccountViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving account");
-            SetError("Failed to save account");
+            await _dialogService.ShowFailureAsync("Failed to save account");
         }
         finally
         {

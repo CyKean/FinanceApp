@@ -26,6 +26,8 @@ public partial class CategoriesViewModel : BaseViewModel
     [ObservableProperty]
     private CategoryType _selectedTab = CategoryType.Expense;
 
+    public Func<object, Task>? AnimateDeleteAsync { get; set; }
+
     public CategoriesViewModel(
         ICategoryService categoryService,
         IAuthenticationService authService,
@@ -134,6 +136,18 @@ public partial class CategoriesViewModel : BaseViewModel
 
             await _categoryService.DeleteAsync(category.Id, userId.Value);
 
+            if (AnimateDeleteAsync is not null)
+            {
+                try
+                {
+                    await AnimateDeleteAsync(category);
+                }
+                catch (Exception animEx)
+                {
+                    _logger.LogWarning(animEx, "Delete animation failed for category {CategoryId}", category.Id);
+                }
+            }
+
             if (category.Type == CategoryType.Expense)
                 ExpenseCategories = ExpenseCategories.Where(c => c.Id != category.Id).ToList();
             else
@@ -144,8 +158,8 @@ public partial class CategoriesViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting category");
-            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex) await _dialogService.ShowErrorToastAsync(vex.Message);
-            else await _dialogService.ShowToastAsync("Delete failed. Please try again.");
+            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex) await _dialogService.ShowFailureAsync(vex.Message);
+            else await _dialogService.ShowFailureAsync("Delete failed. Please try again.");
         }
     }
 

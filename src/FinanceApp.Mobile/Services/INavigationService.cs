@@ -19,6 +19,7 @@ public interface IDialogService
     Task ShowToastAsync(string message, ToastDuration duration = ToastDuration.Short);
     Task ShowErrorToastAsync(string message);
     Task ShowSuccessAsync(string message);
+    Task ShowFailureAsync(string message);
 }
 
 public enum ToastDuration

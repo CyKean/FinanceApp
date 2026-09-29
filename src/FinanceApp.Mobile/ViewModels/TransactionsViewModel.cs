@@ -32,6 +32,8 @@ public partial class TransactionsViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isLoadingMore;
 
+    public Func<object, Task>? AnimateDeleteAsync { get; set; }
+
     private int _currentPage = 1;
     private const int PageSize = 20;
 
@@ -164,13 +166,26 @@ public partial class TransactionsViewModel : BaseViewModel
             if (!userId.HasValue) return;
 
             await _transactionService.DeleteAsync(transaction.Id, userId.Value);
+
+            if (AnimateDeleteAsync is not null)
+            {
+                try
+                {
+                    await AnimateDeleteAsync(transaction);
+                }
+                catch (Exception animEx)
+                {
+                    _logger.LogWarning(animEx, "Delete animation failed for transaction {TransactionId}", transaction.Id);
+                }
+            }
+
             Transactions = Transactions.Where(t => t.Id != transaction.Id).ToList();
             await _dialogService.ShowToastAsync("Transaction deleted");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting transaction");
-            SetError("Failed to delete transaction");
+            await _dialogService.ShowFailureAsync("Delete failed. Please try again.");
         }
     }
 

@@ -32,6 +32,8 @@ public partial class AccountsViewModel : BaseViewModel
 
     public bool IsAccountsTab => !ShowHistory;
 
+    public Func<object, Task>? AnimateDeleteAsync { get; set; }
+
     public AccountsViewModel(
         IAccountService accountService,
         IAuthenticationService authService,
@@ -146,6 +148,18 @@ public partial class AccountsViewModel : BaseViewModel
             await _accountService.DeleteAsync(account.Id, userId.Value);
             await _historyStore.AddAsync(userId.Value, account.Name, AccountHistoryStore.DeletedAction, BuildDetails(account));
 
+            if (AnimateDeleteAsync is not null)
+            {
+                try
+                {
+                    await AnimateDeleteAsync(account);
+                }
+                catch (Exception animEx)
+                {
+                    _logger.LogWarning(animEx, "Delete animation failed for account {AccountId}", account.Id);
+                }
+            }
+
             Accounts = Accounts.Where(a => a.Id != account.Id).ToList();
             TotalBalance = await _accountService.GetTotalBalanceAsync(userId.Value);
             History = await _historyStore.GetAllAsync(userId.Value);
@@ -154,8 +168,8 @@ public partial class AccountsViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting account");
-            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex) await _dialogService.ShowErrorToastAsync(vex.Message);
-            else await _dialogService.ShowToastAsync("Delete failed. Please try again.");
+            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex) await _dialogService.ShowFailureAsync(vex.Message);
+            else await _dialogService.ShowFailureAsync("Delete failed. Please try again.");
         }
     }
 

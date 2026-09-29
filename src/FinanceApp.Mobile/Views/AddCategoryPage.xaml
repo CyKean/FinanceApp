@@ -116,5 +116,8 @@
 
         <!-- Toasts -->
         <controls:ToastHost />
+
+        <!-- Create / edit animation -->
+        <controls:SuccessOverlayHost />
     </Grid>
 </ContentPage>

@@ -103,13 +103,13 @@ public partial class AddCategoryViewModel : BaseViewModel
             {
                 var updateDto = new UpdateCategoryDto(Name, Icon, Color, null, null, null);
                 await _categoryService.UpdateAsync(EditingCategoryId.Value, updateDto, userId.Value);
-                await _dialogService.ShowToastAsync("Category updated");
+                await _dialogService.ShowSuccessAsync("Category updated");
             }
             else
             {
                 var createDto = new CreateCategoryDto(Name, Type, Icon, Color);
                 await _categoryService.CreateAsync(createDto, userId.Value);
-                await _dialogService.ShowToastAsync("Category added");
+                await _dialogService.ShowSuccessAsync("Category added");
             }
 
             await ReturnToCategoriesAsync();
@@ -117,7 +117,7 @@ public partial class AddCategoryViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving category");
-            SetError("Failed to save category");
+            await _dialogService.ShowFailureAsync("Failed to save category");
         }
         finally
         {

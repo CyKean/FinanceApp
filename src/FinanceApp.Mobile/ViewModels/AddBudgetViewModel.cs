@@ -208,7 +208,7 @@ public partial class AddBudgetViewModel : BaseViewModel
                     SelectedAccount != null ? new AccountId(SelectedAccount.Id) : null);
 
                 await _budgetService.UpdateAsync(EditingBudgetId.Value, updateDto, userId.Value);
-                await _dialogService.ShowToastAsync("Budget updated");
+                await _dialogService.ShowSuccessAsync("Budget updated");
             }
             else
             {
@@ -223,7 +223,7 @@ public partial class AddBudgetViewModel : BaseViewModel
                     SelectedAccount != null ? new AccountId(SelectedAccount.Id) : null);
 
                 await _budgetService.CreateAsync(createDto, userId.Value);
-                await _dialogService.ShowToastAsync("Budget created");
+                await _dialogService.ShowSuccessAsync("Budget created");
             }
 
             await _navigationService.NavigateToAsync("//Budgets");
@@ -231,7 +231,7 @@ public partial class AddBudgetViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving budget");
-            SetError("Failed to save budget");
+            await _dialogService.ShowFailureAsync("Failed to save budget");
         }
         finally
         {
@@ -281,12 +281,12 @@ public partial class AddBudgetViewModel : BaseViewModel
             SelectedCategory = Categories.FirstOrDefault(c => c.Id == created.Id);
             IsAddingCategory = false;
             NewCategoryName = string.Empty;
-            await _dialogService.ShowToastAsync("Category added");
+            await _dialogService.ShowSuccessAsync("Category added");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error adding category inline");
-            SetError("Failed to add category");
+            await _dialogService.ShowFailureAsync("Failed to add category");
         }
         finally
         {

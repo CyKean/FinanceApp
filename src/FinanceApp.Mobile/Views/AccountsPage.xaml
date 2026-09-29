@@ -211,5 +211,8 @@
 
         <!-- Action sheet -->
         <controls:ChoiceSheetHost />
+
+        <!-- Success / failure animation -->
+        <controls:SuccessOverlayHost />
     </Grid>
 </ContentPage>

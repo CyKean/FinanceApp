@@ -33,7 +33,7 @@ public partial class GoalsViewModel : BaseViewModel
 
     public bool IsGoalsTab => !ShowHistory;
 
-    public Func<FinancialGoalDto, Task>? AnimateDeleteAsync { get; set; }
+    public Func<object, Task>? AnimateDeleteAsync { get; set; }
 
     public GoalsViewModel(
         IFinancialGoalService goalService,
@@ -200,8 +200,8 @@ public partial class GoalsViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting goal");
-            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex) await _dialogService.ShowErrorToastAsync(vex.Message);
-            else await _dialogService.ShowToastAsync("Delete failed. Please try again.");
+            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex) await _dialogService.ShowFailureAsync(vex.Message);
+            else await _dialogService.ShowFailureAsync("Delete failed. Please try again.");
         }
     }
 
