@@ -69,9 +69,9 @@ public class TransactionTypeToButtonStyleConverter : IValueConverter
         if (value is FinanceApp.Domain.Enums.TransactionType currentType && parameter is string paramType)
         {
             var param = Enum.Parse<FinanceApp.Domain.Enums.TransactionType>(paramType);
-            return currentType == param ? "PrimaryButtonStyle" : "OutlineButtonStyle";
+            return BoolToStyleConverter.Resolve(currentType == param);
         }
-        return "OutlineButtonStyle";
+        return BoolToStyleConverter.Resolve(false);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -87,9 +87,9 @@ public class CategoryTabStyleConverter : IValueConverter
         if (value is FinanceApp.Domain.Enums.CategoryType currentTab && parameter is string paramTab)
         {
             var param = Enum.Parse<FinanceApp.Domain.Enums.CategoryType>(paramTab);
-            return currentTab == param ? "PrimaryButtonStyle" : "OutlineButtonStyle";
+            return BoolToStyleConverter.Resolve(currentTab == param);
         }
-        return "OutlineButtonStyle";
+        return BoolToStyleConverter.Resolve(false);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -366,6 +366,11 @@ public class BoolToStyleConverter : IValueConverter
         if (string.Equals(parameter as string, "Invert", StringComparison.OrdinalIgnoreCase))
             selected = !selected;
 
+        return Resolve(selected);
+    }
+
+    public static Style? Resolve(bool selected)
+    {
         var key = selected ? "PrimaryButtonStyle" : "OutlineButtonStyle";
         var resources = Application.Current?.Resources;
         if (resources == null)

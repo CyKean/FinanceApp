@@ -162,6 +162,18 @@ public partial class AddCategoryViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    private void SetExpenseType()
+    {
+        Type = CategoryType.Expense;
+    }
+
+    [RelayCommand]
+    private void SetIncomeType()
+    {
+        Type = CategoryType.Income;
+    }
+
+    [RelayCommand]
     private void SelectColor(string color)
     {
         if (!string.IsNullOrEmpty(color))

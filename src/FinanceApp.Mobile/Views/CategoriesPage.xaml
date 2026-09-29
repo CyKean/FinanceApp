@@ -5,8 +5,11 @@
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
              xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              xmlns:enums="clr-namespace:FinanceApp.Domain.Enums;assembly=FinanceApp.Domain"
+             xmlns:dtos="clr-namespace:FinanceApp.Application.DTOs;assembly=FinanceApp.Application"
              x:Class="FinanceApp.Mobile.Views.CategoriesPage"
+             x:DataType="viewmodels:CategoriesViewModel"
              Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
              x:Name="CategoriesPageView">
 
     <ContentPage.Resources>
@@ -15,144 +18,271 @@
             <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
             <converters:ColorConverter x:Key="ColorConverter" />
             <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
+            <converters:CategoryTabStyleConverter x:Key="CategoryTabStyleConverter" />
+            <converters:CategoryTabVisibilityConverter x:Key="CategoryTabVisibilityConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid>
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
-        <VerticalStackLayout Spacing="16" Padding="16">
-            <!-- Tab Selector -->
-            <Border Style="{StaticResource CardFrameStyle}" Padding="4">
-                <HorizontalStackLayout Spacing="4">
-                    <Button Text="Expenses" 
-                            Command="{Binding SetTabCommand}"
-                            CommandParameter="{x:Static enums:CategoryType.Expense}"
-                            Style="{Binding SelectedTab, Converter={StaticResource CategoryTabStyleConverter}, ConverterParameter=Expense}"
-                            HorizontalOptions="Fill" />
-                    <Button Text="Income" 
-                            Command="{Binding SetTabCommand}"
-                            CommandParameter="{x:Static enums:CategoryType.Income}"
-                            Style="{Binding SelectedTab, Converter={StaticResource CategoryTabStyleConverter}, ConverterParameter=Income}"
-                            HorizontalOptions="Fill" />
-                </HorizontalStackLayout>
-            </Border>
+        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+            <VerticalStackLayout Spacing="16" Padding="16,16,16,24">
 
-            <!-- Categories List -->
-            <CollectionView ItemsSource="{Binding ExpenseCategories}" 
-                            IsVisible="{Binding SelectedTab, Converter={StaticResource CategoryTabVisibilityConverter}, ConverterParameter=Expense}"
-                            SelectionMode="None">
-<CollectionView.ItemTemplate>
-                        <DataTemplate>
+                <!-- Header -->
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Border Grid.Column="0"
+                            Padding="14,9"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}"
+                            StrokeThickness="0"
+                            VerticalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnBackTapped" />
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                            <Label Text="&#x2039;"
+                                   FontSize="22"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                   VerticalOptions="Center" />
+                            <Label Text="Back"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <Label Grid.Column="1"
+                           Text="Categories"
+                           Style="{StaticResource TitleLabelStyle}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+
+                    <Border Grid.Column="2"
+                            Padding="14,9"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                            StrokeThickness="0"
+                            VerticalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AddCategoryCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="+"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryContainer}}"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center" />
+                    </Border>
+                </Grid>
+
+                <!-- Tab Selector -->
+                <Border Style="{StaticResource CardFrameStyle}" Padding="8">
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Grid.Column="0"
+                                Text="Expenses"
+                                HeightRequest="46"
+                                Command="{Binding SetTabCommand}"
+                                CommandParameter="{x:Static enums:CategoryType.Expense}"
+                                Style="{Binding SelectedTab, Converter={StaticResource CategoryTabStyleConverter}, ConverterParameter=Expense}" />
+                        <Button Grid.Column="1"
+                                Text="Income"
+                                HeightRequest="46"
+                                Command="{Binding SetTabCommand}"
+                                CommandParameter="{x:Static enums:CategoryType.Income}"
+                                Style="{Binding SelectedTab, Converter={StaticResource CategoryTabStyleConverter}, ConverterParameter=Income}" />
+                    </Grid>
+                </Border>
+
+                <!-- Expense Categories -->
+                <CollectionView ItemsSource="{Binding ExpenseCategories}"
+                                IsVisible="{Binding SelectedTab, Converter={StaticResource CategoryTabVisibilityConverter}, ConverterParameter=Expense}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dtos:CategoryDto">
                             <SwipeView>
                                 <SwipeView.RightItems>
                                     <SwipeItems>
-                                        <SwipeItem Text="Edit" 
-                                                   Background="#0E6B4F"
+                                        <SwipeItem Text="Edit"
+                                                   BackgroundColor="#0E6B4F"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
                                                    CommandParameter="{Binding .}" />
-                                        <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}" 
-                                                   Background="Orange"
+                                        <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}"
+                                                   BackgroundColor="#D97706"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.ToggleActiveCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
-                                        <SwipeItem Text="Delete" 
-                                                   Background="Red"
+                                        <SwipeItem Text="Delete"
+                                                   BackgroundColor="#DC2626"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.DeleteCategoryCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
                                     </SwipeItems>
                                 </SwipeView.RightItems>
                                 <Border Style="{StaticResource CategoryItemFrameStyle}" Margin="0,8">
-                                    <HorizontalStackLayout Spacing="16">
-                                        <Border WidthRequest="48" HeightRequest="48"
-                                               Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
-                                               StrokeThickness="0"
-                                               VerticalOptions="Center">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.CategoryActionsCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                        <Border Grid.Column="0"
+                                                WidthRequest="46"
+                                                HeightRequest="46"
+                                                Background="{Binding Color, Converter={StaticResource ColorConverter}}"
+                                                StrokeThickness="0"
+                                                VerticalOptions="Center">
                                             <Border.StrokeShape>
-                                                <Ellipse />
+                                                <RoundRectangle CornerRadius="15" />
                                             </Border.StrokeShape>
-                                            <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
+                                            <Label Text="{Binding Icon}"
+                                                   FontSize="22"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
                                         </Border>
-                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
-                                            <HorizontalStackLayout Spacing="8">
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                            <HorizontalStackLayout Spacing="6">
                                                 <Label Text="{Binding Name}" Style="{StaticResource CategoryNameLabelStyle}" />
-                                                <Label Text="🔒" IsVisible="{Binding IsSystem}" FontSize="12" />
-                                                <Label Text="Inactive" Style="{StaticResource InactiveLabelStyle}" IsVisible="{Binding IsActive, Converter={StaticResource InverseBoolConverter}}" />
+                                                <Label Text="&#x1F512;"
+                                                       FontSize="12"
+                                                       IsVisible="{Binding IsSystem}"
+                                                       VerticalOptions="Center" />
                                             </HorizontalStackLayout>
+                                            <Label Text="Inactive"
+                                                   Style="{StaticResource InactiveLabelStyle}"
+                                                   IsVisible="{Binding IsActive, Converter={StaticResource InverseBoolConverter}}" />
                                         </VerticalStackLayout>
-                                    </HorizontalStackLayout>
+
+                                        <Border Grid.Column="2"
+                                                Padding="11,7"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerHigh}, Dark={StaticResource SurfaceContainerHighDark}}"
+                                                StrokeThickness="0"
+                                                VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="12" />
+                                            </Border.StrokeShape>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.CategoryActionsCommand}"
+                                                                      CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="&#x22EE;"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="Center" />
+                                        </Border>
+                                    </Grid>
                                 </Border>
                             </SwipeView>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
+                <!-- Income Categories -->
                 <CollectionView ItemsSource="{Binding IncomeCategories}"
-                            IsVisible="{Binding SelectedTab, Converter={StaticResource CategoryTabVisibilityConverter}, ConverterParameter=Income}"
-                            SelectionMode="None">
-<CollectionView.ItemTemplate>
-                        <DataTemplate>
+                                IsVisible="{Binding SelectedTab, Converter={StaticResource CategoryTabVisibilityConverter}, ConverterParameter=Income}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dtos:CategoryDto">
                             <SwipeView>
                                 <SwipeView.RightItems>
                                     <SwipeItems>
-                                        <SwipeItem Text="Edit" 
-                                                   Background="#0E6B4F"
+                                        <SwipeItem Text="Edit"
+                                                   BackgroundColor="#0E6B4F"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
                                                    CommandParameter="{Binding .}" />
-                                        <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}" 
-                                                   Background="Orange"
+                                        <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}"
+                                                   BackgroundColor="#D97706"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.ToggleActiveCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
-                                        <SwipeItem Text="Delete" 
-                                                   Background="Red"
+                                        <SwipeItem Text="Delete"
+                                                   BackgroundColor="#DC2626"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.DeleteCategoryCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
                                     </SwipeItems>
                                 </SwipeView.RightItems>
                                 <Border Style="{StaticResource CategoryItemFrameStyle}" Margin="0,8">
-                                    <HorizontalStackLayout Spacing="16">
-                                        <Border WidthRequest="48" HeightRequest="48"
-                                               Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
-                                               StrokeThickness="0"
-                                               VerticalOptions="Center">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.CategoryActionsCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                        <Border Grid.Column="0"
+                                                WidthRequest="46"
+                                                HeightRequest="46"
+                                                Background="{Binding Color, Converter={StaticResource ColorConverter}}"
+                                                StrokeThickness="0"
+                                                VerticalOptions="Center">
                                             <Border.StrokeShape>
-                                                <Ellipse />
+                                                <RoundRectangle CornerRadius="15" />
                                             </Border.StrokeShape>
-                                            <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
+                                            <Label Text="{Binding Icon}"
+                                                   FontSize="22"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
                                         </Border>
-                                        <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
-                                            <HorizontalStackLayout Spacing="8">
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                            <HorizontalStackLayout Spacing="6">
                                                 <Label Text="{Binding Name}" Style="{StaticResource CategoryNameLabelStyle}" />
-                                                <Label Text="🔒" IsVisible="{Binding IsSystem}" FontSize="12" />
-                                                <Label Text="Inactive" Style="{StaticResource InactiveLabelStyle}" IsVisible="{Binding IsActive, Converter={StaticResource InverseBoolConverter}}" />
+                                                <Label Text="&#x1F512;"
+                                                       FontSize="12"
+                                                       IsVisible="{Binding IsSystem}"
+                                                       VerticalOptions="Center" />
                                             </HorizontalStackLayout>
+                                            <Label Text="Inactive"
+                                                   Style="{StaticResource InactiveLabelStyle}"
+                                                   IsVisible="{Binding IsActive, Converter={StaticResource InverseBoolConverter}}" />
                                         </VerticalStackLayout>
-                                    </HorizontalStackLayout>
+
+                                        <Border Grid.Column="2"
+                                                Padding="11,7"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerHigh}, Dark={StaticResource SurfaceContainerHighDark}}"
+                                                StrokeThickness="0"
+                                                VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="12" />
+                                            </Border.StrokeShape>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.CategoryActionsCommand}"
+                                                                      CommandParameter="{Binding .}" />
+                                            </Border.GestureRecognizers>
+                                            <Label Text="&#x22EE;"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="Center" />
+                                        </Border>
+                                    </Grid>
                                 </Border>
                             </SwipeView>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-            <!-- Add Category Button -->
-            <Button Text="Add Category" Command="{Binding AddCategoryCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="16,0,16,16" />
-        </VerticalStackLayout>
-    </RefreshView>
+                <!-- Add Category Button -->
+                <Button Text="Add Category"
+                        Command="{Binding AddCategoryCommand}"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Margin="0,4,0,8" />
+            </VerticalStackLayout>
+        </RefreshView>
 
         <!-- Toasts -->
         <controls:ToastHost />
 
         <!-- Custom confirmation modal -->
         <controls:ConfirmModalHost />
-    </Grid>
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Command="{Binding AddCategoryCommand}" Priority="0">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource Glyph="+" FontFamily="OpenSansRegular" Size="20" Color="White" />
-            </ToolbarItem.IconImageSource>
-        </ToolbarItem>
-    </ContentPage.ToolbarItems>
+        <!-- Choice sheet -->
+        <controls:ChoiceSheetHost />
+    </Grid>
 </ContentPage>

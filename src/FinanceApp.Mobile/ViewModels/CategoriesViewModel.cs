@@ -81,6 +81,35 @@ public partial class CategoriesViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    private async Task CategoryActionsAsync(CategoryDto category)
+    {
+        var options = new List<string> { "Edit" };
+        if (!category.IsSystem)
+        {
+            options.Add(category.IsActive ? "Deactivate" : "Activate");
+            options.Add("Delete");
+        }
+
+        var choice = await _dialogService.ShowChoiceSheetAsync(category.Name, options.ToArray());
+        if (string.IsNullOrEmpty(choice))
+            return;
+
+        switch (choice)
+        {
+            case "Edit":
+                await EditCategoryAsync(category);
+                break;
+            case "Deactivate":
+            case "Activate":
+                await ToggleActiveAsync(category);
+                break;
+            case "Delete":
+                await DeleteCategoryAsync(category);
+                break;
+        }
+    }
+
+    [RelayCommand]
     private async Task DeleteCategoryAsync(CategoryDto category)
     {
         if (category.IsSystem)

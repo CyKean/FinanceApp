@@ -16,4 +16,17 @@ public partial class CategoriesPage : ContentPage
         if (BindingContext is CategoriesViewModel vm && vm.LoadCommand.CanExecute(null))
             await vm.LoadCommand.ExecuteAsync(null);
     }
+
+    private async void OnBackTapped(object? sender, EventArgs e)
+    {
+        try
+        {
+            await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Could not pop categories: {ex.Message}");
+            await Shell.Current.GoToAsync("//Main/More");
+        }
+    }
 }

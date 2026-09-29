@@ -29,10 +29,17 @@
                 <Shadow Brush="Black" Opacity="0.28" Radius="24" Offset="0,10" />
             </Border.Shadow>
             <VerticalStackLayout Spacing="14">
-                <Label x:Name="TitleLabel"
-                       Text="Add Transaction"
-                       Style="{StaticResource TitleLabelStyle}"
-                       HorizontalTextAlignment="Center" />
+                <VerticalStackLayout Spacing="4">
+                    <Label x:Name="TitleLabel"
+                           Text="Add Transaction"
+                           Style="{StaticResource TitleLabelStyle}"
+                           HorizontalTextAlignment="Center" />
+                    <Label x:Name="SubtitleLabel"
+                           Text="Select an option"
+                           FontSize="13"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+                </VerticalStackLayout>
                 <VerticalStackLayout x:Name="OptionsContainer" Spacing="10" />
                 <Button x:Name="CancelButton"
                         Text="Cancel"

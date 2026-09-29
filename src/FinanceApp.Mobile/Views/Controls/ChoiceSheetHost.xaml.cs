@@ -59,14 +59,23 @@ public partial class ChoiceSheetHost : ContentView
         _ = Card.ScaleToAsync(1, 160);
     }
 
+    private static (string Accent, string Glyph, bool Destructive) ResolveOption(string option) =>
+        option.Trim().ToLowerInvariant() switch
+        {
+            "expense" => ("#DC2626", "\u2212", false),
+            "income" => ("#15803D", "+", false),
+            "edit" => ("#0E6B4F", "\u270F\uFE0F", false),
+            "delete" => ("#DC2626", "\U0001F5D1\uFE0F", true),
+            "activate" => ("#16A34A", "\u2713", false),
+            "deactivate" => ("#D97706", "\u2715", false),
+            "add" => ("#0E6B4F", "+", false),
+            "save" => ("#0E6B4F", "\u2713", false),
+            _ => ("#0E6B4F", "\u2022", false)
+        };
+
     private View CreateOptionRow(string option)
     {
-        var (accent, glyph) = option.ToLowerInvariant() switch
-        {
-            "expense" => ("#DC2626", "\u2212"),
-            "income" => ("#15803D", "+"),
-            _ => ("#0E6B4F", "\u2022")
-        };
+        var (accent, glyph, destructive) = ResolveOption(option);
 
         var badge = new Border
         {
@@ -80,7 +89,7 @@ public partial class ChoiceSheetHost : ContentView
         badge.Content = new Label
         {
             Text = glyph,
-            FontSize = 18,
+            FontSize = 17,
             FontAttributes = FontAttributes.Bold,
             TextColor = Colors.White,
             HorizontalOptions = LayoutOptions.Center,
@@ -92,14 +101,16 @@ public partial class ChoiceSheetHost : ContentView
             Text = option,
             FontSize = 15,
             FontAttributes = FontAttributes.Bold,
-            TextColor = ThemeColor("OnSurface", "OnSurfaceDark"),
+            TextColor = destructive
+                ? Color.FromArgb(accent)
+                : ThemeColor("OnSurface", "OnSurfaceDark"),
             VerticalOptions = LayoutOptions.Center,
             HorizontalOptions = LayoutOptions.Fill
         };
 
         var chevron = new Label
         {
-            Text = "\u203A",
+            Text = "›",
             FontSize = 20,
             TextColor = ThemeColor("OnSurfaceVariant", "OnSurfaceVariantDark"),
             VerticalOptions = LayoutOptions.Center
