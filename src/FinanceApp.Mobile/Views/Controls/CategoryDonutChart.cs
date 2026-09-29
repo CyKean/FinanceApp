@@ -54,7 +54,12 @@ internal sealed class CategoryDonutDrawable : IDrawable
         if (total <= 0 || items == null)
         {
             canvas.FillColor = ThemeResources.GetColor("OutlineVariant", "OutlineVariantDark");
-            canvas.FillPath(BuildRing(cx, cy, outer, inner, -90f, 269f));
+            canvas.FillPath(RingPath.Build(cx, cy, outer, inner, -90f, 269f));
+            canvas.FontColor = ThemeResources.GetColor("OnSurfaceVariant", "OnSurfaceVariantDark");
+            canvas.FontSize = 13;
+            canvas.DrawString("No data",
+                cx - inner, cy - 10f, inner * 2f, 20f,
+                HorizontalAlignment.Center, VerticalAlignment.Center);
             return;
         }
 
@@ -67,7 +72,7 @@ internal sealed class CategoryDonutDrawable : IDrawable
             float sweep = (float)(item.Amount.Amount / total) * 360f;
             float gap = sweep > 8f ? 2f : 0f;
             canvas.FillColor = ParseColor(item.CategoryColor);
-            canvas.FillPath(BuildRing(cx, cy, outer, inner, start + gap / 2f, start + sweep - gap / 2f));
+            canvas.FillPath(RingPath.Build(cx, cy, outer, inner, start + gap / 2f, start + sweep - gap / 2f));
             start += sweep;
         }
 
@@ -84,34 +89,6 @@ internal sealed class CategoryDonutDrawable : IDrawable
         canvas.DrawString(totalText,
             cx - inner, cy - 6f, inner * 2f, 20f,
             HorizontalAlignment.Center, VerticalAlignment.Center);
-    }
-
-    private static PathF BuildRing(float cx, float cy, float outer, float inner, float startDeg, float endDeg)
-    {
-        var path = new PathF();
-        if (endDeg <= startDeg)
-            return path;
-
-        int steps = Math.Max(4, (int)MathF.Ceiling((endDeg - startDeg) / 3f));
-        for (int i = 0; i <= steps; i++)
-        {
-            float rad = (startDeg + (endDeg - startDeg) * i / steps) * MathF.PI / 180f;
-            float x = cx + outer * MathF.Cos(rad);
-            float y = cy + outer * MathF.Sin(rad);
-            if (i == 0)
-                path.MoveTo(x, y);
-            else
-                path.LineTo(x, y);
-        }
-
-        for (int i = steps; i >= 0; i--)
-        {
-            float rad = (startDeg + (endDeg - startDeg) * i / steps) * MathF.PI / 180f;
-            path.LineTo(cx + inner * MathF.Cos(rad), cy + inner * MathF.Sin(rad));
-        }
-
-        path.Close();
-        return path;
     }
 
     private static Color ParseColor(string? hex)

@@ -79,14 +79,10 @@ public partial class AnalyticsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task ChangePeriodAsync(int months)
+    private async Task ChangePeriodAsync(string months)
     {
-        SelectedMonths = months;
+        if (!int.TryParse(months, out var value)) return;
+        SelectedMonths = value;
         await LoadAsync();
-    }
-
-    partial void OnSelectedMonthsChanged(int value)
-    {
-        _ = LoadAsync();
     }
 }

@@ -15,6 +15,7 @@ public partial class DashboardViewModel : BaseViewModel
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
     private readonly TransactionSheetRequest _sheetRequest;
+    private readonly DevDataSeeder _devDataSeeder;
     private readonly ILogger<DashboardViewModel> _logger;
 
     [ObservableProperty]
@@ -52,12 +53,14 @@ public partial class DashboardViewModel : BaseViewModel
         IAuthenticationService authService,
         INavigationService navigationService,
         TransactionSheetRequest sheetRequest,
+        DevDataSeeder devDataSeeder,
         ILogger<DashboardViewModel> logger)
     {
         _dashboardService = dashboardService;
         _authService = authService;
         _navigationService = navigationService;
         _sheetRequest = sheetRequest;
+        _devDataSeeder = devDataSeeder;
         _logger = logger;
         Title = "Dashboard";
     }
@@ -78,6 +81,8 @@ public partial class DashboardViewModel : BaseViewModel
                 SetError("User not authenticated");
                 return;
             }
+
+            await _devDataSeeder.SeedIfEmptyAsync(userId.Value);
 
             Dashboard = await _dashboardService.GetDashboardAsync(userId.Value);
 
@@ -143,7 +148,7 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task NavigateToAnalyticsAsync()
     {
-        await _navigationService.NavigateToAsync("//Analytics");
+        await _navigationService.NavigateToAsync("Analytics");
     }
 
     [RelayCommand]

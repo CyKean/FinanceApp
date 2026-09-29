@@ -10,105 +10,33 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <converters:MoneyToStringConverter x:Key="MoneyConverter" />
-            <converters:PercentageToColorConverter x:Key="PercentageColorConverter" />
             <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
-            <converters:SavingsRateColorConverter x:Key="SavingsRateColorConverter" />
+            <converters:CountToBoolConverter x:Key="CountToBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
         <ScrollView>
             <VerticalStackLayout Spacing="16" Padding="16">
+
                 <!-- Period Selector -->
                 <Border Style="{StaticResource CardFrameStyle}" Padding="12">
-                    <HorizontalStackLayout Spacing="8">
-                        <Button Text="3M" Command="{Binding ChangePeriodCommand}" CommandParameter="3"
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0" Text="3M" HeightRequest="46"
+                                Command="{Binding ChangePeriodCommand}" CommandParameter="3"
                                 Style="{Binding SelectedMonths, Converter={StaticResource PeriodButtonStyleConverter}, ConverterParameter=3}" />
-                        <Button Text="6M" Command="{Binding ChangePeriodCommand}" CommandParameter="6"
+                        <Button Grid.Column="1" Text="6M" HeightRequest="46"
+                                Command="{Binding ChangePeriodCommand}" CommandParameter="6"
                                 Style="{Binding SelectedMonths, Converter={StaticResource PeriodButtonStyleConverter}, ConverterParameter=6}" />
-                        <Button Text="12M" Command="{Binding ChangePeriodCommand}" CommandParameter="12"
+                        <Button Grid.Column="2" Text="12M" HeightRequest="46"
+                                Command="{Binding ChangePeriodCommand}" CommandParameter="12"
                                 Style="{Binding SelectedMonths, Converter={StaticResource PeriodButtonStyleConverter}, ConverterParameter=12}" />
-                    </HorizontalStackLayout>
-                </Border>
-
-                <!-- Summary Cards -->
-                <HorizontalStackLayout Spacing="12">
-                    <Border Style="{StaticResource CardFrameStyle}" HorizontalOptions="Fill" Padding="16">
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="Total Income" Style="{StaticResource CaptionLabelStyle}" TextColor="Green" />
-                            <Label Text="{Binding Analytics.MonthlyIncome, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" TextColor="Green" />
-                        </VerticalStackLayout>
-                    </Border>
-                    <Border Style="{StaticResource CardFrameStyle}" HorizontalOptions="Fill" Padding="16">
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="Total Expenses" Style="{StaticResource CaptionLabelStyle}" TextColor="Red" />
-                            <Label Text="{Binding Analytics.MonthlyExpense, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" TextColor="Red" />
-                        </VerticalStackLayout>
-                    </Border>
-                    <Border Style="{StaticResource CardFrameStyle}" HorizontalOptions="Fill" Padding="16">
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="Net" Style="{StaticResource CaptionLabelStyle}" />
-                            <Label Text="{Binding Analytics.IncomeVsExpense, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" />
-                        </VerticalStackLayout>
-                    </Border>
-                </HorizontalStackLayout>
-
-                <HorizontalStackLayout Spacing="12" Margin="0,8,0,0">
-                    <Border Style="{StaticResource CardFrameStyle}" HorizontalOptions="Fill" Padding="16">
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="Savings Rate" Style="{StaticResource CaptionLabelStyle}" />
-                            <Label Text="{Binding Analytics.SavingsRate, StringFormat='{0:F1}%'}" Style="{StaticResource AmountLabelStyle}" TextColor="{Binding Analytics.SavingsRate, Converter={StaticResource SavingsRateColorConverter}}" />
-                        </VerticalStackLayout>
-                    </Border>
-                    <Border Style="{StaticResource CardFrameStyle}" HorizontalOptions="Fill" Padding="16">
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="Avg Daily" Style="{StaticResource CaptionLabelStyle}" />
-                            <Label Text="{Binding Analytics.AverageDailySpending, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" TextColor="Red" />
-                        </VerticalStackLayout>
-                    </Border>
-                    <Border Style="{StaticResource CardFrameStyle}" HorizontalOptions="Fill" Padding="16">
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="Avg Monthly" Style="{StaticResource CaptionLabelStyle}" />
-                            <Label Text="{Binding Analytics.AverageMonthlySpending, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AmountLabelStyle}" TextColor="Red" />
-                        </VerticalStackLayout>
-                    </Border>
-                </HorizontalStackLayout>
-
-                <!-- Category Breakdown -->
-                <Border Style="{StaticResource CardFrameStyle}" Margin="0,16,0,0" Padding="16" IsVisible="{Binding Analytics.CategoryBreakdown.Count, Converter={StaticResource NullToBoolConverter}}">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="Spending by Category" Style="{StaticResource SectionHeaderStyle}" />
-                        <controls:CategoryDonutChart Items="{Binding Analytics.CategoryBreakdown}" HeightRequest="210" />
-                        <CollectionView ItemsSource="{Binding Analytics.CategoryBreakdown}" HeightRequest="300">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource CategoryItemFrameStyle}" Margin="0,4">
-                                        <HorizontalStackLayout Spacing="12">
-                                            <Border WidthRequest="40" HeightRequest="40" CornerRadius="20" 
-                                                   Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
-                                                   HasShadow="False" BorderColor="Transparent">
-                                                <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="16" />
-                                            </Border>
-                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                                <Label Text="{Binding CategoryName}" Style="{StaticResource CategoryNameLabelStyle}" />
-                                                <ProgressBar Progress="{Binding Percentage, Converter={StaticResource PercentageConverter}}" 
-                                                             ProgressColor="{Binding Percentage, Converter={StaticResource PercentageColorConverter}}" HeightRequest="6" />
-                                            </VerticalStackLayout>
-                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
-                                                <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource CategoryAmountLabelStyle}" />
-                                                <Label Text="{Binding Percentage, StringFormat='{0:F1}%'}" Style="{StaticResource CategoryPercentLabelStyle}" />
-                                            </VerticalStackLayout>
-                                        </HorizontalStackLayout>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </VerticalStackLayout>
+                    </Grid>
                 </Border>
 
                 <!-- Monthly Trends -->
-                <Border Style="{StaticResource CardFrameStyle}" Margin="0,16,0,0" Padding="16" IsVisible="{Binding Analytics.SpendingTrends.Count, Converter={StaticResource NullToBoolConverter}}">
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16"
+                        IsVisible="{Binding Analytics.SpendingTrends.Count, Converter={StaticResource CountToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Monthly Trends" Style="{StaticResource SectionHeaderStyle}" />
                         <VerticalStackLayout Spacing="8">
@@ -132,66 +60,51 @@
                                 </HorizontalStackLayout>
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
-                        <CollectionView ItemsSource="{Binding Analytics.SpendingTrends}" HeightRequest="250">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource TrendItemFrameStyle}" Margin="0,4">
-                                        <HorizontalStackLayout Spacing="12">
-                                            <VerticalStackLayout VerticalOptions="Center" WidthRequest="80">
-                                                <Label Text="{Binding Date, StringFormat='{0:MMM yyyy}'}" Style="{StaticResource TrendMonthLabelStyle}" HorizontalOptions="Center" />
-                                            </VerticalStackLayout>
-                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                                <HorizontalStackLayout Spacing="8">
-                                                    <Label Text="Income" Style="{StaticResource TrendCaptionLabelStyle}" TextColor="Green" />
-                                                    <Label Text="{Binding Income, Converter={StaticResource MoneyConverter}}" Style="{StaticResource TrendValueLabelStyle}" TextColor="Green" />
-                                                </HorizontalStackLayout>
-                                                <HorizontalStackLayout Spacing="8">
-                                                    <Label Text="Expense" Style="{StaticResource TrendCaptionLabelStyle}" TextColor="Red" />
-                                                    <Label Text="{Binding Expense, Converter={StaticResource MoneyConverter}}" Style="{StaticResource TrendValueLabelStyle}" TextColor="Red" />
-                                                </HorizontalStackLayout>
-                                                <HorizontalStackLayout Spacing="8">
-                                                    <Label Text="Net" Style="{StaticResource TrendCaptionLabelStyle}" />
-                                                    <Label Text="{Binding Net, Converter={StaticResource MoneyConverter}}" Style="{StaticResource TrendValueLabelStyle}" />
-                                                </HorizontalStackLayout>
-                                            </VerticalStackLayout>
-                                        </HorizontalStackLayout>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Highest Spending Categories -->
-                <Border Style="{StaticResource CardFrameStyle}" Margin="0,16,0,0" Padding="16" IsVisible="{Binding Analytics.HighestSpendingCategories.Count, Converter={StaticResource NullToBoolConverter}}">
+                <!-- Spending by Category -->
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16"
+                        IsVisible="{Binding Analytics.CategoryBreakdown.Count, Converter={StaticResource CountToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Highest Spending Categories" Style="{StaticResource SectionHeaderStyle}" />
-                        <CollectionView ItemsSource="{Binding Analytics.HighestSpendingCategories}" HeightRequest="200">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource CategoryItemFrameStyle}" Margin="0,4">
-                                        <HorizontalStackLayout Spacing="12">
-                                            <Border WidthRequest="40" HeightRequest="40" CornerRadius="20" 
-                                                   Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
-                                                   HasShadow="False" BorderColor="Transparent">
-                                                <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="16" />
-                                            </Border>
-                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                                <Label Text="{Binding CategoryName}" Style="{StaticResource CategoryNameLabelStyle}" />
-                                                <ProgressBar Progress="{Binding Percentage, Converter={StaticResource PercentageConverter}}" 
-                                                             ProgressColor="{Binding Percentage, Converter={StaticResource PercentageColorConverter}}" HeightRequest="6" />
-                                            </VerticalStackLayout>
-                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
-                                                <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource CategoryAmountLabelStyle}" />
-                                                <Label Text="{Binding Percentage, StringFormat='{0:F1}%'}" Style="{StaticResource CategoryPercentLabelStyle}" />
-                                            </VerticalStackLayout>
-                                        </HorizontalStackLayout>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                        <Label Text="Spending by Category" Style="{StaticResource SectionHeaderStyle}" />
+                        <controls:CategoryDonutChart Items="{Binding Analytics.CategoryBreakdown}" HeightRequest="210" />
                     </VerticalStackLayout>
                 </Border>
+
+                <!-- Income vs Expenses -->
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16"
+                        IsVisible="{Binding Analytics, Converter={StaticResource NullToBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Income vs Expenses" Style="{StaticResource SectionHeaderStyle}" />
+                        <controls:IncomeExpenseChart Income="{Binding Analytics.MonthlyIncome}"
+                                                     Expense="{Binding Analytics.MonthlyExpense}"
+                                                     Net="{Binding Analytics.IncomeVsExpense}"
+                                                     HeightRequest="94" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Savings Rate -->
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16"
+                        IsVisible="{Binding Analytics, Converter={StaticResource NullToBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Savings Rate" Style="{StaticResource SectionHeaderStyle}" />
+                        <controls:SavingsRateGauge Value="{Binding Analytics.SavingsRate}"
+                                                   HeightRequest="180" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Spending Averages -->
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16"
+                        IsVisible="{Binding Analytics, Converter={StaticResource NullToBoolConverter}}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Spending Averages" Style="{StaticResource SectionHeaderStyle}" />
+                        <controls:AveragesChart Daily="{Binding Analytics.AverageDailySpending}"
+                                                Monthly="{Binding Analytics.AverageMonthlySpending}"
+                                                HeightRequest="64" />
+                    </VerticalStackLayout>
+                </Border>
+
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>

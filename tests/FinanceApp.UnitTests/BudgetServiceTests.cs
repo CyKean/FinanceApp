@@ -44,6 +44,7 @@ public class BudgetServiceTests
             Mock.Of<IUnitOfWork>(),
             _mockBudgetRepository.Object,
             _mockCategoryRepository.Object,
+            Mock.Of<IAccountRepository>(),
             _mockTransactionRepository.Object,
             Mock.Of<INotificationService>(),
             new CreateBudgetDtoValidator(),

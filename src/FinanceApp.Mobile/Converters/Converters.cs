@@ -171,7 +171,11 @@ public class MoneyToStringConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
     {
         if (value is FinanceApp.Domain.ValueObjects.Money money)
+        {
+            if (parameter is string parameterText && parameterText.Equals("Plain", System.StringComparison.OrdinalIgnoreCase))
+                return money.Amount.ToString("N2", culture);
             return money.ToString();
+        }
         return "₱0.00";
     }
 
@@ -205,6 +209,23 @@ public class NullToBoolConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
     {
+        if (value is System.Collections.ICollection collection)
+            return collection.Count > 0;
+        return value != null;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class CountToBoolConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is int count)
+            return count > 0;
         if (value is System.Collections.ICollection collection)
             return collection.Count > 0;
         return value != null;

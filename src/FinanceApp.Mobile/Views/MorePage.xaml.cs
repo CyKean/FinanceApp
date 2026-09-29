@@ -19,7 +19,7 @@ public partial class MorePage : ContentPage
 
     private async void OnAnalyticsTapped(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("//Analytics");
+        await Shell.Current.GoToAsync("Analytics");
     }
 
     private async void OnProfileTapped(object? sender, EventArgs e)

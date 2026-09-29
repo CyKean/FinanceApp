@@ -8,4 +8,5 @@ public class DatabaseOptions
     public string SupabaseUrl { get; set; } = "";
     public string SupabaseAnonKey { get; set; } = "";
     public bool EnableSensitiveDataLogging { get; set; } = false;
+    public bool SeedDemoData { get; set; } = false;
 }
