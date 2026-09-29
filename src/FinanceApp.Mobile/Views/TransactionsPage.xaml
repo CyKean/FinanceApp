@@ -145,5 +145,8 @@
 
         <!-- Add Transaction chooser -->
         <controls:ChoiceSheetHost />
+
+        <!-- Custom confirmation modal -->
+        <controls:ConfirmModalHost />
     </Grid>
 </ContentPage>

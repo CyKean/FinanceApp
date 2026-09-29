@@ -358,6 +358,37 @@ public class PeriodButtonStyleConverter : IValueConverter
     }
 }
 
+public class BoolToStyleConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        var selected = value is true;
+        if (string.Equals(parameter as string, "Invert", StringComparison.OrdinalIgnoreCase))
+            selected = !selected;
+
+        var key = selected ? "PrimaryButtonStyle" : "OutlineButtonStyle";
+        var resources = Application.Current?.Resources;
+        if (resources == null)
+            return null;
+
+        if (resources.TryGetValue(key, out var direct) && direct is Style directStyle)
+            return directStyle;
+
+        foreach (var dictionary in resources.MergedDictionaries)
+        {
+            if (dictionary.TryGetValue(key, out var merged) && merged is Style mergedStyle)
+                return mergedStyle;
+        }
+
+        return null;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
 public class PredictionConfidenceColorConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)

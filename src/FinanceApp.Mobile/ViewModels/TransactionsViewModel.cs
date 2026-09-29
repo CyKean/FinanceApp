@@ -153,7 +153,8 @@ public partial class TransactionsViewModel : BaseViewModel
             "Delete Transaction",
             $"Are you sure you want to delete this {transaction.Type.ToString().ToLower()}?",
             "Delete",
-            "Cancel");
+            "Cancel",
+            destructive: true);
 
         if (!confirmed) return;
 

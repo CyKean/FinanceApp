@@ -3,111 +3,169 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
-             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.AddGoalPage"
              x:DataType="viewmodels:AddGoalViewModel"
+             Shell.NavBarIsVisible="False"
              Title="{Binding Title}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <converters:MoneyToStringConverter x:Key="MoneyConverter" />
-            <converters:ColorConverter x:Key="ColorConverter" />
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:ColorConverter x:Key="ColorConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <ScrollView>
-        <VerticalStackLayout Spacing="16" Padding="16">
-            <!-- Name -->
-            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                <VerticalStackLayout Spacing="8">
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Spacing="14" Padding="20,24,20,28">
+                <Label Text="{Binding Title}" Style="{StaticResource TitleLabelStyle}" />
+
+                <Label Text="{Binding ErrorMessage}"
+                       Style="{StaticResource ErrorLabelStyle}"
+                       IsVisible="{Binding HasError}" />
+
+                <!-- Goal Name -->
+                <VerticalStackLayout Spacing="6">
                     <Label Text="Goal Name" Style="{StaticResource FormLabelStyle}" />
-                    <Entry Text="{Binding Name}" Placeholder="e.g., Emergency Fund" Style="{StaticResource EntryStyle}" />
+                    <Border Style="{StaticResource FieldBorderStyle}">
+                        <Entry Text="{Binding Name}"
+                               Placeholder="e.g., Emergency Fund"
+                               BackgroundColor="Transparent"
+                               TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                               HeightRequest="48" />
+                    </Border>
                 </VerticalStackLayout>
-            </Border>
 
-            <!-- Target Amount -->
-            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                <VerticalStackLayout Spacing="8">
+                <!-- Target Amount -->
+                <VerticalStackLayout Spacing="6">
                     <Label Text="Target Amount" Style="{StaticResource FormLabelStyle}" />
-                    <Entry Text="{Binding TargetAmount.Amount, StringFormat='{0:N2}'}" 
-                           Keyboard="Numeric" 
-                           Placeholder="0.00"
-                           Style="{StaticResource AmountEntryStyle}"
-                           HorizontalTextAlignment="End" />
+                    <Border Style="{StaticResource FieldBorderStyle}">
+                        <Entry Text="{Binding AmountText}"
+                               Keyboard="Numeric"
+                               Placeholder="0.00"
+                               BackgroundColor="Transparent"
+                               TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                               HeightRequest="48"
+                               HorizontalTextAlignment="End" />
+                    </Border>
                 </VerticalStackLayout>
-            </Border>
 
-            <!-- Target Date -->
-            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Target Date" Style="{StaticResource FormLabelStyle}" />
-                    <DatePicker Date="{Binding TargetDate}" 
-                                Format="MMM dd, yyyy"
-                                MinimumDate="{Binding Source={x:Static sys:DateTime.Today}, Path=Today.AddDays(1)}"
-                                Style="{StaticResource DatePickerStyle}" />
-                </VerticalStackLayout>
-            </Border>
+                <!-- Dates -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Target Date" Style="{StaticResource FormLabelStyle}" />
+                        <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
+                            <DatePicker Date="{Binding TargetDate}"
+                                        Format="MMM dd, yyyy"
+                                        HeightRequest="48" />
+                        </Border>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="6">
+                        <Label Text="Start Date" Style="{StaticResource FormLabelStyle}" />
+                        <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
+                            <DatePicker Date="{Binding StartDate}"
+                                        Format="MMM dd, yyyy"
+                                        HeightRequest="48" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
 
-            <!-- Start Date -->
-            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Start Date" Style="{StaticResource FormLabelStyle}" />
-                    <DatePicker Date="{Binding StartDate}" 
-                                Format="MMM dd, yyyy"
-                                Style="{StaticResource DatePickerStyle}" />
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Description -->
-            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                <VerticalStackLayout Spacing="8">
+                <!-- Description -->
+                <VerticalStackLayout Spacing="6">
                     <Label Text="Description (Optional)" Style="{StaticResource FormLabelStyle}" />
-                    <Editor Text="{Binding Description}" 
-                            HeightRequest="80"
-                            Placeholder="Describe your goal..."
-                            Style="{StaticResource EditorStyle}" />
+                    <Border Style="{StaticResource FieldBorderStyle}" Padding="12,8">
+                        <Editor Text="{Binding Description}"
+                                BackgroundColor="Transparent"
+                                TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                Placeholder="Describe your goal..."
+                                HeightRequest="88" />
+                    </Border>
                 </VerticalStackLayout>
-            </Border>
 
-            <!-- Icon -->
-            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Icon (Emoji)" Style="{StaticResource FormLabelStyle}" />
-                    <Entry Text="{Binding Icon}" Placeholder="🎯" Style="{StaticResource EntryStyle}" MaxLength="2" />
+                <!-- Icon picker -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Icon" Style="{StaticResource FormLabelStyle}" />
+                    <Border Style="{StaticResource FieldBorderStyle}" Padding="12">
+                        <VerticalStackLayout Spacing="10">
+                            <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                                <Border WidthRequest="52" HeightRequest="52"
+                                        Background="{Binding Color, Converter={StaticResource ColorConverter}}"
+                                        StrokeThickness="0"
+                                        VerticalOptions="Center">
+                                    <Border.StrokeShape>
+                                        <Ellipse />
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding Icon, TargetNullValue=🎯}" FontSize="26" VerticalOptions="Center" HorizontalOptions="Center" />
+                                </Border>
+                                <Label Text="Tap an icon below"
+                                       Style="{StaticResource MutedLabelStyle}"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Fill" />
+                            </HorizontalStackLayout>
+                            <FlexLayout x:Name="EmojiContainer"
+                                        Direction="Row"
+                                        Wrap="Wrap" />
+                        </VerticalStackLayout>
+                    </Border>
                 </VerticalStackLayout>
-            </Border>
 
-            <!-- Color -->
-            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Color (Hex)" Style="{StaticResource FormLabelStyle}" />
-                    <Entry Text="{Binding Color}" Placeholder="#512BD4" Style="{StaticResource EntryStyle}" MaxLength="7" />
+                <!-- Color picker -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Color" Style="{StaticResource FormLabelStyle}" />
+                    <Border Style="{StaticResource FieldBorderStyle}" Padding="12">
+                        <VerticalStackLayout Spacing="10">
+                            <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                                <Border WidthRequest="40" HeightRequest="40"
+                                        Background="{Binding Color, Converter={StaticResource ColorConverter}}"
+                                        StrokeThickness="0"
+                                        VerticalOptions="Center">
+                                    <Border.StrokeShape>
+                                        <Ellipse />
+                                    </Border.StrokeShape>
+                                </Border>
+                                <Label Text="{Binding Color}"
+                                       Style="{StaticResource MutedLabelStyle}"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Fill" />
+                            </HorizontalStackLayout>
+                            <FlexLayout x:Name="ColorContainer"
+                                        Direction="Row"
+                                        Wrap="Wrap" />
+                        </VerticalStackLayout>
+                    </Border>
                 </VerticalStackLayout>
-            </Border>
 
-            <!-- Linked Account -->
-            <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Linked Account (Optional)" Style="{StaticResource FormLabelStyle}" />
-                    <Picker Title="Select Account" 
-                            ItemsSource="{Binding Accounts}" 
-                            ItemDisplayBinding="{Binding Name}"
-                            SelectedItem="{Binding LinkedAccount}"
-                            Style="{StaticResource PickerStyle}" />
+                <!-- Linked Account (Optional) -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Account (Optional)" Style="{StaticResource FormLabelStyle}" />
+                    <controls:ModernSelect ItemsSource="{Binding Accounts}"
+                                           SelectedItem="{Binding LinkedAccount}"
+                                           Placeholder="All accounts"
+                                           DisplayMemberPath="Name"
+                                           IconMemberPath="Icon"
+                                           ColorMemberPath="Color" />
                 </VerticalStackLayout>
-            </Border>
 
-            <!-- Save Button -->
-            <Button Text="{Binding IsEditing, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Update|Create'}" 
-                    Command="{Binding SaveCommand}"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
-                    Style="{StaticResource PrimaryButtonStyle}"
-                    Margin="16,24,16,16" />
-        </VerticalStackLayout>
-    </ScrollView>
+                <!-- Save Button -->
+                <Button Text="{Binding IsEditing, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Update|Create'}"
+                        Command="{Binding SaveCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        TextColor="White"
+                        Margin="0,8,0,0" />
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Cancel" Command="{Binding CancelCommand}" Priority="0" />
-    </ContentPage.ToolbarItems>
+                <!-- Cancel Button -->
+                <Button Text="Cancel"
+                        Command="{Binding CancelCommand}"
+                        Style="{StaticResource OutlineButtonStyle}" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Toasts -->
+        <controls:ToastHost />
+
+        <!-- Success animation -->
+        <controls:SuccessOverlayHost />
+    </Grid>
 </ContentPage>

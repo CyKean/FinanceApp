@@ -49,7 +49,7 @@
     <ShellContent Route="EditCategory" ContentTemplate="{DataTemplate views:AddCategoryPage}" Shell.NavBarIsVisible="True" />
     <ShellContent Route="AddBudget" ContentTemplate="{DataTemplate views:AddBudgetPage}" Shell.NavBarIsVisible="True" />
     <ShellContent Route="EditBudget" ContentTemplate="{DataTemplate views:AddBudgetPage}" Shell.NavBarIsVisible="True" />
-    <ShellContent Route="AddGoal" ContentTemplate="{DataTemplate views:AddGoalPage}" Shell.NavBarIsVisible="True" />
-    <ShellContent Route="EditGoal" ContentTemplate="{DataTemplate views:AddGoalPage}" Shell.NavBarIsVisible="True" />
+    <ShellContent Route="AddGoal" ContentTemplate="{DataTemplate views:AddGoalPage}" />
+    <ShellContent Route="EditGoal" ContentTemplate="{DataTemplate views:AddGoalPage}" />
 
 </Shell>

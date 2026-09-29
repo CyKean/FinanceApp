@@ -16,13 +16,24 @@ public partial class GoalsViewModel : BaseViewModel
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly GoalHistoryStore _historyStore;
     private readonly ILogger<GoalsViewModel> _logger;
 
     [ObservableProperty]
     private IReadOnlyList<FinancialGoalDto> _goals = Array.Empty<FinancialGoalDto>();
 
     [ObservableProperty]
+    private IReadOnlyList<GoalHistoryEntryDto> _history = Array.Empty<GoalHistoryEntryDto>();
+
+    [ObservableProperty]
+    private bool _showHistory;
+
+    [ObservableProperty]
     private GoalStatus _filterStatus = GoalStatus.Active;
+
+    public bool IsGoalsTab => !ShowHistory;
+
+    public Func<FinancialGoalDto, Task>? AnimateDeleteAsync { get; set; }
 
     public GoalsViewModel(
         IFinancialGoalService goalService,
@@ -30,6 +41,7 @@ public partial class GoalsViewModel : BaseViewModel
         IAuthenticationService authService,
         INavigationService navigationService,
         IDialogService dialogService,
+        GoalHistoryStore historyStore,
         ILogger<GoalsViewModel> logger)
     {
         _goalService = goalService;
@@ -37,9 +49,21 @@ public partial class GoalsViewModel : BaseViewModel
         _authService = authService;
         _navigationService = navigationService;
         _dialogService = dialogService;
+        _historyStore = historyStore;
         _logger = logger;
         Title = "Goals";
     }
+
+    partial void OnShowHistoryChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsGoalsTab));
+    }
+
+    [RelayCommand]
+    private void ShowGoalsTab() => ShowHistory = false;
+
+    [RelayCommand]
+    private void ShowHistoryTab() => ShowHistory = true;
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -55,6 +79,7 @@ public partial class GoalsViewModel : BaseViewModel
             if (!userId.HasValue) return;
 
             Goals = await _goalService.GetAllAsync(userId.Value);
+            History = await _historyStore.GetAllAsync(userId.Value);
         }
         catch (Exception ex)
         {
@@ -100,7 +125,7 @@ public partial class GoalsViewModel : BaseViewModel
             var progressDto = new GoalProgressDto(new Money(amount, goal.TargetAmount.Currency));
             await _goalService.AddProgressAsync(goal.Id, progressDto, userId.Value);
             await LoadAsync();
-            await _dialogService.ShowToastAsync("Progress added");
+            await _dialogService.ShowSuccessAsync("Progress added");
         }
         catch (Exception ex)
         {
@@ -127,7 +152,7 @@ public partial class GoalsViewModel : BaseViewModel
 
             await _goalService.CompleteAsync(goal.Id, userId.Value);
             await LoadAsync();
-            await _dialogService.ShowToastAsync("Goal completed!");
+            await _dialogService.ShowSuccessAsync("Goal completed!");
         }
         catch (Exception ex)
         {
@@ -143,7 +168,8 @@ public partial class GoalsViewModel : BaseViewModel
             "Delete Goal",
             $"Are you sure you want to delete '{goal.Name}'?",
             "Delete",
-            "Cancel");
+            "Cancel",
+            destructive: true);
 
         if (!confirmed) return;
 
@@ -153,7 +179,22 @@ public partial class GoalsViewModel : BaseViewModel
             if (!userId.HasValue) return;
 
             await _goalService.DeleteAsync(goal.Id, userId.Value);
+            await _historyStore.AddAsync(userId.Value, goal.Name, GoalHistoryStore.DeletedAction);
+
+            if (AnimateDeleteAsync is not null)
+            {
+                try
+                {
+                    await AnimateDeleteAsync(goal);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Delete animation failed for goal {GoalId}", goal.Id);
+                }
+            }
+
             Goals = Goals.Where(g => g.Id != goal.Id).ToList();
+            History = await _historyStore.GetAllAsync(userId.Value);
             await _dialogService.ShowToastAsync("Goal deleted");
         }
         catch (Exception ex)

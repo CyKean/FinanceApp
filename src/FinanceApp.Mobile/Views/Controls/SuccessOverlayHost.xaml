@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinanceApp.Mobile.Views.Controls.SuccessOverlayHost"
+             x:Name="Root"
+             IsVisible="False"
+             VerticalOptions="Fill"
+             HorizontalOptions="Fill">
+    <Grid>
+        <Grid x:Name="Scrim" BackgroundColor="#99000000" Opacity="0" />
+
+        <Border x:Name="Card"
+                Background="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
+                Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}"
+                StrokeThickness="1"
+                Padding="26,26,26,22"
+                WidthRequest="244"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                Opacity="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="28" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="Black" Opacity="0.32" Radius="28" Offset="0,12" />
+            </Border.Shadow>
+            <VerticalStackLayout Spacing="0">
+                <Border x:Name="Badge"
+                        WidthRequest="84"
+                        HeightRequest="84"
+                        StrokeThickness="0"
+                        BackgroundColor="#16A34A"
+                        HorizontalOptions="Center"
+                        Margin="0,0,0,16"
+                        Opacity="0">
+                    <Border.StrokeShape>
+                        <Ellipse />
+                    </Border.StrokeShape>
+                    <Label x:Name="CheckLabel"
+                           Text="&#x2713;"
+                           FontSize="42"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           Opacity="0" />
+                </Border>
+
+                <Label x:Name="MessageLabel"
+                       FontSize="17"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
+                       LineBreakMode="WordWrap"
+                       Opacity="0"
+                       TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentView>

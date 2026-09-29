@@ -84,7 +84,8 @@ public partial class AccountsViewModel : BaseViewModel
             "Delete Account",
             $"Are you sure you want to delete '{account.Name}'?",
             "Delete",
-            "Cancel");
+            "Cancel",
+            destructive: true);
 
         if (!confirmed) return;
 

@@ -143,6 +143,9 @@
 
         <!-- Toasts -->
         <controls:ToastHost />
+
+        <!-- Custom confirmation modal -->
+        <controls:ConfirmModalHost />
     </Grid>
 
     <ContentPage.ToolbarItems>

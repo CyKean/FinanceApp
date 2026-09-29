@@ -16,13 +16,21 @@ public partial class AddGoalViewModel : BaseViewModel
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly GoalHistoryStore _historyStore;
     private readonly ILogger<AddGoalViewModel> _logger;
+
+    private string? _originalName;
+    private Money? _originalTargetAmount;
+    private DateTime? _originalTargetDate;
 
     [ObservableProperty]
     private string _name = string.Empty;
 
     [ObservableProperty]
     private Money _targetAmount = Money.Zero();
+
+    [ObservableProperty]
+    private string _amountText = string.Empty;
 
     [ObservableProperty]
     private DateTime _targetDate = DateTime.Today.AddMonths(6);
@@ -57,6 +65,7 @@ public partial class AddGoalViewModel : BaseViewModel
         IAuthenticationService authService,
         INavigationService navigationService,
         IDialogService dialogService,
+        GoalHistoryStore historyStore,
         ILogger<AddGoalViewModel> logger)
     {
         _goalService = goalService;
@@ -64,6 +73,7 @@ public partial class AddGoalViewModel : BaseViewModel
         _authService = authService;
         _navigationService = navigationService;
         _dialogService = dialogService;
+        _historyStore = historyStore;
         _logger = logger;
     }
 
@@ -95,15 +105,24 @@ public partial class AddGoalViewModel : BaseViewModel
         if (!userId.HasValue) return;
 
         var goal = await _goalService.GetByIdAsync(goalId, userId.Value);
-        if (goal == null) return;
+        if (goal == null)
+        {
+            _logger.LogWarning("Goal {GoalId} was not found for user {UserId}", goalId, userId.Value);
+            SetError("Goal not found");
+            return;
+        }
 
         Name = goal.Name;
         TargetAmount = goal.TargetAmount;
+        AmountText = goal.TargetAmount.Amount.ToString("N2", System.Globalization.CultureInfo.InvariantCulture);
         TargetDate = goal.TargetDate;
         StartDate = goal.StartDate;
         Description = goal.Description ?? string.Empty;
         Icon = goal.Icon ?? "🎯";
         Color = goal.Color ?? "#512BD4";
+        _originalName = goal.Name;
+        _originalTargetAmount = goal.TargetAmount;
+        _originalTargetDate = goal.TargetDate;
 
         if (goal.LinkedAccountId.HasValue)
             LinkedAccount = Accounts.FirstOrDefault(a => a.Id == goal.LinkedAccountId.Value.Value);
@@ -138,7 +157,8 @@ public partial class AddGoalViewModel : BaseViewModel
                     null);
 
                 await _goalService.UpdateAsync(EditingGoalId.Value, updateDto, userId.Value);
-                await _dialogService.ShowToastAsync("Goal updated");
+                await _historyStore.AddAsync(userId.Value, Name, GoalHistoryStore.EditedAction, BuildChangeDetails());
+                await _dialogService.ShowSuccessAsync("Goal updated");
             }
             else
             {
@@ -153,7 +173,7 @@ public partial class AddGoalViewModel : BaseViewModel
                     LinkedAccount != null ? new AccountId(LinkedAccount.Id) : null);
 
                 await _goalService.CreateAsync(createDto, userId.Value);
-                await _dialogService.ShowToastAsync("Goal created");
+                await _dialogService.ShowSuccessAsync("Goal created");
             }
 
             await _navigationService.NavigateToAsync("//Goals");
@@ -175,6 +195,36 @@ public partial class AddGoalViewModel : BaseViewModel
         await _navigationService.NavigateToAsync("//Goals");
     }
 
+    [RelayCommand]
+    private void SelectIcon(string icon)
+    {
+        if (!string.IsNullOrWhiteSpace(icon))
+            Icon = icon;
+    }
+
+    [RelayCommand]
+    private void SelectColor(string color)
+    {
+        if (!string.IsNullOrWhiteSpace(color))
+            Color = color;
+    }
+
+    private string? BuildChangeDetails()
+    {
+        var changes = new List<string>();
+
+        if (_originalName != null && !string.Equals(_originalName, Name, StringComparison.Ordinal))
+            changes.Add($"Name: {_originalName} → {Name}");
+
+        if (_originalTargetAmount is { } originalTarget && originalTarget.Amount != TargetAmount.Amount)
+            changes.Add($"Target: {originalTarget} → {TargetAmount}");
+
+        if (_originalTargetDate is { } originalDate && originalDate.Date != TargetDate.Date)
+            changes.Add($"Date: {originalDate:MMM dd, yyyy} → {TargetDate:MMM dd, yyyy}");
+
+        return changes.Count == 0 ? null : string.Join("; ", changes);
+    }
+
     private bool ValidateInput()
     {
         if (string.IsNullOrWhiteSpace(Name))
@@ -183,11 +233,13 @@ public partial class AddGoalViewModel : BaseViewModel
             return false;
         }
 
-        if (TargetAmount.Amount <= 0)
+        if (!decimal.TryParse(AmountText, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var parsedAmount) || parsedAmount <= 0)
         {
             SetError("Target amount must be greater than zero");
             return false;
         }
+
+        TargetAmount = new Money(parsedAmount, TargetAmount.Currency);
 
         if (TargetDate <= DateTime.Today)
         {

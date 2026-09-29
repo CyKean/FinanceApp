@@ -93,7 +93,8 @@ public partial class CategoriesViewModel : BaseViewModel
             "Delete Category",
             $"Are you sure you want to delete '{category.Name}'?",
             "Delete",
-            "Cancel");
+            "Cancel",
+            destructive: true);
 
         if (!confirmed) return;
 

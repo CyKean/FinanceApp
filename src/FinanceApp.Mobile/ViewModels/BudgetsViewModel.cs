@@ -86,7 +86,8 @@ public partial class BudgetsViewModel : BaseViewModel
             "Delete Budget",
             $"Are you sure you want to delete '{budget.Name}'?",
             "Delete",
-            "Cancel");
+            "Cancel",
+            destructive: true);
 
         if (!confirmed) return;
 

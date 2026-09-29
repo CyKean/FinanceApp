@@ -56,12 +56,21 @@ public class DialogService : IDialogService
     private readonly ILogger<DialogService> _logger;
     private readonly ToastService _toastService;
     private readonly ChoiceSheetService _choiceSheetService;
+    private readonly ConfirmModalService _confirmModalService;
+    private readonly SuccessAnimationService _successAnimationService;
 
-    public DialogService(ILogger<DialogService> logger, ToastService toastService, ChoiceSheetService choiceSheetService)
+    public DialogService(
+        ILogger<DialogService> logger,
+        ToastService toastService,
+        ChoiceSheetService choiceSheetService,
+        ConfirmModalService confirmModalService,
+        SuccessAnimationService successAnimationService)
     {
         _logger = logger;
         _toastService = toastService;
         _choiceSheetService = choiceSheetService;
+        _confirmModalService = confirmModalService;
+        _successAnimationService = successAnimationService;
     }
 
     private static Page? GetMainPage()
@@ -73,8 +82,11 @@ public class DialogService : IDialogService
         return window?.Page;
     }
 
-    public async Task<bool> ShowConfirmationAsync(string title, string message, string confirmText = "Yes", string cancelText = "No")
+    public async Task<bool> ShowConfirmationAsync(string title, string message, string confirmText = "Yes", string cancelText = "No", bool destructive = false)
     {
+        if (_confirmModalService.HasHost)
+            return await _confirmModalService.ShowAsync(title, message, confirmText, cancelText, destructive);
+
         var page = GetMainPage();
         if (page == null) return false;
         return await page.DisplayAlertAsync(title, message, confirmText, cancelText);
@@ -117,5 +129,16 @@ public class DialogService : IDialogService
     {
         _logger.LogWarning("Error toast: {Message}", message);
         await _toastService.ShowAsync(message, ToastKind.Error);
+    }
+
+    public async Task ShowSuccessAsync(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            return;
+
+        if (_successAnimationService.HasHost)
+            await _successAnimationService.ShowAsync(message);
+        else
+            await _toastService.ShowAsync(message, ToastKind.Success);
     }
 }

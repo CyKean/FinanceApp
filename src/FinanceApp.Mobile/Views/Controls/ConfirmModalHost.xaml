@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinanceApp.Mobile.Views.Controls.ConfirmModalHost"
+             x:Name="Root"
+             IsVisible="False"
+             VerticalOptions="Fill"
+             HorizontalOptions="Fill">
+    <Grid>
+        <Grid x:Name="Scrim" BackgroundColor="#B3000000" Opacity="0">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnCancelTapped" />
+            </Grid.GestureRecognizers>
+        </Grid>
+
+        <Border x:Name="Card"
+                Background="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
+                Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}"
+                StrokeThickness="1"
+                Padding="24,24,24,20"
+                WidthRequest="316"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                Opacity="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="26" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="Black" Opacity="0.32" Radius="28" Offset="0,12" />
+            </Border.Shadow>
+            <VerticalStackLayout Spacing="0">
+                <Border x:Name="IconBadge"
+                        WidthRequest="62"
+                        HeightRequest="62"
+                        StrokeThickness="0"
+                        HorizontalOptions="Center"
+                        Margin="0,0,0,16">
+                    <Border.StrokeShape>
+                        <Ellipse />
+                    </Border.StrokeShape>
+                    <Label x:Name="IconLabel"
+                           Text="&#x2713;"
+                           FontSize="28"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+
+                <Label x:Name="TitleLabel"
+                       FontSize="19"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+
+                <Label x:Name="MessageLabel"
+                       FontSize="14"
+                       HorizontalTextAlignment="Center"
+                       LineBreakMode="WordWrap"
+                       Margin="0,8,0,0"
+                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,22,0,0">
+                    <Button x:Name="CancelButton"
+                            Grid.Column="0"
+                            Style="{StaticResource OutlineButtonStyle}"
+                            Clicked="OnCancelTapped" />
+                    <Button x:Name="ConfirmButton"
+                            Grid.Column="1"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Clicked="OnConfirmTapped" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentView>

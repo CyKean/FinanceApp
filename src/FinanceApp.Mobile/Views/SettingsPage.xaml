@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.SettingsPage"
              x:DataType="viewmodels:SettingsViewModel"
              Title="{Binding Title}">
@@ -14,6 +15,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
+    <Grid>
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
         <ScrollView>
             <VerticalStackLayout Spacing="16" Padding="16">
@@ -95,4 +97,8 @@
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>
+
+        <!-- Custom confirmation modal -->
+        <controls:ConfirmModalHost />
+    </Grid>
 </ContentPage>

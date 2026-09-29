@@ -101,9 +101,12 @@ public static class MauiProgram
         builder.Services.AddSingleton<TransactionSheetRequest>();
         builder.Services.AddSingleton<ToastService>();
         builder.Services.AddSingleton<ChoiceSheetService>();
+        builder.Services.AddSingleton<ConfirmModalService>();
+        builder.Services.AddSingleton<SuccessAnimationService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
         builder.Services.AddSingleton<IDialogService, DialogService>();
         builder.Services.AddSingleton<DevDataSeeder>();
+        builder.Services.AddSingleton<GoalHistoryStore>();
 
         // Background Services
         builder.Services.AddHostedService<SupabaseInitializer>();

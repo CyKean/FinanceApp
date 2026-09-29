@@ -177,7 +177,8 @@ public partial class SettingsViewModel : BaseViewModel
             "Logout",
             "Are you sure you want to logout?",
             "Logout",
-            "Cancel");
+            "Cancel",
+            destructive: true);
 
         if (!confirmed) return;
 
