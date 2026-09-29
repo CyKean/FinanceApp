@@ -123,8 +123,16 @@ public partial class AddCategoryPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Could not load the form: {ex.Message}", "OK");
-            await Shell.Current.GoToAsync("//Categories");
+            await DisplayAlertAsync("Error", $"Could not load the form: {ex.Message}", "OK");
+            try
+            {
+                await Shell.Current.GoToAsync("..");
+            }
+            catch (Exception navEx)
+            {
+                System.Diagnostics.Debug.WriteLine($"Could not navigate back: {navEx.Message}");
+                await Shell.Current.GoToAsync("//Main/More");
+            }
         }
     }
 }

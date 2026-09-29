@@ -14,7 +14,7 @@ public partial class MorePage : ContentPage
 
     private async void OnCategoriesTapped(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("//Categories");
+        await Shell.Current.GoToAsync("Categories");
     }
 
     private async void OnAnalyticsTapped(object? sender, EventArgs e)

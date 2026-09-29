@@ -112,7 +112,7 @@ public partial class AddCategoryViewModel : BaseViewModel
                 await _dialogService.ShowToastAsync("Category added");
             }
 
-            await _navigationService.NavigateToAsync("//Categories");
+            await ReturnToCategoriesAsync();
         }
         catch (Exception ex)
         {
@@ -128,7 +128,30 @@ public partial class AddCategoryViewModel : BaseViewModel
     [RelayCommand]
     private async Task CancelAsync()
     {
-        await _navigationService.NavigateToAsync("//Categories");
+        await ReturnToCategoriesAsync();
+    }
+
+    private async Task ReturnToCategoriesAsync()
+    {
+        try
+        {
+            await _navigationService.GoBackAsync();
+            return;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not pop back to categories");
+        }
+
+        try
+        {
+            await _navigationService.NavigateToAsync("Categories");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Could not navigate to categories; returning to More");
+            await _navigationService.NavigateToAsync("//Main/More");
+        }
     }
 
     [RelayCommand]
