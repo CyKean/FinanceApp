@@ -269,7 +269,8 @@ public class FinanceAppDbContext : DbContext
             }
         }
 
-        EnqueueSyncOperations();
+        if (EnqueueSyncOperations() > 0)
+            FinanceApp.Application.SyncNotifications.RaiseDataChanged();
 
         return await base.SaveChangesAsync(cancellationToken);
     }
@@ -278,10 +279,11 @@ public class FinanceAppDbContext : DbContext
     /// Offline-first outbox: every user-driven insert/update/delete queues a
     /// <see cref="SyncOperation"/> in the same transaction so the background
     /// sync can push it when online. Sync bookkeeping itself (Synced/Failed
-    /// rows) and SyncOperation rows never enqueue.
+    /// rows) and SyncOperation rows never enqueue. Returns queued count.
     /// </summary>
-    private void EnqueueSyncOperations()
+    private int EnqueueSyncOperations()
     {
+        var queued = 0;
         foreach (var entry in ChangeTracker.Entries().ToList())
         {
             if (entry.Entity is not Entity entity)
@@ -323,7 +325,10 @@ public class FinanceAppDbContext : DbContext
                 entity.Id,
                 operationType,
                 userId));
+            queued++;
         }
+
+        return queued;
     }
 
     private static Guid GetEntityUserId(Entity entity) => entity switch

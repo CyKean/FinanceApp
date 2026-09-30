@@ -342,17 +342,39 @@ public class SupabaseSyncService : ISupabaseSyncService
             return 0;
         }
 
+        // Each table pulls independently: one missing/blocked table must not
+        // abort the other five.
         var merged = 0;
-        merged += await PullAccountsAsync(client, userId, cancellationToken);
-        merged += await PullCategoriesAsync(client, userId, cancellationToken);
-        merged += await PullTransactionsAsync(client, userId, cancellationToken);
-        merged += await PullBudgetsAsync(client, userId, cancellationToken);
-        merged += await PullRecurringAsync(client, userId, cancellationToken);
-        merged += await PullGoalsAsync(client, userId, cancellationToken);
+        Exception? lastError = null;
+
+        merged += await TryPullAsync("accounts", () => PullAccountsAsync(client, userId, cancellationToken), e => lastError = e);
+        merged += await TryPullAsync("categories", () => PullCategoriesAsync(client, userId, cancellationToken), e => lastError = e);
+        merged += await TryPullAsync("transactions", () => PullTransactionsAsync(client, userId, cancellationToken), e => lastError = e);
+        merged += await TryPullAsync("budgets", () => PullBudgetsAsync(client, userId, cancellationToken), e => lastError = e);
+        merged += await TryPullAsync("recurring", () => PullRecurringAsync(client, userId, cancellationToken), e => lastError = e);
+        merged += await TryPullAsync("goals", () => PullGoalsAsync(client, userId, cancellationToken), e => lastError = e);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        if (merged == 0 && lastError != null)
+            throw lastError;
+
         _logger.LogInformation("Pulled {Count} server rows for user {UserId}", merged, userId);
         return merged;
+    }
+
+    private async Task<int> TryPullAsync(string table, Func<Task<int>> pull, Action<Exception> onError)
+    {
+        try
+        {
+            return await pull();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Pull failed for table {Table}, continuing with the rest", table);
+            onError(ex);
+            return 0;
+        }
     }
 
     private static bool IsPending(SyncStatus status) =>

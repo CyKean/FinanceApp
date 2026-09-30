@@ -15,9 +15,11 @@ public class SyncBackgroundService : BackgroundService
 {
     private static readonly TimeSpan Interval = TimeSpan.FromMinutes(1);
     private static readonly TimeSpan InitialDelay = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan SaveDebounce = TimeSpan.FromSeconds(10);
 
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SyncBackgroundService> _logger;
+    private readonly SemaphoreSlim _signal = new(0, 1);
 
     public SyncBackgroundService(IServiceProvider serviceProvider, ILogger<SyncBackgroundService> logger)
     {
@@ -28,38 +30,80 @@ public class SyncBackgroundService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Sync background worker started");
+        FinanceApp.Application.SyncNotifications.Subscribe(OnDataChanged);
 
         try
         {
-            await Task.Delay(InitialDelay, stoppingToken);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        while (!stoppingToken.IsCancellationRequested)
-        {
             try
             {
-                await RunSyncOnceAsync(stoppingToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Background sync tick failed");
-            }
-
-            try
-            {
-                await Task.Delay(Interval, stoppingToken);
+                await Task.Delay(InitialDelay, stoppingToken);
             }
             catch (OperationCanceledException)
             {
-                break;
+                return;
+            }
+
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                // Wake immediately when local data changes (debounced to batch
+                // rapid saves), otherwise tick on the regular interval.
+                var signaled = await WaitForSignalOrTimeoutAsync(stoppingToken);
+                if (signaled)
+                {
+                    DrainSignals();
+                    try
+                    {
+                        await Task.Delay(SaveDebounce, stoppingToken);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        break;
+                    }
+                    DrainSignals();
+                }
+
+                try
+                {
+                    await RunSyncOnceAsync(stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Background sync tick failed");
+                }
             }
         }
+        finally
+        {
+            FinanceApp.Application.SyncNotifications.Unsubscribe(OnDataChanged);
+            _logger.LogInformation("Sync background worker stopped");
+        }
+    }
 
-        _logger.LogInformation("Sync background worker stopped");
+    private void OnDataChanged()
+    {
+        try
+        {
+            _signal.Release();
+        }
+        catch (SemaphoreFullException)
+        {
+            // A wake-up is already pending.
+        }
+    }
+
+    private void DrainSignals()
+    {
+        while (_signal.Wait(0))
+        {
+        }
+    }
+
+    private async Task<bool> WaitForSignalOrTimeoutAsync(CancellationToken stoppingToken)
+    {
+        var signalTask = _signal.WaitAsync(stoppingToken);
+        var delayTask = Task.Delay(Interval, stoppingToken);
+        var completed = await Task.WhenAny(signalTask, delayTask);
+        return completed == signalTask;
     }
 
     private async Task RunSyncOnceAsync(CancellationToken stoppingToken)

@@ -27,5 +27,6 @@ public record SyncResultDto(
     bool Success,
     int SyncedCount,
     int FailedCount,
-    string? ErrorMessage
+    string? ErrorMessage,
+    int PulledCount = 0
 );

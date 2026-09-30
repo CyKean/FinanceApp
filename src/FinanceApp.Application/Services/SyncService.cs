@@ -71,6 +71,24 @@ public class SyncService : BaseService, ISyncService, IDisposable
             failedOperations.FirstOrDefault()?.ErrorMessage);
     }
 
+    public async Task<IReadOnlyList<SyncOperationDto>> GetRecentOperationsAsync(Guid userId, int count = 20, CancellationToken cancellationToken = default)
+    {
+        var operations = await _syncRepository.GetRecentByUserIdAsync(userId, count, cancellationToken);
+        return operations
+            .Select(o => new SyncOperationDto(
+                o.Id,
+                o.EntityType,
+                o.EntityId,
+                o.OperationType,
+                o.Status,
+                o.RetryCount,
+                o.LastAttemptAt,
+                o.ErrorMessage,
+                o.CreatedAt,
+                o.UpdatedAt))
+            .ToList();
+    }
+
     public async Task<SyncResultDto> SyncAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         _currentUserId = userId;
@@ -90,6 +108,11 @@ public class SyncService : BaseService, ISyncService, IDisposable
         {
             _logger.LogInformation("Starting sync for user {UserId}", userId);
 
+            // Heal rows that never got outbox entries (pre-outbox data, seeds):
+            // anything in SQLite without an operation gets a Create op so the
+            // whole local database eventually lands in Supabase.
+            await EnqueueMissingOperationsAsync(userId, _syncCts.Token);
+
             var pendingOperations = await _syncRepository.GetPendingByUserIdAsync(userId, _syncCts.Token);
             if (!pendingOperations.Any())
             {
@@ -97,7 +120,18 @@ public class SyncService : BaseService, ISyncService, IDisposable
                 return new SyncResultDto(true, 0, 0, null);
             }
 
+            // Collapse duplicate ops for the same row (edit x3 offline = 1 push).
+            // A Delete anywhere in the group wins; otherwise the latest op covers all.
+            pendingOperations = await CoalesceOperationsAsync(pendingOperations, _syncCts.Token);
+            if (!pendingOperations.Any())
+            {
+                await UnitOfWork.SaveChangesAsync(_syncCts.Token);
+                return new SyncResultDto(true, 0, 0, null);
+            }
+
             var syncedCount = 0;
+            var pushedCount = 0;
+            var pulledCount = 0;
             var failedCount = 0;
             string? lastError = null;
 
@@ -112,6 +146,7 @@ public class SyncService : BaseService, ISyncService, IDisposable
                     operation.MarkAsSynced();
                     await _syncRepository.UpdateAsync(operation, _syncCts.Token);
                     syncedCount++;
+                    pushedCount++;
                 }
                 catch (Exception ex)
                 {
@@ -131,6 +166,7 @@ public class SyncService : BaseService, ISyncService, IDisposable
             try
             {
                 var pulled = await _supabaseSyncService.PullAsync(userId, _syncCts.Token);
+                pulledCount = pulled;
                 syncedCount += pulled;
             }
             catch (Exception ex)
@@ -140,9 +176,9 @@ public class SyncService : BaseService, ISyncService, IDisposable
                 _logger.LogError(ex, "Pull failed for user {UserId}", userId);
             }
 
-            _logger.LogInformation("Sync completed for user {UserId}: {Synced} synced, {Failed} failed", userId, syncedCount, failedCount);
+            _logger.LogInformation("Sync completed for user {UserId}: {Synced} synced ({Pushed} pushed, {Pulled} pulled), {Failed} failed", userId, syncedCount, pushedCount, pulledCount, failedCount);
 
-            return new SyncResultDto(failedCount == 0, syncedCount, failedCount, lastError);
+            return new SyncResultDto(failedCount == 0, pushedCount, failedCount, lastError, pulledCount);
         }
         catch (OperationCanceledException)
         {
@@ -224,6 +260,71 @@ public class SyncService : BaseService, ISyncService, IDisposable
                 }
             });
         }
+    }
+
+    private async Task EnqueueMissingOperationsAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        await EnqueueMissingAsync("Account", await _accountRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
+        await EnqueueMissingAsync("Category", await _categoryRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
+        await EnqueueMissingAsync("Transaction", await _transactionRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
+        await EnqueueMissingAsync("Budget", await _budgetRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
+        await EnqueueMissingAsync("RecurringTransaction", await _recurringRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
+        await EnqueueMissingAsync("FinancialGoal", await _goalRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
+    }
+
+    private async Task EnqueueMissingAsync<T>(string entityType, IReadOnlyList<T> entities, Guid userId, CancellationToken cancellationToken)
+        where T : Entity
+    {
+        foreach (var entity in entities)
+        {
+            var existing = await _syncRepository.GetByEntityAsync(entityType, entity.Id, cancellationToken);
+            if (existing.Count > 0)
+                continue;
+
+            var operationType = entity.SyncStatus == SyncStatus.PendingDelete
+                ? SyncOperationType.Delete
+                : SyncOperationType.Create;
+
+            await _syncRepository.AddAsync(
+                new SyncOperation(entityType, entity.Id, operationType, userId),
+                cancellationToken);
+        }
+
+        await UnitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task<IReadOnlyList<SyncOperation>> CoalesceOperationsAsync(
+        IReadOnlyList<SyncOperation> pending,
+        CancellationToken cancellationToken)
+    {
+        var survivors = new List<SyncOperation>();
+
+        foreach (var group in pending.GroupBy(o => (o.EntityType, o.EntityId)))
+        {
+            var ordered = group.OrderBy(o => o.CreatedAt).ToList();
+            if (ordered.Count == 1)
+            {
+                survivors.Add(ordered[0]);
+                continue;
+            }
+
+            var survivor = ordered.LastOrDefault(o => o.OperationType == SyncOperationType.Delete)
+                ?? ordered[^1];
+
+            foreach (var redundant in ordered.Where(o => o != survivor))
+            {
+                redundant.MarkAsSynced();
+                await _syncRepository.UpdateAsync(redundant, cancellationToken);
+            }
+
+            survivors.Add(survivor);
+            _logger.LogInformation(
+                "Coalesced {Count} pending ops for {EntityType} {EntityId} into {Operation}",
+                ordered.Count, group.Key.EntityType, group.Key.EntityId, survivor.OperationType);
+        }
+
+        await UnitOfWork.SaveChangesAsync(cancellationToken);
+        return survivors.OrderBy(o => o.CreatedAt).ToList();
     }
 
     private async Task ProcessSyncOperationWithRetryAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
@@ -449,12 +550,7 @@ public class SyncService : BaseService, ISyncService, IDisposable
 
     private async Task<DateTime?> GetLastSuccessfulSyncAsync(Guid userId, CancellationToken cancellationToken)
     {
-        var syncedOps = await _syncRepository.GetPendingByUserIdAsync(userId, cancellationToken);
-        return syncedOps
-            .Where(o => o.Status == SyncStatus.Synced)
-            .OrderByDescending(o => o.LastAttemptAt)
-            .Select(o => o.LastAttemptAt)
-            .FirstOrDefault();
+        return await _syncRepository.GetLastSyncedAtAsync(userId, cancellationToken);
     }
 
     public void Dispose()

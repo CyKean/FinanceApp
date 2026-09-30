@@ -184,9 +184,8 @@ public class DevDataSeeder
             context.AddRange(recurring);
             await context.SaveChangesAsync(cancellationToken);
 
-            await context.SyncOperations
-                .Where(o => o.UserId == userId)
-                .ExecuteDeleteAsync(cancellationToken);
+            // NOTE: outbox rows for seeded data are intentionally kept - the sync
+            // backfill picks them up so seeds upload like everything else.
 
             _logger.LogInformation(
                 "Seeded demo data for user {UserId}: {Accounts} accounts, {Transactions} transactions, {Budgets} budgets, 2 goals, {Recurring} recurring",

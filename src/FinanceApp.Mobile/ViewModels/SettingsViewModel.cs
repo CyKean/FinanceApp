@@ -23,6 +23,9 @@ public partial class SettingsViewModel : BaseViewModel
     private SyncStatusDto _syncStatus = new(false, null, 0, 0, null);
 
     [ObservableProperty]
+    private IReadOnlyList<SyncOperationDto> _recentSyncOperations = Array.Empty<SyncOperationDto>();
+
+    [ObservableProperty]
     private bool _isSyncing;
 
     [ObservableProperty]
@@ -65,6 +68,7 @@ public partial class SettingsViewModel : BaseViewModel
             if (userId.HasValue)
             {
                 SyncStatus = await _syncService.GetStatusAsync(userId.Value);
+                RecentSyncOperations = await _syncService.GetRecentOperationsAsync(userId.Value);
                 IsPeriodicSyncEnabled = _connectivityService.CurrentAccess == NetworkAccess.Internet;
             }
         }
@@ -93,10 +97,11 @@ public partial class SettingsViewModel : BaseViewModel
         {
             var result = await _syncService.SyncAsync(userId.Value);
             SyncStatus = await _syncService.GetStatusAsync(userId.Value);
+            RecentSyncOperations = await _syncService.GetRecentOperationsAsync(userId.Value);
 
             if (result.Success)
             {
-                await _dialogService.ShowToastAsync($"Synced {result.SyncedCount} items");
+                await _dialogService.ShowToastAsync($"Sent {result.SyncedCount}, received {result.PulledCount}");
             }
             else
             {
@@ -152,7 +157,7 @@ public partial class SettingsViewModel : BaseViewModel
 
             if (result.Success)
             {
-                await _dialogService.ShowToastAsync($"Force synced {result.SyncedCount} items");
+                await _dialogService.ShowToastAsync($"Force sent {result.SyncedCount}, received {result.PulledCount}");
             }
             else
             {

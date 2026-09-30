@@ -39,4 +39,22 @@ public class SyncOperationRepository : BaseRepository<SyncOperation>, ISyncOpera
         return await DbSet
             .CountAsync(s => s.UserId == userId && s.Status != SyncStatus.Synced, cancellationToken);
     }
+
+    public async Task<IReadOnlyList<SyncOperation>> GetRecentByUserIdAsync(Guid userId, int count, CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .Where(s => s.UserId == userId)
+            .OrderByDescending(s => s.CreatedAt)
+            .Take(count)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<DateTime?> GetLastSyncedAtAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .Where(s => s.UserId == userId && s.Status == SyncStatus.Synced)
+            .OrderByDescending(s => s.LastAttemptAt)
+            .Select(s => s.LastAttemptAt)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }

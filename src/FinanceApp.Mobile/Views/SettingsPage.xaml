@@ -62,7 +62,7 @@
                             </VerticalStackLayout>
                             <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
                                 <Label Text="Last Sync" Style="{StaticResource SyncDetailCaptionStyle}" />
-                                <Label Text="{Binding SyncStatus.LastSyncAt, StringFormat='{0:MMM dd, HH:mm}'}" Style="{StaticResource SyncDetailValueStyle}" />
+                                <Label Text="{Binding SyncStatus.LastSyncAt, Converter={StaticResource ManilaTimeConverter}, StringFormat='{0:MMM dd, HH:mm}'}" Style="{StaticResource SyncDetailValueStyle}" />
                             </VerticalStackLayout>
                         </HorizontalStackLayout>
 
@@ -81,6 +81,51 @@
                                Style="{StaticResource SyncErrorLabelStyle}"
                                IsVisible="{Binding SyncStatus.LastError, Converter={StaticResource NullToBoolConverter}}"
                                TextColor="Red" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Sync History -->
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Sync History" Style="{StaticResource SectionHeaderStyle}" />
+                        <CollectionView ItemsSource="{Binding RecentSyncOperations}" HeightRequest="240">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <VerticalStackLayout Spacing="2" Padding="0,6">
+                                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                            <Label Text="{Binding EntityType}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="Fill" />
+                                            <Label Text="{Binding OperationType}"
+                                                   FontSize="12"
+                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="{Binding Status}"
+                                                   FontSize="12"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{Binding Status, Converter={StaticResource SyncStatusToColorConverter}}"
+                                                   VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding LastAttemptAt, Converter={StaticResource ManilaTimeConverter}, StringFormat='{0:MMM dd, HH:mm}'}"
+                                               FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+                                        <Label Text="{Binding ErrorMessage}"
+                                               Style="{StaticResource SyncErrorLabelStyle}"
+                                               IsVisible="{Binding ErrorMessage, Converter={StaticResource NullToBoolConverter}}"
+                                               TextColor="{StaticResource Error}" />
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <Label Text="No sync activity yet"
+                                       Style="{StaticResource MutedLabelStyle}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </CollectionView.EmptyView>
+                        </CollectionView>
                     </VerticalStackLayout>
                 </Border>
 

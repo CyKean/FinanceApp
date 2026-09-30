@@ -34,6 +34,7 @@
              <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
              <converters:InsightSeverityToIconConverter x:Key="InsightSeverityToIconConverter" />
              <converters:InsightSeverityToColorConverter x:Key="InsightSeverityToColorConverter" />
+             <converters:ManilaTimeConverter x:Key="ManilaTimeConverter" />
          </ResourceDictionary>
      </Application.Resources>
 </Application>

@@ -548,3 +548,40 @@ public class InsightSeverityToColorConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+/// <summary>
+/// Displays UTC timestamps in Philippine time (Asia/Manila, fixed UTC+8, no DST).
+/// </summary>
+public class ManilaTimeConverter : IValueConverter
+{
+    private static readonly TimeZoneInfo ManilaZone = ResolveManilaZone();
+
+    private static TimeZoneInfo ResolveManilaZone()
+    {
+        try
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById("Asia/Manila");
+        }
+        catch
+        {
+            return TimeZoneInfo.CreateCustomTimeZone("Asia/Manila", TimeSpan.FromHours(8), "Manila", "Manila");
+        }
+    }
+
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is DateTime dateTime)
+        {
+            var utc = dateTime.Kind == DateTimeKind.Utc
+                ? dateTime
+                : DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+            return TimeZoneInfo.ConvertTimeFromUtc(utc, ManilaZone);
+        }
+        return value;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
