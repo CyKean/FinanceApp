@@ -250,16 +250,16 @@ public class SupabaseInitializer : IHostedService
         {
             _logger.LogInformation("Initializing Supabase services...");
 
+            var authService = _serviceProvider.GetRequiredService<IAuthenticationService>();
+            await authService.InitializeAsync(cancellationToken);
+
             var dbOptions = _serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptions<FinanceApp.Infrastructure.Configuration.DatabaseOptions>>().Value;
             if (string.IsNullOrWhiteSpace(dbOptions.SupabaseUrl) || string.IsNullOrWhiteSpace(dbOptions.SupabaseAnonKey))
             {
                 _logger.LogWarning("Supabase URL/anon key are not configured in appsettings.json. The app will run offline with local SQLite only.");
                 return;
             }
-            
-            var authService = _serviceProvider.GetRequiredService<IAuthenticationService>();
-            await authService.InitializeAsync(cancellationToken);
-            
+
             var syncService = _serviceProvider.GetRequiredService<ISupabaseSyncService>();
             await syncService.InitializeAsync(cancellationToken);
             

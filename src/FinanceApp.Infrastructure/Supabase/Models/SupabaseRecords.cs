@@ -201,6 +201,49 @@ public class BudgetRecord : PostgrestModels.BaseModel
     public Guid? LinkedAccountId { get; set; }
 }
 
+[PostgrestAttributes.Table("budgets")]
+public class BudgetRecordLite : PostgrestModels.BaseModel
+{
+    [PostgrestAttributes.PrimaryKey("id", false)]
+    public Guid Id { get; set; }
+
+    [PostgrestAttributes.Column("created_at")]
+    public DateTime CreatedAt { get; set; }
+
+    [PostgrestAttributes.Column("updated_at")]
+    public DateTime UpdatedAt { get; set; }
+
+    [PostgrestAttributes.Column("is_deleted")]
+    public bool IsDeleted { get; set; }
+
+    [PostgrestAttributes.Column("version")]
+    public int Version { get; set; }
+
+    [PostgrestAttributes.Column("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [PostgrestAttributes.Column("amount")]
+    public decimal Amount { get; set; }
+
+    [PostgrestAttributes.Column("currency")]
+    public string Currency { get; set; } = "PHP";
+
+    [PostgrestAttributes.Column("spent_amount")]
+    public decimal SpentAmount { get; set; }
+
+    [PostgrestAttributes.Column("start_date")]
+    public DateTime StartDate { get; set; }
+
+    [PostgrestAttributes.Column("end_date")]
+    public DateTime EndDate { get; set; }
+
+    [PostgrestAttributes.Column("category_id")]
+    public Guid CategoryId { get; set; }
+
+    [PostgrestAttributes.Column("user_id")]
+    public Guid UserId { get; set; }
+}
+
 [PostgrestAttributes.Table("recurring_transactions")]
 public class RecurringTransactionRecord : PostgrestModels.BaseModel
 {

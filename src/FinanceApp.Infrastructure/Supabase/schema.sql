@@ -135,3 +135,9 @@ create policy "Users manage own recurring transactions"
     on recurring_transactions for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy "Users manage own financial goals"
     on financial_goals for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Upgrade for databases created before these columns existed (idempotent).
+-- Safe to run on a fresh database - every statement is a no-op there.
+alter table budgets add column if not exists icon text;
+alter table budgets add column if not exists color text;
+alter table budgets add column if not exists linked_account_id uuid;

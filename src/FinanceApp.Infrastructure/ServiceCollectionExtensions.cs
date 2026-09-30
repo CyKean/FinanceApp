@@ -63,7 +63,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<SupabaseClientProvider>();
         services.AddScoped<ISupabaseSyncService, SupabaseSyncService>();
         services.AddScoped<ISyncService, SyncService>();
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
         return services;
     }

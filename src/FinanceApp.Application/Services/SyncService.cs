@@ -115,10 +115,10 @@ public class SyncService : BaseService, ISyncService, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    operation.IncrementRetry(ex.Message);
+                    operation.IncrementRetry(SyncErrorSanitizer.Sanitize(ex.Message));
                     await _syncRepository.UpdateAsync(operation, _syncCts.Token);
                     failedCount++;
-                    lastError = ex.Message;
+                    lastError = SyncErrorSanitizer.Sanitize(ex.Message);
                     _logger.LogError(ex, "Failed to sync operation {OperationId} for user {UserId}", operation.Id, userId);
                 }
             }
@@ -136,7 +136,7 @@ public class SyncService : BaseService, ISyncService, IDisposable
             catch (Exception ex)
             {
                 failedCount++;
-                lastError = ex.Message;
+                lastError = SyncErrorSanitizer.Sanitize(ex.Message);
                 _logger.LogError(ex, "Pull failed for user {UserId}", userId);
             }
 
@@ -239,7 +239,7 @@ public class SyncService : BaseService, ISyncService, IDisposable
             }
             catch (Exception ex) when (attempt < _maxRetries && IsTransientError(ex))
             {
-                operation.IncrementRetry($"Attempt {attempt + 1}: {ex.Message}");
+                operation.IncrementRetry($"Attempt {attempt + 1}: {SyncErrorSanitizer.Sanitize(ex.Message)}");
                 await _syncRepository.UpdateAsync(operation, cancellationToken);
                 await UnitOfWork.SaveChangesAsync(cancellationToken);
 

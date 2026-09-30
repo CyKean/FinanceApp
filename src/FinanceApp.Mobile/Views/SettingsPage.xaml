@@ -6,7 +6,8 @@
              xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.SettingsPage"
              x:DataType="viewmodels:SettingsViewModel"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -31,7 +32,10 @@
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                     <VerticalStackLayout Spacing="8">
                         <HorizontalStackLayout Spacing="12">
-                            <Border WidthRequest="64" HeightRequest="64" CornerRadius="32" Background="#512BD4" HasShadow="False" BorderColor="Transparent">
+                            <Border WidthRequest="64" HeightRequest="64" Background="#512BD4" StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="32" />
+                                </Border.StrokeShape>
                                 <Label Text="👤" VerticalOptions="Center" HorizontalOptions="Center" FontSize="28" />
                             </Border>
                             <VerticalStackLayout Spacing="4" VerticalOptions="Center">
@@ -65,7 +69,13 @@
                         <Button Text="Sync Now" 
                                 Command="{Binding SyncNowCommand}"
                                 IsEnabled="{Binding IsSyncing, Converter={StaticResource InverseBoolConverter}}"
-                                Style="{StaticResource PrimaryButtonStyle}" />
+                                Style="{StaticResource PrimaryButtonStyle}">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="{x:Type Button}" Binding="{Binding IsSyncing}" Value="True">
+                                    <Setter Property="Text" Value="Syncing..." />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
 
                         <Label Text="{Binding SyncStatus.LastError}" 
                                Style="{StaticResource SyncErrorLabelStyle}"
@@ -115,6 +125,9 @@
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>
+
+        <!-- Toasts -->
+        <controls:ToastHost />
 
         <!-- Custom confirmation modal -->
         <controls:ConfirmModalHost />

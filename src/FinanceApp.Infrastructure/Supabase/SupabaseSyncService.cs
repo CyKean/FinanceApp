@@ -1,5 +1,6 @@
 namespace FinanceApp.Infrastructure.Supabase;
 
+using System.Text.RegularExpressions;
 using FinanceApp.Application.Interfaces;
 using FinanceApp.Domain.Entities;
 using FinanceApp.Domain.Enums;
@@ -15,9 +16,16 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public class SupabaseSyncService : ISupabaseSyncService
 {
+    private static readonly Regex MissingColumnRegex = new(
+        @"Could not find the '(?<column>[^']+)' column of '(?<table>[^']+)'",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    private static readonly string[] BudgetOptionalColumns = { "icon", "color", "linked_account_id" };
+
     private readonly SupabaseClientProvider _clientProvider;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<SupabaseSyncService> _logger;
+    private volatile bool _budgetPushOmitsOptionalColumns;
 
     public SupabaseSyncService(
         SupabaseClientProvider clientProvider,
@@ -165,6 +173,54 @@ public class SupabaseSyncService : ISupabaseSyncService
         }
         else
         {
+            try
+            {
+                await UpsertBudgetAsync(client, entity, _budgetPushOmitsOptionalColumns);
+            }
+            catch (Exception ex) when (!_budgetPushOmitsOptionalColumns && IsMissingBudgetOptionalColumn(ex))
+            {
+                _logger.LogWarning(
+                    "Supabase budgets table is missing icon/color/linked_account_id; pushing without them. {Error}",
+                    ex.Message);
+                _budgetPushOmitsOptionalColumns = true;
+                await UpsertBudgetAsync(client, entity, true);
+            }
+        }
+
+        _logger.LogDebug("Synced budget {BudgetId} ({OperationType})", entity.Id, operationType);
+    }
+
+    private static bool IsMissingBudgetOptionalColumn(Exception exception)
+    {
+        var match = MissingColumnRegex.Match(exception.ToString());
+        return match.Success &&
+               match.Groups["table"].Value.Equals("budgets", StringComparison.OrdinalIgnoreCase) &&
+               BudgetOptionalColumns.Contains(match.Groups["column"].Value, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static async Task UpsertBudgetAsync(global::Supabase.Client client, Budget entity, bool omitOptionalColumns)
+    {
+        if (omitOptionalColumns)
+        {
+            await client.From<BudgetRecordLite>().Upsert(new BudgetRecordLite
+            {
+                Id = entity.Id,
+                CreatedAt = entity.CreatedAt,
+                UpdatedAt = entity.UpdatedAt,
+                IsDeleted = entity.IsDeleted,
+                Version = entity.Version,
+                Name = entity.Name,
+                Amount = entity.Amount.Amount,
+                Currency = entity.Amount.Currency,
+                SpentAmount = entity.SpentAmount.Amount,
+                StartDate = entity.StartDate,
+                EndDate = entity.EndDate,
+                CategoryId = entity.CategoryId,
+                UserId = entity.UserId
+            });
+        }
+        else
+        {
             await client.From<BudgetRecord>().Upsert(new BudgetRecord
             {
                 Id = entity.Id,
@@ -185,8 +241,6 @@ public class SupabaseSyncService : ISupabaseSyncService
                 LinkedAccountId = entity.LinkedAccountId?.Value
             });
         }
-
-        _logger.LogDebug("Synced budget {BudgetId} ({OperationType})", entity.Id, operationType);
     }
 
     public async Task SyncRecurringTransactionAsync(RecurringTransaction entity, SyncOperationType operationType, CancellationToken cancellationToken = default)
