@@ -25,6 +25,15 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, string? databaseDirectory = null)
     {
         services.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName));
+        services.Configure<AiOptions>(configuration.GetSection(AiOptions.SectionName));
+
+        services.AddHttpClient(OpenAiClient.HttpClientName)
+            .ConfigureHttpClient((sp, client) =>
+            {
+                var aiOptions = sp.GetRequiredService<IOptions<AiOptions>>().Value;
+                client.Timeout = TimeSpan.FromSeconds(Math.Max(5, aiOptions.TimeoutSeconds));
+            });
+        services.AddSingleton<IAiClient, OpenAiClient>();
 
         services.AddDbContext<FinanceAppDbContext>((sp, options) =>
         {

@@ -22,6 +22,16 @@ public partial class MorePage : ContentPage
         await Shell.Current.GoToAsync("Analytics");
     }
 
+    private async void OnChatTapped(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("Chat");
+    }
+
+    private async void OnBudgetSuggestionsTapped(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("BudgetSuggestions");
+    }
+
     private async void OnProfileTapped(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("//Settings");

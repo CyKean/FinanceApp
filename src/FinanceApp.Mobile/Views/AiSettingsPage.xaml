@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
+             x:Class="FinanceApp.Mobile.Views.AiSettingsPage"
+             x:DataType="viewmodels:AiSettingsViewModel"
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
+             x:Name="AiSettingsPageView">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToStringConverter x:Key="AiStatusConverter"
+                                              TrueValue="Cloud AI enabled"
+                                              FalseValue="On-device answers only" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Spacing="16" Padding="16">
+                <!-- Header -->
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <Border Padding="14,9"
+                            Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}"
+                            StrokeThickness="0"
+                            VerticalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnBackTapped" />
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                            <Label Text="&#x2039;"
+                                   FontSize="22"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                   VerticalOptions="Center" />
+                            <Label Text="Back"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="AI Assistant" Style="{StaticResource TitleLabelStyle}" />
+                        <Label Text="Connect a language model for open-ended answers" Style="{StaticResource MutedLabelStyle}" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Status -->
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Status" Style="{StaticResource SectionHeaderStyle}" />
+                        <Label Text="{Binding IsConfigured, Converter={StaticResource AiStatusConverter}}"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+                        <HorizontalStackLayout Spacing="4">
+                            <Label Text="Model" Style="{StaticResource MutedLabelStyle}" />
+                            <Label Text="{Binding Model}" Style="{StaticResource MutedLabelStyle}" />
+                        </HorizontalStackLayout>
+                        <Label Text="Your budgets, spending and balances are always answered on-device. Only open-ended questions are sent to the AI provider when a key is configured."
+                               Style="{StaticResource MutedLabelStyle}"
+                               LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Provider -->
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Provider" Style="{StaticResource SectionHeaderStyle}" />
+                        <Label Text="Free API keys work: pick a provider, paste its key below, then test the connection. Your budgets and balances always stay on-device."
+                               Style="{StaticResource MutedLabelStyle}"
+                               LineBreakMode="WordWrap" />
+                        <Button Text="Choose a provider&#x2026;"
+                                Command="{Binding ChooseProviderCommand}"
+                                Style="{StaticResource OutlineButtonStyle}" />
+                        <Label Text="Base URL" Style="{StaticResource MutedLabelStyle}" />
+                        <Border Style="{StaticResource FieldBorderStyle}">
+                            <Entry Text="{Binding BaseUrl}"
+                                   Placeholder="https://api.openai.com/v1"
+                                   BackgroundColor="Transparent"
+                                   HeightRequest="46"
+                                   FontSize="15" />
+                        </Border>
+                        <Label Text="Model" Style="{StaticResource MutedLabelStyle}" />
+                        <Border Style="{StaticResource FieldBorderStyle}">
+                            <Entry Text="{Binding Model}"
+                                   Placeholder="gpt-4o-mini"
+                                   BackgroundColor="Transparent"
+                                   HeightRequest="46"
+                                   FontSize="15" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- API key -->
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="API key" Style="{StaticResource SectionHeaderStyle}" />
+                        <Label Text="Paste an OpenAI-compatible API key. It is stored in this device's secure storage and never synced."
+                               Style="{StaticResource MutedLabelStyle}"
+                               LineBreakMode="WordWrap" />
+                        <Border Style="{StaticResource FieldBorderStyle}">
+                            <Entry Text="{Binding ApiKey}"
+                                   Placeholder="sk-..."
+                                   IsPassword="True"
+                                   BackgroundColor="Transparent"
+                                   HeightRequest="46"
+                                   FontSize="15" />
+                        </Border>
+                        <Button Text="Save key"
+                                Command="{Binding SaveCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                TextColor="White" />
+                        <Button Text="Test connection"
+                                Command="{Binding TestConnectionCommand}"
+                                IsEnabled="{Binding IsTesting, Converter={StaticResource InverseBoolConverter}}"
+                                Style="{StaticResource OutlineButtonStyle}" />
+                        <Button Text="Remove key"
+                                Command="{Binding ClearCommand}"
+                                IsVisible="{Binding IsConfigured}"
+                                Style="{StaticResource DangerButtonStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- What you get -->
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="What you get" Style="{StaticResource SectionHeaderStyle}" />
+                        <Label Text="&#x2705; Budget, spending, balance and savings answers work offline"
+                               Style="{StaticResource MutedLabelStyle}"
+                               LineBreakMode="WordWrap" />
+                        <Label Text="&#x2705; General finance topics answered from built-in guidance"
+                               Style="{StaticResource MutedLabelStyle}"
+                               LineBreakMode="WordWrap" />
+                        <Label Text="&#x1F4A1; With a key: open-ended questions answered by a large language model with your financial snapshot for context"
+                               Style="{StaticResource MutedLabelStyle}"
+                               LineBreakMode="WordWrap" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Toasts -->
+        <controls:ToastHost />
+
+        <!-- Custom confirmation modal -->
+        <controls:ConfirmModalHost />
+
+        <!-- Success / failure animation -->
+        <controls:SuccessOverlayHost />
+    </Grid>
+</ContentPage>

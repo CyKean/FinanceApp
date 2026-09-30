@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:dtos="clr-namespace:FinanceApp.Application.DTOs;assembly=FinanceApp.Application"
+             xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
+             x:Class="FinanceApp.Mobile.Views.BudgetSuggestionsPage"
+             x:DataType="viewmodels:BudgetSuggestionsViewModel"
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
+             x:Name="BudgetSuggestionsPageView">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:ColorConverter x:Key="ColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+            <VerticalStackLayout Spacing="16" Padding="20,16,20,28">
+
+                <!-- Header -->
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <Border Padding="14,9"
+                            Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}"
+                            StrokeThickness="0"
+                            VerticalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnBackTapped" />
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                            <Label Text="&#x2039;"
+                                   FontSize="22"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                   VerticalOptions="Center" />
+                            <Label Text="Back"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                        <Label Text="AI Suggestions" Style="{StaticResource TitleLabelStyle}" />
+                        <Label Text="Budget ideas based on your last 3 months" Style="{StaticResource MutedLabelStyle}" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Suggestions -->
+                <CollectionView ItemsSource="{Binding Suggestions}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dtos:BudgetSuggestionDto">
+                            <Border Style="{StaticResource CardFrameStyle}" Margin="0,4" Padding="16">
+                                <VerticalStackLayout Spacing="10">
+                                    <Grid ColumnDefinitions="48,*,Auto" ColumnSpacing="12">
+                                        <Border Grid.Column="0" WidthRequest="48" HeightRequest="48"
+                                                Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
+                                                StrokeThickness="0"
+                                                VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <Ellipse />
+                                            </Border.StrokeShape>
+                                            <Label Text="{Binding IconGlyph}"
+                                                   FontSize="20"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="Center" />
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                            <Label Text="{Binding CategoryName}"
+                                                   Style="{StaticResource BudgetCategoryNameLabelStyle}" />
+                                            <Label Text="{Binding KindLabel}"
+                                                   FontSize="12"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+                                        </VerticalStackLayout>
+
+                                        <Label Grid.Column="2"
+                                               Text="{Binding KindIcon}"
+                                               FontSize="24"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="Suggested" Style="{StaticResource BudgetDetailCaptionStyle}" />
+                                            <Label Text="{Binding SuggestedText}"
+                                                   FontSize="20"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="1"
+                                               Text="{Binding CurrentText}"
+                                               Style="{StaticResource BudgetDetailCaptionStyle}"
+                                               VerticalOptions="End"
+                                               HorizontalTextAlignment="End" />
+                                    </Grid>
+
+                                    <Label Text="{Binding Reason}"
+                                           Style="{StaticResource MutedLabelStyle}"
+                                           LineBreakMode="WordWrap" />
+
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                        <Button Grid.Column="0"
+                                                Text="Apply"
+                                                Command="{Binding Source={x:Reference BudgetSuggestionsPageView}, Path=BindingContext.ApplyCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Style="{StaticResource PrimaryButtonStyle}"
+                                                TextColor="White" />
+                                        <Button Grid.Column="1"
+                                                Text="Dismiss"
+                                                Command="{Binding Source={x:Reference BudgetSuggestionsPageView}, Path=BindingContext.DismissCommand}"
+                                                CommandParameter="{Binding .}"
+                                                Style="{StaticResource OutlineButtonStyle}"
+                                                WidthRequest="110" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20,40">
+                            <Label Text="&#x2728;" FontSize="48" HorizontalOptions="Center" />
+                            <Label Text="No suggestions right now" Style="{StaticResource EmptyStateLabelStyle}" />
+                            <Label Text="Once you have a few weeks of spending recorded, tailored budget ideas will appear here"
+                                   Style="{StaticResource EmptyStateSubLabelStyle}"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </VerticalStackLayout>
+        </RefreshView>
+
+        <!-- Toasts -->
+        <controls:ToastHost />
+
+        <!-- Success / failure animation -->
+        <controls:SuccessOverlayHost />
+    </Grid>
+</ContentPage>

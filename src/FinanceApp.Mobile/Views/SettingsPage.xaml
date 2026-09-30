@@ -74,6 +74,24 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- AI Assistant -->
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="AI Assistant" Style="{StaticResource SectionHeaderStyle}" />
+                        <HorizontalStackLayout Spacing="14" Padding="4,4">
+                            <Label Text="&#x1F4AC;" FontSize="24" WidthRequest="28" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                                <Label Text="Chat &amp; budget ideas" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
+                                <Label Text="Manage the AI provider and API key" Style="{StaticResource MutedLabelStyle}" />
+                            </VerticalStackLayout>
+                            <Label Text="&#x203A;" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnAiAssistantTapped" />
+                            </HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- App Info -->
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                     <VerticalStackLayout Spacing="8">

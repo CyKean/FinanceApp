@@ -37,6 +37,11 @@
                 </HorizontalStackLayout>
             </Border>
 
+            <!-- AI Suggestions entry -->
+            <Button Text="&#x2728; AI budget suggestions"
+                    Command="{Binding OpenSuggestionsCommand}"
+                    Style="{StaticResource OutlineButtonStyle}" />
+
             <!-- Budgets List -->
             <CollectionView ItemsSource="{Binding Budgets}" SelectionMode="None">
                 <CollectionView.ItemTemplate>

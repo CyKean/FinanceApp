@@ -76,6 +76,12 @@ public partial class BudgetsViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    private async Task OpenSuggestionsAsync()
+    {
+        await _navigationService.NavigateToAsync("BudgetSuggestions");
+    }
+
+    [RelayCommand]
     private async Task EditBudgetAsync(BudgetDto budget)
     {
         await _navigationService.NavigateToAsync($"//EditBudget?id={budget.Id}");

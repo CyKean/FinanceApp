@@ -21,4 +21,16 @@ public partial class SettingsPage : ContentPage
     {
         await Shell.Current.GoToAsync("//More");
     }
+
+    private async void OnAiAssistantTapped(object? sender, EventArgs e)
+    {
+        try
+        {
+            await Shell.Current.GoToAsync("AiSettings");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Could not open AI settings: {ex.Message}");
+        }
+    }
 }

@@ -75,6 +75,34 @@
                 <BoxView Style="{StaticResource DividerStyle}" />
 
                 <HorizontalStackLayout Spacing="14" Padding="4,12">
+                    <Label Text="&#x1F4AC;" FontSize="24" WidthRequest="28" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Label Text="AI Assistant" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
+                        <Label Text="Chat about your money and finance" Style="{StaticResource MutedLabelStyle}" />
+                    </VerticalStackLayout>
+                    <Label Text="&#x203A;" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
+                    <HorizontalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnChatTapped" />
+                    </HorizontalStackLayout.GestureRecognizers>
+                </HorizontalStackLayout>
+
+                <BoxView Style="{StaticResource DividerStyle}" />
+
+                <HorizontalStackLayout Spacing="14" Padding="4,12">
+                    <Label Text="&#x2728;" FontSize="24" WidthRequest="28" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Label Text="Budget Ideas" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
+                        <Label Text="AI suggestions for smarter budgets" Style="{StaticResource MutedLabelStyle}" />
+                    </VerticalStackLayout>
+                    <Label Text="&#x203A;" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
+                    <HorizontalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBudgetSuggestionsTapped" />
+                    </HorizontalStackLayout.GestureRecognizers>
+                </HorizontalStackLayout>
+
+                <BoxView Style="{StaticResource DividerStyle}" />
+
+                <HorizontalStackLayout Spacing="14" Padding="4,12">
                     <Image Source="tab_profile" HeightRequest="28" WidthRequest="28" VerticalOptions="Center" />
                     <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                         <Label Text="Profile &amp; Settings" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />

@@ -79,6 +79,8 @@ public static class MauiProgram
         builder.Services.AddScoped<IDashboardService, DashboardService>();
         builder.Services.AddScoped<ISyncService, SyncService>();
         builder.Services.AddScoped<IPredictionService, PredictionService>();
+        builder.Services.AddScoped<IBudgetSuggestionService, BudgetSuggestionService>();
+        builder.Services.AddScoped<IFinanceChatService, FinanceChatService>();
 
         // Validators
         builder.Services.AddScoped<CreateAccountDtoValidator>();
@@ -108,6 +110,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<DevDataSeeder>();
         builder.Services.AddSingleton<GoalHistoryStore>();
         builder.Services.AddSingleton<AccountHistoryStore>();
+        builder.Services.AddSingleton<ChatHistoryStore>();
+        builder.Services.AddSingleton<IAiSettingsStore, AiSettingsStore>();
 
         // Background Services
         builder.Services.AddHostedService<SupabaseInitializer>();
@@ -131,6 +135,9 @@ public static class MauiProgram
         builder.Services.AddTransient<SettingsViewModel>();
         builder.Services.AddTransient<PredictionsViewModel>();
         builder.Services.AddTransient<AnalyticsViewModel>();
+        builder.Services.AddTransient<ChatViewModel>();
+        builder.Services.AddTransient<BudgetSuggestionsViewModel>();
+        builder.Services.AddTransient<AiSettingsViewModel>();
 
         // Pages
         builder.Services.AddSingleton<AppShell>();
@@ -152,6 +159,9 @@ public static class MauiProgram
         builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<MorePage>();
         builder.Services.AddTransient<AddTransactionSheetPage>();
+        builder.Services.AddTransient<ChatPage>();
+        builder.Services.AddTransient<BudgetSuggestionsPage>();
+        builder.Services.AddTransient<AiSettingsPage>();
 
         // Routing
         Routing.RegisterRoute("Dashboard", typeof(DashboardPage));
@@ -175,6 +185,9 @@ public static class MauiProgram
         Routing.RegisterRoute("Predictions", typeof(PredictionsPage));
         Routing.RegisterRoute("Settings", typeof(SettingsPage));
         Routing.RegisterRoute("Login", typeof(LoginPage));
+        Routing.RegisterRoute("Chat", typeof(ChatPage));
+        Routing.RegisterRoute("BudgetSuggestions", typeof(BudgetSuggestionsPage));
+        Routing.RegisterRoute("AiSettings", typeof(AiSettingsPage));
 
 #if DEBUG
         builder.Logging.AddDebug();
