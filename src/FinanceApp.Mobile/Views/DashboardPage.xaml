@@ -20,27 +20,15 @@
     <Grid>
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
         <ScrollView>
-            <VerticalStackLayout Spacing="16" Padding="20,16,20,24">
+            <VerticalStackLayout x:Name="ContentStack" Spacing="18" Padding="20,20,20,32">
                 <!-- Greeting -->
                 <VerticalStackLayout Spacing="2">
-                    <Label Text="Overview" Style="{StaticResource TitleLabelStyle}" />
+                    <Label Text="Overview" FontSize="28" FontFamily="OpenSansSemibold" Style="{StaticResource TitleLabelStyle}" />
                     <Label Text="Here is your money at a glance" Style="{StaticResource MutedLabelStyle}" />
                 </VerticalStackLayout>
 
                 <!-- Balance hero -->
-                <Border Padding="22">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="{StaticResource Primary}" Offset="0.0" />
-                            <GradientStop Color="{StaticResource PrimaryDark}" Offset="1.0" />
-                        </LinearGradientBrush>
-                    </Border.Background>
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="24" />
-                    </Border.StrokeShape>
-                    <Border.Shadow>
-                        <Shadow Brush="Black" Opacity="0.20" Radius="18" Offset="0,8" />
-                    </Border.Shadow>
+                <Border Style="{StaticResource HeroCardStyle}">
                     <VerticalStackLayout Spacing="4">
                         <Label Text="Total Balance" FontSize="13" TextColor="White" Opacity="0.85" />
                         <HorizontalStackLayout Spacing="8" VerticalOptions="Center">

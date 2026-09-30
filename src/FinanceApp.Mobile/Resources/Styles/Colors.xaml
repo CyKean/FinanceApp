@@ -98,6 +98,20 @@
     <Color x:Key="PrimaryDarkText">#E8EAF0</Color>
     <Color x:Key="SecondaryDarkText">#7BD9B4</Color>
 
+    <!-- Modern accents & gradient tokens -->
+    <Color x:Key="GradientStart">#10805E</Color>
+    <Color x:Key="GradientMid">#0B5D45</Color>
+    <Color x:Key="GradientEnd">#053A2B</Color>
+    <Color x:Key="GradientGlow">#2DD4BF</Color>
+    <Color x:Key="IncomeAccent">#A7F3D0</Color>
+    <Color x:Key="ExpenseAccent">#FECACA</Color>
+    <Color x:Key="GlassWhite">#26FFFFFF</Color>
+    <Color x:Key="GlassWhiteStrong">#3DFFFFFF</Color>
+    <Color x:Key="CardSurface">#FFFFFF</Color>
+    <Color x:Key="CardSurfaceDark">#13211A</Color>
+    <Color x:Key="CardStroke">#E6ECE8</Color>
+    <Color x:Key="CardStrokeDark">#23352C</Color>
+
     <!-- Standard Colors for backwards compatibility -->
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>

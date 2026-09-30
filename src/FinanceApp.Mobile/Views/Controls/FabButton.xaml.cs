@@ -35,4 +35,10 @@ public partial class FabButton : ContentView
     {
         InitializeComponent();
     }
+
+    private async void OnTapped(object? sender, TappedEventArgs e)
+    {
+        await FabBorder.ScaleToAsync(0.88, 70, Easing.CubicOut);
+        await FabBorder.ScaleToAsync(1.0, 160, Easing.SpringOut);
+    }
 }
