@@ -299,6 +299,9 @@ public class FinanceAppDbContext : DbContext
             }
             else if (entry.State == EntityState.Added)
             {
+                if (entity.SyncStatus == SyncStatus.Synced)
+                    continue; // Pull-adopted rows arrive already synced.
+
                 operationType = SyncOperationType.Create;
             }
             else if (entry.State == EntityState.Modified)

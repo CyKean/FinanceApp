@@ -433,97 +433,144 @@ public class SyncService : BaseService, ISyncService, IDisposable
 
     private async Task SyncAccountAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
     {
-        var account = await _accountRepository.GetByIdAsync(operation.EntityId, cancellationToken);
-        if (account == null || account.UserId != userId)
+        var account = await _accountRepository.GetByIdIncludingDeletedAsync(operation.EntityId, cancellationToken);
+        if (account == null)
+        {
+            _logger.LogWarning("Account {EntityId} not found locally, treating operation {OperationId} as synced", operation.EntityId, operation.Id);
+            return;
+        }
+
+        if (account.UserId != userId)
             throw new NotFoundException("Account", operation.EntityId);
 
-        // Conflict resolution: Check server version if update
-        if (operation.OperationType == SyncOperationType.Update)
+        var operationType = account.IsDeleted ? SyncOperationType.Delete : operation.OperationType;
+
+        if (operationType == SyncOperationType.Update)
         {
             await ResolveConflictAsync(account, operation, cancellationToken);
         }
 
-        await _supabaseSyncService.SyncAccountAsync(account, operation.OperationType, cancellationToken);
+        await _supabaseSyncService.SyncAccountAsync(account, operationType, cancellationToken);
         account.MarkAsSynced();
         await _accountRepository.UpdateAsync(account, cancellationToken);
     }
 
     private async Task SyncCategoryAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
     {
-        var category = await _categoryRepository.GetByIdAsync(operation.EntityId, cancellationToken);
-        if (category == null || category.UserId != userId)
+        var category = await _categoryRepository.GetByIdIncludingDeletedAsync(operation.EntityId, cancellationToken);
+        if (category == null)
+        {
+            _logger.LogWarning("Category {EntityId} not found locally, treating operation {OperationId} as synced", operation.EntityId, operation.Id);
+            return;
+        }
+
+        if (category.UserId != userId)
             throw new NotFoundException("Category", operation.EntityId);
 
-        if (operation.OperationType == SyncOperationType.Update)
+        var operationType = category.IsDeleted ? SyncOperationType.Delete : operation.OperationType;
+
+        if (operationType == SyncOperationType.Update)
         {
             await ResolveConflictAsync(category, operation, cancellationToken);
         }
 
-        await _supabaseSyncService.SyncCategoryAsync(category, operation.OperationType, cancellationToken);
+        await _supabaseSyncService.SyncCategoryAsync(category, operationType, cancellationToken);
         category.MarkAsSynced();
         await _categoryRepository.UpdateAsync(category, cancellationToken);
     }
 
     private async Task SyncTransactionAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
     {
-        var transaction = await _transactionRepository.GetByIdAsync(operation.EntityId, cancellationToken);
-        if (transaction == null || transaction.UserId != userId)
+        var transaction = await _transactionRepository.GetByIdIncludingDeletedAsync(operation.EntityId, cancellationToken);
+        if (transaction == null)
+        {
+            _logger.LogWarning("Transaction {EntityId} not found locally, treating operation {OperationId} as synced", operation.EntityId, operation.Id);
+            return;
+        }
+
+        if (transaction.UserId != userId)
             throw new NotFoundException("Transaction", operation.EntityId);
 
-        if (operation.OperationType == SyncOperationType.Update)
+        var operationType = transaction.IsDeleted ? SyncOperationType.Delete : operation.OperationType;
+
+        if (operationType == SyncOperationType.Update)
         {
             await ResolveConflictAsync(transaction, operation, cancellationToken);
         }
 
-        await _supabaseSyncService.SyncTransactionAsync(transaction, operation.OperationType, cancellationToken);
+        await _supabaseSyncService.SyncTransactionAsync(transaction, operationType, cancellationToken);
         transaction.MarkAsSynced();
         await _transactionRepository.UpdateAsync(transaction, cancellationToken);
     }
 
     private async Task SyncBudgetAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
     {
-        var budget = await _budgetRepository.GetByIdAsync(operation.EntityId, cancellationToken);
-        if (budget == null || budget.UserId != userId)
+        var budget = await _budgetRepository.GetByIdIncludingDeletedAsync(operation.EntityId, cancellationToken);
+        if (budget == null)
+        {
+            _logger.LogWarning("Budget {EntityId} not found locally, treating operation {OperationId} as synced", operation.EntityId, operation.Id);
+            return;
+        }
+
+        if (budget.UserId != userId)
             throw new NotFoundException("Budget", operation.EntityId);
 
-        if (operation.OperationType == SyncOperationType.Update)
+        var operationType = budget.IsDeleted ? SyncOperationType.Delete : operation.OperationType;
+
+        if (operationType == SyncOperationType.Update)
         {
             await ResolveConflictAsync(budget, operation, cancellationToken);
         }
 
-        await _supabaseSyncService.SyncBudgetAsync(budget, operation.OperationType, cancellationToken);
+        await _supabaseSyncService.SyncBudgetAsync(budget, operationType, cancellationToken);
         budget.MarkAsSynced();
         await _budgetRepository.UpdateAsync(budget, cancellationToken);
     }
 
     private async Task SyncRecurringTransactionAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
     {
-        var recurring = await _recurringRepository.GetByIdAsync(operation.EntityId, cancellationToken);
-        if (recurring == null || recurring.UserId != userId)
+        var recurring = await _recurringRepository.GetByIdIncludingDeletedAsync(operation.EntityId, cancellationToken);
+        if (recurring == null)
+        {
+            _logger.LogWarning("RecurringTransaction {EntityId} not found locally, treating operation {OperationId} as synced", operation.EntityId, operation.Id);
+            return;
+        }
+
+        if (recurring.UserId != userId)
             throw new NotFoundException("RecurringTransaction", operation.EntityId);
 
-        if (operation.OperationType == SyncOperationType.Update)
+        var operationType = recurring.IsDeleted ? SyncOperationType.Delete : operation.OperationType;
+
+        if (operationType == SyncOperationType.Update)
         {
             await ResolveConflictAsync(recurring, operation, cancellationToken);
         }
 
-        await _supabaseSyncService.SyncRecurringTransactionAsync(recurring, operation.OperationType, cancellationToken);
+        await _supabaseSyncService.SyncRecurringTransactionAsync(recurring, operationType, cancellationToken);
         recurring.MarkAsSynced();
         await _recurringRepository.UpdateAsync(recurring, cancellationToken);
     }
 
     private async Task SyncFinancialGoalAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
     {
-        var goal = await _goalRepository.GetByIdAsync(operation.EntityId, cancellationToken);
-        if (goal == null || goal.UserId != userId)
+        var goal = await _goalRepository.GetByIdIncludingDeletedAsync(operation.EntityId, cancellationToken);
+        if (goal == null)
+        {
+            _logger.LogWarning("FinancialGoal {EntityId} not found locally, treating operation {OperationId} as synced", operation.EntityId, operation.Id);
+            return;
+        }
+
+        if (goal.UserId != userId)
             throw new NotFoundException("FinancialGoal", operation.EntityId);
 
-        if (operation.OperationType == SyncOperationType.Update)
+        var operationType = goal.IsDeleted ? SyncOperationType.Delete : operation.OperationType;
+
+        if (operationType == SyncOperationType.Update)
         {
             await ResolveConflictAsync(goal, operation, cancellationToken);
         }
 
-        await _supabaseSyncService.SyncFinancialGoalAsync(goal, operation.OperationType, cancellationToken);
+        await _supabaseSyncService.SyncFinancialGoalAsync(goal, operationType, cancellationToken);
         goal.MarkAsSynced();
         await _goalRepository.UpdateAsync(goal, cancellationToken);
     }

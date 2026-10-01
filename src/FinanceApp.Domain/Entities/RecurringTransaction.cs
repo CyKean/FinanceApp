@@ -19,8 +19,6 @@ public class RecurringTransaction : Entity
     public DateTime? LastGeneratedAt { get; private set; }
     public DateTime? NextDueDate { get; private set; }
     public bool IsActive { get; private set; }
-    public SyncStatus SyncStatus { get; private set; }
-    public DateTime? LastSyncedAt { get; private set; }
 
     private RecurringTransaction() : base() { }
 
@@ -60,7 +58,6 @@ public class RecurringTransaction : Entity
         Notes = notes?.Trim();
         IsActive = true;
         NextDueDate = CalculateNextDueDate(startDate.Date);
-        SyncStatus = SyncStatus.PendingCreate;
     }
 
     public void UpdateName(string name)
@@ -192,37 +189,5 @@ public class RecurringTransaction : Entity
             UserId,
             Notes,
             Id);
-    }
-
-    public void MarkAsSynced()
-    {
-        SyncStatus = SyncStatus.Synced;
-        LastSyncedAt = DateTime.UtcNow;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsPendingCreate()
-    {
-        SyncStatus = SyncStatus.PendingCreate;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsPendingUpdate()
-    {
-        if (SyncStatus == SyncStatus.Synced || SyncStatus == SyncStatus.PendingCreate)
-            SyncStatus = SyncStatus.PendingUpdate;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsPendingDelete()
-    {
-        SyncStatus = SyncStatus.PendingDelete;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsFailed()
-    {
-        SyncStatus = SyncStatus.Failed;
-        UpdateTimestamp();
     }
 }

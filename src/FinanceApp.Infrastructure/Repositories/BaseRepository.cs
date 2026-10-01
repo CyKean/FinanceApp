@@ -21,6 +21,11 @@ public abstract class BaseRepository<T> : IRepository<T> where T : Entity
         return await DbSet.FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
 
+    public virtual async Task<T?> GetByIdIncludingDeletedAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await DbSet.IgnoreQueryFilters().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+    }
+
     public virtual async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await DbSet.ToListAsync(cancellationToken);

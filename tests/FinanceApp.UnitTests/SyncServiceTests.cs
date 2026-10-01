@@ -37,6 +37,23 @@ public class SyncServiceTests
         _mockGoalRepository = new Mock<IFinancialGoalRepository>();
         _mockSupabaseSyncService = new Mock<ISupabaseSyncService>();
         _mockConnectivityService = new Mock<IConnectivityService>();
+        _mockConnectivityService.Setup(x => x.CheckConnectivityAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() => _mockConnectivityService.Object.CurrentAccess);
+
+        _mockAccountRepository.Setup(x => x.GetByUserIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Account>());
+        _mockCategoryRepository.Setup(x => x.GetByUserIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Category>());
+        _mockTransactionRepository.Setup(x => x.GetByUserIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Transaction>());
+        _mockBudgetRepository.Setup(x => x.GetByUserIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Budget>());
+        _mockRecurringRepository.Setup(x => x.GetByUserIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<RecurringTransaction>());
+        _mockGoalRepository.Setup(x => x.GetByUserIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<FinancialGoal>());
+        _mockSyncRepository.Setup(x => x.GetByEntityAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<SyncOperation>());
         _mockLogger = new Mock<ILogger<SyncService>>();
 
         var mockUnitOfWork = new Mock<IUnitOfWork>();
@@ -96,7 +113,7 @@ public class SyncServiceTests
             userId);
         typeof(Entity).GetProperty(nameof(Entity.Id))?.SetValue(transaction, transactionId);
         
-        _mockTransactionRepository.Setup(x => x.GetByIdAsync(transactionId, It.IsAny<CancellationToken>()))
+        _mockTransactionRepository.Setup(x => x.GetByIdIncludingDeletedAsync(transactionId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(transaction);
         
         // Use callback to signal when first sync has acquired lock and is processing
@@ -176,7 +193,7 @@ public class SyncServiceTests
             })
             .ReturnsAsync(new List<SyncOperation>()); // Second call after sync
 
-        _mockTransactionRepository.Setup(x => x.GetByIdAsync(transactionId, It.IsAny<CancellationToken>()))
+        _mockTransactionRepository.Setup(x => x.GetByIdIncludingDeletedAsync(transactionId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(transaction);
 
         _mockSupabaseSyncService.Setup(x => x.SyncTransactionAsync(
@@ -189,7 +206,7 @@ public class SyncServiceTests
         var result = await _syncService.SyncAsync(userId);
 
         // Assert
-        Assert.True(result.Success);
+        Assert.True(result.Success, result.ErrorMessage);
         Assert.Equal(1, result.SyncedCount);
         
         // Verify supabase was called
@@ -225,7 +242,7 @@ public class SyncServiceTests
             .ReturnsAsync(new List<SyncOperation> { syncOp })
             .ReturnsAsync(new List<SyncOperation>());
 
-        _mockTransactionRepository.Setup(x => x.GetByIdAsync(transactionId, It.IsAny<CancellationToken>()))
+        _mockTransactionRepository.Setup(x => x.GetByIdIncludingDeletedAsync(transactionId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(transaction);
 
         _mockSupabaseSyncService.Setup(x => x.SyncTransactionAsync(

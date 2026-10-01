@@ -14,8 +14,6 @@ public class Transaction : Entity
     public CategoryId CategoryId { get; private set; }
     public Guid UserId { get; private set; }
     public Guid? RecurringTransactionId { get; private set; }
-    public SyncStatus SyncStatus { get; private set; }
-    public DateTime? LastSyncedAt { get; private set; }
 
     private Transaction() : base() { }
 
@@ -46,7 +44,6 @@ public class Transaction : Entity
         UserId = userId;
         Notes = notes?.Trim();
         RecurringTransactionId = recurringTransactionId;
-        SyncStatus = SyncStatus.PendingCreate;
     }
 
     public void UpdateAmount(Money amount)
@@ -93,35 +90,4 @@ public class Transaction : Entity
         MarkAsPendingUpdate();
     }
 
-    public void MarkAsSynced()
-    {
-        SyncStatus = SyncStatus.Synced;
-        LastSyncedAt = DateTime.UtcNow;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsPendingCreate()
-    {
-        SyncStatus = SyncStatus.PendingCreate;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsPendingUpdate()
-    {
-        if (SyncStatus == SyncStatus.Synced || SyncStatus == SyncStatus.PendingCreate)
-            SyncStatus = SyncStatus.PendingUpdate;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsPendingDelete()
-    {
-        SyncStatus = SyncStatus.PendingDelete;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsFailed()
-    {
-        SyncStatus = SyncStatus.Failed;
-        UpdateTimestamp();
-    }
 }

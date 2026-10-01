@@ -17,8 +17,6 @@ public class FinancialGoal : Entity
     public string? Color { get; private set; }
     public Guid UserId { get; private set; }
     public AccountId? LinkedAccountId { get; private set; }
-    public SyncStatus SyncStatus { get; private set; }
-    public DateTime? LastSyncedAt { get; private set; }
 
     private FinancialGoal() : base() { }
 
@@ -53,7 +51,6 @@ public class FinancialGoal : Entity
         Color = color?.Trim();
         UserId = userId;
         LinkedAccountId = linkedAccountId;
-        SyncStatus = SyncStatus.PendingCreate;
     }
 
     public void UpdateName(string name)
@@ -234,37 +231,5 @@ public class FinancialGoal : Entity
     {
         var required = GetRequiredMonthlySavings();
         return monthlySavings >= required;
-    }
-
-    public void MarkAsSynced()
-    {
-        SyncStatus = SyncStatus.Synced;
-        LastSyncedAt = DateTime.UtcNow;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsPendingCreate()
-    {
-        SyncStatus = SyncStatus.PendingCreate;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsPendingUpdate()
-    {
-        if (SyncStatus == SyncStatus.Synced || SyncStatus == SyncStatus.PendingCreate)
-            SyncStatus = SyncStatus.PendingUpdate;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsPendingDelete()
-    {
-        SyncStatus = SyncStatus.PendingDelete;
-        UpdateTimestamp();
-    }
-
-    public void MarkAsFailed()
-    {
-        SyncStatus = SyncStatus.Failed;
-        UpdateTimestamp();
     }
 }
