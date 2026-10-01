@@ -7,6 +7,8 @@
              xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.TransactionsPage"
              Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource PayCream}"
              x:Name="TransactionsPageView">
 
     <ContentPage.Resources>
@@ -27,47 +29,53 @@
                             RemainingItemsThreshold="5"
                             RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
                 <CollectionView.Header>
-                    <VerticalStackLayout Spacing="16" Padding="20,16,20,0">
-                        <!-- Header -->
-                        <controls:PageHeader Title="Transactions"
-                                             Subtitle="History of money in and out" />
+                    <VerticalStackLayout Spacing="12" Padding="18,14,18,0">
+                        <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                            <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeTapped" /></Border.GestureRecognizers>
+                                <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center" Margin="10,0">
+                                <Label Text="Transactions" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="History of money in and out" FontSize="12" TextColor="#6F7668" />
+                            </VerticalStackLayout>
+                            <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayInk}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                <Label Text="+" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PayLime}" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding AddTransactionCommand}" /></Label.GestureRecognizers>
+                                </Label>
+                            </Border>
+                        </Grid>
 
-                        <!-- Filter Bar -->
                         <controls:FilterBar StartDate="{Binding Filter.StartDate, Mode=TwoWay}"
                                             EndDate="{Binding Filter.EndDate, Mode=TwoWay}"
                                             SelectedType="{Binding Filter.Type, Mode=TwoWay}"
                                             ApplyCommand="{Binding ApplyFilterCommand}"
                                             ClearCommand="{Binding ClearFilterCommand}" />
 
-                        <!-- Summary -->
-                        <Border Style="{StaticResource CardFrameStyle}" IsVisible="{Binding Summary, Converter={StaticResource NullToBoolConverter}}">
-                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding Summary, Converter={StaticResource NullToBoolConverter}}">
+                            <Border Grid.Column="0" Style="{StaticResource PayLimeCardStyle}" Padding="14">
                                 <VerticalStackLayout Spacing="2">
-                                    <Label Text="Income" Style="{StaticResource CaptionLabelStyle}" TextColor="{StaticResource Success}" />
-                                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
-                                        <Label Text="{Binding Summary.TotalIncome.Amount, StringFormat='{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Success}" VerticalOptions="End" />
-                                        <Label Text="{Binding Summary.TotalIncome.Currency}" FontSize="10" TextColor="{StaticResource Success}" Opacity="0.8" VerticalOptions="End" Margin="0,0,0,2" />
-                                    </HorizontalStackLayout>
+                                    <Label Text="↗ Income" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                    <Label Text="{Binding Summary.TotalIncome.Amount, StringFormat='{0:N2}'}" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                                 </VerticalStackLayout>
-                                <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                    <Label Text="Expenses" Style="{StaticResource CaptionLabelStyle}" TextColor="{StaticResource Error}" />
-                                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
-                                        <Label Text="{Binding Summary.TotalExpense.Amount, StringFormat='{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource Error}" VerticalOptions="End" />
-                                        <Label Text="{Binding Summary.TotalExpense.Currency}" FontSize="10" TextColor="{StaticResource Error}" Opacity="0.8" VerticalOptions="End" Margin="0,0,0,2" />
-                                    </HorizontalStackLayout>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource PayDarkCardStyle}" Padding="14">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="↘ Expenses" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PayLime}" />
+                                    <Label Text="{Binding Summary.TotalExpense.Amount, StringFormat='{0:N2}'}" FontSize="17" FontAttributes="Bold" TextColor="White" />
                                 </VerticalStackLayout>
-                                <VerticalStackLayout Grid.Row="1" Spacing="2">
-                                    <Label Text="Net" Style="{StaticResource CaptionLabelStyle}" />
-                                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
-                                        <Label Text="{Binding Summary.NetAmount.Amount, StringFormat='{0:N2}'}" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" VerticalOptions="End" />
-                                        <Label Text="{Binding Summary.NetAmount.Currency}" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="End" Margin="0,0,0,2" />
-                                    </HorizontalStackLayout>
-                                </VerticalStackLayout>
-                                <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="2">
-                                    <Label Text="Count" Style="{StaticResource CaptionLabelStyle}" />
-                                    <Label Text="{Binding Summary.TransactionCount}" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
-                                </VerticalStackLayout>
-                            </Grid>
+                            </Border>
+                        </Grid>
+                        <Border Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="14,10" IsVisible="{Binding Summary, Converter={StaticResource NullToBoolConverter}}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                            <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                                <Label Text="Net" FontSize="12" FontAttributes="Bold" TextColor="#6F7668" VerticalOptions="Center" />
+                                <Label Text="{Binding Summary.NetAmount.Amount, StringFormat='{0:N2}'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                                <Label Text="•" TextColor="#6F7668" VerticalOptions="Center" />
+                                <Label Text="{Binding Summary.TransactionCount, StringFormat='{0} txns'}" FontSize="12" TextColor="#6F7668" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
                         </Border>
                     </VerticalStackLayout>
                 </CollectionView.Header>
@@ -77,44 +85,34 @@
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>
-                                    <SwipeItem Text="Edit"
-                                               BackgroundColor="#0E6B4F"
+                                    <SwipeItem Text="Edit" BackgroundColor="#161B16"
                                                Command="{Binding Source={x:Reference TransactionsPageView}, Path=BindingContext.EditTransactionCommand}"
                                                CommandParameter="{Binding .}" />
-                                    <SwipeItem Text="Delete"
-                                               BackgroundColor="Red"
+                                    <SwipeItem Text="Delete" BackgroundColor="#DC2626"
                                                Command="{Binding Source={x:Reference TransactionsPageView}, Path=BindingContext.DeleteTransactionCommand}"
                                                CommandParameter="{Binding .}" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            <Border Style="{StaticResource TransactionItemFrameStyle}" Margin="20,4">
+                            <Border Background="{StaticResource PayCard}" Stroke="#D3D9BE" StrokeThickness="1" Padding="12" Margin="18,4">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="22" /></Border.StrokeShape>
                                 <HorizontalStackLayout Spacing="12">
-                                    <Border WidthRequest="48" HeightRequest="48"
-                                            Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
-                                            StrokeThickness="0"
-                                            VerticalOptions="Center">
-                                        <Border.StrokeShape>
-                                            <Ellipse />
-                                        </Border.StrokeShape>
-                                        <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
-                                    </Border>
+                                    <controls:PaytinIconView Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="48" VerticalOptions="Center" />
                                     <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                        <Label Text="{Binding CategoryName}" Style="{StaticResource TransactionNameLabelStyle}" />
-                                        <Label Text="{Binding Notes}" Style="{StaticResource TransactionNotesLabelStyle}"
+                                        <Label Text="{Binding CategoryName}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                        <Label Text="{Binding Notes}" FontSize="12" TextColor="#6F7668"
                                                IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
-                                        <HorizontalStackLayout Spacing="8">
-                                            <Label Text="{Binding AccountName}" Style="{StaticResource TransactionAccountLabelStyle}" />
-                                            <Label Text="•" Style="{StaticResource TransactionSeparatorLabelStyle}" />
-                                            <Label Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" Style="{StaticResource TransactionDateLabelStyle}" />
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Label Text="{Binding AccountName}" FontSize="11" TextColor="#6F7668" />
+                                            <Label Text="•" FontSize="11" TextColor="#D3D9BE" />
+                                            <Label Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" FontSize="11" TextColor="#6F7668" />
                                         </HorizontalStackLayout>
                                     </VerticalStackLayout>
                                     <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
                                         <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}"
-                                               Style="{StaticResource TransactionAmountLabelStyle}"
-                                               TextColor="{Binding Type, Converter={StaticResource TransactionTypeColorConverter}}" />
+                                               FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalTextAlignment="End" />
                                         <Label Text="{Binding SyncStatus, Converter={StaticResource SyncStatusIconConverter}}"
-                                               Style="{StaticResource SyncStatusLabelStyle}"
-                                               TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusColorConverter}}" />
+                                               FontSize="11" FontAttributes="Bold"
+                                               TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusColorConverter}}" HorizontalTextAlignment="End" />
                                     </VerticalStackLayout>
                                 </HorizontalStackLayout>
                             </Border>
@@ -128,28 +126,18 @@
                 </CollectionView.Footer>
 
                 <CollectionView.EmptyView>
-                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20,16,20,96">
-                        <Label Text="📭" FontSize="48" HorizontalOptions="Center" />
-                        <Label Text="No transactions found" Style="{StaticResource EmptyStateLabelStyle}" />
-                        <Label Text="Tap + to add your first transaction" Style="{StaticResource EmptyStateSubLabelStyle}" />
-                    </VerticalStackLayout>
+                    <controls:PaytinEmptyState Title="No transactions found"
+                                             Subtitle="Tap + to add your first transaction"
+                                             IconKey="receipt" />
                 </CollectionView.EmptyView>
             </CollectionView>
         </RefreshView>
 
-        <!-- Add FAB -->
-        <controls:FabButton Command="{Binding AddTransactionCommand}" Margin="20" />
+        <controls:PaytinTabBar VerticalOptions="End" ActiveTab="Transactions" />
 
-        <!-- Toasts -->
         <controls:ToastHost />
-
-        <!-- Add Transaction chooser -->
         <controls:ChoiceSheetHost />
-
-        <!-- Custom confirmation modal -->
         <controls:ConfirmModalHost />
-
-        <!-- Success / failure animation -->
         <controls:SuccessOverlayHost />
     </Grid>
 </ContentPage>

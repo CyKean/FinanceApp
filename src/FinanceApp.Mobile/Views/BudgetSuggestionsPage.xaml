@@ -9,6 +9,7 @@
              x:DataType="viewmodels:BudgetSuggestionsViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource PayCream}"
              x:Name="BudgetSuggestionsPageView">
 
     <ContentPage.Resources>
@@ -22,35 +23,31 @@
             <VerticalStackLayout Spacing="16" Padding="20,16,20,28">
 
                 <!-- Header -->
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                    <Border Padding="14,9"
-                            Background="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}"
-                            StrokeThickness="0"
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <Border WidthRequest="46" HeightRequest="46"
+                            Background="{StaticResource PayCard}"
+                            Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
                             VerticalOptions="Center">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="14" />
+                            <Ellipse />
                         </Border.StrokeShape>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnBackTapped" />
                         </Border.GestureRecognizers>
-                        <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                            <Label Text="&#x2039;"
-                                   FontSize="22"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                                   VerticalOptions="Center" />
-                            <Label Text="Back"
-                                   FontSize="14"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                                   VerticalOptions="Center" />
-                        </HorizontalStackLayout>
+                        <Label Text="←"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PayInk}"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center" />
                     </Border>
 
-                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Text="AI Suggestions" Style="{StaticResource TitleLabelStyle}" />
-                        <Label Text="Budget ideas based on your last 3 months" Style="{StaticResource MutedLabelStyle}" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                        <Label Text="AI Suggestions" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                        <Label Text="Budget ideas from your last 3 months" FontSize="12" TextColor="#6F7668" />
                     </VerticalStackLayout>
+
+                    <controls:PaytinIconView Grid.Column="2" IconKey="bulb" Size="46" Light="True" VerticalOptions="Center" />
                 </Grid>
 
                 <!-- Suggestions -->
@@ -60,18 +57,7 @@
                             <Border Style="{StaticResource CardFrameStyle}" Margin="0,4" Padding="16">
                                 <VerticalStackLayout Spacing="10">
                                     <Grid ColumnDefinitions="48,*,Auto" ColumnSpacing="12">
-                                        <Border Grid.Column="0" WidthRequest="48" HeightRequest="48"
-                                                Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
-                                                StrokeThickness="0"
-                                                VerticalOptions="Center">
-                                            <Border.StrokeShape>
-                                                <Ellipse />
-                                            </Border.StrokeShape>
-                                            <Label Text="{Binding IconGlyph}"
-                                                   FontSize="20"
-                                                   VerticalOptions="Center"
-                                                   HorizontalOptions="Center" />
-                                        </Border>
+                                        <controls:PaytinIconView Grid.Column="0" Icon="{Binding IconGlyph}" Name="{Binding CategoryName}" Size="48" VerticalOptions="Center" />
 
                                         <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
                                             <Label Text="{Binding CategoryName}"
@@ -79,7 +65,7 @@
                                             <Label Text="{Binding KindLabel}"
                                                    FontSize="12"
                                                    FontAttributes="Bold"
-                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+                                                   TextColor="{StaticResource PayInk}" />
                                         </VerticalStackLayout>
 
                                         <Label Grid.Column="2"
@@ -94,7 +80,8 @@
                                             <Label Text="{Binding SuggestedText}"
                                                    FontSize="20"
                                                    FontAttributes="Bold"
-                                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+                                                   FontFamily="SpaceGroteskBold"
+                                                   TextColor="{StaticResource PayInk}" />
                                         </VerticalStackLayout>
                                         <Label Grid.Column="1"
                                                Text="{Binding CurrentText}"
@@ -109,7 +96,7 @@
 
                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                                         <Button Grid.Column="0"
-                                                Text="Apply"
+                                                Text="Apply →"
                                                 Command="{Binding Source={x:Reference BudgetSuggestionsPageView}, Path=BindingContext.ApplyCommand}"
                                                 CommandParameter="{Binding .}"
                                                 Style="{StaticResource PrimaryButtonStyle}"
@@ -126,13 +113,9 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                     <CollectionView.EmptyView>
-                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20,40">
-                            <Label Text="&#x2728;" FontSize="48" HorizontalOptions="Center" />
-                            <Label Text="No suggestions right now" Style="{StaticResource EmptyStateLabelStyle}" />
-                            <Label Text="Once you have a few weeks of spending recorded, tailored budget ideas will appear here"
-                                   Style="{StaticResource EmptyStateSubLabelStyle}"
-                                   HorizontalTextAlignment="Center" />
-                        </VerticalStackLayout>
+                        <controls:PaytinEmptyState Title="No suggestions right now"
+                                                 Subtitle="Once you have a few weeks of spending recorded, tailored budget ideas will appear here"
+                                                 IconKey="bulb" />
                     </CollectionView.EmptyView>
                 </CollectionView>
             </VerticalStackLayout>

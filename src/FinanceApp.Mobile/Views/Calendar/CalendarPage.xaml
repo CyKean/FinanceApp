@@ -3,9 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.Calendar.CalendarPage"
              x:DataType="viewmodels:CalendarViewModel"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource PayCream}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -17,21 +20,51 @@
     </ContentPage.Resources>
 
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
-        <VerticalStackLayout Spacing="0">
+        <ScrollView>
+        <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
+            <!-- Header -->
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                <Border WidthRequest="46" HeightRequest="46"
+                        Background="{StaticResource PayCard}"
+                        Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                        VerticalOptions="Center">
+                    <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                    <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
+                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                    <Label Text="Calendar" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                    <Label Text="Money day by day" FontSize="12" TextColor="#6F7668" />
+                </VerticalStackLayout>
+                <controls:PaytinIconView Grid.Column="2" IconKey="calendar" Size="46" Light="True" VerticalOptions="Center" />
+            </Grid>
+
             <!-- Month Header -->
-            <Border Style="{StaticResource CardFrameStyle}" Margin="16,16,16,8" Padding="16">
-                <HorizontalStackLayout Spacing="12">
-                    <Button Text="←" Command="{Binding PreviousMonthCommand}" Style="{StaticResource IconButtonStyle}" WidthRequest="44" HeightRequest="44" />
-                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Fill">
-                        <Label Text="{Binding SelectedMonth, StringFormat='{0:MMMM yyyy}'}" Style="{StaticResource MonthLabelStyle}" HorizontalOptions="Center" />
-                    </VerticalStackLayout>
-                    <Button Text="Today" Command="{Binding CurrentMonthCommand}" Style="{StaticResource OutlineButtonStyle}" WidthRequest="80" HeightRequest="44" />
-                    <Button Text="→" Command="{Binding NextMonthCommand}" Style="{StaticResource IconButtonStyle}" WidthRequest="44" HeightRequest="44" />
+            <Border Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="8">
+                <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                    <Border WidthRequest="42" HeightRequest="42" Background="{StaticResource PayCream}" Stroke="{StaticResource PayInk}" StrokeThickness="1.2" VerticalOptions="Center">
+                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding PreviousMonthCommand}" /></Border.GestureRecognizers>
+                        <Label Text="←" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <Label Text="{Binding SelectedMonth, StringFormat='{0:MMMM yyyy}'}" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" HorizontalOptions="Fill" HorizontalTextAlignment="Center" />
+                    <Border Background="{StaticResource PayCream}" Stroke="{StaticResource PayInk}" StrokeThickness="1.2" Padding="12,8" VerticalOptions="Center">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                        <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding CurrentMonthCommand}" /></Border.GestureRecognizers>
+                        <Label Text="Today" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                    </Border>
+                    <Border WidthRequest="42" HeightRequest="42" Background="{StaticResource PayInk}" StrokeThickness="0" VerticalOptions="Center">
+                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NextMonthCommand}" /></Border.GestureRecognizers>
+                        <Label Text="→" FontAttributes="Bold" TextColor="{StaticResource PayLime}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
                 </HorizontalStackLayout>
             </Border>
 
             <!-- Calendar Grid -->
-            <Border Style="{StaticResource CardFrameStyle}" Margin="16,8" Padding="8">
+            <Border Style="{StaticResource CardFrameStyle}" Padding="12">
                 <VerticalStackLayout Spacing="4">
                     <!-- Day Headers -->
                     <HorizontalStackLayout>
@@ -52,7 +85,7 @@
             </Border>
 
             <!-- Selected Day Events -->
-            <Border Style="{StaticResource CardFrameStyle}" Margin="16,8,16,16" Padding="16" IsVisible="{Binding SelectedDayEvents.Count, Converter={StaticResource NullToBoolConverter}}">
+            <Border Style="{StaticResource CardFrameStyle}" IsVisible="{Binding SelectedDayEvents.Count, Converter={StaticResource NullToBoolConverter}}">
                 <VerticalStackLayout Spacing="12">
                     <Label Text="{Binding SelectedDate, StringFormat='{0:MMMM dd, yyyy}'}" Style="{StaticResource SectionHeaderStyle}" />
                     
@@ -61,11 +94,7 @@
                             <DataTemplate>
                                 <Border Style="{StaticResource TransactionItemFrameStyle}" Margin="0,4">
                                     <HorizontalStackLayout Spacing="12">
-                                        <Border WidthRequest="40" HeightRequest="40" CornerRadius="20" 
-                                               Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
-                                               HasShadow="False" BorderColor="Transparent">
-                                            <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="16" />
-                                        </Border>
+                                        <controls:PaytinIconView Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="40" VerticalOptions="Center" />
                                         <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                             <Label Text="{Binding CategoryName}" Style="{StaticResource TransactionNameLabelStyle}" />
                                             <Label Text="{Binding Notes}" Style="{StaticResource TransactionNotesLabelStyle}" 
@@ -83,12 +112,12 @@
             </Border>
 
             <!-- Empty State for Selected Day -->
-            <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20" 
-                                 IsVisible="{Binding SelectedDayEvents.Count, Converter={StaticResource InverseBoolConverter}, ConverterParameter=true}"
-                                 IsEnabled="{Binding SelectedDate, Converter={StaticResource NullToBoolConverter}}">
-                <Label Text="📅" FontSize="48" />
-                <Label Text="No events on this day" Style="{StaticResource EmptyStateLabelStyle}" />
-            </VerticalStackLayout>
+            <controls:PaytinEmptyState Title="No events on this day"
+                                     Subtitle="Pick another day to see its activity"
+                                     IconKey="calendar"
+                                     IsVisible="{Binding SelectedDayEvents.Count, Converter={StaticResource InverseBoolConverter}, ConverterParameter=true}"
+                                     IsEnabled="{Binding SelectedDate, Converter={StaticResource NullToBoolConverter}}" />
         </VerticalStackLayout>
+        </ScrollView>
     </RefreshView>
 </ContentPage>

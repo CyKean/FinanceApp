@@ -32,6 +32,16 @@ public partial class MorePage : ContentPage
         await Shell.Current.GoToAsync("BudgetSuggestions");
     }
 
+    private async void OnCalendarTapped(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("Calendar");
+    }
+
+    private async void OnPredictionsTapped(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("Predictions");
+    }
+
     private async void OnProfileTapped(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("//Settings");
@@ -40,5 +50,15 @@ public partial class MorePage : ContentPage
     private async void OnScrimTapped(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("//Main/Dashboard");
+    }
+
+    private async void OnHomeTapped(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("//Main/Dashboard");
+    }
+
+    private async void OnTransactionsTapped(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("//Main/Transactions");
     }
 }

@@ -16,4 +16,10 @@ public partial class AnalyticsPage : ContentPage
         if (BindingContext is AnalyticsViewModel vm && vm.LoadCommand.CanExecute(null))
             await vm.LoadCommand.ExecuteAsync(null);
     }
+
+    private async void OnBackTapped(object? sender, EventArgs e)
+    {
+        try { await Shell.Current.GoToAsync(".."); }
+        catch { await Shell.Current.GoToAsync("//Main/Dashboard"); }
+    }
 }

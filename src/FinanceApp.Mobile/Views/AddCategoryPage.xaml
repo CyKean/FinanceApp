@@ -23,7 +23,32 @@
 
     <Grid>
         <ScrollView>
-            <VerticalStackLayout Spacing="16" Padding="16,16,16,24">
+            <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
+                <!-- Header -->
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                    <Border WidthRequest="46" HeightRequest="46"
+                            Background="{StaticResource PayCard}"
+                            Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                            VerticalOptions="Center">
+                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding CancelCommand}" /></Border.GestureRecognizers>
+                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                        <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                        <Label Text="Name, icon and color" FontSize="12" TextColor="#6F7668" />
+                    </VerticalStackLayout>
+                    <Border Grid.Column="2" WidthRequest="46" HeightRequest="46"
+                            Background="{StaticResource PayLime}"
+                            Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                            VerticalOptions="Center">
+                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        <Label Text="▦" FontSize="18" TextColor="{StaticResource PayInk}"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                </Grid>
+
                 <!-- Name -->
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                     <VerticalStackLayout Spacing="8">
@@ -53,48 +78,13 @@
                     <VerticalStackLayout Spacing="10">
                         <Label Text="Icon" Style="{StaticResource FormLabelStyle}" />
                         <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                            <Border WidthRequest="52" HeightRequest="52"
-                                    Background="{Binding Color, Converter={StaticResource ColorConverter}}"
-                                    StrokeThickness="0"
-                                    VerticalOptions="Center">
-                                <Border.StrokeShape>
-                                    <Ellipse />
-                                </Border.StrokeShape>
-                                <Label Text="{Binding Icon, TargetNullValue='&#x1F3F7;&#xFE0F;'}"
-                                       FontSize="26"
-                                       VerticalOptions="Center"
-                                       HorizontalOptions="Center" />
-                            </Border>
+                            <controls:PaytinIconView Icon="{Binding Icon}" Name="{Binding Name}" Size="52" VerticalOptions="Center" />
                             <Label Text="Tap an icon below"
                                    Style="{StaticResource MutedLabelStyle}"
                                    VerticalOptions="Center"
                                    HorizontalOptions="Fill" />
                         </HorizontalStackLayout>
                         <FlexLayout x:Name="EmojiContainer"
-                                    Direction="Row"
-                                    Wrap="Wrap" />
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Color picker -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Color" Style="{StaticResource FormLabelStyle}" />
-                        <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                            <Border WidthRequest="40" HeightRequest="40"
-                                    Background="{Binding Color, Converter={StaticResource ColorConverter}}"
-                                    StrokeThickness="0"
-                                    VerticalOptions="Center">
-                                <Border.StrokeShape>
-                                    <Ellipse />
-                                </Border.StrokeShape>
-                            </Border>
-                            <Label Text="{Binding Color}"
-                                   Style="{StaticResource MutedLabelStyle}"
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="Fill" />
-                        </HorizontalStackLayout>
-                        <FlexLayout x:Name="ColorContainer"
                                     Direction="Row"
                                     Wrap="Wrap" />
                     </VerticalStackLayout>

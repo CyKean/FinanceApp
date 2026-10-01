@@ -7,359 +7,263 @@
              xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.DashboardPage"
              x:DataType="viewmodels:DashboardViewModel"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource PayCream}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:MoneyToStringConverter x:Key="MoneyConverter" />
             <converters:PercentageToColorConverter x:Key="PercentageColorConverter" />
             <converters:TransactionTypeToColorConverter x:Key="TransactionTypeColorConverter" />
+            <converters:CategoryInitialConverter x:Key="InitialConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid>
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
-        <ScrollView>
-            <VerticalStackLayout x:Name="ContentStack" Spacing="18" Padding="20,20,20,32">
-                <!-- Greeting -->
-                <VerticalStackLayout Spacing="2">
-                    <Label Text="Overview" FontSize="28" FontFamily="OpenSansSemibold" Style="{StaticResource TitleLabelStyle}" />
-                    <Label Text="Here is your money at a glance" Style="{StaticResource MutedLabelStyle}" />
-                </VerticalStackLayout>
-
-                <!-- Balance hero -->
-                <Border Style="{StaticResource HeroCardStyle}">
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="Total Balance" FontSize="13" TextColor="White" Opacity="0.85" />
-                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                            <Label Text="{Binding TotalBalance.Amount, StringFormat='{0:N2}'}"
-                                   FontSize="36"
-                                   FontAttributes="Bold"
-                                   TextColor="White"
-                                   VerticalOptions="End" />
-                            <Label Text="{Binding TotalBalance.Currency}"
-                                   FontSize="16"
-                                   TextColor="White"
-                                   Opacity="0.85"
-                                   VerticalOptions="End"
-                                   Margin="0,0,0,6" />
-                        </HorizontalStackLayout>
-                        <HorizontalStackLayout Spacing="16" Margin="0,12,0,0">
-                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                                <Label Text="↑" FontSize="16" FontAttributes="Bold" TextColor="#A7E5C6" VerticalOptions="Center" />
-                                <VerticalStackLayout Spacing="0">
-                                    <Label Text="Income" FontSize="11" TextColor="White" Opacity="0.8" />
-                                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
-                                        <Label Text="{Binding TotalIncome.Amount, StringFormat='{0:N2}'}"
-                                               FontSize="15" FontAttributes="Bold" TextColor="White" VerticalOptions="End" />
-                                        <Label Text="{Binding TotalIncome.Currency}"
-                                               FontSize="10" TextColor="White" Opacity="0.8" VerticalOptions="End" Margin="0,0,0,2" />
-                                    </HorizontalStackLayout>
-                                </VerticalStackLayout>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                                <Label Text="↓" FontSize="16" FontAttributes="Bold" TextColor="#FECACA" VerticalOptions="Center" />
-                                <VerticalStackLayout Spacing="0">
-                                    <Label Text="Expenses" FontSize="11" TextColor="White" Opacity="0.8" />
-                                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
-                                        <Label Text="{Binding TotalExpense.Amount, StringFormat='{0:N2}'}"
-                                               FontSize="15" FontAttributes="Bold" TextColor="White" VerticalOptions="End" />
-                                        <Label Text="{Binding TotalExpense.Currency}"
-                                               FontSize="10" TextColor="White" Opacity="0.8" VerticalOptions="End" Margin="0,0,0,2" />
-                                    </HorizontalStackLayout>
-                                </VerticalStackLayout>
-                            </HorizontalStackLayout>
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Savings rate strip -->
-                <Border Style="{StaticResource CardFrameStyle}">
-                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                        <Label Text="◉" FontSize="28" TextColor="{Binding SavingsRate, Converter={StaticResource SavingsRateColorConverter}}" VerticalOptions="Center" />
-                        <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                            <Label Text="Savings Rate" Style="{StaticResource CaptionLabelStyle}" />
-                            <Label Text="Share of income saved" Style="{StaticResource MutedLabelStyle}" />
+        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+            <ScrollView>
+                <VerticalStackLayout Spacing="14" Padding="18,14,18,100">
+                    <!-- Header -->
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
+                        <Border Grid.Column="0" WidthRequest="48" HeightRequest="48" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Background="#D9C6A5" VerticalOptions="Center">
+                            <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                            <Label Text="W" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                            <Label Text="William Current" FontSize="12" TextColor="#6F7668" />
+                            <Label Text="Welcome Back" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
                         </VerticalStackLayout>
-                        <Label Text="{Binding SavingsRate, StringFormat='{0:F1}%'}"
-                               Style="{StaticResource AmountLabelStyle}"
-                               TextColor="{Binding SavingsRate, Converter={StaticResource SavingsRateColorConverter}}"
-                               VerticalOptions="Center" />
-                    </HorizontalStackLayout>
-                </Border>
+                        <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" VerticalOptions="Center">
+                            <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToSettingsCommand}" /></Border.GestureRecognizers>
+                            <Grid>
+                                <controls:PaytinIconView IconKey="bell" ShowBadge="False" Light="True" Size="24" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Text="●" FontSize="10" TextColor="#E5484D" HorizontalOptions="End" VerticalOptions="Start" Margin="0,9,9,0" />
+                            </Grid>
+                        </Border>
+                    </Grid>
 
-                <!-- Quick Actions -->
-                <Border Style="{StaticResource CardFrameStyle}">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="Quick Actions" Style="{StaticResource SectionHeaderStyle}" />
-                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
-                            <Button Grid.Row="0" Grid.Column="0"
-                                    Text="Add Expense"
-                                    Command="{Binding NavigateToAddExpenseCommand}"
-                                    Style="{StaticResource DangerButtonStyle}"
-                                    HorizontalOptions="Fill">
-                                <Button.ImageSource>
-                                    <FontImageSource Glyph="−" FontFamily="OpenSansRegular" Size="20" Color="White" />
-                                </Button.ImageSource>
-                            </Button>
-                            <Button Grid.Row="0" Grid.Column="1"
-                                    Text="Add Income"
-                                    Command="{Binding NavigateToAddIncomeCommand}"
-                                    Style="{StaticResource SecondaryButtonStyle}"
-                                    HorizontalOptions="Fill">
-                                <Button.ImageSource>
-                                    <FontImageSource Glyph="+" FontFamily="OpenSansRegular" Size="20" Color="White" />
-                                </Button.ImageSource>
-                            </Button>
-                            <Button Grid.Row="1" Grid.Column="0"
-                                    Text="Transactions"
-                                    Command="{Binding NavigateToTransactionsCommand}"
-                                    Style="{StaticResource OutlineButtonStyle}"
-                                    HorizontalOptions="Fill" />
-                            <Button Grid.Row="1" Grid.Column="1"
-                                    Text="Analytics"
-                                    Command="{Binding NavigateToAnalyticsCommand}"
-                                    Style="{StaticResource OutlineButtonStyle}"
-                                    HorizontalOptions="Fill" />
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Recent Transactions -->
-                <Border Style="{StaticResource CardFrameStyle}">
-                    <VerticalStackLayout Spacing="12">
-                        <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
-                            <Label Grid.Column="0" Text="Recent Transactions" Style="{StaticResource SectionHeaderStyle}" VerticalOptions="Center" />
-                            <Label Grid.Column="1"
-                                   Text="View All →"
-                                   FontSize="13"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="End">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding NavigateToTransactionsCommand}" />
-                                </Label.GestureRecognizers>
-                            </Label>
-                        </Grid>
-
-                        <CollectionView ItemsSource="{Binding RecentTransactions}"
-                                        SelectionMode="None"
-                                        HeightRequest="300">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="dtos:TransactionDto">
-                                    <Border Style="{StaticResource TransactionItemFrameStyle}" Margin="0,4">
-                                        <HorizontalStackLayout Spacing="12">
-                                            <Border WidthRequest="48" HeightRequest="48"
-                                                    Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
-                                                    StrokeThickness="0"
-                                                    VerticalOptions="Center">
-                                                <Border.StrokeShape>
-                                                    <Ellipse />
-                                                </Border.StrokeShape>
-                                                <Label Text="{Binding CategoryIcon}"
-                                                       VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
-                                            </Border>
-                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                                <Label Text="{Binding CategoryName}" Style="{StaticResource TransactionNameLabelStyle}" />
-                                                <Label Text="{Binding Notes}" Style="{StaticResource TransactionNotesLabelStyle}"
-                                                       IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
-                                                <Label Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" Style="{StaticResource TransactionDateLabelStyle}" />
-                                            </VerticalStackLayout>
-                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
-                                                <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}"
-                                                       Style="{StaticResource TransactionAmountLabelStyle}"
-                                                       TextColor="{Binding Type, Converter={StaticResource TransactionTypeColorConverter}}" />
-                                                <Label Text="{Binding SyncStatus, Converter={StaticResource SyncStatusToIconConverter}}"
-                                                       Style="{StaticResource SyncStatusLabelStyle}"
-                                                       TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusToColorConverter}}" />
-                                            </VerticalStackLayout>
+                    <!-- VISA card (Paytin mock copy) -->
+                    <Grid>
+                        <Border Style="{StaticResource HeroCardStyle}" Padding="0" Margin="0,15,0,0">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToAccountsCommand}" /></Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,64" Padding="20,16,12,16">
+                                <!-- diagonal line texture -->
+                                <Grid Grid.ColumnSpan="2" VerticalOptions="FillAndExpand" InputTransparent="True">
+                                    <VerticalStackLayout Spacing="34" VerticalOptions="Center" HorizontalOptions="Center">
+                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
+                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
+                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
+                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
+                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
+                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                                <!-- card content -->
+                                <Grid Grid.Column="0">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="VISA" FontSize="13" FontAttributes="Bold" TextColor="White" Opacity="0.85" LetterSpacing="3" VerticalOptions="Center" />
+                                        <Label Text="Balance" FontSize="12" TextColor="White" Opacity="0.65" Margin="0,10,0,0" />
+                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                            <Label Text="$" FontSize="20" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="White" VerticalOptions="End" Margin="0,0,0,4" />
+                                            <Label Text="{Binding TotalBalance.Amount, StringFormat='{0:N2}'}" FontSize="30" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="White" VerticalOptions="End" />
                                         </HorizontalStackLayout>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                            <CollectionView.EmptyView>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20">
-                                    <Label Text="📭" FontSize="48" HorizontalOptions="Center" />
-                                    <Label Text="No transactions yet" Style="{StaticResource EmptyStateLabelStyle}" />
-                                    <Label Text="Tap 'Add Expense' or 'Add Income' to get started" Style="{StaticResource EmptyStateSubLabelStyle}" />
-                                </VerticalStackLayout>
-                            </CollectionView.EmptyView>
-                        </CollectionView>
-                    </VerticalStackLayout>
-                </Border>
+                                        <Label Text="•••• •••• ••••  7281" FontSize="13" TextColor="White" Opacity="0.65" Margin="0,6,0,0" />
+                                        <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
+                                            <Label Grid.Column="0" Text="William Current" FontSize="11" TextColor="White" Opacity="0.65" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="Exp 07/26" FontSize="11" TextColor="White" Opacity="0.65" VerticalOptions="Center" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                    <!-- lime sparkle + accents -->
+                                    <Polygon Points="11,0 13.2,8.8 22,11 13.2,13.2 11,22 8.8,13.2 0,11 8.8,8.8"
+                                             Fill="{StaticResource PayLime}"
+                                             WidthRequest="22" HeightRequest="22"
+                                             HorizontalOptions="End" VerticalOptions="Start" Margin="0,40,60,0" />
+                                    <Label Text="+" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayLime}" Opacity="0.9"
+                                           HorizontalOptions="End" VerticalOptions="Start" Margin="0,68,34,0" />
+                                    <Label Text="+" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource PayLime}" Opacity="0.6"
+                                           HorizontalOptions="End" VerticalOptions="Start" Margin="0,24,104,0" />
+                                </Grid>
+                                <!-- lime contactless bar -->
+                                <Border Grid.Column="1" Background="{StaticResource PayLime}" Stroke="{StaticResource PayLime}" StrokeThickness="0" WidthRequest="48" VerticalOptions="Fill" Margin="8,12,2,12">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                                    <Label Text=")))" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <!-- Set Budget pill straddling the top edge -->
+                        <Border VerticalOptions="Start" HorizontalOptions="End" Margin="0,0,16,0"
+                                Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="8,6">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToBudgetsCommand}" /></Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Border WidthRequest="20" HeightRequest="20" Background="{StaticResource PayInk}" StrokeThickness="0" VerticalOptions="Center">
+                                    <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                    <Label Text="+" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayLime}" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,-2,0,0" />
+                                </Border>
+                                <Label Text="Set Budget" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
 
-                <!-- Spending by Category -->
-                <Border Style="{StaticResource CardFrameStyle}">
-                    <VerticalStackLayout Spacing="12">
-                        <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
-                            <Label Grid.Column="0" Text="Spending by Category" Style="{StaticResource SectionHeaderStyle}" VerticalOptions="Center" />
-                            <Label Grid.Column="1"
-                                   Text="View All →"
-                                   FontSize="13"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="End">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding NavigateToAnalyticsCommand}" />
-                                </Label.GestureRecognizers>
+                    <!-- Quick actions -->
+                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="6" HorizontalOptions="Center">
+                            <Border Style="{StaticResource PayCircleActionStyle}">
+                                <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToAiSuggestionsCommand}" /></Border.GestureRecognizers>
+                                <Path x:Name="QuickAIIcon" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" Stroke="{StaticResource PayInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                            <Label Text="AI Ideas" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="6" HorizontalOptions="Center">
+                            <Border Style="{StaticResource PayCircleActionStyle}">
+                                <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToAnalyticsCommand}" /></Border.GestureRecognizers>
+                                <Path x:Name="QuickStatsIcon" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" Stroke="{StaticResource PayInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                            <Label Text="Stats" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2" Spacing="6" HorizontalOptions="Center">
+                            <Border Style="{StaticResource PayCircleActionStyle}">
+                                <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToForecastsCommand}" /></Border.GestureRecognizers>
+                                <Path x:Name="QuickForecastIcon" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" Stroke="{StaticResource PayInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                            <Label Text="Forecast" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="3" Spacing="6" HorizontalOptions="Center">
+                            <Border Style="{StaticResource PayCircleActionStyle}">
+                                <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToMoreCommand}" /></Border.GestureRecognizers>
+                                <Path x:Name="QuickMoreIcon" Aspect="Uniform" WidthRequest="24" HeightRequest="24" StrokeThickness="2.5" Stroke="{StaticResource PayInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                            <Label Text="More" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Add money row -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Button Grid.Column="0" Text="− Expense" Command="{Binding NavigateToAddExpenseCommand}" Style="{StaticResource PrimaryButtonStyle}" />
+                        <Button Grid.Column="1" Text="+ Income" Command="{Binding NavigateToAddIncomeCommand}" Style="{StaticResource SecondaryButtonStyle}" />
+                    </Grid>
+
+                    <!-- Recent Activity -->
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Recent Activity" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="See all ›" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center">
+                                <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToTransactionsCommand}" /></Label.GestureRecognizers>
                             </Label>
                         </Grid>
-                        <CollectionView ItemsSource="{Binding SpendingByCategory}" HeightRequest="200">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="dtos:CategorySpendingDto">
-                                    <Border Style="{StaticResource CategoryItemFrameStyle}" Margin="0,4">
-                                        <HorizontalStackLayout Spacing="12">
-                                            <Border WidthRequest="40" HeightRequest="40"
-                                                    Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
-                                                    StrokeThickness="0"
-                                                    VerticalOptions="Center">
-                                                <Border.StrokeShape>
-                                                    <Ellipse />
-                                                </Border.StrokeShape>
-                                                <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="16" />
-                                            </Border>
-                                            <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
-                                                <Label Text="{Binding CategoryName}" Style="{StaticResource CategoryNameLabelStyle}" />
-                                                <ProgressBar Progress="{Binding Percentage, Converter={StaticResource PercentageConverter}}"
-                                                             ProgressColor="{Binding Percentage, Converter={StaticResource PercentageColorConverter}}" HeightRequest="6" />
+                        <Border Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="8">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="28" /></Border.StrokeShape>
+                            <CollectionView ItemsSource="{Binding RecentTransactions}" SelectionMode="None" HeightRequest="268">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="dtos:TransactionDto">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="10,10">
+                                            <controls:PaytinIconView Grid.Column="0" Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="46" VerticalOptions="Center" />
+                                            <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                                <Label Text="{Binding CategoryName}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                                <Label Text="{Binding Date, StringFormat='{0:dddd, dd MMMM}'}" FontSize="11" TextColor="#6F7668" />
                                             </VerticalStackLayout>
-                                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
-                                                <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource CategoryAmountLabelStyle}" />
-                                                <Label Text="{Binding Percentage, StringFormat='{0:F1}%'}" Style="{StaticResource CategoryPercentLabelStyle}" />
+                                            <Label Grid.Column="2" Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                                <CollectionView.EmptyView>
+                                    <controls:PaytinEmptyState Title="No transactions yet"
+                                                             Subtitle="Tap − Expense or + Income to add one"
+                                                             IconKey="receipt" />
+                                </CollectionView.EmptyView>
+                            </CollectionView>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Savings / budgets / goals (kept, Paytin style) -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Border Grid.Column="0" Style="{StaticResource PayLimeCardStyle}">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="◉ Savings" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="{Binding SavingsRate, StringFormat='{0:F1}%'}" FontSize="26" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="of income saved" FontSize="11" TextColor="{StaticResource PayInk}" Opacity="0.7" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Column="1" Style="{StaticResource PayDarkCardStyle}">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="◎ Budgets" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayLime}" />
+                                <Label Text="{Binding ActiveBudgets.Count, StringFormat='{0} active'}" FontSize="20" FontAttributes="Bold" TextColor="White" />
+                                <Label Text="Keep it inside the lines" FontSize="11" TextColor="White" Opacity="0.7">
+                                    <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToBudgetsCommand}" /></Label.GestureRecognizers>
+                                </Label>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <Border Style="{StaticResource CardFrameStyle}">
+                        <VerticalStackLayout Spacing="10">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="Spending by Category" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Grid.Column="1" Text="›" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}">
+                                    <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToAnalyticsCommand}" /></Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+                            <CollectionView ItemsSource="{Binding SpendingByCategory}" HeightRequest="170" SelectionMode="None">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="dtos:CategorySpendingDto">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="4,8">
+                                            <controls:PaytinIconView Grid.Column="0" Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="40" VerticalOptions="Center" />
+                                            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                                <Label Text="{Binding CategoryName}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                                <ProgressBar Progress="{Binding Percentage, Converter={StaticResource PercentageConverter}}" ProgressColor="{StaticResource PayInk}" HeightRequest="6" />
                                             </VerticalStackLayout>
-                                        </HorizontalStackLayout>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                            <CollectionView.EmptyView>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20">
-                                    <Label Text="📊" FontSize="40" HorizontalOptions="Center" />
-                                    <Label Text="No spending data yet" Style="{StaticResource EmptyStateLabelStyle}" />
-                                    <Label Text="Add expenses to see your breakdown" Style="{StaticResource EmptyStateSubLabelStyle}" />
-                                </VerticalStackLayout>
-                            </CollectionView.EmptyView>
-                        </CollectionView>
-                    </VerticalStackLayout>
-                </Border>
+                                            <Label Grid.Column="2" Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                                <CollectionView.EmptyView>
+                                    <controls:PaytinEmptyState Title="No spending data yet"
+                                                             Subtitle="Add expenses to see your breakdown"
+                                                             IconKey="chart" />
+                                </CollectionView.EmptyView>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
 
-                <!-- Active Budgets -->
-                <Border Style="{StaticResource CardFrameStyle}">
-                    <VerticalStackLayout Spacing="12">
-                        <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
-                            <Label Grid.Column="0" Text="Budgets" Style="{StaticResource SectionHeaderStyle}" VerticalOptions="Center" />
-                            <Label Grid.Column="1"
-                                   Text="View All →"
-                                   FontSize="13"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="End">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding NavigateToBudgetsCommand}" />
-                                </Label.GestureRecognizers>
-                            </Label>
-                        </Grid>
-                        <CollectionView ItemsSource="{Binding ActiveBudgets}" HeightRequest="200">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="dtos:BudgetDto">
-                                    <Border Style="{StaticResource BudgetItemFrameStyle}" Margin="0,4">
-                                        <VerticalStackLayout Spacing="8">
-                                            <HorizontalStackLayout Spacing="12">
-                                                <Border WidthRequest="40" HeightRequest="40"
-                                                        Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
-                                                        StrokeThickness="0"
-                                                        VerticalOptions="Center">
-                                                    <Border.StrokeShape>
-                                                        <Ellipse />
-                                                    </Border.StrokeShape>
-                                                    <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="16" />
-                                                </Border>
-                                                <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
-                                                    <Label Text="{Binding CategoryName}" Style="{StaticResource BudgetNameLabelStyle}" />
-                                                    <ProgressBar Progress="{Binding PercentageUsed, Converter={StaticResource PercentageConverter}}"
-                                                                 ProgressColor="{Binding PercentageUsed, Converter={StaticResource PercentageColorConverter}}" HeightRequest="6" />
-                                                </VerticalStackLayout>
-                                            </HorizontalStackLayout>
-                                            <HorizontalStackLayout Spacing="6">
-                                                <Label Text="{Binding SpentAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetSpentLabelStyle}" />
-                                                <Label Text="of" Style="{StaticResource BudgetOfLabelStyle}" />
-                                                <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetTotalLabelStyle}" />
-                                                <Label Text="{Binding PercentageUsed, StringFormat='({0:F1}%)'}" Style="{StaticResource BudgetPercentLabelStyle}"
-                                                       TextColor="{Binding PercentageUsed, Converter={StaticResource PercentageColorConverter}}" />
-                                            </HorizontalStackLayout>
-                                        </VerticalStackLayout>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                            <CollectionView.EmptyView>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20">
-                                    <Label Text="🎯" FontSize="40" HorizontalOptions="Center" />
-                                    <Label Text="No budgets yet" Style="{StaticResource EmptyStateLabelStyle}" />
-                                    <Label Text="Create a budget to track spending" Style="{StaticResource EmptyStateSubLabelStyle}" />
-                                </VerticalStackLayout>
-                            </CollectionView.EmptyView>
-                        </CollectionView>
-                    </VerticalStackLayout>
-                </Border>
+                    <Border Style="{StaticResource CardFrameStyle}">
+                        <VerticalStackLayout Spacing="10">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="Goals" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Grid.Column="1" Text="›" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}">
+                                    <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToGoalsCommand}" /></Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+                            <CollectionView ItemsSource="{Binding ActiveGoals}" HeightRequest="150" SelectionMode="None">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="dtos:FinancialGoalDto">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="4,8">
+                                            <controls:PaytinIconView Grid.Column="0" Icon="{Binding Icon}" Name="{Binding Name}" Size="38" VerticalOptions="Center" />
+                                            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                                <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                                <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}" ProgressColor="{StaticResource PayLimeDark}" HeightRequest="6" />
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="2" Text="{Binding ProgressPercentage, StringFormat='{0:F0}%'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                                <CollectionView.EmptyView>
+                                    <controls:PaytinEmptyState Title="No goals yet"
+                                                             Subtitle="Set a savings goal to get started"
+                                                             IconKey="target" />
+                                </CollectionView.EmptyView>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
 
-                <!-- Active Goals -->
-                <Border Style="{StaticResource CardFrameStyle}">
-                    <VerticalStackLayout Spacing="12">
-                        <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
-                            <Label Grid.Column="0" Text="Goals" Style="{StaticResource SectionHeaderStyle}" VerticalOptions="Center" />
-                            <Label Grid.Column="1"
-                                   Text="View All →"
-                                   FontSize="13"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="End">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding NavigateToGoalsCommand}" />
-                                </Label.GestureRecognizers>
-                            </Label>
-                        </Grid>
-                        <CollectionView ItemsSource="{Binding ActiveGoals}" HeightRequest="200">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="dtos:FinancialGoalDto">
-                                    <Border Style="{StaticResource GoalItemFrameStyle}" Margin="0,4">
-                                        <VerticalStackLayout Spacing="8">
-                                            <HorizontalStackLayout Spacing="12">
-                                                <Label Text="{Binding Icon}" FontSize="24" VerticalOptions="Center" />
-                                                <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
-                                                    <Label Text="{Binding Name}" Style="{StaticResource GoalNameLabelStyle}" />
-                                                    <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}"
-                                                                 ProgressColor="{Binding ProgressPercentage, Converter={StaticResource PercentageColorConverter}}" HeightRequest="6" />
-                                                </VerticalStackLayout>
-                                            </HorizontalStackLayout>
-                                            <HorizontalStackLayout Spacing="6">
-                                                <Label Text="{Binding CurrentAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalCurrentLabelStyle}" />
-                                                <Label Text="of" Style="{StaticResource GoalOfLabelStyle}" />
-                                                <Label Text="{Binding TargetAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalTargetLabelStyle}" />
-                                                <Label Text="{Binding ProgressPercentage, StringFormat='({0:F1}%)'}" Style="{StaticResource GoalPercentLabelStyle}" />
-                                                <Label Text="{Binding DaysRemaining, StringFormat='{0} days left'}" Style="{StaticResource GoalDaysLabelStyle}" />
-                                            </HorizontalStackLayout>
-                                        </VerticalStackLayout>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                            <CollectionView.EmptyView>
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20">
-                                    <Label Text="🌱" FontSize="40" HorizontalOptions="Center" />
-                                    <Label Text="No goals yet" Style="{StaticResource EmptyStateLabelStyle}" />
-                                    <Label Text="Set a savings goal to get started" Style="{StaticResource EmptyStateSubLabelStyle}" />
-                                </VerticalStackLayout>
-                            </CollectionView.EmptyView>
-                        </CollectionView>
-                    </VerticalStackLayout>
-                </Border>
-            </VerticalStackLayout>
-        </ScrollView>
-    </RefreshView>
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
 
-        <!-- Toasts -->
+        <!-- Paytin tab bar (floating) -->
+        <controls:PaytinTabBar VerticalOptions="End" ActiveTab="Dashboard" />
+
         <controls:ToastHost />
     </Grid>
 </ContentPage>

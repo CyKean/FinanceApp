@@ -25,56 +25,54 @@
 
     <Grid>
         <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
-            <VerticalStackLayout Spacing="16" Padding="16,16,16,24">
+            <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
 
                 <!-- Header -->
-                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                    <Border Grid.Column="0"
-                            Padding="14,9"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}"
-                            StrokeThickness="0"
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <Border Grid.Column="0" WidthRequest="46" HeightRequest="46"
+                            Background="{StaticResource PayCard}"
+                            Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
                             VerticalOptions="Center">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="14" />
+                            <Ellipse />
                         </Border.StrokeShape>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnBackTapped" />
                         </Border.GestureRecognizers>
-                        <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                            <Label Text="&#x2039;"
-                                   FontSize="22"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                                   VerticalOptions="Center" />
-                            <Label Text="Back"
-                                   FontSize="14"
-                                   FontAttributes="Bold"
-                                   TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                                   VerticalOptions="Center" />
-                        </HorizontalStackLayout>
+                        <Label Text="←"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PayInk}"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center" />
                     </Border>
 
-                    <Label Grid.Column="1"
-                           Text="Categories"
-                           Style="{StaticResource TitleLabelStyle}"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
+                        <Label Text="Categories"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               FontFamily="SpaceGroteskBold"
+                               TextColor="{StaticResource PayInk}" />
+                        <Label Text="Organize expenses and income"
+                               FontSize="12"
+                               TextColor="#6F7668" />
+                    </VerticalStackLayout>
 
                     <Border Grid.Column="2"
-                            Padding="14,9"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
-                            StrokeThickness="0"
+                            Background="{StaticResource PayLime}"
+                            Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                            Padding="12,8"
                             VerticalOptions="Center">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="14" />
+                            <RoundRectangle CornerRadius="100" />
                         </Border.StrokeShape>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding AddCategoryCommand}" />
                         </Border.GestureRecognizers>
-                        <Label Text="+"
-                               FontSize="22"
+                        <Label Text="+ Add"
+                               FontSize="12"
                                FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryContainer}}"
+                               TextColor="{StaticResource PayInk}"
                                VerticalOptions="Center"
                                HorizontalOptions="Center" />
                     </Border>
@@ -108,7 +106,7 @@
                                 <SwipeView.RightItems>
                                     <SwipeItems>
                                         <SwipeItem Text="Edit"
-                                                   BackgroundColor="#0E6B4F"
+                                                   BackgroundColor="#161B16"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
                                                    CommandParameter="{Binding .}" />
                                         <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}"
@@ -129,20 +127,7 @@
                                                               CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
-                                        <Border Grid.Column="0"
-                                                WidthRequest="46"
-                                                HeightRequest="46"
-                                                Background="{Binding Color, Converter={StaticResource ColorConverter}}"
-                                                StrokeThickness="0"
-                                                VerticalOptions="Center">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="15" />
-                                            </Border.StrokeShape>
-                                            <Label Text="{Binding Icon}"
-                                                   FontSize="22"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center" />
-                                        </Border>
+                                        <controls:PaytinIconView Grid.Column="0" Icon="{Binding Icon}" Name="{Binding Name}" Size="46" VerticalOptions="Center" />
 
                                         <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
                                             <HorizontalStackLayout Spacing="6">
@@ -193,7 +178,7 @@
                                 <SwipeView.RightItems>
                                     <SwipeItems>
                                         <SwipeItem Text="Edit"
-                                                   BackgroundColor="#0E6B4F"
+                                                   BackgroundColor="#161B16"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
                                                    CommandParameter="{Binding .}" />
                                         <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}"
@@ -214,20 +199,7 @@
                                                               CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
-                                        <Border Grid.Column="0"
-                                                WidthRequest="46"
-                                                HeightRequest="46"
-                                                Background="{Binding Color, Converter={StaticResource ColorConverter}}"
-                                                StrokeThickness="0"
-                                                VerticalOptions="Center">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="15" />
-                                            </Border.StrokeShape>
-                                            <Label Text="{Binding Icon}"
-                                                   FontSize="22"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center" />
-                                        </Border>
+                                        <controls:PaytinIconView Grid.Column="0" Icon="{Binding Icon}" Name="{Binding Name}" Size="46" VerticalOptions="Center" />
 
                                         <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
                                             <HorizontalStackLayout Spacing="6">
@@ -269,7 +241,7 @@
                 </CollectionView>
 
                 <!-- Add Category Button -->
-                <Button Text="Add Category"
+                <Button Text="+ Add Category"
                         Command="{Binding AddCategoryCommand}"
                         Style="{StaticResource PrimaryButtonStyle}"
                         Margin="0,4,0,8" />

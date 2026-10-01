@@ -4,37 +4,38 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!-- ============================================ -->
-    <!-- BASE COMPONENT STYLES -->
+    <!-- BASE COMPONENT STYLES — PAYTIN -->
     <!-- ============================================ -->
 
     <Style TargetType="ActivityIndicator">
-        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
     </Style>
 
     <Style TargetType="IndicatorView">
         <Setter Property="IndicatorColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}"/>
-        <Setter Property="SelectedIndicatorColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray100}}"/>
+        <Setter Property="SelectedIndicatorColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}"/>
     </Style>
 
-
     <Style TargetType="BoxView">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerHighest}, Dark={StaticResource SurfaceContainerHighDark}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerHigh}, Dark={StaticResource SurfaceContainerHighDark}}" />
     </Style>
 
     <!-- ============================================ -->
-    <!-- BUTTON STYLES -->
+    <!-- BUTTON STYLES — pill, Paytin -->
     <!-- ============================================ -->
 
     <Style TargetType="Button">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryContainer}}" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkVariant}}" />
-        <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
+        <Setter Property="FontFamily" Value="SpaceGrotesk"/>
         <Setter Property="FontSize" Value="15"/>
-        <Setter Property="FontAttributes" Value="None"/>
-        <Setter Property="CornerRadius" Value="16"/>
-        <Setter Property="Padding" Value="18,14"/>
-        <Setter Property="MinimumHeightRequest" Value="48"/>
-        <Setter Property="MinimumWidthRequest" Value="48"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="CornerRadius" Value="100"/>
+        <Setter Property="Padding" Value="20,14"/>
+        <Setter Property="MinimumHeightRequest" Value="52"/>
+        <Setter Property="MinimumWidthRequest" Value="52"/>
+        <Setter Property="BorderWidth" Value="1.5" />
+        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -42,8 +43,6 @@
                         <VisualState.Setters>
                             <Setter Property="Scale" Value="1" />
                             <Setter Property="Opacity" Value="1" />
-                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryContainer}}" />
-                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkVariant}}" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Pressed">
@@ -56,6 +55,7 @@
                         <VisualState.Setters>
                             <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
                             <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerHigh}, Dark={StaticResource SurfaceContainerHighDark}}" />
+                            <Setter Property="BorderColor" Value="Transparent" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -64,43 +64,48 @@
     </Style>
 
     <Style TargetType="Button" x:Key="PrimaryButtonStyle" BasedOn="{StaticResource Button}">
-        <Setter Property="HeightRequest" Value="52"/>
+        <Setter Property="HeightRequest" Value="56"/>
+        <Setter Property="FontSize" Value="16"/>
     </Style>
 
     <Style TargetType="Button" x:Key="SecondaryButtonStyle" BasedOn="{StaticResource Button}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSecondary}, Dark={StaticResource OnSecondaryContainer}}" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource SecondaryContainer}}" />
-        <Setter Property="HeightRequest" Value="48"/>
+        <Setter Property="TextColor" Value="{StaticResource PayInk}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource PayLime}" />
+        <Setter Property="BorderColor" Value="{StaticResource PayInk}" />
+        <Setter Property="HeightRequest" Value="52"/>
     </Style>
 
     <Style TargetType="Button" x:Key="OutlineButtonStyle" BasedOn="{StaticResource Button}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
-        <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayCream}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineDark}}" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="HeightRequest" Value="48"/>
+        <Setter Property="HeightRequest" Value="52"/>
     </Style>
 
     <Style TargetType="Button" x:Key="TextButtonStyle" BasedOn="{StaticResource Button}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BorderColor" Value="Transparent" />
         <Setter Property="Padding" Value="8,4"/>
-        <Setter Property="FontAttributes" Value="None"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="HeightRequest" Value="36"/>
     </Style>
 
     <Style TargetType="Button" x:Key="DangerButtonStyle" BasedOn="{StaticResource Button}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnError}, Dark={StaticResource OnError}}" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Error}, Dark={StaticResource Error}}" />
-        <Setter Property="HeightRequest" Value="48"/>
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="BackgroundColor" Value="{StaticResource Error}" />
+        <Setter Property="BorderColor" Value="{StaticResource Error}" />
+        <Setter Property="HeightRequest" Value="52"/>
     </Style>
 
     <Style TargetType="Button" x:Key="IconButtonStyle" BasedOn="{StaticResource Button}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainer}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayCream}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineDark}}" />
         <Setter Property="Padding" Value="0"/>
-        <Setter Property="HeightRequest" Value="44"/>
-        <Setter Property="WidthRequest" Value="44"/>
+        <Setter Property="HeightRequest" Value="48"/>
+        <Setter Property="WidthRequest" Value="48"/>
     </Style>
 
     <!-- ============================================ -->
@@ -115,7 +120,8 @@
     </Style>
 
     <Style TargetType="Label" x:Key="Headline" BasedOn="{StaticResource Label}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryDark}, Dark={StaticResource PrimaryLight}}" />
+        <Setter Property="FontFamily" Value="SpaceGroteskBold" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayCream}}" />
         <Setter Property="FontSize" Value="32" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="HorizontalOptions" Value="Center" />
@@ -123,6 +129,7 @@
     </Style>
 
     <Style TargetType="Label" x:Key="SubHeadline" BasedOn="{StaticResource Label}">
+        <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
         <Setter Property="FontSize" Value="24" />
         <Setter Property="FontAttributes" Value="Bold"/>
@@ -131,7 +138,8 @@
     </Style>
 
     <Style TargetType="Label" x:Key="AppTitleStyle" BasedOn="{StaticResource Label}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+        <Setter Property="FontFamily" Value="SpaceGroteskBold" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
         <Setter Property="FontSize" Value="36" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="HorizontalTextAlignment" Value="Center" />
@@ -157,6 +165,7 @@
     </Style>
 
     <Style TargetType="Label" x:Key="SectionHeaderStyle" BasedOn="{StaticResource Label}">
+        <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
@@ -164,12 +173,14 @@
     </Style>
 
     <Style TargetType="Label" x:Key="BalanceLabelStyle" BasedOn="{StaticResource Label}">
+        <Setter Property="FontFamily" Value="SpaceGroteskBold" />
         <Setter Property="FontSize" Value="28" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="AmountLabelStyle" BasedOn="{StaticResource Label}">
+        <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
@@ -182,62 +193,127 @@
     </Style>
 
     <!-- ============================================ -->
-    <!-- BORDER / CARD STYLES -->
+    <!-- BORDER / CARD STYLES — PAYTIN chunky rounded -->
     <!-- ============================================ -->
 
     <Style TargetType="Border" x:Key="CardFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource CardSurface}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource CardStroke}, Dark={StaticResource CardStrokeDark}}" />
-        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="26" />
+                <RoundRectangle CornerRadius="28" />
             </Setter.Value>
         </Setter>
         <Setter Property="Shadow">
             <Setter.Value>
-                <Shadow Brush="#0B3B2A" Opacity="0.08" Radius="24" Offset="0,10" />
+                <Shadow Brush="#161B16" Opacity="0.08" Radius="18" Offset="0,8" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="20"/>
     </Style>
 
-    <!-- Hero gradient card (balance / highlights) -->
+    <!-- Hero dark card (VISA balance card) -->
     <Style TargetType="Border" x:Key="HeroCardStyle">
         <Setter Property="Background">
             <Setter.Value>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="{StaticResource GradientStart}" Offset="0.0" />
-                    <GradientStop Color="{StaticResource GradientMid}" Offset="0.55" />
-                    <GradientStop Color="{StaticResource GradientEnd}" Offset="1.0" />
+                    <GradientStop Color="#232923" Offset="0.0" />
+                    <GradientStop Color="#161B16" Offset="0.6" />
+                    <GradientStop Color="#0E120E" Offset="1.0" />
                 </LinearGradientBrush>
             </Setter.Value>
         </Setter>
-        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Stroke" Value="#161B16" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="30" />
+                <RoundRectangle CornerRadius="28" />
             </Setter.Value>
         </Setter>
         <Setter Property="Shadow">
             <Setter.Value>
-                <Shadow Brush="#053A2B" Opacity="0.35" Radius="28" Offset="0,14" />
+                <Shadow Brush="#161B16" Opacity="0.30" Radius="26" Offset="0,12" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Padding" Value="24"/>
+        <Setter Property="Padding" Value="22"/>
+    </Style>
+
+    <!-- Lime highlight card (Earning / CTA) -->
+    <Style TargetType="Border" x:Key="PayLimeCardStyle">
+        <Setter Property="Background" Value="{StaticResource PayLime}" />
+        <Setter Property="Stroke" Value="{StaticResource PayInk}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="28" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="#161B16" Opacity="0.12" Radius="18" Offset="0,8" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Padding" Value="18"/>
+    </Style>
+
+    <!-- Dark stat card (Spending) -->
+    <Style TargetType="Border" x:Key="PayDarkCardStyle">
+        <Setter Property="Background" Value="{StaticResource PayInk}" />
+        <Setter Property="Stroke" Value="{StaticResource PayInk}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="28" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="#161B16" Opacity="0.25" Radius="20" Offset="0,10" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Padding" Value="18"/>
+    </Style>
+
+    <!-- Small lime pill (Set Budget / period selected) -->
+    <Style TargetType="Border" x:Key="PayPillStyle">
+        <Setter Property="Background" Value="{StaticResource PayLime}" />
+        <Setter Property="Stroke" Value="{StaticResource PayInk}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="100" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Padding" Value="14,8"/>
+    </Style>
+
+    <!-- Cream circle action button -->
+    <Style TargetType="Border" x:Key="PayCircleActionStyle">
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineDark}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="100" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="WidthRequest" Value="64"/>
+        <Setter Property="HeightRequest" Value="64"/>
     </Style>
 
     <!-- Frosted pill used inside hero cards -->
     <Style TargetType="Border" x:Key="GlassPillStyle">
-        <Setter Property="Background" Value="{StaticResource GlassWhite}" />
-        <Setter Property="Stroke" Value="{StaticResource GlassWhiteStrong}" />
-        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Background" Value="{StaticResource PayLime}" />
+        <Setter Property="Stroke" Value="{StaticResource PayInk}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="18" />
+                <RoundRectangle CornerRadius="100" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Padding" Value="14,10"/>
+        <Setter Property="Padding" Value="14,8"/>
     </Style>
 
     <!-- Tappable list rows: soft press feedback -->
@@ -261,84 +337,84 @@
     </Style>
 
     <Style TargetType="Border" x:Key="FilterBarStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
-        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="16" />
+                <RoundRectangle CornerRadius="100" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="12"/>
     </Style>
 
     <Style TargetType="Border" x:Key="BudgetCardFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
-        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="18" />
+                <RoundRectangle CornerRadius="24" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Padding" Value="14"/>
+        <Setter Property="Padding" Value="16"/>
     </Style>
 
     <Style TargetType="Border" x:Key="GoalCardFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
-        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="18" />
+                <RoundRectangle CornerRadius="24" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Padding" Value="14"/>
+        <Setter Property="Padding" Value="16"/>
     </Style>
 
     <Style TargetType="Border" x:Key="TransactionItemFrameStyle" BasedOn="{StaticResource PressableRowStyle}">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource CardSurface}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource CardStroke}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayCreamDeep}, Dark={StaticResource CardStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="20" />
+                <RoundRectangle CornerRadius="22" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="14,12"/>
     </Style>
 
     <Style TargetType="Border" x:Key="AccountItemFrameStyle" BasedOn="{StaticResource PressableRowStyle}">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource CardSurface}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource CardStroke}, Dark={StaticResource CardStrokeDark}}" />
-        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="20" />
+                <RoundRectangle CornerRadius="24" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Padding" Value="14,12"/>
+        <Setter Property="Padding" Value="16,14"/>
     </Style>
 
     <Style TargetType="Border" x:Key="CategoryItemFrameStyle" BasedOn="{StaticResource PressableRowStyle}">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource CardSurface}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource CardStroke}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayCreamDeep}, Dark={StaticResource CardStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="20" />
+                <RoundRectangle CornerRadius="22" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="14,12"/>
     </Style>
 
     <Style TargetType="Border" x:Key="TrendItemFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SurfaceContainer}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
-        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="16" />
+                <RoundRectangle CornerRadius="20" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="12"/>
@@ -346,11 +422,11 @@
 
     <Style TargetType="Border" x:Key="InsightCardFrameStyle">
         <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource InfoContainer}, Dark={StaticResource InfoContainer}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Info}, Dark={StaticResource Info}}" />
-        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource Info}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="16" />
+                <RoundRectangle CornerRadius="20" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="12"/>
@@ -359,34 +435,34 @@
     <Style TargetType="Border" x:Key="AnomalyCardFrameStyle">
         <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource ErrorContainer}, Dark={StaticResource ErrorContainer}}" />
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Error}, Dark={StaticResource Error}}" />
-        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="16" />
+                <RoundRectangle CornerRadius="20" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="12"/>
     </Style>
 
     <Style TargetType="Border" x:Key="BudgetItemFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SurfaceContainer}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayCreamDeep}, Dark={StaticResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="16" />
+                <RoundRectangle CornerRadius="20" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="12"/>
     </Style>
 
     <Style TargetType="Border" x:Key="GoalItemFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SurfaceContainer}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayCreamDeep}, Dark={StaticResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="16" />
+                <RoundRectangle CornerRadius="20" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="12"/>
@@ -398,15 +474,15 @@
 
     <!-- Modern input container: wrap an Entry in this Border -->
     <Style TargetType="Border" x:Key="FieldBorderStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SurfaceContainerLowest}, Dark={StaticResource SurfaceContainerLowestDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
-        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerLowestDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="14" />
+                <RoundRectangle CornerRadius="100" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Padding" Value="14,2"/>
+        <Setter Property="Padding" Value="16,2"/>
     </Style>
 
     <!-- Hairline divider -->
@@ -418,12 +494,14 @@
 
     <!-- Modern type scale -->
     <Style TargetType="Label" x:Key="DisplayLabelStyle" BasedOn="{StaticResource Label}">
+        <Setter Property="FontFamily" Value="SpaceGroteskBold" />
         <Setter Property="FontSize" Value="34" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="TitleLabelStyle" BasedOn="{StaticResource Label}">
+        <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
@@ -746,7 +824,7 @@
     <!-- ============================================ -->
 
     <Style TargetType="Entry" x:Key="EntryStyle" BasedOn="{StaticResource Entry}">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerHighest}, Dark={StaticResource SurfaceContainerHighestDark}}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="HeightRequest" Value="52"/>
     </Style>
@@ -763,7 +841,7 @@
     <!-- ============================================ -->
 
     <Style TargetType="Editor" x:Key="EditorStyle" BasedOn="{StaticResource Editor}">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerHighest}, Dark={StaticResource SurfaceContainerHighestDark}}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="HeightRequest" Value="100"/>
     </Style>
@@ -773,7 +851,7 @@
     <!-- ============================================ -->
 
     <Style TargetType="Picker" x:Key="PickerStyle" BasedOn="{StaticResource Picker}">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerHighest}, Dark={StaticResource SurfaceContainerHighestDark}}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="HeightRequest" Value="52"/>
     </Style>
@@ -787,7 +865,7 @@
     <!-- ============================================ -->
 
     <Style TargetType="SwipeItem" BasedOn="{StaticResource SwipeItem}">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerHighest}, Dark={StaticResource SurfaceContainerHighestDark}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource SurfaceContainerHighDark}}" />
     </Style>
 
     <!-- ============================================ -->
@@ -795,7 +873,7 @@
     <!-- ============================================ -->
 
     <Style TargetType="SearchBar" BasedOn="{StaticResource SearchBar}">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerHighest}, Dark={StaticResource SurfaceContainerHighestDark}}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="HeightRequest" Value="48"/>
     </Style>
 
@@ -806,36 +884,38 @@
     <Style TargetType="Page" ApplyToDerivedTypes="True">
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource BackgroundDark}}" />
+        <Setter Property="Shell.TabBarIsVisible" Value="False" />
+        <Setter Property="Shell.NavBarHasShadow" Value="False" />
     </Style>
 
     <!-- ============================================ -->
-    <!-- SHELL & TABBAR STYLES -->
+    <!-- SHELL &amp; TABBAR STYLES — black floating-bar look -->
     <!-- ============================================ -->
 
     <Style TargetType="Shell">
-        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}" />
-        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayCream}, Dark={StaticResource SurfaceDark}}" />
+        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
         <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
         <Setter Property="Shell.DisabledColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
-        <Setter Property="Shell.UnselectedColor" Value="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource OutlineDark}}" />
+        <Setter Property="Shell.UnselectedColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OutlineDark}}" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
-        <Setter Property="Shell.TabBarBackgroundColor" Value="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="Shell.TabBarForegroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkVariant}}" />
-        <Setter Property="Shell.TabBarTitleColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDarkVariant}}" />
-        <Setter Property="Shell.TabBarUnselectedColor" Value="{AppThemeBinding Light={StaticResource Outline}, Dark={StaticResource OutlineDark}}" />
+        <Setter Property="Shell.TabBarBackgroundColor" Value="#161B16" />
+        <Setter Property="Shell.TabBarForegroundColor" Value="#CDF463" />
+        <Setter Property="Shell.TabBarTitleColor" Value="#CDF463" />
+        <Setter Property="Shell.TabBarUnselectedColor" Value="#8A917F" />
     </Style>
 
     <Style TargetType="NavigationPage">
-        <Setter Property="BarBackgroundColor" Value="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}" />
+        <Setter Property="BarBackgroundColor" Value="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource SurfaceDark}}" />
         <Setter Property="BarTextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
-        <Setter Property="IconColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+        <Setter Property="IconColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
     </Style>
 
     <Style TargetType="TabbedPage">
-        <Setter Property="BarBackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerLow}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="BarTextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
-        <Setter Property="UnselectedTabColor" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
-        <Setter Property="SelectedTabColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+        <Setter Property="BarBackgroundColor" Value="#161B16" />
+        <Setter Property="BarTextColor" Value="#CDF463" />
+        <Setter Property="UnselectedTabColor" Value="#8A917F" />
+        <Setter Property="SelectedTabColor" Value="#CDF463" />
     </Style>
 
 </ResourceDictionary>

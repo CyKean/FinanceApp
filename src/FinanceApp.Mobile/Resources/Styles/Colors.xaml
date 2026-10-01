@@ -1,24 +1,37 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
-<ResourceDictionary 
+<ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
 
-    <!-- Primary Brand Colors (emerald) -->
-    <Color x:Key="Primary">#0E6B4F</Color>
-    <Color x:Key="PrimaryLight">#3D9A76</Color>
-    <Color x:Key="PrimaryDark">#073E2D</Color>
-    <Color x:Key="PrimaryContainer">#D7EFE3</Color>
+    <!-- ============ PAYTIN PALETTE (from mockup) ============ -->
+    <Color x:Key="PayLime">#CDF463</Color>
+    <Color x:Key="PayLimeSoft">#DFFB8D</Color>
+    <Color x:Key="PayLimeDark">#A8CF3A</Color>
+    <Color x:Key="PayCream">#EFF3DF</Color>
+    <Color x:Key="PayCreamDeep">#E4EACB</Color>
+    <Color x:Key="PayCard">#FAFBF0</Color>
+    <Color x:Key="PayInk">#161B16</Color>
+    <Color x:Key="PayInkSoft">#232923</Color>
+    <Color x:Key="PayMuted">#6F7668</Color>
+    <Color x:Key="PayLine">#161B16</Color>
+    <Color x:Key="PayWhite">#FFFFFF</Color>
+
+    <!-- Primary Brand Colors -> remapped to Paytin ink + lime -->
+    <Color x:Key="Primary">#161B16</Color>
+    <Color x:Key="PrimaryLight">#CDF463</Color>
+    <Color x:Key="PrimaryDark">#0E120E</Color>
+    <Color x:Key="PrimaryContainer">#CDF463</Color>
     <Color x:Key="OnPrimary">#FFFFFF</Color>
-    <Color x:Key="OnPrimaryContainer">#06281E</Color>
+    <Color x:Key="OnPrimaryContainer">#161B16</Color>
 
     <!-- Secondary Colors -->
-    <Color x:Key="Secondary">#0F766E</Color>
-    <Color x:Key="SecondaryLight">#2DD4BF</Color>
-    <Color x:Key="SecondaryContainer">#CCFBF1</Color>
+    <Color x:Key="Secondary">#4A5548</Color>
+    <Color x:Key="SecondaryLight">#CDF463</Color>
+    <Color x:Key="SecondaryContainer">#E4EACB</Color>
     <Color x:Key="OnSecondary">#FFFFFF</Color>
-    <Color x:Key="OnSecondaryContainer">#042F2B</Color>
+    <Color x:Key="OnSecondaryContainer">#161B16</Color>
 
     <!-- Tertiary Colors -->
     <Color x:Key="Tertiary">#B45309</Color>
@@ -32,10 +45,10 @@
     <Color x:Key="OnError">#FFFFFF</Color>
     <Color x:Key="OnErrorContainer">#450A0A</Color>
 
-    <Color x:Key="Success">#15803D</Color>
-    <Color x:Key="SuccessContainer">#DCFCE7</Color>
+    <Color x:Key="Success">#3E7C2B</Color>
+    <Color x:Key="SuccessContainer">#DDF5B8</Color>
     <Color x:Key="OnSuccess">#FFFFFF</Color>
-    <Color x:Key="OnSuccessContainer">#052E16</Color>
+    <Color x:Key="OnSuccessContainer">#1A2E10</Color>
 
     <Color x:Key="Warning">#D97706</Color>
     <Color x:Key="WarningContainer">#FEF3C7</Color>
@@ -47,70 +60,70 @@
     <Color x:Key="OnInfo">#FFFFFF</Color>
     <Color x:Key="OnInfoContainer">#082F49</Color>
 
-    <!-- Surface Colors -->
-    <Color x:Key="Surface">#FFFFFF</Color>
-    <Color x:Key="SurfaceDim">#E7EBF0</Color>
+    <!-- Surface Colors -> cream theme -->
+    <Color x:Key="Surface">#FAFBF0</Color>
+    <Color x:Key="SurfaceDim">#E4EACB</Color>
     <Color x:Key="SurfaceBright">#FFFFFF</Color>
     <Color x:Key="SurfaceContainerLowest">#FFFFFF</Color>
-    <Color x:Key="SurfaceContainerLow">#F8FAFC</Color>
-    <Color x:Key="SurfaceContainer">#F1F5F4</Color>
-    <Color x:Key="SurfaceContainerHigh">#E7EDE9</Color>
-    <Color x:Key="SurfaceContainerHighest">#DCE4DE</Color>
-    <Color x:Key="OnSurface">#0F1F18</Color>
-    <Color x:Key="OnSurfaceVariant">#5F6F66</Color>
-    <Color x:Key="Outline">#8FA098</Color>
-    <Color x:Key="OutlineVariant">#DFE7E1</Color>
+    <Color x:Key="SurfaceContainerLow">#FAFBF0</Color>
+    <Color x:Key="SurfaceContainer">#EFF3DF</Color>
+    <Color x:Key="SurfaceContainerHigh">#E7EDD2</Color>
+    <Color x:Key="SurfaceContainerHighest">#DCE3C2</Color>
+    <Color x:Key="OnSurface">#161B16</Color>
+    <Color x:Key="OnSurfaceVariant">#6F7668</Color>
+    <Color x:Key="Outline">#161B16</Color>
+    <Color x:Key="OutlineVariant">#D3D9BE</Color>
 
     <!-- Inverse Colors -->
-    <Color x:Key="InverseSurface">#0F1F18</Color>
-    <Color x:Key="InverseOnSurface">#F2F7F4</Color>
-    <Color x:Key="InversePrimary">#7BD9B4</Color>
+    <Color x:Key="InverseSurface">#161B16</Color>
+    <Color x:Key="InverseOnSurface">#EFF3DF</Color>
+    <Color x:Key="InversePrimary">#CDF463</Color>
 
     <!-- Shadow -->
     <Color x:Key="Shadow">#000000</Color>
     <Color x:Key="Scrim">#000000</Color>
 
-    <!-- Background -->
-    <Color x:Key="Background">#F4F7F5</Color>
-    <Color x:Key="OnBackground">#0F1F18</Color>
+    <!-- Background -> Paytin cream -->
+    <Color x:Key="Background">#EFF3DF</Color>
+    <Color x:Key="OnBackground">#161B16</Color>
 
     <!-- Surface Tint -->
-    <Color x:Key="SurfaceTint">#0E6B4F</Color>
+    <Color x:Key="SurfaceTint">#161B16</Color>
 
-    <!-- Dark Theme Colors -->
-    <Color x:Key="PrimaryDarkVariant">#7BD9B4</Color>
-    <Color x:Key="PrimaryLightDark">#A7E5C6</Color>
-    <Color x:Key="PrimaryContainerDark">#073E2D</Color>
-    <Color x:Key="OnPrimaryContainerDark">#D7EFE3</Color>
+    <!-- Dark Theme Colors (keep dark readable, lime accents) -->
+    <Color x:Key="PrimaryDarkVariant">#CDF463</Color>
+    <Color x:Key="PrimaryLightDark">#CDF463</Color>
+    <Color x:Key="PrimaryContainerDark">#232923</Color>
+    <Color x:Key="OnPrimaryContainerDark">#EFF3DF</Color>
 
-    <Color x:Key="SurfaceDark">#0A1410</Color>
-    <Color x:Key="SurfaceContainerLowestDark">#060D0A</Color>
-    <Color x:Key="SurfaceContainerLowDark">#0E1A14</Color>
-    <Color x:Key="SurfaceContainerDark">#16241D</Color>
-    <Color x:Key="SurfaceContainerHighDark">#1F3128</Color>
-    <Color x:Key="SurfaceContainerHighestDark">#2A3F33</Color>
-    <Color x:Key="OnSurfaceDark">#EDF5F0</Color>
-    <Color x:Key="OnSurfaceVariantDark">#93A89C</Color>
-    <Color x:Key="OutlineDark">#5F7469</Color>
-    <Color x:Key="OutlineVariantDark">#22332B</Color>
-    <Color x:Key="BackgroundDark">#0A1410</Color>
-    <Color x:Key="OnBackgroundDark">#EDF5F0</Color>
-    <Color x:Key="PrimaryDarkText">#E8EAF0</Color>
-    <Color x:Key="SecondaryDarkText">#7BD9B4</Color>
+    <Color x:Key="SurfaceDark">#141814</Color>
+    <Color x:Key="SurfaceContainerLowestDark">#0E120E</Color>
+    <Color x:Key="SurfaceContainerLowDark">#1A201A</Color>
+    <Color x:Key="SurfaceContainerDark">#232923</Color>
+    <Color x:Key="SurfaceContainerHighDark">#2E352E</Color>
+    <Color x:Key="SurfaceContainerHighestDark">#3A423A</Color>
+    <Color x:Key="OnSurfaceDark">#EFF3DF</Color>
+    <Color x:Key="OnSurfaceVariantDark">#AEB5A4</Color>
+    <Color x:Key="OutlineDark">#3A423A</Color>
+    <Color x:Key="OutlineVariantDark">#2E352E</Color>
+    <Color x:Key="BackgroundDark">#141814</Color>
+    <Color x:Key="OnBackgroundDark">#EFF3DF</Color>
+    <Color x:Key="PrimaryDarkText">#EFF3DF</Color>
+    <Color x:Key="SecondaryDarkText">#CDF463</Color>
 
-    <!-- Modern accents & gradient tokens -->
-    <Color x:Key="GradientStart">#10805E</Color>
-    <Color x:Key="GradientMid">#0B5D45</Color>
-    <Color x:Key="GradientEnd">#053A2B</Color>
-    <Color x:Key="GradientGlow">#2DD4BF</Color>
-    <Color x:Key="IncomeAccent">#A7F3D0</Color>
+    <!-- Modern accents &amp; gradient tokens -->
+    <Color x:Key="GradientStart">#232923</Color>
+    <Color x:Key="GradientMid">#161B16</Color>
+    <Color x:Key="GradientEnd">#0E120E</Color>
+    <Color x:Key="GradientGlow">#CDF463</Color>
+    <Color x:Key="IncomeAccent">#CDF463</Color>
     <Color x:Key="ExpenseAccent">#FECACA</Color>
     <Color x:Key="GlassWhite">#26FFFFFF</Color>
     <Color x:Key="GlassWhiteStrong">#3DFFFFFF</Color>
-    <Color x:Key="CardSurface">#FFFFFF</Color>
-    <Color x:Key="CardSurfaceDark">#13211A</Color>
-    <Color x:Key="CardStroke">#E6ECE8</Color>
-    <Color x:Key="CardStrokeDark">#23352C</Color>
+    <Color x:Key="CardSurface">#FAFBF0</Color>
+    <Color x:Key="CardSurfaceDark">#1E241E</Color>
+    <Color x:Key="CardStroke">#161B16</Color>
+    <Color x:Key="CardStrokeDark">#3A423A</Color>
 
     <!-- Standard Colors for backwards compatibility -->
     <Color x:Key="White">White</Color>

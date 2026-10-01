@@ -585,3 +585,28 @@ public class ManilaTimeConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+/// <summary>
+/// Paytin-style badge: first letter of the category name (e.g. "S" for Shopping).
+/// Used instead of raw emoji so list icons match the mockup's minimal badges.
+/// </summary>
+public class CategoryInitialConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is string name && !string.IsNullOrWhiteSpace(name))
+        {
+            foreach (var ch in name.Trim())
+            {
+                if (char.IsLetterOrDigit(ch))
+                    return char.ToUpperInvariant(ch).ToString();
+            }
+        }
+        return "?";
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

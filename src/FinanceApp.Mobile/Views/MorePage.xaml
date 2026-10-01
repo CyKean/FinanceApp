@@ -1,119 +1,130 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.MorePage"
              Title="More"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="#80000000">
+             BackgroundColor="{StaticResource PayCream}">
 
-    <Grid RowDefinitions="*,Auto">
-        <!-- Scrim: tap to go back to Dashboard -->
-        <Grid Grid.Row="0" Grid.RowSpan="2" BackgroundColor="Transparent">
-            <Grid.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnScrimTapped" />
-            </Grid.GestureRecognizers>
-        </Grid>
-
-        <!-- Bottom sheet -->
-        <Border Grid.Row="1"
-                Background="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
-                Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}"
-                StrokeThickness="1"
-                Padding="20,12,20,28">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="28,28,0,0" />
-            </Border.StrokeShape>
-            <VerticalStackLayout Spacing="4">
-                <BoxView Color="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}"
-                         HeightRequest="5"
-                         WidthRequest="48"
-                         CornerRadius="3"
-                         HorizontalOptions="Center"
-                         Margin="0,0,0,8" />
-                <Label Text="More" Style="{StaticResource TitleLabelStyle}" Margin="0,0,0,8" />
-
-                <HorizontalStackLayout Spacing="14" Padding="4,12">
-                    <Image Source="tab_goals" HeightRequest="28" WidthRequest="28" VerticalOptions="Center" />
-                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                        <Label Text="Goals" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
-                        <Label Text="Track your savings targets" Style="{StaticResource MutedLabelStyle}" />
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Spacing="14" Padding="18,14,18,100">
+                <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                    <Border WidthRequest="48" HeightRequest="48" Background="#D9C6A5" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        <Label Text="W" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <VerticalStackLayout Grid.Column="1" Margin="10,0" VerticalOptions="Center">
+                        <Label Text="William Current" FontSize="12" TextColor="#6F7668" />
+                        <Label Text="More" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                     </VerticalStackLayout>
-                    <Label Text="›" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
-                    <HorizontalStackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnGoalsTapped" />
-                    </HorizontalStackLayout.GestureRecognizers>
-                </HorizontalStackLayout>
+                    <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        <controls:PaytinIconView IconKey="bell" ShowBadge="False" Light="True" Size="22" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                </Grid>
 
-                <BoxView Style="{StaticResource DividerStyle}" />
+                <Border Style="{StaticResource HeroCardStyle}" Padding="18">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                            <Label Text="Paytin Pro" FontSize="16" FontAttributes="Bold" TextColor="White" />
+                            <Label Text="Insights, AI budgets and forecasts" FontSize="12" TextColor="White" Opacity="0.7" />
+                        </VerticalStackLayout>
+                        <Border Grid.Column="1" Background="{StaticResource PayLime}" StrokeThickness="0" Padding="14,10" VerticalOptions="Center">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                            <Label Text="Explore →" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                        </Border>
+                    </Grid>
+                </Border>
 
-                <HorizontalStackLayout Spacing="14" Padding="4,12">
-                    <Image Source="tab_categories" HeightRequest="28" WidthRequest="28" VerticalOptions="Center" />
-                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                        <Label Text="Categories" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
-                        <Label Text="Organize expenses and income" Style="{StaticResource MutedLabelStyle}" />
+                <Border Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="8">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="28" /></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="0">
+                        <HorizontalStackLayout Spacing="14" Padding="10,12">
+                            <controls:PaytinIconView IconKey="target" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                                <Label Text="Goals" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="Track your savings targets" FontSize="12" TextColor="#6F7668" />
+                            </VerticalStackLayout>
+                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnGoalsTapped" /></HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+                        <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
+                        <HorizontalStackLayout Spacing="14" Padding="10,12">
+                            <controls:PaytinIconView IconKey="grid" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                                <Label Text="Categories" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="Organize expenses and income" FontSize="12" TextColor="#6F7668" />
+                            </VerticalStackLayout>
+                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnCategoriesTapped" /></HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+                        <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
+                        <HorizontalStackLayout Spacing="14" Padding="10,12">
+                            <controls:PaytinIconView IconKey="chart" Size="46" VerticalOptions="Center" />
+                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                                <Label Text="Analytics" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="Charts and spending insights" FontSize="12" TextColor="#6F7668" />
+                            </VerticalStackLayout>
+                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnAnalyticsTapped" /></HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+                        <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
+                        <HorizontalStackLayout Spacing="14" Padding="10,12">
+                            <controls:PaytinIconView IconKey="bot" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                                <Label Text="AI Assistant" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="Chat about your money" FontSize="12" TextColor="#6F7668" />
+                            </VerticalStackLayout>
+                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnChatTapped" /></HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+                        <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
+                        <HorizontalStackLayout Spacing="14" Padding="10,12">
+                            <controls:PaytinIconView IconKey="bulb" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                                <Label Text="Budget Ideas" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="AI suggestions for smarter budgets" FontSize="12" TextColor="#6F7668" />
+                            </VerticalStackLayout>
+                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnBudgetSuggestionsTapped" /></HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+                        <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
+                        <HorizontalStackLayout Spacing="14" Padding="10,12">
+                            <controls:PaytinIconView IconKey="calendar" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                                <Label Text="Calendar" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="Money day by day" FontSize="12" TextColor="#6F7668" />
+                            </VerticalStackLayout>
+                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnCalendarTapped" /></HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+                        <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
+                        <HorizontalStackLayout Spacing="14" Padding="10,12">
+                            <controls:PaytinIconView IconKey="forecast" Size="46" VerticalOptions="Center" />
+                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                                <Label Text="Forecasts" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="Predictions and smart insights" FontSize="12" TextColor="#6F7668" />
+                            </VerticalStackLayout>
+                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnPredictionsTapped" /></HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+                        <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
+                        <HorizontalStackLayout Spacing="14" Padding="10,12">
+                            <controls:PaytinIconView IconKey="settings" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                                <Label Text="Profile &amp; Settings" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="Account, sync and preferences" FontSize="12" TextColor="#6F7668" />
+                            </VerticalStackLayout>
+                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnProfileTapped" /></HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
                     </VerticalStackLayout>
-                    <Label Text="›" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
-                    <HorizontalStackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnCategoriesTapped" />
-                    </HorizontalStackLayout.GestureRecognizers>
-                </HorizontalStackLayout>
-
-                <BoxView Style="{StaticResource DividerStyle}" />
-
-                <HorizontalStackLayout Spacing="14" Padding="4,12">
-                    <Label Text="📊" FontSize="24" WidthRequest="28" HorizontalOptions="Center" VerticalOptions="Center" />
-                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                        <Label Text="Analytics" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
-                        <Label Text="Charts and spending insights" Style="{StaticResource MutedLabelStyle}" />
-                    </VerticalStackLayout>
-                    <Label Text="›" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
-                    <HorizontalStackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnAnalyticsTapped" />
-                    </HorizontalStackLayout.GestureRecognizers>
-                </HorizontalStackLayout>
-
-                <BoxView Style="{StaticResource DividerStyle}" />
-
-                <HorizontalStackLayout Spacing="14" Padding="4,12">
-                    <Label Text="&#x1F4AC;" FontSize="24" WidthRequest="28" HorizontalOptions="Center" VerticalOptions="Center" />
-                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                        <Label Text="AI Assistant" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
-                        <Label Text="Chat about your money and finance" Style="{StaticResource MutedLabelStyle}" />
-                    </VerticalStackLayout>
-                    <Label Text="&#x203A;" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
-                    <HorizontalStackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnChatTapped" />
-                    </HorizontalStackLayout.GestureRecognizers>
-                </HorizontalStackLayout>
-
-                <BoxView Style="{StaticResource DividerStyle}" />
-
-                <HorizontalStackLayout Spacing="14" Padding="4,12">
-                    <Label Text="&#x2728;" FontSize="24" WidthRequest="28" HorizontalOptions="Center" VerticalOptions="Center" />
-                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                        <Label Text="Budget Ideas" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
-                        <Label Text="AI suggestions for smarter budgets" Style="{StaticResource MutedLabelStyle}" />
-                    </VerticalStackLayout>
-                    <Label Text="&#x203A;" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
-                    <HorizontalStackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnBudgetSuggestionsTapped" />
-                    </HorizontalStackLayout.GestureRecognizers>
-                </HorizontalStackLayout>
-
-                <BoxView Style="{StaticResource DividerStyle}" />
-
-                <HorizontalStackLayout Spacing="14" Padding="4,12">
-                    <Image Source="tab_profile" HeightRequest="28" WidthRequest="28" VerticalOptions="Center" />
-                    <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                        <Label Text="Profile &amp; Settings" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
-                        <Label Text="Account, sync and preferences" Style="{StaticResource MutedLabelStyle}" />
-                    </VerticalStackLayout>
-                    <Label Text="›" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
-                    <HorizontalStackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnProfileTapped" />
-                    </HorizontalStackLayout.GestureRecognizers>
-                </HorizontalStackLayout>
+                </Border>
             </VerticalStackLayout>
-        </Border>
+        </ScrollView>
+
+        <controls:PaytinTabBar VerticalOptions="End" ActiveTab="More" />
     </Grid>
 </ContentPage>

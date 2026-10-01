@@ -6,20 +6,16 @@
     <Border x:Name="FabBorder"
             HeightRequest="64"
             WidthRequest="64"
-            StrokeThickness="0"
+            Stroke="{StaticResource PayInk}"
+            StrokeThickness="1.5"
+            Background="{StaticResource PayInk}"
             VerticalOptions="End"
             HorizontalOptions="End">
-        <Border.Background>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="{StaticResource GradientStart}" Offset="0.0" />
-                <GradientStop Color="{StaticResource GradientEnd}" Offset="1.0" />
-            </LinearGradientBrush>
-        </Border.Background>
         <Border.StrokeShape>
-            <RoundRectangle CornerRadius="22" />
+            <Ellipse />
         </Border.StrokeShape>
         <Border.Shadow>
-            <Shadow Brush="#053A2B" Opacity="0.40" Radius="20" Offset="0,10" />
+            <Shadow Brush="Black" Opacity="0.35" Radius="20" Offset="0,10" />
         </Border.Shadow>
         <Border.GestureRecognizers>
             <TapGestureRecognizer Tapped="OnTapped"
@@ -28,7 +24,8 @@
         </Border.GestureRecognizers>
         <Label Text="{Binding Text, Source={x:Reference Root}}"
                FontSize="32"
-               TextColor="White"
+               FontFamily="SpaceGroteskBold"
+               TextColor="{StaticResource PayLime}"
                HorizontalOptions="Center"
                VerticalOptions="Center"
                Margin="0,-3,0,0" />

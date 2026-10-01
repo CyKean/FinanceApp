@@ -8,7 +8,8 @@
              x:Class="FinanceApp.Mobile.Views.SettingsPage"
              x:DataType="viewmodels:SettingsViewModel"
              Title="{Binding Title}"
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource PayCream}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -20,162 +21,115 @@
     <Grid>
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
         <ScrollView>
-            <VerticalStackLayout Spacing="16" Padding="16">
-                <!-- Back to More -->
-                <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
-                    <HorizontalStackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnBackTapped" />
-                    </HorizontalStackLayout.GestureRecognizers>
-                    <Label Text="‹" FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" VerticalOptions="Center" />
-                    <Label Text="Back" FontSize="15" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" VerticalOptions="Center" />
-                </HorizontalStackLayout>
-                <!-- User Info -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                    <VerticalStackLayout Spacing="8">
-                        <HorizontalStackLayout Spacing="12">
-                            <Border WidthRequest="64" HeightRequest="64" Background="#512BD4" StrokeThickness="0">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="32" />
-                                </Border.StrokeShape>
-                                <Label Text="👤" VerticalOptions="Center" HorizontalOptions="Center" FontSize="28" />
+            <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
+                <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                    <Border WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
+                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                    <Label Grid.Column="1" Text="Profile &amp; Settings" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        <Label Text="•••" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                </Grid>
+
+                <Border Style="{StaticResource HeroCardStyle}">
+                    <HorizontalStackLayout Spacing="14">
+                        <Border WidthRequest="60" HeightRequest="60" Background="{StaticResource PayLime}" Stroke="{StaticResource PayLime}" StrokeThickness="0">
+                            <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                            <Label Text="W" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                            <Label Text="Signed in as" FontSize="11" TextColor="White" Opacity="0.7" />
+                            <Label Text="{Binding UserEmail}" FontSize="16" FontAttributes="Bold" TextColor="White" />
+                            <Border Background="{StaticResource PayLime}" StrokeThickness="0" Padding="10,3" HorizontalOptions="Start" Margin="0,4,0,0">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                                <Label Text="● Paytin member" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                             </Border>
-                            <VerticalStackLayout Spacing="4" VerticalOptions="Center">
-                                <Label Text="Signed in as" Style="{StaticResource CaptionLabelStyle}" />
-                                <Label Text="{Binding UserEmail}" Style="{StaticResource UserEmailLabelStyle}" />
-                            </VerticalStackLayout>
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
                 </Border>
 
-                <!-- Sync Section -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
+                <Border Style="{StaticResource CardFrameStyle}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Synchronization" Style="{StaticResource SectionHeaderStyle}" />
-                        
-                        <HorizontalStackLayout Spacing="12">
-                            <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
-                                <Label Text="Pending" Style="{StaticResource SyncDetailCaptionStyle}" />
-                                <Label Text="{Binding SyncStatus.PendingCount}" Style="{StaticResource SyncDetailValueStyle}" />
-                            </VerticalStackLayout>
-                            <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
-                                <Label Text="Failed" Style="{StaticResource SyncDetailCaptionStyle}" />
-                                <Label Text="{Binding SyncStatus.FailedCount}" Style="{StaticResource SyncDetailValueStyle}" TextColor="Red" />
-                            </VerticalStackLayout>
-                            <VerticalStackLayout Spacing="4" HorizontalOptions="Fill">
-                                <Label Text="Last Sync" Style="{StaticResource SyncDetailCaptionStyle}" />
-                                <Label Text="{Binding SyncStatus.LastSyncAt, Converter={StaticResource ManilaTimeConverter}, StringFormat='{0:MMM dd, HH:mm}'}" Style="{StaticResource SyncDetailValueStyle}" />
-                            </VerticalStackLayout>
-                        </HorizontalStackLayout>
-
-                        <Button Text="Sync Now" 
-                                Command="{Binding SyncNowCommand}"
-                                IsEnabled="{Binding IsSyncing, Converter={StaticResource InverseBoolConverter}}"
-                                Style="{StaticResource PrimaryButtonStyle}">
+                        <Label Text="Synchronization" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                            <Border Padding="10" Background="{StaticResource PayCream}" StrokeThickness="0">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="{Binding SyncStatus.PendingCount}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" />
+                                    <Label Text="Pending" FontSize="11" TextColor="#6F7668" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Column="1" Padding="10" Background="{StaticResource PayCream}" StrokeThickness="0">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="{Binding SyncStatus.FailedCount}" FontSize="18" FontAttributes="Bold" TextColor="#DC2626" HorizontalOptions="Center" />
+                                    <Label Text="Failed" FontSize="11" TextColor="#6F7668" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Column="2" Padding="10" Background="{StaticResource PayInk}" StrokeThickness="0">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="✓" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayLime}" HorizontalOptions="Center" />
+                                    <Label Text="Synced" FontSize="11" TextColor="White" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                        <Label Text="{Binding SyncStatus.LastSyncAt, Converter={StaticResource ManilaTimeConverter}, StringFormat='Last sync {0:MMM dd, HH:mm}'}" FontSize="12" TextColor="#6F7668" HorizontalOptions="Center" />
+                        <Button Text="Sync Now →" Command="{Binding SyncNowCommand}" IsEnabled="{Binding IsSyncing, Converter={StaticResource InverseBoolConverter}}" Style="{StaticResource PrimaryButtonStyle}">
                             <Button.Triggers>
                                 <DataTrigger TargetType="{x:Type Button}" Binding="{Binding IsSyncing}" Value="True">
                                     <Setter Property="Text" Value="Syncing..." />
                                 </DataTrigger>
                             </Button.Triggers>
                         </Button>
-
-                        <Label Text="{Binding SyncStatus.LastError}" 
-                               Style="{StaticResource SyncErrorLabelStyle}"
-                               IsVisible="{Binding SyncStatus.LastError, Converter={StaticResource NullToBoolConverter}}"
-                               TextColor="Red" />
+                        <Label Text="{Binding SyncStatus.LastError}" FontSize="13" TextColor="#DC2626"
+                               IsVisible="{Binding SyncStatus.LastError, Converter={StaticResource NullToBoolConverter}}" />
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Sync History -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="Sync History" Style="{StaticResource SectionHeaderStyle}" />
-                        <CollectionView ItemsSource="{Binding RecentSyncOperations}" HeightRequest="240">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="dtos:SyncOperationDto">
-                                    <VerticalStackLayout Spacing="2" Padding="0,6">
-                                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                                            <Label Text="{Binding EntityType}"
-                                                   FontSize="14"
-                                                   FontAttributes="Bold"
-                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
-                                                   VerticalOptions="Center"
-                                                   HorizontalOptions="Fill" />
-                                            <Label Text="{Binding OperationType}"
-                                                   FontSize="12"
-                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}"
-                                                   VerticalOptions="Center" />
-                                            <Label Text="{Binding Status}"
-                                                   FontSize="12"
-                                                   FontAttributes="Bold"
-                                                   TextColor="{Binding Status, Converter={StaticResource SyncStatusToColorConverter}}"
-                                                   VerticalOptions="Center" />
-                                        </HorizontalStackLayout>
-                                        <Label Text="{Binding LastAttemptAt, Converter={StaticResource ManilaTimeConverter}, StringFormat='{0:MMM dd, HH:mm}'}"
-                                               FontSize="12"
-                                               TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
-                                        <Label Text="{Binding ErrorMessage}"
-                                               Style="{StaticResource SyncErrorLabelStyle}"
-                                               IsVisible="{Binding ErrorMessage, Converter={StaticResource NullToBoolConverter}}"
-                                               TextColor="{StaticResource Error}" />
-                                    </VerticalStackLayout>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                            <CollectionView.EmptyView>
-                                <Label Text="No sync activity yet"
-                                       Style="{StaticResource MutedLabelStyle}"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center" />
-                            </CollectionView.EmptyView>
-                        </CollectionView>
-                    </VerticalStackLayout>
+                <Border Background="{StaticResource PayInk}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="16">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
+                    <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnAiAssistantTapped" /></Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="12">
+                        <controls:PaytinIconView IconKey="bot" Size="46" Light="True" VerticalOptions="Center" />
+                        <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                            <Label Text="AI Assistant" FontSize="15" FontAttributes="Bold" TextColor="White" />
+                            <Label Text="Chat &amp; budget ideas · API key" FontSize="12" TextColor="White" Opacity="0.7" />
+                        </VerticalStackLayout>
+                        <Label Text="›" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PayLime}" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
                 </Border>
 
-                <!-- AI Assistant -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
+                <Border Style="{StaticResource CardFrameStyle}">
                     <VerticalStackLayout Spacing="8">
-                        <Label Text="AI Assistant" Style="{StaticResource SectionHeaderStyle}" />
-                        <HorizontalStackLayout Spacing="14" Padding="4,4">
-                            <Label Text="&#x1F4AC;" FontSize="24" WidthRequest="28" HorizontalOptions="Center" VerticalOptions="Center" />
-                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                <Label Text="Chat &amp; budget ideas" Style="{StaticResource BodyLabelStyle}" FontAttributes="Bold" />
-                                <Label Text="Manage the AI provider and API key" Style="{StaticResource MutedLabelStyle}" />
-                            </VerticalStackLayout>
-                            <Label Text="&#x203A;" FontSize="24" TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" VerticalOptions="Center" />
-                            <HorizontalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnAiAssistantTapped" />
-                            </HorizontalStackLayout.GestureRecognizers>
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- App Info -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16">
-                    <VerticalStackLayout Spacing="8">
-                        <Label Text="App Information" Style="{StaticResource SectionHeaderStyle}" />
+                        <Label Text="App Information" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                         <HorizontalStackLayout Spacing="12">
-                            <Label Text="Version" Style="{StaticResource InfoLabelStyle}" />
-                            <Label Text="{Binding AppVersion}" Style="{StaticResource InfoValueLabelStyle}" HorizontalOptions="EndAndExpand" />
+                            <Label Text="Version" FontSize="14" TextColor="#6F7668" />
+                            <Label Text="{Binding AppVersion}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="EndAndExpand" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="12">
+                            <Label Text="Theme" FontSize="14" TextColor="#6F7668" />
+                            <Label Text="Paytin Cream + Lime" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="EndAndExpand" />
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Danger Zone -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Background="#FFF5F5">
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="Danger Zone" Style="{StaticResource SectionHeaderStyle}" TextColor="Red" />
-                        <Button Text="Logout" 
-                                Command="{Binding LogoutCommand}"
-                                Style="{StaticResource DangerButtonStyle}" />
+                <Border Background="#FFE9E9" Stroke="#DC2626" StrokeThickness="1.5" Padding="18">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Danger Zone" FontSize="16" FontAttributes="Bold" TextColor="#DC2626" />
+                        <Button Text="Logout" Command="{Binding LogoutCommand}" Style="{StaticResource DangerButtonStyle}" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>
 
-        <!-- Toasts -->
         <controls:ToastHost />
-
-        <!-- Custom confirmation modal -->
         <controls:ConfirmModalHost />
     </Grid>
 </ContentPage>

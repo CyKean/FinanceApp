@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.ViewModels;
 
 public partial class DashboardPage : ContentPage
@@ -8,12 +9,15 @@ public partial class DashboardPage : ContentPage
     {
         InitializeComponent();
         BindingContext = viewModel;
+        QuickAIIcon.Data = PaytinIcons.GetGeometry("bulb");
+        QuickStatsIcon.Data = PaytinIcons.GetGeometry("chart");
+        QuickForecastIcon.Data = PaytinIcons.GetGeometry("forecast");
+        QuickMoreIcon.Data = PaytinIcons.GetGeometry("sliders");
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        _ = Helpers.PageAnimator.StaggerInAsync(ContentStack);
         if (BindingContext is DashboardViewModel vm && vm.LoadCommand.CanExecute(null))
             await vm.LoadCommand.ExecuteAsync(null);
     }

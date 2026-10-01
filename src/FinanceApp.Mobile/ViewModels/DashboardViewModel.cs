@@ -91,7 +91,7 @@ public partial class DashboardViewModel : BaseViewModel
             TotalExpense = Dashboard.TotalExpense;
             NetAmount = Dashboard.NetAmount;
             SavingsRate = Dashboard.SavingsRate;
-            RecentTransactions = Dashboard.RecentTransactions;
+            RecentTransactions = Dashboard.RecentTransactions.Take(4).ToList();
             SpendingByCategory = Dashboard.SpendingByCategory;
             ActiveBudgets = Dashboard.ActiveBudgets;
             ActiveGoals = Dashboard.ActiveGoals;
@@ -149,6 +149,30 @@ public partial class DashboardViewModel : BaseViewModel
     private async Task NavigateToAnalyticsAsync()
     {
         await _navigationService.NavigateToAsync("Analytics");
+    }
+
+    [RelayCommand]
+    private async Task NavigateToMoreAsync()
+    {
+        await _navigationService.NavigateToAsync("//Main/More");
+    }
+
+    [RelayCommand]
+    private async Task NavigateToAiSuggestionsAsync()
+    {
+        await _navigationService.NavigateToAsync("BudgetSuggestions");
+    }
+
+    [RelayCommand]
+    private async Task NavigateToForecastsAsync()
+    {
+        await _navigationService.NavigateToAsync("Predictions");
+    }
+
+    [RelayCommand]
+    private async Task NavigateToSettingsAsync()
+    {
+        await _navigationService.NavigateToAsync("//Settings");
     }
 
     [RelayCommand]

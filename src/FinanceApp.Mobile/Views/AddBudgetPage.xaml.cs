@@ -18,77 +18,20 @@ public partial class AddBudgetPage : ContentPage
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
         BuildEmojiGrid();
-        BuildColorGrid();
         _viewModel.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(AddBudgetViewModel.Color))
-                BuildColorGrid();
+            if (e.PropertyName == nameof(AddBudgetViewModel.Icon))
+                BuildEmojiGrid();
         };
     }
 
     private void BuildEmojiGrid()
     {
-        EmojiContainer.Children.Clear();
-        foreach (var emoji in EmojiPalette.Icons)
+        Views.Controls.PaytinIconPicker.Build(EmojiContainer, EmojiPalette.Icons, _viewModel.Icon, emoji =>
         {
-            var label = new Label
-            {
-                Text = emoji,
-                FontSize = 24,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center
-            };
-            var tile = new Border
-            {
-                WidthRequest = 48,
-                HeightRequest = 48,
-                StrokeThickness = 0,
-                BackgroundColor = Colors.Transparent,
-                StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(14) },
-                Content = label,
-                Margin = new Thickness(3)
-            };
-            var captured = emoji;
-            tile.GestureRecognizers.Add(new TapGestureRecognizer
-            {
-                Command = new Command(() =>
-                {
-                    if (BindingContext is AddBudgetViewModel vm)
-                        vm.SelectIconCommand.Execute(captured);
-                })
-            });
-            EmojiContainer.Children.Add(tile);
-        }
-    }
-
-    private void BuildColorGrid()
-    {
-        ColorContainer.Children.Clear();
-        var selected = (_viewModel.Color ?? string.Empty).Trim();
-        foreach (var hex in ColorPalette.Swatches)
-        {
-            var isSelected = string.Equals(hex, selected, StringComparison.OrdinalIgnoreCase);
-            var tile = new Border
-            {
-                WidthRequest = 44,
-                HeightRequest = 44,
-                StrokeThickness = isSelected ? 3 : 0,
-                Stroke = isSelected ? new SolidColorBrush(Color.FromArgb("#0E6B4F")) : Brush.Transparent,
-                BackgroundColor = Color.FromArgb(hex),
-                StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(22) },
-                Margin = new Thickness(4)
-            };
-            var captured = hex;
-            tile.GestureRecognizers.Add(new TapGestureRecognizer
-            {
-                Command = new Command(() =>
-                {
-                    if (BindingContext is AddBudgetViewModel vm)
-                        vm.SelectColorCommand.Execute(captured);
-                })
-            });
-            ColorContainer.Children.Add(tile);
-        }
+            if (BindingContext is AddBudgetViewModel vm)
+                vm.SelectIconCommand.Execute(emoji);
+        });
     }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)

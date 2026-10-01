@@ -18,4 +18,9 @@ public partial class TransactionsPage : ContentPage
         if (BindingContext is TransactionsViewModel vm && vm.LoadCommand.CanExecute(null))
             await vm.LoadCommand.ExecuteAsync(null);
     }
+
+    private async void OnHomeTapped(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("//Main/Dashboard");
+    }
 }

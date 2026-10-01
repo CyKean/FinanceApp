@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinanceApp.Mobile.Views.Controls.PaytinTabBar"
+             x:Name="Root">
+    <Border Margin="30,0,30,12"
+            Background="#161B16"
+            Stroke="#161B16"
+            StrokeThickness="1.5"
+            Padding="10,8">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="100" />
+        </Border.StrokeShape>
+        <Border.Shadow>
+            <Shadow Brush="Black" Opacity="0.35" Radius="20" Offset="0,10" />
+        </Border.Shadow>
+        <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="4">
+            <Border x:Name="TabDashboard" Grid.Column="0" WidthRequest="52" HeightRequest="52" StrokeThickness="0" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Dashboard" /></Border.GestureRecognizers>
+                <Path x:Name="IconDashboard" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+            <Border x:Name="TabTransactions" Grid.Column="1" WidthRequest="52" HeightRequest="52" StrokeThickness="0" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Transactions" /></Border.GestureRecognizers>
+                <Path x:Name="IconTransactions" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+            <Border x:Name="TabAccounts" Grid.Column="2" WidthRequest="52" HeightRequest="52" StrokeThickness="0" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Accounts" /></Border.GestureRecognizers>
+                <Path x:Name="IconAccounts" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+            <Border x:Name="TabBudgets" Grid.Column="3" WidthRequest="52" HeightRequest="52" StrokeThickness="0" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Budgets" /></Border.GestureRecognizers>
+                <Path x:Name="IconBudgets" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+            <Border x:Name="TabMore" Grid.Column="4" WidthRequest="52" HeightRequest="52" StrokeThickness="0" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="More" /></Border.GestureRecognizers>
+                <Path x:Name="IconMore" Aspect="Uniform" WidthRequest="24" HeightRequest="24" StrokeThickness="3" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+        </Grid>
+    </Border>
+</ContentView>
