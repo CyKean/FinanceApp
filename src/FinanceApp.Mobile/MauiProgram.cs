@@ -17,6 +17,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+// The iOS/MacCatalyst SDKs expose their own "NotificationCenter" namespace,
+// so the feed store is always referenced through this alias.
+using AppNotificationCenter = FinanceApp.Application.Services.NotificationCenter;
+
 namespace FinanceApp.Mobile;
 
 public static class MauiProgram
@@ -83,6 +87,7 @@ public static class MauiProgram
         builder.Services.AddScoped<IPredictionService, PredictionService>();
         builder.Services.AddScoped<IBudgetSuggestionService, BudgetSuggestionService>();
         builder.Services.AddScoped<IFinanceChatService, FinanceChatService>();
+        builder.Services.AddScoped<INotificationFeedBuilder, NotificationFeedBuilder>();
 
         // Validators
         builder.Services.AddScoped<CreateAccountDtoValidator>();
@@ -115,6 +120,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<AccountHistoryStore>();
         builder.Services.AddSingleton<ChatHistoryStore>();
         builder.Services.AddSingleton<IAiSettingsStore, AiSettingsStore>();
+
+        // Notifications: the feed is app-wide so every bell shares one badge, and
+        // the watcher keeps it fresh and surfaces new alerts to the user.
+        builder.Services.AddSingleton<INotificationStateStore, PreferencesNotificationStateStore>();
+        builder.Services.AddSingleton<AppNotificationCenter>();
+        builder.Services.AddSingleton<INotificationCenter>(sp => sp.GetRequiredService<AppNotificationCenter>());
+        builder.Services.AddSingleton<NotificationWatcher>();
 
         // Background Services
         builder.Services.AddHostedService<SupabaseInitializer>();
@@ -168,9 +180,6 @@ public static class MauiProgram
         builder.Services.AddTransient<BudgetSuggestionsPage>();
         builder.Services.AddTransient<AiSettingsPage>();
         builder.Services.AddTransient<NotificationsPage>();
-
-        // App-wide notification feed state (singleton so every bell shares it)
-        builder.Services.AddSingleton<NotificationCenter>();
 
         // Routing
         Routing.RegisterRoute("Dashboard", typeof(DashboardPage));

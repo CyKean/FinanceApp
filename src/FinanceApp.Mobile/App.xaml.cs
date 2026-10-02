@@ -1,4 +1,5 @@
 ﻿using FinanceApp.Application.Interfaces;
+using FinanceApp.Mobile.Services;
 using FinanceApp.Mobile.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls;
@@ -30,7 +31,15 @@ public partial class App : Microsoft.Maui.Controls.Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(_services.GetRequiredService<AppShell>());
+        var window = new Window(_services.GetRequiredService<AppShell>());
+
+        // Derive the notification feed up front so the bell badge is populated
+        // before the user ever opens the notifications page, and keep it warm.
+        var watcher = _services.GetRequiredService<NotificationWatcher>();
+        watcher.Start();
+        _ = watcher.RefreshAsync();
+
+        return window;
     }
 
     private async void OnAuthStateChanged(FinanceApp.Application.Interfaces.AuthStateChangedEventArgs e)
@@ -39,10 +48,16 @@ public partial class App : Microsoft.Maui.Controls.Application
         {
             if (e.IsAuthenticated)
             {
+                _ = _services.GetRequiredService<NotificationWatcher>().RefreshAsync();
                 await shell.GoToAsync("//Main/Dashboard");
             }
             else
             {
+                // Notifications belong to the user who was signed in; drop them
+                // so the next account does not inherit their unread alerts.
+                _services.GetRequiredService<NotificationWatcher>().Stop();
+                _services.GetRequiredService<INotificationCenter>().Reset();
+
                 await shell.GoToAsync("//Login");
             }
         }

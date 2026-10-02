@@ -8,6 +8,7 @@ using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FinanceApp.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 
 public partial class DashboardViewModel : BaseViewModel
@@ -18,7 +19,8 @@ public partial class DashboardViewModel : BaseViewModel
     private readonly TransactionSheetRequest _sheetRequest;
     private readonly TransactionSheetService _transactionSheetService;
     private readonly DevDataSeeder _devDataSeeder;
-    private readonly NotificationCenter _notificationCenter;
+    private readonly INotificationCenter _notificationCenter;
+    private readonly NotificationWatcher _notificationWatcher;
     private readonly ILogger<DashboardViewModel> _logger;
 
     [ObservableProperty]
@@ -67,6 +69,8 @@ public partial class DashboardViewModel : BaseViewModel
         TransactionSheetRequest sheetRequest,
         TransactionSheetService transactionSheetService,
         DevDataSeeder devDataSeeder,
+        INotificationCenter notificationCenter,
+        NotificationWatcher notificationWatcher,
         ILogger<DashboardViewModel> logger)
     {
         _dashboardService = dashboardService;
@@ -75,8 +79,13 @@ public partial class DashboardViewModel : BaseViewModel
         _sheetRequest = sheetRequest;
         _transactionSheetService = transactionSheetService;
         _devDataSeeder = devDataSeeder;
+        _notificationCenter = notificationCenter;
+        _notificationWatcher = notificationWatcher;
         _logger = logger;
         Title = "Dashboard";
+
+        UnreadNotifications = _notificationCenter.UnreadCount;
+        _notificationCenter.Changed += OnNotificationsChanged;
     }
 
     [RelayCommand]
@@ -113,6 +122,9 @@ public partial class DashboardViewModel : BaseViewModel
             SpendingByCategory = Dashboard.SpendingByCategory;
             ActiveBudgets = Dashboard.ActiveBudgets;
             ActiveGoals = Dashboard.ActiveGoals;
+
+            // Keep the bell badge and any new alerts current on the landing page.
+            await _notificationWatcher.RefreshAsync();
         }
         catch (Exception ex)
         {
@@ -123,6 +135,15 @@ public partial class DashboardViewModel : BaseViewModel
         {
             IsBusy = false;
         }
+    }
+
+    private void OnNotificationsChanged()
+    {
+        // Raised by the watcher, which can run off the UI thread.
+        if (MainThread.IsMainThread)
+            UnreadNotifications = _notificationCenter.UnreadCount;
+        else
+            MainThread.BeginInvokeOnMainThread(() => UnreadNotifications = _notificationCenter.UnreadCount);
     }
 
     [RelayCommand]
@@ -198,6 +219,8 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task NavigateToNotificationsAsync()
     {
+        // Relative, not "//Notifications": Shell cannot absolute-navigate to a
+        // route registered with Routing.RegisterRoute.
         await _navigationService.NavigateToAsync("Notifications");
     }
 

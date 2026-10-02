@@ -284,17 +284,40 @@ public class CountToBoolConverter : IValueConverter
     }
 }
 
-public class SeverityToLightConverter : IValueConverter
+/// <summary>
+/// Maps a <see cref="FinanceApp.Application.Notifications.NotificationSeverity"/>
+/// onto a distinct accent so critical alerts do not read the same as info ones:
+/// Info = blue, Success = green, Warning = amber, Critical = red.
+/// </summary>
+public class SeverityToAccentConverter : IValueConverter
 {
+    private const string Fallback = "#161B16";
+
     public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
     {
-        if (value is FinanceApp.Mobile.Helpers.NotificationSeverity severity)
+        var key = value switch
         {
-            // Info / Success read better on a lime badge; warnings stay ink.
-            return severity is FinanceApp.Mobile.Helpers.NotificationSeverity.Info
-                or FinanceApp.Mobile.Helpers.NotificationSeverity.Success;
+            FinanceApp.Application.Notifications.NotificationSeverity.Info => "Info",
+            FinanceApp.Application.Notifications.NotificationSeverity.Success => "Success",
+            FinanceApp.Application.Notifications.NotificationSeverity.Warning => "Warning",
+            FinanceApp.Application.Notifications.NotificationSeverity.Critical => "Error",
+            _ => "PayInk"
+        };
+
+        var resources = Application.Current?.Resources;
+        if (resources is not null)
+        {
+            if (resources.TryGetValue(key, out var direct) && direct is Color directColor)
+                return directColor;
+
+            foreach (var dictionary in resources.MergedDictionaries)
+            {
+                if (dictionary.TryGetValue(key, out var merged) && merged is Color mergedColor)
+                    return mergedColor;
+            }
         }
-        return false;
+
+        return Color.FromArgb(Fallback);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)

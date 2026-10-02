@@ -2,6 +2,7 @@ namespace FinanceApp.Application.Services;
 
 using FinanceApp.Application.DTOs;
 using FinanceApp.Application.Interfaces;
+using FinanceApp.Application.Notifications;
 using FinanceApp.Application.Validators;
 using FinanceApp.Domain.Entities;
 using FinanceApp.Domain.Enums;
@@ -202,12 +203,6 @@ public class BudgetService : BaseService, IBudgetService
         foreach (var budget in budgets)
         {
             await CalculateAndSetSpentAmount(budget, cancellationToken);
-            
-            // Check for budget warnings
-            if (budget.IsNearLimit(90))
-            {
-                await _notificationService.ScheduleBudgetWarningAsync(budget.Id, userId, cancellationToken);
-            }
         }
 
         await UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -245,11 +240,8 @@ public class BudgetService : BaseService, IBudgetService
         await _budgetRepository.UpdateAsync(budget, cancellationToken);
         await UnitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Check for budget warnings after adding spending
-        if (budget.IsNearLimit(90))
-        {
-            await _notificationService.ScheduleBudgetWarningAsync(budget.Id, userId, cancellationToken);
-        }
+        // Alerts only fire on writes - reads would re-notify on every page load.
+        await NotifyIfOverThresholdAsync(budget, cancellationToken);
     }
 
     public async Task RemoveSpendingAsync(Guid budgetId, Money amount, Guid userId, CancellationToken cancellationToken = default)
@@ -291,5 +283,35 @@ public class BudgetService : BaseService, IBudgetService
 
         budget.ResetSpending();
         budget.AddSpending(spent);
+    }
+
+    /// <summary>
+    /// Raises an alert when a budget crosses the 90% mark, so the user hears
+    /// about it the moment spending pushes them over rather than the next time
+    /// they happen to open the notifications page.
+    /// </summary>
+    private async Task NotifyIfOverThresholdAsync(Budget budget, CancellationToken cancellationToken)
+    {
+        if (!budget.IsNearLimit(90))
+            return;
+
+        var limit = budget.Amount.Amount;
+        var spent = budget.SpentAmount.Amount;
+        var used = budget.GetPercentageUsed();
+        var over = budget.IsOverBudget();
+
+        await _notificationService.PublishAsync(
+            new AppNotification(
+                over ? $"budget-over-{budget.Id}" : $"budget-near-{budget.Id}",
+                "Budgets",
+                over ? $"{budget.Name} is over budget" : $"{budget.Name} is close to its limit",
+                over
+                    ? $"Spent {spent:N0} of {limit:N0} ({used:F0}%). Cut back or raise the limit."
+                    : $"{used:F0}% used · {Math.Max(limit - spent, 0):N0} left of {limit:N0}.",
+                over ? "alertCircle" : "pie",
+                over ? NotificationSeverity.Critical : NotificationSeverity.Warning,
+                DateTime.Now,
+                "//Budgets"),
+            cancellationToken);
     }
 }

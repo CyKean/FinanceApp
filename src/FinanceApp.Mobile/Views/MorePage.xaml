@@ -22,7 +22,15 @@
                     <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnNotificationsTapped" /></Border.GestureRecognizers>
-                        <controls:PaytinIconView IconKey="bell" ShowBadge="False" Light="True" Size="22" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Grid>
+                            <controls:PaytinIconView IconKey="bell" ShowBadge="False" Light="True" Size="22" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Border x:Name="NotificationBadge" WidthRequest="20" HeightRequest="20" Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.2"
+                                    HorizontalOptions="End" VerticalOptions="Start" Margin="0,4,4,0" IsVisible="False">
+                                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                <Label x:Name="NotificationBadgeCount" Text="0" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource PayInk}"
+                                       HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
                     </Border>
                 </Grid>
 
@@ -127,5 +135,7 @@
         </ScrollView>
 
         <controls:PaytinTabBar VerticalOptions="End" ActiveTab="More" />
+
+        <controls:ToastHost />
     </Grid>
 </ContentPage>

@@ -1,8 +1,15 @@
 namespace FinanceApp.Infrastructure.Services;
 
 using FinanceApp.Application.Interfaces;
+using FinanceApp.Application.Notifications;
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+/// Application-layer notification publisher. Alerts are raised in-process and
+/// picked up by the host (the MAUI app forwards them into the shared feed and
+/// surfaces them to the user). Platform delivery is intentionally a no-op so the
+/// same service can run in tests and background workers.
+/// </summary>
 public class NotificationService : INotificationService
 {
     private readonly ILogger<NotificationService> _logger;
@@ -12,38 +19,39 @@ public class NotificationService : INotificationService
         _logger = logger;
     }
 
-    public Task ScheduleBudgetWarningAsync(Guid budgetId, Guid userId, CancellationToken cancellationToken = default)
+    public event Action<AppNotification>? AlertRaised;
+
+    public Task PublishAsync(AppNotification notification, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Scheduled budget warning for budget {BudgetId}, user {UserId}", budgetId, userId);
+        if (notification is null || string.IsNullOrWhiteSpace(notification.Id))
+            return Task.CompletedTask;
+
+        _logger.LogInformation(
+            "Raised notification {NotificationId} ({Severity}) for group {Group}: {Title}",
+            notification.Id,
+            notification.Severity,
+            notification.Group,
+            notification.Title);
+
+        try
+        {
+            AlertRaised?.Invoke(notification);
+        }
+        catch (Exception ex)
+        {
+            // A failing listener must never break the caller's save path.
+            _logger.LogWarning(ex, "Notification listener failed for {NotificationId}", notification.Id);
+        }
+
         return Task.CompletedTask;
     }
 
-    public Task ScheduleRecurringBillAsync(Guid recurringTransactionId, Guid userId, CancellationToken cancellationToken = default)
-    {
-        _logger.LogInformation("Scheduled recurring bill notification for recurring transaction {RecurringTransactionId}, user {UserId}", recurringTransactionId, userId);
-        return Task.CompletedTask;
-    }
-
-    public Task ScheduleGoalProgressAsync(Guid goalId, Guid userId, CancellationToken cancellationToken = default)
-    {
-        _logger.LogInformation("Scheduled goal progress notification for goal {GoalId}, user {UserId}", goalId, userId);
-        return Task.CompletedTask;
-    }
-
-    public Task CancelScheduledNotificationsAsync(Guid entityId, Guid userId, CancellationToken cancellationToken = default)
-    {
-        _logger.LogInformation("Cancelled scheduled notifications for entity {EntityId}, user {UserId}", entityId, userId);
-        return Task.CompletedTask;
-    }
+    public Task<bool> HasPermissionAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult(true);
 
     public Task RequestPermissionAsync(CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Notification permission requested");
+        _logger.LogInformation("In-app notifications do not need an OS permission");
         return Task.CompletedTask;
-    }
-
-    public Task<bool> HasPermissionAsync(CancellationToken cancellationToken = default)
-    {
-        return Task.FromResult(true);
     }
 }

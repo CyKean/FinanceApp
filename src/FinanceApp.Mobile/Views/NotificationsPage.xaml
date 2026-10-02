@@ -4,7 +4,7 @@
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
              xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
-             xmlns:helpers="clr-namespace:FinanceApp.Mobile.Helpers"
+             xmlns:notifications="clr-namespace:FinanceApp.Application.Notifications;assembly=FinanceApp.Application"
              x:Class="FinanceApp.Mobile.Views.NotificationsPage"
              x:DataType="viewmodels:NotificationsViewModel"
              x:Name="NotificationsPageView"
@@ -65,7 +65,7 @@
                         <Label Text="Today" Style="{StaticResource SectionHeaderStyle}" />
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Today}" Spacing="0">
                             <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="helpers:NotificationItem">
+                                <DataTemplate x:DataType="notifications:AppNotification">
                                     <Border Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="14" Margin="0,4">
                                         <Border.StrokeShape><RoundRectangle CornerRadius="22" /></Border.StrokeShape>
                                         <Border.GestureRecognizers>
@@ -74,7 +74,7 @@
                                         </Border.GestureRecognizers>
                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                             <controls:PaytinIconView Grid.Column="0" IconKey="{Binding IconKey}" Size="44"
-                                                                    Light="{Binding Severity, Converter={StaticResource SeverityToLightConverter}}"
+                                                                    Accent="{Binding Severity, Converter={StaticResource SeverityToAccentConverter}}"
                                                                     VerticalOptions="Center" />
                                             <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center" HorizontalOptions="Fill">
                                                 <HorizontalStackLayout Spacing="6">
@@ -106,7 +106,7 @@
                         <Label Text="Earlier" Style="{StaticResource SectionHeaderStyle}" />
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Earlier}" Spacing="0">
                             <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="helpers:NotificationItem">
+                                <DataTemplate x:DataType="notifications:AppNotification">
                                     <Border Background="{StaticResource PayCard}" Stroke="#D3D9BE" StrokeThickness="1" Padding="14" Margin="0,4">
                                         <Border.StrokeShape><RoundRectangle CornerRadius="22" /></Border.StrokeShape>
                                         <Border.GestureRecognizers>
@@ -115,7 +115,7 @@
                                         </Border.GestureRecognizers>
                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                             <controls:PaytinIconView Grid.Column="0" IconKey="{Binding IconKey}" Size="44"
-                                                                    Light="{Binding Severity, Converter={StaticResource SeverityToLightConverter}}"
+                                                                    Accent="{Binding Severity, Converter={StaticResource SeverityToAccentConverter}}"
                                                                     VerticalOptions="Center" />
                                             <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center" HorizontalOptions="Fill">
                                                 <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />

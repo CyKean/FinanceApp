@@ -33,6 +33,10 @@ public partial class PaytinIconView : ContentView
         BindableProperty.Create(nameof(ShowBadge), typeof(bool), typeof(PaytinIconView), true,
             propertyChanged: (b, _, _) => ((PaytinIconView)b).Refresh());
 
+    public static readonly BindableProperty AccentProperty =
+        BindableProperty.Create(nameof(Accent), typeof(Color), typeof(PaytinIconView), null,
+            propertyChanged: (b, _, _) => ((PaytinIconView)b).Refresh());
+
     /// <summary>Raw stored icon (usually an emoji) used for key resolution.</summary>
     public string? Icon
     {
@@ -75,6 +79,17 @@ public partial class PaytinIconView : ContentView
         set => SetValue(ShowBadgeProperty, value);
     }
 
+    /// <summary>
+    /// Optional badge fill that overrides the ink/lime pairing. Used where a
+    /// severity has to read at a glance (critical red vs info blue). The glyph
+    /// colour is picked automatically for contrast against the accent.
+    /// </summary>
+    public Color? Accent
+    {
+        get => (Color?)GetValue(AccentProperty);
+        set => SetValue(AccentProperty, value);
+    }
+
     public PaytinIconView()
     {
         InitializeComponent();
@@ -88,7 +103,9 @@ public partial class PaytinIconView : ContentView
 
         var key = PaytinIcons.Resolve(Icon, Name, IconKey);
         Glyph.Data = PaytinIcons.GetGeometry(key);
-        Glyph.Stroke = Light ? Ink : Colors.White;
+
+        var accent = Accent;
+        Glyph.Stroke = accent is not null ? ContrastOn(accent) : Light ? Ink : Colors.White;
 
         var size = Size <= 0 ? 46 : Size;
         // Explicit glyph size, exactly like the (working) tab bar pattern.
@@ -100,7 +117,7 @@ public partial class PaytinIconView : ContentView
         {
             Badge.WidthRequest = size;
             Badge.HeightRequest = size;
-            Badge.Background = Light ? Lime : Ink;
+            Badge.Background = accent ?? (Light ? Lime : Ink);
             Badge.StrokeShape = _circle;
             Badge.Padding = 0;
         }
@@ -113,5 +130,12 @@ public partial class PaytinIconView : ContentView
             Badge.StrokeShape = null;
             Badge.Padding = 0;
         }
+    }
+
+    /// <summary>Picks ink or white glyph depending on how bright the badge is.</summary>
+    private static Color ContrastOn(Color color)
+    {
+        var luminance = (0.299 * color.Red + 0.587 * color.Green + 0.114 * color.Blue);
+        return luminance > 0.6 ? Ink : Colors.White;
     }
 }

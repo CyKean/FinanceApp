@@ -36,7 +36,7 @@
              <converters:InsightSeverityToIconConverter x:Key="InsightSeverityToIconConverter" />
              <converters:InsightSeverityToColorConverter x:Key="InsightSeverityToColorConverter" />
              <converters:ManilaTimeConverter x:Key="ManilaTimeConverter" />
-              <converters:SeverityToLightConverter x:Key="SeverityToLightConverter" />
+              <converters:SeverityToAccentConverter x:Key="SeverityToAccentConverter" />
          </ResourceDictionary>
      </Application.Resources>
 </Application>

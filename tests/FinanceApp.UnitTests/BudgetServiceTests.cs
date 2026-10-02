@@ -46,7 +46,7 @@ public class BudgetServiceTests
             _mockCategoryRepository.Object,
             Mock.Of<IAccountRepository>(),
             _mockTransactionRepository.Object,
-            Mock.Of<INotificationService>(),
+            _mockNotificationService.Object,
             new CreateBudgetDtoValidator(),
             new UpdateBudgetDtoValidator(),
             Mock.Of<ILogger<BudgetService>>());
@@ -173,5 +173,104 @@ public class BudgetServiceTests
         Assert.Equal(350, budgetDto.SpentAmount.Amount);
         Assert.Equal(650, budgetDto.RemainingAmount.Amount);
         Assert.Equal(35.0m, budgetDto.PercentageUsed);
+    }
+
+    [Fact]
+    public async Task GetActiveAsync_DoesNotNotify_OnReads()
+    {
+        var userId = Guid.NewGuid();
+        var categoryId = Guid.NewGuid();
+
+        var budget = new Budget("Food Budget", new Money(100),
+            DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1),
+            new CategoryId(categoryId), userId);
+        typeof(Entity).GetProperty(nameof(Entity.Id))?.SetValue(budget, Guid.NewGuid());
+
+        _mockBudgetRepository.Setup(x => x.GetActiveByUserIdAsync(userId, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Budget> { budget });
+
+        _mockTransactionRepository.Setup(x => x.GetTotalByCategoryAsync(
+            userId, new CategoryId(categoryId), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Money(95));
+
+        await _budgetService.GetActiveAsync(userId, DateTime.Today);
+
+        _mockNotificationService.Verify(
+            x => x.PublishAsync(It.IsAny<FinanceApp.Application.Notifications.AppNotification>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task AddSpendingAsync_Notifies_WhenBudgetGoesOverThreshold()
+    {
+        var userId = Guid.NewGuid();
+        var categoryId = Guid.NewGuid();
+        var budgetId = Guid.NewGuid();
+
+        var budget = new Budget("Food Budget", new Money(100),
+            DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1),
+            new CategoryId(categoryId), userId);
+        typeof(Entity).GetProperty(nameof(Entity.Id))?.SetValue(budget, budgetId);
+
+        _mockBudgetRepository.Setup(x => x.GetByIdAsync(budgetId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(budget);
+
+        await _budgetService.AddSpendingAsync(budgetId, new Money(95), userId);
+
+        _mockNotificationService.Verify(
+            x => x.PublishAsync(
+                It.Is<FinanceApp.Application.Notifications.AppNotification>(n =>
+                    n.Id == $"budget-near-{budgetId}" &&
+                    n.Severity == FinanceApp.Application.Notifications.NotificationSeverity.Warning),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task AddSpendingAsync_Notifies_Critical_WhenOverLimit()
+    {
+        var userId = Guid.NewGuid();
+        var categoryId = Guid.NewGuid();
+        var budgetId = Guid.NewGuid();
+
+        var budget = new Budget("Food Budget", new Money(100),
+            DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1),
+            new CategoryId(categoryId), userId);
+        typeof(Entity).GetProperty(nameof(Entity.Id))?.SetValue(budget, budgetId);
+
+        _mockBudgetRepository.Setup(x => x.GetByIdAsync(budgetId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(budget);
+
+        await _budgetService.AddSpendingAsync(budgetId, new Money(140), userId);
+
+        _mockNotificationService.Verify(
+            x => x.PublishAsync(
+                It.Is<FinanceApp.Application.Notifications.AppNotification>(n =>
+                    n.Id == $"budget-over-{budgetId}" &&
+                    n.Severity == FinanceApp.Application.Notifications.NotificationSeverity.Critical),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task AddSpendingAsync_StaysQuiet_BelowThreshold()
+    {
+        var userId = Guid.NewGuid();
+        var categoryId = Guid.NewGuid();
+        var budgetId = Guid.NewGuid();
+
+        var budget = new Budget("Food Budget", new Money(1000),
+            DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1),
+            new CategoryId(categoryId), userId);
+        typeof(Entity).GetProperty(nameof(Entity.Id))?.SetValue(budget, budgetId);
+
+        _mockBudgetRepository.Setup(x => x.GetByIdAsync(budgetId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(budget);
+
+        await _budgetService.AddSpendingAsync(budgetId, new Money(10), userId);
+
+        _mockNotificationService.Verify(
+            x => x.PublishAsync(It.IsAny<FinanceApp.Application.Notifications.AppNotification>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 }
