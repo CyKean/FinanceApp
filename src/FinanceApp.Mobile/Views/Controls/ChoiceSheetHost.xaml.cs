@@ -1,11 +1,18 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls.Shapes;
 
+/// <summary>
+/// Bottom sheet of choices, used for the "Add Transaction" expense/income
+/// prompt. Rows use the same ink badge and Lucide glyph as the rest of the app.
+/// </summary>
 public partial class ChoiceSheetHost : ContentView
 {
+    private const double SlideIn = 60;
+
     private ChoiceSheetService? _choiceSheetService;
     private ChoiceSheetRequest? _active;
 
@@ -30,13 +37,12 @@ public partial class ChoiceSheetHost : ContentView
         _choiceSheetService = null;
     }
 
-    private void OnChoiceRequested(ChoiceSheetRequest request)
-    {
+    private void OnChoiceRequested(ChoiceSheetRequest request) =>
         MainThread.BeginInvokeOnMainThread(() => Show(request));
-    }
 
     private void Show(ChoiceSheetRequest request)
     {
+        // A new prompt supersedes the old one: settle it so its awaiter returns.
         if (_active != null)
         {
             var previous = _active;
@@ -53,45 +59,53 @@ public partial class ChoiceSheetHost : ContentView
         IsVisible = true;
         Scrim.Opacity = 0;
         Card.Opacity = 0;
-        Card.Scale = 0.92;
-        _ = Scrim.FadeToAsync(1, 160);
-        _ = Card.FadeToAsync(1, 160);
-        _ = Card.ScaleToAsync(1, 160);
+        Card.TranslationY = SlideIn;
+
+        _ = Scrim.FadeToAsync(1, PaytinOverlay.ScrimFadeMs, Easing.CubicOut);
+        _ = Card.FadeToAsync(1, PaytinOverlay.CardInMs, Easing.CubicOut);
+        _ = Card.TranslateToAsync(0, 0, PaytinOverlay.CardInMs, Easing.CubicOut);
     }
 
+    /// <summary>Accent, Lucide key and destructive flag for a known option.</summary>
     private static (string Accent, string Glyph, bool Destructive) ResolveOption(string option) =>
         option.Trim().ToLowerInvariant() switch
         {
-            "expense" => ("#DC2626", "\u2212", false),
-            "income" => ("#15803D", "+", false),
-            "edit" => ("#0E6B4F", "\u270F\uFE0F", false),
-            "delete" => ("#DC2626", "\U0001F5D1\uFE0F", true),
-            "activate" => ("#16A34A", "\u2713", false),
-            "deactivate" => ("#D97706", "\u2715", false),
-            "add" => ("#0E6B4F", "+", false),
-            "save" => ("#0E6B4F", "\u2713", false),
-            _ => ("#0E6B4F", "\u2022", false)
+            "expense" => ("#DC2626", "trenddown", false),
+            "income" => ("#CDF463", "trendup", false),
+            "edit" => ("#CDF463", "pencil", false),
+            "delete" => ("#DC2626", "trash", true),
+            "activate" => ("#CDF463", "check", false),
+            "deactivate" => ("#F59E0B", "alert", false),
+            "add" => ("#CDF463", "plus", false),
+            "save" => ("#CDF463", "check", false),
+            _ => ("#CDF463", "dots", false)
         };
 
     private View CreateOptionRow(string option)
     {
         var (accent, glyph, destructive) = ResolveOption(option);
+        var accentColor = PaytinOverlay.Resolve(accent, accent);
 
         var badge = new Border
         {
             WidthRequest = 36,
             HeightRequest = 36,
             StrokeThickness = 0,
-            BackgroundColor = Color.FromArgb(accent),
+            BackgroundColor = accentColor,
             StrokeShape = new Ellipse(),
             VerticalOptions = LayoutOptions.Center
         };
-        badge.Content = new Label
+        badge.Content = new Path
         {
-            Text = glyph,
-            FontSize = 17,
-            FontAttributes = FontAttributes.Bold,
-            TextColor = Colors.White,
+            Aspect = Microsoft.Maui.Controls.Stretch.Uniform,
+            WidthRequest = 18,
+            HeightRequest = 18,
+            Data = PaytinIcons.GetGeometry(glyph),
+            Stroke = IsDarkAccent(accentColor) ? PaytinOverlay.Lime : PaytinOverlay.Ink,
+            StrokeThickness = 2,
+            StrokeLineCap = PenLineCap.Round,
+            StrokeLineJoin = PenLineJoin.Round,
+            Fill = Brush.Transparent,
             HorizontalOptions = LayoutOptions.Center,
             VerticalOptions = LayoutOptions.Center
         };
@@ -101,36 +115,35 @@ public partial class ChoiceSheetHost : ContentView
             Text = option,
             FontSize = 15,
             FontAttributes = FontAttributes.Bold,
-            TextColor = destructive
-                ? Color.FromArgb(accent)
-                : ThemeColor("OnSurface", "OnSurfaceDark"),
+            TextColor = destructive ? accentColor : PaytinOverlay.Ink,
             VerticalOptions = LayoutOptions.Center,
             HorizontalOptions = LayoutOptions.Fill
         };
 
-        var chevron = new Label
+        // Columns must be declared: assigning a column index on a Grid without
+        // ColumnDefinitions silently falls back to the implicit single column
+        // and stacks the children on top of each other.
+        var grid = new Grid
         {
-            Text = "›",
-            FontSize = 20,
-            TextColor = ThemeColor("OnSurfaceVariant", "OnSurfaceVariantDark"),
-            VerticalOptions = LayoutOptions.Center
+            ColumnDefinitions =
+            {
+                new ColumnDefinition(GridLength.Auto),
+                new ColumnDefinition(GridLength.Star)
+            },
+            ColumnSpacing = 12
         };
-
-        var grid = new Grid { ColumnSpacing = 12 };
         grid.Add(badge);
         Grid.SetColumn(label, 1);
         grid.Add(label);
-        Grid.SetColumn(chevron, 2);
-        grid.Add(chevron);
 
         var row = new Border
         {
             HeightRequest = 56,
             Padding = new Thickness(14, 0),
-            Background = ThemeBrush("SurfaceContainerLow", "SurfaceContainerLowDark"),
-            Stroke = ThemeBrush("OutlineVariant", "OutlineVariantDark"),
-            StrokeThickness = 1,
-            StrokeShape = new RoundRectangle { CornerRadius = 16 },
+            Background = Colors.Transparent,
+            Stroke = PaytinOverlay.Ink,
+            StrokeThickness = 1.5,
+            StrokeShape = new RoundRectangle { CornerRadius = 18 },
             Content = grid
         };
 
@@ -141,6 +154,13 @@ public partial class ChoiceSheetHost : ContentView
         });
 
         return row;
+    }
+
+    /// <summary>Lime reads on the dark accents; ink on the lime ones.</summary>
+    private static bool IsDarkAccent(Color color)
+    {
+        var luminance = (0.299 * color.Red + 0.587 * color.Green + 0.114 * color.Blue) / 255d;
+        return luminance < 0.55;
     }
 
     private void OnCancelTapped(object? sender, EventArgs e) => Complete(null);
@@ -158,15 +178,9 @@ public partial class ChoiceSheetHost : ContentView
     private async Task HideAsync()
     {
         await Task.WhenAll(
-            Scrim.FadeToAsync(0, 140),
-            Card.FadeToAsync(0, 140),
-            Card.ScaleToAsync(0.94, 140));
+            Scrim.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
+            Card.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
+            Card.TranslateToAsync(0, SlideIn, PaytinOverlay.CardOutMs, Easing.CubicIn));
         IsVisible = false;
     }
-
-    private static Color ThemeColor(string lightKey, string darkKey) =>
-        ThemeResources.GetColor(lightKey, darkKey);
-
-    private static Brush ThemeBrush(string lightKey, string darkKey) =>
-        ThemeResources.GetBrush(lightKey, darkKey);
 }

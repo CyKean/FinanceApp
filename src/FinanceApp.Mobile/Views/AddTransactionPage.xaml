@@ -79,11 +79,11 @@
             <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Account" Style="{StaticResource FormLabelStyle}" />
-                    <Picker Title="Select Account" 
-                            ItemsSource="{Binding Accounts}" 
-                            ItemDisplayBinding="{Binding Name}"
-                            SelectedItem="{Binding SelectedAccount}"
-                            Style="{StaticResource PickerStyle}" />
+                    <controls:ModernSelect ItemsSource="{Binding Accounts}"
+                                           SelectedItem="{Binding SelectedAccount}"
+                                           Placeholder="Select Account"
+                                           DisplayMemberPath="Name"
+                                           IconMemberPath="Icon" />
                 </VerticalStackLayout>
             </Border>
 
@@ -91,11 +91,11 @@
             <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Category" Style="{StaticResource FormLabelStyle}" />
-                    <Picker Title="Select Category" 
-                            ItemsSource="{Binding Categories}" 
-                            ItemDisplayBinding="{Binding Name}"
-                            SelectedItem="{Binding SelectedCategory}"
-                            Style="{StaticResource PickerStyle}" />
+                    <controls:ModernSelect ItemsSource="{Binding Categories}"
+                                           SelectedItem="{Binding SelectedCategory}"
+                                           Placeholder="Select Category"
+                                           DisplayMemberPath="Name"
+                                           IconMemberPath="Icon" />
                 </VerticalStackLayout>
             </Border>
 

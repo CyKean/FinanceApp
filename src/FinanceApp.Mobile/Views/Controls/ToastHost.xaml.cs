@@ -1,15 +1,17 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui.Dispatching;
 
 /// <summary>
 /// Renders <see cref="ToastService"/> requests as a bottom toast card.
-/// Drop as the last child of any page-level Grid. pointer input passes through.
+/// Drop as the last child of any page-level Grid; pointer input passes through.
 /// </summary>
 public partial class ToastHost : ContentView
 {
+    private const double SlideIn = 24;
+
     private IDispatcherTimer? _hideTimer;
     private ToastService? _toastService;
 
@@ -34,42 +36,53 @@ public partial class ToastHost : ContentView
         _toastService = null;
     }
 
-    private void OnToastRequested(ToastRequest request)
-    {
+    private void OnToastRequested(ToastRequest request) =>
         MainThread.BeginInvokeOnMainThread(() => Show(request));
-    }
 
     private void Show(ToastRequest request)
     {
         _hideTimer?.Stop();
 
-        var (accent, glyph) = request.Kind switch
-        {
-            ToastKind.Error => ("#DC2626", "✕"),
-            ToastKind.Info => ("#0284C7", "i"),
-            _ => ("#16A34A", "✓")
-        };
-
-        IconBadge.BackgroundColor = Color.FromArgb(accent);
-        IconLabel.Text = glyph;
+        var (accent, onAccent, glyph) = PaytinOverlay.ForToast(request.Kind);
+        IconBadge.BackgroundColor = accent;
+        Glyph.Stroke = onAccent;
+        Glyph.Data = PaytinIcons.GetGeometry(glyph);
         MessageLabel.Text = request.Message;
 
         IsVisible = true;
         Opacity = 0;
-        this.FadeTo(1, 150);
+        ToastRow.TranslationY = SlideIn;
+        ToastRow.Scale = 0.96;
+
+        _ = Task.WhenAll(
+            this.FadeToAsync(1, PaytinOverlay.ToastInMs, Easing.CubicOut),
+            ToastRow.TranslateToAsync(0, 0, PaytinOverlay.ToastInMs, Easing.CubicOut),
+            ToastRow.ScaleToAsync(1, PaytinOverlay.ToastInMs, Easing.CubicOut));
 
         _hideTimer = Dispatcher.CreateTimer();
-        _hideTimer.Interval = TimeSpan.FromSeconds(2.6);
+        _hideTimer.Interval = PaytinOverlay.ToastDuration;
         _hideTimer.IsRepeating = false;
-        _hideTimer.Tick += (_, _) =>
-        {
-            _hideTimer?.Stop();
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                await this.FadeTo(0, 200);
-                IsVisible = false;
-            });
-        };
+        _hideTimer.Tick += OnHideTimerTicked;
         _hideTimer.Start();
+    }
+
+    private void OnHideTimerTicked(object? sender, EventArgs e)
+    {
+        _hideTimer?.Stop();
+        _ = HideAsync();
+    }
+
+    private async Task HideAsync()
+    {
+        // Guard against a newer toast having taken over mid-hide.
+        if (!IsVisible)
+            return;
+
+        await Task.WhenAll(
+            this.FadeToAsync(0, PaytinOverlay.ToastOutMs, Easing.CubicIn),
+            ToastRow.TranslateToAsync(0, SlideIn, PaytinOverlay.ToastOutMs, Easing.CubicIn),
+            ToastRow.ScaleToAsync(PaytinOverlay.CardScaleOut, PaytinOverlay.ToastOutMs, Easing.CubicIn));
+
+        IsVisible = false;
     }
 }

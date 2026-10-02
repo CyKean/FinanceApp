@@ -1,13 +1,15 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.Services;
 using Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Full-screen confirmation for a save: a lime tick for success, a red alert for
+/// failure (with a shake), plus a Lucide glyph instead of a text character.
+/// </summary>
 public partial class SuccessOverlayHost : ContentView
 {
-    private const int HoldMs = 800;
-    private const int FailureHoldMs = 950;
-
     private SuccessAnimationService? _successService;
     private SuccessAnimationRequest? _active;
 
@@ -36,6 +38,8 @@ public partial class SuccessOverlayHost : ContentView
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
+            // A second request supersedes the first: settle the old one so its
+            // awaiter is not left hanging.
             var previous = _active;
             _active = request;
             previous?.Completion.TrySetResult(true);
@@ -46,44 +50,50 @@ public partial class SuccessOverlayHost : ContentView
     private async Task PlayAsync(SuccessAnimationRequest request)
     {
         var isFailure = request.Kind == AnimationKind.Failure;
+        var (accent, onAccent, glyph) = PaytinOverlay.ForResult(isFailure);
 
-        Badge.BackgroundColor = isFailure ? Color.FromArgb("#DC2626") : Color.FromArgb("#16A34A");
-        CheckLabel.Text = isFailure ? "✕" : "✓";
+        Badge.BackgroundColor = accent;
+        Glyph.Stroke = onAccent;
+        Glyph.Data = PaytinIcons.GetGeometry(glyph);
         MessageLabel.Text = request.Message;
 
-        Scrim.Opacity = 0;
         Card.Opacity = 0;
-        Card.Scale = 0.65;
+        Card.Scale = PaytinOverlay.CardScaleIn;
         Card.TranslationX = 0;
+        Scrim.Opacity = 0;
         Badge.Opacity = 0;
-        Badge.Scale = 0.3;
-        Badge.Rotation = 0;
-        CheckLabel.Opacity = 0;
-        CheckLabel.Scale = 0.3;
+        Badge.Scale = 0.4;
+        Badge.Rotation = isFailure ? -14 : 0;
+        Glyph.Opacity = 0;
+        Glyph.Scale = 0.4;
         MessageLabel.Opacity = 0;
         IsVisible = true;
 
-        _ = Scrim.FadeToAsync(1, 160);
-        await Task.WhenAll(Card.FadeToAsync(1, 220), Card.ScaleToAsync(1, 320, Easing.SpringOut));
+        _ = Scrim.FadeToAsync(1, PaytinOverlay.ScrimFadeMs, Easing.CubicOut);
         await Task.WhenAll(
-            Badge.FadeToAsync(1, 160),
-            Badge.ScaleToAsync(1, 380, Easing.SpringOut),
-            isFailure ? Badge.RotateToAsync(-12, 320, Easing.SpringOut) : Badge.RotateToAsync(0, 1, Easing.Linear));
-        await Task.WhenAll(CheckLabel.FadeToAsync(1, 180), CheckLabel.ScaleToAsync(1, 320, Easing.SpringOut));
-        _ = MessageLabel.FadeToAsync(1, 200);
+            Card.FadeToAsync(1, PaytinOverlay.CardInMs, Easing.CubicOut),
+            Card.ScaleToAsync(1, PaytinOverlay.SpringMs, Easing.SpringOut));
+        await Task.WhenAll(
+            Badge.FadeToAsync(1, PaytinOverlay.ScrimFadeMs, Easing.CubicOut),
+            Badge.ScaleToAsync(1, PaytinOverlay.SpringMs, Easing.SpringOut));
+        await Task.WhenAll(
+            Glyph.FadeToAsync(1, PaytinOverlay.CardInMs, Easing.CubicOut),
+            Glyph.ScaleToAsync(1, PaytinOverlay.SpringMs, Easing.SpringOut));
+        _ = MessageLabel.FadeToAsync(1, PaytinOverlay.CardInMs, Easing.CubicOut);
 
         if (isFailure)
             await ShakeAsync();
 
-        await Task.Delay(isFailure ? FailureHoldMs : HoldMs);
+        await Task.Delay(isFailure ? PaytinOverlay.FailureHoldDuration : PaytinOverlay.HoldDuration);
 
+        // A newer overlay may have taken over while this one was on screen.
         if (!ReferenceEquals(_active, request))
             return;
 
         await Task.WhenAll(
-            Scrim.FadeToAsync(0, 220),
-            Card.FadeToAsync(0, 220),
-            Card.ScaleToAsync(0.9, 220));
+            Scrim.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
+            Card.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
+            Card.ScaleToAsync(PaytinOverlay.CardScaleOut, PaytinOverlay.CardOutMs, Easing.CubicIn));
 
         IsVisible = false;
         _active = null;
@@ -92,10 +102,10 @@ public partial class SuccessOverlayHost : ContentView
 
     private async Task ShakeAsync()
     {
-        await Card.TranslateToAsync(-16, 0, 70, Easing.CubicOut);
-        await Card.TranslateToAsync(16, 0, 110, Easing.Linear);
-        await Card.TranslateToAsync(-10, 0, 110, Easing.Linear);
-        await Card.TranslateToAsync(10, 0, 110, Easing.Linear);
+        await Card.TranslateToAsync(-14, 0, 70, Easing.CubicOut);
+        await Card.TranslateToAsync(14, 0, 110, Easing.Linear);
+        await Card.TranslateToAsync(-9, 0, 110, Easing.Linear);
+        await Card.TranslateToAsync(9, 0, 110, Easing.Linear);
         await Card.TranslateToAsync(-4, 0, 90, Easing.Linear);
         await Card.TranslateToAsync(0, 0, 90, Easing.CubicIn);
     }

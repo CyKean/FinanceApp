@@ -1,8 +1,13 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.Services;
 using Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Yes/no prompt. Destructive actions get a red badge with a warning glyph;
+/// everything else uses the lime tick, matching the rest of the Paytin theme.
+/// </summary>
 public partial class ConfirmModalHost : ContentView
 {
     private ConfirmModalService? _confirmModalService;
@@ -34,6 +39,7 @@ public partial class ConfirmModalHost : ContentView
 
     private void Show(ConfirmModalRequest request)
     {
+        // A new prompt supersedes the old one: settle it so its awaiter returns.
         if (_active != null)
         {
             var previous = _active;
@@ -48,21 +54,23 @@ public partial class ConfirmModalHost : ContentView
         CancelButton.Text = string.IsNullOrWhiteSpace(request.CancelText) ? "Cancel" : request.CancelText;
         ConfirmButton.Text = string.IsNullOrWhiteSpace(request.ConfirmText) ? "Confirm" : request.ConfirmText;
 
-        var accent = request.IsDestructive ? "#DC2626" : "#0E6B4F";
-        IconBadge.BackgroundColor = Color.FromArgb(accent);
-        IconLabel.Text = request.IsDestructive ? "\U0001F5D1" : "\u2713";
+        var (accent, onAccent, glyph) = PaytinOverlay.ForConfirm(request.IsDestructive);
+        IconBadge.BackgroundColor = accent;
+        Glyph.Stroke = onAccent;
+        Glyph.Data = PaytinIcons.GetGeometry(glyph);
 
-        var style = ResolveStyle(request.IsDestructive ? "DangerButtonStyle" : "PrimaryButtonStyle");
-        if (style != null)
-            ConfirmButton.Style = style;
+        // A destructive confirm has to read as destructive, so it keeps the
+        // Danger style; everything else uses the primary ink button.
+        ConfirmButton.Style = ResolveStyle(request.IsDestructive ? "DangerButtonStyle" : "PrimaryButtonStyle");
 
         IsVisible = true;
         Scrim.Opacity = 0;
         Card.Opacity = 0;
-        Card.Scale = 0.92;
-        _ = Scrim.FadeToAsync(1, 160);
-        _ = Card.FadeToAsync(1, 160);
-        _ = Card.ScaleToAsync(1, 160);
+        Card.Scale = PaytinOverlay.CardScaleIn;
+
+        _ = Scrim.FadeToAsync(1, PaytinOverlay.ScrimFadeMs, Easing.CubicOut);
+        _ = Card.FadeToAsync(1, PaytinOverlay.CardInMs, Easing.CubicOut);
+        _ = Card.ScaleToAsync(1, PaytinOverlay.SpringMs, Easing.SpringOut);
     }
 
     private void OnCancelTapped(object? sender, EventArgs e) => Complete(false);
@@ -82,9 +90,9 @@ public partial class ConfirmModalHost : ContentView
     private async Task HideAsync()
     {
         await Task.WhenAll(
-            Scrim.FadeToAsync(0, 140),
-            Card.FadeToAsync(0, 140),
-            Card.ScaleToAsync(0.94, 140));
+            Scrim.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
+            Card.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
+            Card.ScaleToAsync(PaytinOverlay.CardScaleOut, PaytinOverlay.CardOutMs, Easing.CubicIn));
         IsVisible = false;
     }
 

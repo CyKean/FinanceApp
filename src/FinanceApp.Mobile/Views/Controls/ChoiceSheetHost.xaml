@@ -7,43 +7,46 @@
              VerticalOptions="Fill"
              HorizontalOptions="Fill">
     <Grid>
-        <Grid x:Name="Scrim" BackgroundColor="#A6000000" Opacity="0">
+        <Grid x:Name="Scrim" BackgroundColor="#8C000000" Opacity="0">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnCancelTapped" />
             </Grid.GestureRecognizers>
         </Grid>
 
         <Border x:Name="Card"
-                Background="{AppThemeBinding Light={StaticResource Surface}, Dark={StaticResource SurfaceDark}}"
-                Stroke="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}"
-                StrokeThickness="1"
+                Background="{StaticResource PayCard}"
+                Stroke="{StaticResource PayInk}"
+                StrokeThickness="1.5"
                 Padding="20,18"
                 WidthRequest="320"
-                VerticalOptions="Center"
-                HorizontalOptions="Center"
+                VerticalOptions="End"
+                Margin="16,0,16,24"
                 Opacity="0">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="24" />
+                <RoundRectangle CornerRadius="30,30,0,0" />
             </Border.StrokeShape>
             <Border.Shadow>
-                <Shadow Brush="Black" Opacity="0.28" Radius="24" Offset="0,10" />
+                <Shadow Brush="#161B16" Opacity="0.30" Radius="24" Offset="0,-6" />
             </Border.Shadow>
             <VerticalStackLayout Spacing="14">
                 <VerticalStackLayout Spacing="4">
                     <Label x:Name="TitleLabel"
                            Text="Add Transaction"
-                           Style="{StaticResource TitleLabelStyle}"
-                           HorizontalTextAlignment="Center" />
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{StaticResource PayInk}" />
                     <Label x:Name="SubtitleLabel"
                            Text="Select an option"
                            FontSize="13"
                            HorizontalTextAlignment="Center"
-                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+                           TextColor="{StaticResource PayMuted}" />
                 </VerticalStackLayout>
-                <VerticalStackLayout x:Name="OptionsContainer" Spacing="10" />
+                <VerticalStackLayout x:Name="OptionsContainer" Spacing="8" />
                 <Button x:Name="CancelButton"
                         Text="Cancel"
                         Style="{StaticResource OutlineButtonStyle}"
+                        HeightRequest="48"
                         Clicked="OnCancelTapped" />
             </VerticalStackLayout>
         </Border>

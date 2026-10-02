@@ -144,12 +144,9 @@
                                        BackgroundColor="Transparent"
                                        TextColor="{StaticResource PayInk}"
                                        HeightRequest="44" />
-                                <Picker Title="Account type"
-                                        ItemsSource="{Binding AccountTypes}"
-                                        SelectedItem="{Binding NewAccountType}"
-                                        BackgroundColor="Transparent"
-                                        TextColor="{StaticResource PayInk}"
-                                        HeightRequest="44" />
+                                <controls:ModernSelect ItemsSource="{Binding AccountTypes}"
+                                                       SelectedItem="{Binding NewAccountType}"
+                                                       Placeholder="Account type" />
                                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                                     <Button Text="Add"
                                             Command="{Binding SaveNewAccountCommand}"
