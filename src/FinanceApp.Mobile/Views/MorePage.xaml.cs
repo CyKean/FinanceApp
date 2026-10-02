@@ -1,10 +1,25 @@
 namespace FinanceApp.Mobile.Views;
 
+using FinanceApp.Application.Interfaces;
+using FinanceApp.Mobile.Helpers;
+
 public partial class MorePage : ContentPage
 {
-    public MorePage()
+    private readonly IAuthenticationService _authService;
+
+    public MorePage(IAuthenticationService authService)
     {
         InitializeComponent();
+        _authService = authService;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        var email = await _authService.GetCurrentUserEmailAsync();
+        ProfileName.Text = UserDisplay.NameFromEmail(email);
+        AvatarInitial.Text = UserDisplay.InitialFromEmail(email);
     }
 
     private async void OnGoalsTapped(object? sender, EventArgs e)

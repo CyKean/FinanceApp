@@ -1,60 +1,125 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:enums="clr-namespace:FinanceApp.Domain.Enums;assembly=FinanceApp.Domain"
              x:Class="FinanceApp.Mobile.Views.Controls.FilterBar"
              x:Name="Root">
-    <Border Style="{StaticResource FilterBarStyle}" Padding="16">
-        <VerticalStackLayout Spacing="12">
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="From" Style="{StaticResource CaptionLabelStyle}" />
-                    <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
-                        <DatePicker Date="{Binding StartDate, Source={x:Reference Root}, Mode=TwoWay}"
-                                    Format="MMM dd, yyyy"
-                                    MinimumDate="2020-01-01"
-                                    HeightRequest="46"
-                                    TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+    <VerticalStackLayout Spacing="10">
+
+        <!-- Collapsed summary row: one tap opens the panel. -->
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+            <Border x:Name="TogglePill"
+                    Padding="14,0" HeightRequest="40"
+                    Background="{StaticResource PayCard}"
+                    Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleCommand, Source={x:Reference Root}}" />
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Path x:Name="FilterIcon" Aspect="Uniform" WidthRequest="16" HeightRequest="16"
+                          Stroke="{StaticResource PayInk}" StrokeThickness="2"
+                          StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" />
+                    <Label x:Name="ToggleLabel" Text="Filter" FontSize="13" FontAttributes="Bold"
+                           TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <Label x:Name="SummaryLabel" Grid.Column="1"
+                   Text="{Binding ActiveSummary, Source={x:Reference Root}}"
+                   FontSize="12" TextColor="{StaticResource PayMuted}"
+                   LineBreakMode="TailTruncation"
+                   HorizontalTextAlignment="End" VerticalOptions="Center" />
+
+            <Border x:Name="ClearChip" Grid.Column="2"
+                    Padding="14,0" HeightRequest="40"
+                    Background="{StaticResource PayInk}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                    IsVisible="{Binding HasActiveFilters, Source={x:Reference Root}}">
+                <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ClearCommand, Source={x:Reference Root}}" />
+                </Border.GestureRecognizers>
+                <Label Text="Clear" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayLime}"
+                       HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+        </Grid>
+
+        <!-- Expanded panel. -->
+        <Border Style="{StaticResource FilterBarStyle}"
+                IsVisible="{Binding IsExpanded, Source={x:Reference Root}}">
+            <VerticalStackLayout Spacing="10">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="From" Style="{StaticResource CaptionLabelStyle}" />
+                        <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
+                            <DatePicker Date="{Binding StartDate, Source={x:Reference Root}, Mode=TwoWay}"
+                                        Format="MMM dd, yyyy"
+                                        MinimumDate="2020-01-01"
+                                        HeightRequest="44"
+                                        TextColor="{StaticResource PayInk}" />
+                        </Border>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="To" Style="{StaticResource CaptionLabelStyle}" />
+                        <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
+                            <DatePicker Date="{Binding EndDate, Source={x:Reference Root}, Mode=TwoWay}"
+                                        Format="MMM dd, yyyy"
+                                        MinimumDate="2020-01-01"
+                                        HeightRequest="44"
+                                        TextColor="{StaticResource PayInk}" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Type as a segmented control: shorter than a Picker and it
+                     adds the "All" option the Picker never offered. -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <Border x:Name="TypeAllPill" HeightRequest="38"
+                            Background="Transparent" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnTypeTapped" CommandParameter="all" />
+                        </Border.GestureRecognizers>
+                        <Label x:Name="TypeAllLabel" Text="All" FontSize="13" FontAttributes="Bold"
+                               TextColor="{StaticResource PayMuted}"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="1" Spacing="4">
-                    <Label Text="To" Style="{StaticResource CaptionLabelStyle}" />
-                    <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
-                        <DatePicker Date="{Binding EndDate, Source={x:Reference Root}, Mode=TwoWay}"
-                                    Format="MMM dd, yyyy"
-                                    MinimumDate="2020-01-01"
-                                    HeightRequest="46"
-                                    TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+                    <Border x:Name="TypeIncomePill" Grid.Column="1" HeightRequest="38"
+                            Background="Transparent" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnTypeTapped" CommandParameter="income" />
+                        </Border.GestureRecognizers>
+                        <Label x:Name="TypeIncomeLabel" Text="Income" FontSize="13" FontAttributes="Bold"
+                               TextColor="{StaticResource PayMuted}"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
-                </VerticalStackLayout>
-            </Grid>
-            <VerticalStackLayout Spacing="4">
-                <Label Text="Type" Style="{StaticResource CaptionLabelStyle}" />
-                <Border Style="{StaticResource FieldBorderStyle}" Padding="12,0">
-                    <Picker SelectedItem="{Binding SelectedType, Source={x:Reference Root}, Mode=TwoWay}"
-                            HeightRequest="46"
-                            TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}">
-                        <Picker.ItemsSource>
-                            <x:Array Type="{x:Type enums:TransactionType}">
-                                <enums:TransactionType>Expense</enums:TransactionType>
-                                <enums:TransactionType>Income</enums:TransactionType>
-                            </x:Array>
-                        </Picker.ItemsSource>
-                    </Picker>
-                </Border>
+                    <Border x:Name="TypeExpensePill" Grid.Column="2" HeightRequest="38"
+                            Background="Transparent" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnTypeTapped" CommandParameter="expense" />
+                        </Border.GestureRecognizers>
+                        <Label x:Name="TypeExpenseLabel" Text="Expense" FontSize="13" FontAttributes="Bold"
+                               TextColor="{StaticResource PayMuted}"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Text="Apply"
+                            Command="{Binding ApplyCommand, Source={x:Reference Root}}"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            HeightRequest="44"
+                            TextColor="{StaticResource PayLime}"
+                            HorizontalOptions="Fill" />
+                    <Button Grid.Column="1"
+                            Text="Clear"
+                            Command="{Binding ClearCommand, Source={x:Reference Root}}"
+                            Style="{StaticResource OutlineButtonStyle}"
+                            HeightRequest="44"
+                            HorizontalOptions="Fill" />
+                </Grid>
             </VerticalStackLayout>
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                <Button Text="Apply"
-                        Command="{Binding ApplyCommand, Source={x:Reference Root}}"
-                        Style="{StaticResource PrimaryButtonStyle}"
-                        TextColor="White"
-                        HorizontalOptions="Fill" />
-                <Button Grid.Column="1"
-                        Text="Clear"
-                        Command="{Binding ClearCommand, Source={x:Reference Root}}"
-                        Style="{StaticResource OutlineButtonStyle}"
-                        HorizontalOptions="Fill" />
-            </Grid>
-        </VerticalStackLayout>
-    </Border>
+        </Border>
+    </VerticalStackLayout>
 </ContentView>

@@ -1,14 +1,27 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
 using System.Collections;
+using FinanceApp.Mobile.Helpers;
 using Microsoft.Maui.Controls.Shapes;
 
 /// <summary>
 /// Modern replacement for Picker: a field that expands an inline option list
-/// (avatar + label + checkmark) instead of opening the native dialog.
+/// (badge + label + checkmark) instead of opening the native dialog.
 /// </summary>
 public partial class ModernSelect : ContentView
 {
+    private static readonly Color Ink = Color.FromArgb("#161B16");
+    private static readonly Color Muted = Color.FromArgb("#6F7668");
+    private static readonly Color Selection = Color.FromArgb("#E4EACB");
+
+    /// <summary>Badge fill, matching PaytinIconView's default ink circle.</summary>
+    private const string BadgeBackground = "#161B16";
+
+    /// <summary>Glyph colour on the ink badge.</summary>
+    private static readonly Color OnBadge = Colors.White;
+
+    private const double BadgeSize = 34;
+
     public static readonly BindableProperty ItemsSourceProperty =
         BindableProperty.Create(nameof(ItemsSource), typeof(IList), typeof(ModernSelect), null,
             propertyChanged: (b, _, _) => ((ModernSelect)b)?.Rebuild());
@@ -80,138 +93,173 @@ public partial class ModernSelect : ContentView
 
     private void OnFieldTapped(object? sender, EventArgs e)
     {
-        _isOpen = !_isOpen;
-        DropBorder.IsVisible = _isOpen;
-        ChevronLabel.Text = _isOpen ? "⌃" : "⌄";
+        SetOpen(!_isOpen);
         if (_isOpen)
             Rebuild();
     }
 
+    private void SetOpen(bool open)
+    {
+        _isOpen = open;
+        DropBorder.IsVisible = open;
+        ChevronPath.Rotation = open ? 180 : 0;
+    }
+
     private string? ReadMember(object? item, string? path)
     {
-        if (item == null || string.IsNullOrEmpty(path))
+        if (item is null || string.IsNullOrEmpty(path))
             return null;
+
         return item.GetType().GetProperty(path)?.GetValue(item)?.ToString();
     }
 
     private string GetDisplayText(object? item)
     {
-        if (item == null)
+        if (item is null)
             return Placeholder;
+
         return ReadMember(item, DisplayMemberPath) ?? item.ToString() ?? Placeholder;
     }
 
+    /// <summary>
+    /// Maps an item to a Lucide key. The stored value is usually an emoji, so it
+    /// goes through <see cref="PaytinIcons.Resolve"/>, which maps known emoji and
+    /// otherwise matches the item's name.
+    /// </summary>
+    private string ResolveIconKey(object? item, string? name) =>
+        PaytinIcons.Resolve(item is null ? null : ReadMember(item, IconMemberPath), name);
+
+    /// <summary>
+    /// Builds a Lucide stroke glyph. <paramref name="directKey"/> bypasses
+    /// <see cref="ResolveIconKey"/> for fixed glyphs such as the selection check.
+    /// </summary>
+    private Path CreateIconGlyph(object? item, string? name, double size, string? directKey = null, Color? stroke = null) => new()
+    {
+        Aspect = Microsoft.Maui.Controls.Stretch.Uniform,
+        WidthRequest = size,
+        HeightRequest = size,
+        Data = PaytinIcons.GetGeometry(directKey ?? ResolveIconKey(item, name)),
+        Stroke = stroke ?? OnBadge,
+        StrokeThickness = 1.9,
+        StrokeLineCap = PenLineCap.Round,
+        StrokeLineJoin = PenLineJoin.Round,
+        Fill = Brush.Transparent,
+        HorizontalOptions = LayoutOptions.Center,
+        VerticalOptions = LayoutOptions.Center
+    };
+
     private void Rebuild()
     {
-        if (DisplayLabel == null || OptionsContainer == null || DropBorder == null)
+        if (DisplayLabel is null || OptionsContainer is null || DropBorder is null)
             return;
 
         var selected = SelectedItem;
+
         DisplayLabel.Text = GetDisplayText(selected);
-        DisplayLabel.TextColor = selected == null
-            ? ThemeResources.GetColor("OnSurfaceVariant", "OnSurfaceVariantDark")
-            : ThemeResources.GetColor("OnSurface", "OnSurfaceDark");
+        DisplayLabel.TextColor = selected is null ? Muted : Ink;
+
+        // Mirror the selected option's badge in the closed field so the choice
+        // is identifiable without expanding the list.
+        var hasIcon = !string.IsNullOrEmpty(IconMemberPath);
+        var showBadge = hasIcon && selected is not null;
+
+        FieldBadge.IsVisible = showBadge;
+        if (showBadge)
+            FieldBadgeGlyph.Data = PaytinIcons.GetGeometry(ResolveIconKey(selected, GetDisplayText(selected)));
 
         OptionsContainer.Children.Clear();
+
         var items = ItemsSource;
-        if (items == null || items.Count == 0)
+        if (items is null || items.Count == 0)
         {
             OptionsContainer.Children.Add(new Label
             {
                 Text = "No options yet",
                 FontSize = 13,
-                TextColor = ThemeResources.GetColor("OnSurfaceVariant", "OnSurfaceVariantDark"),
-                Margin = new Thickness(12, 8)
+                TextColor = Muted,
+                Margin = new Thickness(12, 10)
             });
             return;
         }
 
-        var hasIcon = !string.IsNullOrEmpty(IconMemberPath);
         foreach (var item in items)
+            OptionsContainer.Children.Add(CreateOptionRow(item, selected));
+    }
+
+    private View CreateOptionRow(object item, object? selected)
+    {
+        var captured = item;
+        var isSelected = Equals(item, selected);
+        var hasIcon = !string.IsNullOrEmpty(IconMemberPath);
+
+        // The columns must exist: assigning a column index on a Grid with no
+        // ColumnDefinitions silently falls back to column 0, which stacks the
+        // badge, label and checkmark on top of each other.
+        var content = new Grid
         {
-            var captured = item;
-            var isSelected = Equals(item, selected);
-            var content = new Grid { ColumnSpacing = 12 };
-            var column = 0;
-
-            if (hasIcon)
+            ColumnDefinitions =
             {
-                var badge = new Border
-                {
-                    WidthRequest = 36,
-                    HeightRequest = 36,
-                    StrokeThickness = 0,
-                    StrokeShape = new Ellipse(),
-                    VerticalOptions = LayoutOptions.Center
-                };
-                var colorHex = ReadMember(item, ColorMemberPath);
-                try
-                {
-                    badge.BackgroundColor = !string.IsNullOrEmpty(colorHex)
-                        ? Color.FromArgb(colorHex)
-                        : ThemeResources.GetColor("SurfaceContainerHighest", "SurfaceContainerHighestDark");
-                }
-                catch
-                {
-                    badge.BackgroundColor = ThemeResources.GetColor("SurfaceContainerHighest", "SurfaceContainerHighestDark");
-                }
-                badge.Content = new Label
-                {
-                    Text = ReadMember(item, IconMemberPath) ?? "•",
-                    FontSize = 16,
-                    HorizontalOptions = LayoutOptions.Center,
-                    VerticalOptions = LayoutOptions.Center
-                };
-                Grid.SetColumn(badge, 0);
-                content.Children.Add(badge);
-                column = 1;
-            }
+                new ColumnDefinition(GridLength.Auto),
+                new ColumnDefinition(GridLength.Star),
+                new ColumnDefinition(GridLength.Auto)
+            },
+            ColumnSpacing = 12
+        };
 
-            var label = new Label
-            {
-                Text = GetDisplayText(item),
-                FontSize = 15,
-                TextColor = ThemeResources.GetColor("OnSurface", "OnSurfaceDark"),
-                VerticalOptions = LayoutOptions.Center,
-                LineBreakMode = LineBreakMode.TailTruncation
-            };
-            Grid.SetColumn(label, column);
-            content.Children.Add(label);
+        var badgeColumn = 0;
 
-            var check = new Label
+        if (hasIcon)
+        {
+            content.Children.Add(new Border
             {
-                Text = "✓",
-                FontSize = 16,
-                FontAttributes = FontAttributes.Bold,
-                TextColor = ThemeResources.GetColor("Primary", "PrimaryLight"),
-                VerticalOptions = LayoutOptions.Center,
-                IsVisible = isSelected
-            };
-            Grid.SetColumn(check, column + 1);
-            content.Children.Add(check);
-
-            var row = new Border
-            {
-                Padding = new Thickness(10, 9),
+                WidthRequest = BadgeSize,
+                HeightRequest = BadgeSize,
                 StrokeThickness = 0,
-                StrokeShape = new RoundRectangle { CornerRadius = 12 },
-                Background = isSelected
-                    ? ThemeResources.GetBrush("PrimaryContainer", "PrimaryContainerDark")
-                    : Brush.Transparent,
-                Content = content
-            };
-
-            row.GestureRecognizers.Add(new TapGestureRecognizer
-            {
-                Command = new Command(() =>
-                {
-                    SelectedItem = captured;
-                    _isOpen = false;
-                    DropBorder.IsVisible = false;
-                    ChevronLabel.Text = "⌄";
-                })
+                BackgroundColor = Color.FromArgb(BadgeBackground),
+                StrokeShape = new Ellipse(),
+                VerticalOptions = LayoutOptions.Center,
+                Content = CreateIconGlyph(item, GetDisplayText(item), 18)
             });
-            OptionsContainer.Children.Add(row);
+            badgeColumn = 1;
         }
+
+        var label = new Label
+        {
+            Text = GetDisplayText(item),
+            FontSize = 15,
+            FontAttributes = isSelected ? FontAttributes.Bold : FontAttributes.None,
+            TextColor = Ink,
+            VerticalOptions = LayoutOptions.Center,
+            LineBreakMode = LineBreakMode.TailTruncation
+        };
+        Grid.SetColumn(label, badgeColumn);
+        content.Children.Add(label);
+
+        // Reserve the trailing column even when nothing is selected, so labels
+        // do not shift as the selection changes.
+        var check = CreateIconGlyph(null, null, 16, directKey: "check");
+        Grid.SetColumn(check, badgeColumn + 1);
+        check.IsVisible = isSelected;
+        content.Children.Add(check);
+
+        var row = new Border
+        {
+            Padding = new Thickness(10, 8),
+            StrokeThickness = 0,
+            StrokeShape = new RoundRectangle { CornerRadius = 14 },
+            Background = isSelected ? Selection : Brush.Transparent,
+            Content = content
+        };
+
+        row.GestureRecognizers.Add(new TapGestureRecognizer
+        {
+            Command = new Command(() =>
+            {
+                SelectedItem = captured;
+                SetOpen(false);
+            })
+        });
+
+        return row;
     }
 }

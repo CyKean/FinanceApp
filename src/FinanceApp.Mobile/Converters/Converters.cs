@@ -62,6 +62,53 @@ public class TransactionTypeToColorConverter : IValueConverter
     }
 }
 
+/// <summary>
+/// Maps a <see cref="FinanceApp.Domain.Enums.TransactionType"/> onto the Paytin
+/// palette: Income is lime, Expense is ink. ConverterParameter selects the tone:
+/// "accent" (default) for the fill, "onAccent" for text/icon colour on that fill.
+/// </summary>
+public class TransactionTypeToPayColorConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        var isIncome = value is FinanceApp.Domain.Enums.TransactionType.Income;
+        var onAccent = string.Equals(parameter as string, "onAccent", StringComparison.OrdinalIgnoreCase);
+
+        var key = (isIncome, onAccent) switch
+        {
+            (true, false) => "PayLime",
+            (true, true) => "PayInk",
+            (false, false) => "PayInk",
+            _ => "PayLime"
+        };
+
+        return ResolveColor(key);
+    }
+
+    private static Color ResolveColor(string key)
+    {
+        var resources = Application.Current?.Resources;
+        if (resources is not null)
+        {
+            if (resources.TryGetValue(key, out var direct) && direct is Color directColor)
+                return directColor;
+
+            foreach (var dictionary in resources.MergedDictionaries)
+            {
+                if (dictionary.TryGetValue(key, out var merged) && merged is Color mergedColor)
+                    return mergedColor;
+            }
+        }
+
+        return key == "PayLime" ? Color.FromArgb("#CDF463") : Color.FromArgb("#161B16");
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
 public class TransactionTypeToButtonStyleConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)

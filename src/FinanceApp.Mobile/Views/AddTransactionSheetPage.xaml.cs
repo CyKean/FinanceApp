@@ -6,8 +6,16 @@ using FinanceApp.Mobile.ViewModels;
 [QueryProperty(nameof(TransactionTypeParam), "type")]
 public partial class AddTransactionSheetPage : ContentPage
 {
+    /// <summary>Resting offset for the sheet while it is off-screen.</summary>
+    private const double OffscreenTranslation = 900;
+
+    private const uint EnterMs = 300;
+    private const uint EnterFadeMs = 220;
+    private const uint ExitMs = 220;
+
     private readonly AddTransactionViewModel _viewModel;
     private TransactionType? _initializedType;
+    private bool _isDismissing;
 
     public string TransactionTypeParam { get; set; } = nameof(TransactionType.Expense);
 
@@ -15,8 +23,11 @@ public partial class AddTransactionSheetPage : ContentPage
     {
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
-        _viewModel.OnSavedCallback = () => Shell.Current.GoToAsync("//Dashboard");
-        _viewModel.OnCancelledCallback = () => Shell.Current.GoToAsync("//Dashboard");
+
+        // The sheet animates itself away before leaving, so navigation is
+        // funnelled through DismissAsync instead of popping directly.
+        _viewModel.OnSavedCallback = DismissAsync;
+        _viewModel.OnCancelledCallback = DismissAsync;
     }
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
@@ -28,9 +39,49 @@ public partial class AddTransactionSheetPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+
+        // Shell reuses the page instance, so reset before animating in again.
+        _isDismissing = false;
+
         // Re-applies the mode for reused page instances where the query
         // may arrive without a fresh navigation event.
         await EnsureInitializedAsync();
+        await PlayEnterAsync();
+    }
+
+    private async Task PlayEnterAsync()
+    {
+        if (_isDismissing)
+            return;
+
+        // Reset first: the sheet may still hold the previous exit transform.
+        Sheet.TranslationY = OffscreenTranslation;
+        Scrim.Opacity = 0;
+
+        await Task.WhenAll(
+            Sheet.TranslateToAsync(0, 0, EnterMs, Easing.CubicOut),
+            Scrim.FadeToAsync(1, EnterFadeMs));
+    }
+
+    private async Task DismissAsync()
+    {
+        if (_isDismissing)
+            return;
+
+        _isDismissing = true;
+
+        await Task.WhenAll(
+            Sheet.TranslateToAsync(0, OffscreenTranslation, ExitMs, Easing.CubicIn),
+            Scrim.FadeToAsync(0, ExitMs));
+
+        try
+        {
+            await Shell.Current.GoToAsync("//Dashboard");
+        }
+        catch
+        {
+            // Route unavailable — the sheet is already off-screen.
+        }
     }
 
     private async Task EnsureInitializedAsync()
@@ -48,14 +99,11 @@ public partial class AddTransactionSheetPage : ContentPage
                 return;
 
             _initializedType = type;
-            System.Diagnostics.Debug.WriteLine($"[SHEET] Initializing {type}");
             await _viewModel.InitializeAsync(type);
-            System.Diagnostics.Debug.WriteLine("[SHEET] Initialized OK");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"[SHEET-FAIL] {ex}");
-            await DisplayAlert("Error", $"Could not load the form: {ex.Message}", "OK");
+            await DisplayAlert("Error", "Could not load the form. Please try again.", "OK");
             await Shell.Current.GoToAsync("//Dashboard");
         }
     }

@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
              xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
-             x:Class="FinanceApp.Mobile.Views.AddTransactionSheetPage"
+             x:Class="FinanceApp.Mobile.Views.Controls.TransactionSheetHost"
+             x:Name="Root"
              x:DataType="viewmodels:AddTransactionViewModel"
-             Title="{Binding Title}"
-             Shell.NavBarIsVisible="False"
-             BackgroundColor="Transparent">
+             IsVisible="False"
+             InputTransparent="False"
+             HorizontalOptions="Fill"
+             VerticalOptions="Fill">
 
-    <ContentPage.Resources>
+    <ContentView.Resources>
         <ResourceDictionary>
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
             <converters:TransactionTypeToPayColorConverter x:Key="TypeAccent" />
         </ResourceDictionary>
-    </ContentPage.Resources>
+    </ContentView.Resources>
 
-    <Grid RowDefinitions="*,Auto" BackgroundColor="Transparent">
+    <Grid RowDefinitions="*,Auto">
 
-        <!-- Scrim: tap to cancel -->
-        <Border x:Name="Scrim" Grid.Row="0" Grid.RowSpan="2"
-                BackgroundColor="#99000000" Opacity="0" InputTransparent="False">
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding CancelCommand}" />
-            </Border.GestureRecognizers>
-        </Border>
+        <!-- Lighter scrim so the page underneath stays readable. -->
+        <Grid x:Name="Scrim" Grid.Row="0" Grid.RowSpan="2" BackgroundColor="#4D000000" Opacity="0">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnCancelTapped" />
+            </Grid.GestureRecognizers>
+        </Grid>
 
-        <!-- Bottom sheet: TranslationY is the animation offset, set in code-behind -->
-        <Border x:Name="Sheet" Grid.Row="1" TranslationY="900"
+        <Border x:Name="Sheet" Grid.Row="1"
                 Background="{StaticResource PayCard}"
                 Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
                 Padding="18,10,18,20">
@@ -39,16 +39,17 @@
                 <Shadow Brush="#161B16" Opacity="0.30" Radius="24" Offset="0,-6" />
             </Border.Shadow>
 
-            <ScrollView MaximumHeightRequest="600">
+            <!-- MaximumHeightRequest is assigned in code from the host height
+                 so the sheet always fits the page, whatever the screen size. -->
+            <ScrollView x:Name="FormScroll">
                 <VerticalStackLayout Spacing="12">
 
-                    <!-- Drag handle -->
                     <Border WidthRequest="44" HeightRequest="5" Background="#C8CDB4" StrokeThickness="0"
                             HorizontalOptions="Center">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                     </Border>
 
-                    <!-- Header: title + close -->
+                    <!-- Header -->
                     <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
                         <VerticalStackLayout Spacing="0" VerticalOptions="Center">
                             <Label Text="{Binding Title}" FontSize="20" FontAttributes="Bold"
@@ -59,19 +60,19 @@
                                 Background="Transparent" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
                             <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding CancelCommand}" />
+                                <TapGestureRecognizer Tapped="OnCancelTapped" />
                             </Border.GestureRecognizers>
                             <Label Text="✕" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}"
                                    HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                     </Grid>
 
-                    <!-- Mode banner: lime for income, ink for expense (mirrors the dashboard cards) -->
+                    <!-- Mode banner: lime for income, ink for expense -->
                     <Border Padding="16,12"
                             Background="{Binding TransactionType, Converter={StaticResource TypeAccent}}"
                             Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><RoundRectangle CornerRadius="22" /></Border.StrokeShape>
-<Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                             <Border WidthRequest="10" HeightRequest="10" VerticalOptions="Center"
                                     Background="{Binding TransactionType, Converter={StaticResource TypeAccent}, ConverterParameter=onAccent}}"
                                     StrokeThickness="0">
@@ -237,11 +238,5 @@
                 </VerticalStackLayout>
             </ScrollView>
         </Border>
-
-        <!-- Toasts -->
-        <controls:ToastHost />
-
-        <!-- Create / edit animation -->
-        <controls:SuccessOverlayHost />
     </Grid>
-</ContentPage>
+</ContentView>

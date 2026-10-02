@@ -5,34 +5,51 @@
              x:Name="Root">
     <VerticalStackLayout Spacing="0" VerticalOptions="Start">
         <!-- Closed field -->
-        <Border Style="{StaticResource FieldBorderStyle}" HeightRequest="52">
+        <Border x:Name="FieldBorder" Style="{StaticResource FieldBorderStyle}" HeightRequest="52">
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnFieldTapped" />
             </Border.GestureRecognizers>
-            <Grid ColumnDefinitions="*,Auto"
+            <Grid ColumnDefinitions="Auto,*,Auto"
                   ColumnSpacing="10"
-                  Padding="2,0"
+                  Padding="14,0"
                   VerticalOptions="Center">
+                <Border x:Name="FieldBadge" WidthRequest="30" HeightRequest="30"
+                        Background="{StaticResource PayInk}"
+                        StrokeThickness="0" VerticalOptions="Center">
+                    <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                    <Path x:Name="FieldBadgeGlyph"
+                          Aspect="Uniform"
+                          WidthRequest="17" HeightRequest="17"
+                          Stroke="{StaticResource PayWhite}" StrokeThickness="1.9"
+                          StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent"
+                          HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
                 <Label x:Name="DisplayLabel"
+                       Grid.Column="1"
                        FontSize="15"
                        LineBreakMode="TailTruncation"
                        VerticalOptions="Center" />
-                <Label x:Name="ChevronLabel"
-                       Grid.Column="1"
-                       Text="⌄"
-                       FontSize="18"
-                       VerticalOptions="Center"
-                       TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+                <Path x:Name="ChevronPath" Grid.Column="2"
+                      Aspect="Uniform" WidthRequest="16" HeightRequest="16"
+                      Data="M 5 8 L 11 14 L 17 8"
+                      Stroke="{StaticResource PayInk}" StrokeThickness="2"
+                      StrokeLineCap="Round" StrokeLineJoin="Round"
+                      Fill="Transparent" VerticalOptions="Center" />
             </Grid>
         </Border>
 
         <!-- Expanded options -->
         <Border x:Name="DropBorder"
                 IsVisible="False"
-                Style="{StaticResource CardFrameStyle}"
+                Background="{StaticResource PayCard}"
+                Stroke="{StaticResource PayInk}"
+                StrokeThickness="1.5"
                 Padding="6"
                 Margin="0,6,0,0">
-            <ScrollView MaximumHeightRequest="280">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="22" />
+            </Border.StrokeShape>
+            <ScrollView MaximumHeightRequest="240">
                 <VerticalStackLayout x:Name="OptionsContainer" Spacing="2" />
             </ScrollView>
         </Border>

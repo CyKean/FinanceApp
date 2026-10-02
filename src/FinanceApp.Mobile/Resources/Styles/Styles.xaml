@@ -346,10 +346,11 @@
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="100" />
+                <!-- Not a full pill: a 100 radius clipped the field captions. -->
+                <RoundRectangle CornerRadius="24" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Padding" Value="12"/>
+        <Setter Property="Padding" Value="14"/>
     </Style>
 
     <Style TargetType="Border" x:Key="BudgetCardFrameStyle">

@@ -4,6 +4,7 @@ using FinanceApp.Application.DTOs;
 using FinanceApp.Application.Interfaces;
 using FinanceApp.Domain.Enums;
 using FinanceApp.Domain.ValueObjects;
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -15,6 +16,7 @@ public partial class DashboardViewModel : BaseViewModel
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
     private readonly TransactionSheetRequest _sheetRequest;
+    private readonly TransactionSheetService _transactionSheetService;
     private readonly DevDataSeeder _devDataSeeder;
     private readonly ILogger<DashboardViewModel> _logger;
 
@@ -48,11 +50,18 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty]
     private IReadOnlyList<FinancialGoalDto> _activeGoals = Array.Empty<FinancialGoalDto>();
 
+    [ObservableProperty]
+    private string _userName = UserDisplay.FallbackName;
+
+    [ObservableProperty]
+    private string _userInitial = UserDisplay.FallbackInitial;
+
     public DashboardViewModel(
         IDashboardService dashboardService,
         IAuthenticationService authService,
         INavigationService navigationService,
         TransactionSheetRequest sheetRequest,
+        TransactionSheetService transactionSheetService,
         DevDataSeeder devDataSeeder,
         ILogger<DashboardViewModel> logger)
     {
@@ -60,6 +69,7 @@ public partial class DashboardViewModel : BaseViewModel
         _authService = authService;
         _navigationService = navigationService;
         _sheetRequest = sheetRequest;
+        _transactionSheetService = transactionSheetService;
         _devDataSeeder = devDataSeeder;
         _logger = logger;
         Title = "Dashboard";
@@ -75,6 +85,10 @@ public partial class DashboardViewModel : BaseViewModel
 
         try
         {
+            var email = await _authService.GetCurrentUserEmailAsync();
+            UserName = UserDisplay.NameFromEmail(email);
+            UserInitial = UserDisplay.InitialFromEmail(email);
+
             var userId = await _authService.GetCurrentUserIdAsync();
             if (!userId.HasValue)
             {
@@ -114,17 +128,19 @@ public partial class DashboardViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task NavigateToAddExpenseAsync()
-    {
-        _sheetRequest.Request(TransactionType.Expense);
-        await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Expense");
-    }
+    private Task NavigateToAddExpenseAsync() => OpenSheetAsync(TransactionType.Expense);
 
     [RelayCommand]
-    private async Task NavigateToAddIncomeAsync()
+    private Task NavigateToAddIncomeAsync() => OpenSheetAsync(TransactionType.Income);
+
+    /// <summary>
+    /// Shows the form as an overlay on this page instead of pushing the
+    /// AddTransactionSheet route, so the dashboard stays visible behind it.
+    /// </summary>
+    private Task OpenSheetAsync(TransactionType type)
     {
-        _sheetRequest.Request(TransactionType.Income);
-        await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Income");
+        _transactionSheetService.Show(type);
+        return Task.CompletedTask;
     }
 
     [RelayCommand]

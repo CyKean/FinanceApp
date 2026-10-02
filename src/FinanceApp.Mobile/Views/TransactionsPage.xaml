@@ -51,6 +51,7 @@
                         <controls:FilterBar StartDate="{Binding Filter.StartDate, Mode=TwoWay}"
                                             EndDate="{Binding Filter.EndDate, Mode=TwoWay}"
                                             SelectedType="{Binding Filter.Type, Mode=TwoWay}"
+                                            IsExpanded="{Binding IsFilterExpanded, Mode=TwoWay}"
                                             ApplyCommand="{Binding ApplyFilterCommand}"
                                             ClearCommand="{Binding ClearFilterCommand}" />
 
@@ -134,6 +135,8 @@
         </RefreshView>
 
         <controls:PaytinTabBar VerticalOptions="End" ActiveTab="Transactions" />
+
+        <controls:TransactionSheetHost />
 
         <controls:ToastHost />
         <controls:ChoiceSheetHost />

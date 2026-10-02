@@ -17,6 +17,7 @@ public partial class TransactionsViewModel : BaseViewModel
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
     private readonly TransactionSheetRequest _sheetRequest;
+    private readonly TransactionSheetService _transactionSheetService;
     private readonly IDialogService _dialogService;
     private readonly ILogger<TransactionsViewModel> _logger;
 
@@ -32,6 +33,10 @@ public partial class TransactionsViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isLoadingMore;
 
+    /// <summary>False keeps the filter panel collapsed to a single summary row.</summary>
+    [ObservableProperty]
+    private bool _isFilterExpanded;
+
     public Func<object, Task>? AnimateDeleteAsync { get; set; }
 
     private int _currentPage = 1;
@@ -44,6 +49,7 @@ public partial class TransactionsViewModel : BaseViewModel
         IAuthenticationService authService,
           INavigationService navigationService,
           TransactionSheetRequest sheetRequest,
+          TransactionSheetService transactionSheetService,
           IDialogService dialogService,
           ILogger<TransactionsViewModel> logger)
     {
@@ -53,6 +59,7 @@ public partial class TransactionsViewModel : BaseViewModel
         _authService = authService;
           _navigationService = navigationService;
           _sheetRequest = sheetRequest;
+          _transactionSheetService = transactionSheetService;
           _dialogService = dialogService;
         _logger = logger;
         Title = "Transactions";
@@ -115,31 +122,29 @@ public partial class TransactionsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task AddExpenseAsync()
-    {
-        await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Expense");
-    }
+    private Task AddExpenseAsync() => OpenSheetAsync(TransactionType.Expense);
 
     [RelayCommand]
-    private async Task AddIncomeAsync()
-    {
-        await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Income");
-    }
+    private Task AddIncomeAsync() => OpenSheetAsync(TransactionType.Income);
 
     [RelayCommand]
     private async Task AddTransactionAsync()
     {
-          var choice = await _dialogService.ShowChoiceSheetAsync("Add Transaction", "Expense", "Income");
-          if (choice == "Expense")
-          {
-              _sheetRequest.Request(TransactionType.Expense);
-              await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Expense");
-          }
-          else if (choice == "Income")
-          {
-              _sheetRequest.Request(TransactionType.Income);
-              await _navigationService.NavigateToAsync("//AddTransactionSheet?type=Income");
-          }
+        var choice = await _dialogService.ShowChoiceSheetAsync("Add Transaction", "Expense", "Income");
+        if (choice == "Expense")
+            _transactionSheetService.Show(TransactionType.Expense);
+        else if (choice == "Income")
+            _transactionSheetService.Show(TransactionType.Income);
+    }
+
+    /// <summary>
+    /// Shows the form as an overlay on this page instead of pushing the
+    /// AddTransactionSheet route, so the list stays visible behind it.
+    /// </summary>
+    private Task OpenSheetAsync(TransactionType type)
+    {
+        _transactionSheetService.Show(type);
+        return Task.CompletedTask;
     }
 
     [RelayCommand]
@@ -192,6 +197,7 @@ public partial class TransactionsViewModel : BaseViewModel
     [RelayCommand]
     private async Task ApplyFilterAsync()
     {
+        IsFilterExpanded = false;
         await LoadAsync();
     }
 
@@ -199,6 +205,7 @@ public partial class TransactionsViewModel : BaseViewModel
     private async Task ClearFilterAsync()
     {
         Filter = new TransactionFilterDto();
+        IsFilterExpanded = false;
         await LoadAsync();
     }
 

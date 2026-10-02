@@ -13,10 +13,10 @@
                 <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
                     <Border WidthRequest="48" HeightRequest="48" Background="#D9C6A5" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                        <Label Text="W" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label x:Name="AvatarInitial" Text="G" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <VerticalStackLayout Grid.Column="1" Margin="10,0" VerticalOptions="Center">
-                        <Label Text="William Current" FontSize="12" TextColor="#6F7668" />
+                        <Label x:Name="ProfileName" Text="Guest" FontSize="12" TextColor="#6F7668" LineBreakMode="TailTruncation" />
                         <Label Text="More" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                     </VerticalStackLayout>
                     <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">

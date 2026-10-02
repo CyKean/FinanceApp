@@ -15,6 +15,7 @@
              <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
              <converters:ColorConverter x:Key="ColorConverter" />
              <converters:TransactionTypeToColorConverter x:Key="TransactionTypeToColorConverter" />
+            <converters:TransactionTypeToPayColorConverter x:Key="TransactionTypeToPayColorConverter" />
              <converters:TransactionTypeToButtonStyleConverter x:Key="TransactionTypeToButtonStyleConverter" />
              <converters:CategoryTabStyleConverter x:Key="CategoryTabStyleConverter" />
              <converters:CategoryTabVisibilityConverter x:Key="CategoryTabVisibilityConverter" />

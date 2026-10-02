@@ -28,10 +28,10 @@
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
                         <Border Grid.Column="0" WidthRequest="48" HeightRequest="48" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Background="#D9C6A5" VerticalOptions="Center">
                             <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                            <Label Text="W" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="{Binding UserInitial}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                            <Label Text="William Current" FontSize="12" TextColor="#6F7668" />
+                            <Label Text="{Binding UserName}" FontSize="12" TextColor="#6F7668" LineBreakMode="TailTruncation" />
                             <Label Text="Welcome Back" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
                         </VerticalStackLayout>
                         <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" VerticalOptions="Center">
@@ -67,7 +67,7 @@
                                         </HorizontalStackLayout>
                                         <Label Text="**** **** ****  7281" FontSize="13" FontAttributes="Bold" TextColor="White" Opacity="0.9" CharacterSpacing="1" Margin="0,10,0,0" />
                                         <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,0">
-                                            <Label Grid.Column="0" Text="William Current" FontSize="11" TextColor="White" Opacity="0.65" VerticalOptions="Center" />
+                                            <Label Grid.Column="0" Text="{Binding UserName}" FontSize="11" TextColor="White" Opacity="0.65" LineBreakMode="TailTruncation" VerticalOptions="Center" />
                                             <Label Grid.Column="1" Text="Exp 07/26" FontSize="11" TextColor="{StaticResource PayLime}" Opacity="0.9" VerticalOptions="Center" />
                                         </Grid>
                                     </VerticalStackLayout>
@@ -261,6 +261,8 @@
 
         <!-- Paytin tab bar (floating) -->
         <controls:PaytinTabBar VerticalOptions="End" ActiveTab="Dashboard" />
+
+        <controls:TransactionSheetHost />
 
         <controls:ToastHost />
     </Grid>
