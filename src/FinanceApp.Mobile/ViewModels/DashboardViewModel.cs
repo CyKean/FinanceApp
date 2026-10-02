@@ -18,7 +18,11 @@ public partial class DashboardViewModel : BaseViewModel
     private readonly TransactionSheetRequest _sheetRequest;
     private readonly TransactionSheetService _transactionSheetService;
     private readonly DevDataSeeder _devDataSeeder;
+    private readonly NotificationCenter _notificationCenter;
     private readonly ILogger<DashboardViewModel> _logger;
+
+    [ObservableProperty]
+    private int _unreadNotifications;
 
     [ObservableProperty]
     private DashboardDto? _dashboard;
@@ -189,6 +193,12 @@ public partial class DashboardViewModel : BaseViewModel
     private async Task NavigateToSettingsAsync()
     {
         await _navigationService.NavigateToAsync("//Settings");
+    }
+
+    [RelayCommand]
+    private async Task NavigateToNotificationsAsync()
+    {
+        await _navigationService.NavigateToAsync("Notifications");
     }
 
     [RelayCommand]

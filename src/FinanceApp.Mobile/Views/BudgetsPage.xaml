@@ -67,14 +67,14 @@
             <Border Background="{StaticResource PayInk}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="16,12">
                 <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenSuggestionsCommand}" /></Border.GestureRecognizers>
-                <HorizontalStackLayout Spacing="10">
-                    <controls:PaytinIconView IconKey="bulb" Size="40" Light="True" VerticalOptions="Center" />
-                    <VerticalStackLayout Spacing="0" VerticalOptions="Center" HorizontalOptions="Fill">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <controls:PaytinIconView Grid.Column="0" IconKey="bulb" Size="40" Light="True" VerticalOptions="Center" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center" HorizontalOptions="Fill">
                         <Label Text="AI budget suggestions" FontSize="14" FontAttributes="Bold" TextColor="White" />
                         <Label Text="Smarter limits from your spending" FontSize="11" TextColor="White" Opacity="0.7" />
                     </VerticalStackLayout>
-                    <Label Text="›" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource PayLime}" VerticalOptions="Center" />
-                </HorizontalStackLayout>
+                    <Label Grid.Column="2" Text="›" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource PayLime}" VerticalOptions="Center" />
+                </Grid>
             </Border>
 
             <CollectionView ItemsSource="{Binding Budgets}" SelectionMode="None">

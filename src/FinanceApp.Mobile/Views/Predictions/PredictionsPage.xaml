@@ -200,21 +200,19 @@
                 <!-- Smart Insights -->
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding Insights.Count, Converter={StaticResource NullToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="💡 Smart Insights" Style="{StaticResource SectionHeaderStyle}" />
+                        <Label Text="Smart Insights" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
                         <CollectionView ItemsSource="{Binding Insights}" HeightRequest="250">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
                                     <Border Style="{StaticResource InsightCardFrameStyle}" Margin="0,4">
                                         <VerticalStackLayout Spacing="8">
                                             <HorizontalStackLayout Spacing="12">
-                                                <Label Text="{Binding Severity, Converter={StaticResource InsightSeverityToIconConverter}}" FontSize="20" VerticalOptions="Center" />
+                                                <controls:PaytinIconView IconKey="{Binding Severity, Converter={StaticResource InsightSeverityToIconConverter}}"
+                                                                        Size="38" VerticalOptions="Center" />
                                                 <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                                     <Label Text="{Binding Title}" Style="{StaticResource InsightTitleLabelStyle}" />
                                                     <Label Text="{Binding Message}" Style="{StaticResource InsightMessageLabelStyle}" />
                                                 </VerticalStackLayout>
-                                                <Label Text="{Binding Severity, Converter={StaticResource InsightSeverityToColorConverter}}" 
-                                                       Style="{StaticResource InsightSeverityBadgeStyle}"
-                                                       TextColor="White" />
                                             </HorizontalStackLayout>
                                         </VerticalStackLayout>
                                     </Border>
@@ -227,7 +225,7 @@
                 <!-- Anomalies -->
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding Anomalies.Count, Converter={StaticResource NullToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="⚠ Unusual Spending" Style="{StaticResource SectionHeaderStyle}" />
+                        <Label Text="Unusual Spending" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
                         <CollectionView ItemsSource="{Binding Anomalies}" HeightRequest="250">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>

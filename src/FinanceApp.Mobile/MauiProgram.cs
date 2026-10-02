@@ -137,10 +137,12 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
         builder.Services.AddTransient<PredictionsViewModel>();
+        builder.Services.AddTransient<CalendarViewModel>();
         builder.Services.AddTransient<AnalyticsViewModel>();
         builder.Services.AddTransient<ChatViewModel>();
         builder.Services.AddTransient<BudgetSuggestionsViewModel>();
         builder.Services.AddTransient<AiSettingsViewModel>();
+        builder.Services.AddTransient<NotificationsViewModel>();
 
         // Pages
         builder.Services.AddSingleton<AppShell>();
@@ -165,6 +167,10 @@ public static class MauiProgram
         builder.Services.AddTransient<ChatPage>();
         builder.Services.AddTransient<BudgetSuggestionsPage>();
         builder.Services.AddTransient<AiSettingsPage>();
+        builder.Services.AddTransient<NotificationsPage>();
+
+        // App-wide notification feed state (singleton so every bell shares it)
+        builder.Services.AddSingleton<NotificationCenter>();
 
         // Routing
         Routing.RegisterRoute("Dashboard", typeof(DashboardPage));
@@ -191,6 +197,7 @@ public static class MauiProgram
         Routing.RegisterRoute("Chat", typeof(ChatPage));
         Routing.RegisterRoute("BudgetSuggestions", typeof(BudgetSuggestionsPage));
         Routing.RegisterRoute("AiSettings", typeof(AiSettingsPage));
+        Routing.RegisterRoute("Notifications", typeof(NotificationsPage));
 
 #if DEBUG
         builder.Logging.AddDebug();

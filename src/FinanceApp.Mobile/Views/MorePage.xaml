@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
@@ -21,6 +21,7 @@
                     </VerticalStackLayout>
                     <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnNotificationsTapped" /></Border.GestureRecognizers>
                         <controls:PaytinIconView IconKey="bell" ShowBadge="False" Light="True" Size="22" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </Grid>
@@ -41,85 +42,85 @@
                 <Border Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="8">
                     <Border.StrokeShape><RoundRectangle CornerRadius="28" /></Border.StrokeShape>
                     <VerticalStackLayout Spacing="0">
-                        <HorizontalStackLayout Spacing="14" Padding="10,12">
-                            <controls:PaytinIconView IconKey="target" Size="46" Light="True" VerticalOptions="Center" />
-                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
+                            <controls:PaytinIconView Grid.Column="0" IconKey="target" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                 <Label Text="Goals" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                                 <Label Text="Track your savings targets" FontSize="12" TextColor="#6F7668" />
                             </VerticalStackLayout>
-                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
-                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnGoalsTapped" /></HorizontalStackLayout.GestureRecognizers>
-                        </HorizontalStackLayout>
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnGoalsTapped" /></Grid.GestureRecognizers>
+                        </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
-                        <HorizontalStackLayout Spacing="14" Padding="10,12">
-                            <controls:PaytinIconView IconKey="grid" Size="46" Light="True" VerticalOptions="Center" />
-                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
+                            <controls:PaytinIconView Grid.Column="0" IconKey="grid" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                 <Label Text="Categories" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                                 <Label Text="Organize expenses and income" FontSize="12" TextColor="#6F7668" />
                             </VerticalStackLayout>
-                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
-                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnCategoriesTapped" /></HorizontalStackLayout.GestureRecognizers>
-                        </HorizontalStackLayout>
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnCategoriesTapped" /></Grid.GestureRecognizers>
+                        </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
-                        <HorizontalStackLayout Spacing="14" Padding="10,12">
-                            <controls:PaytinIconView IconKey="chart" Size="46" VerticalOptions="Center" />
-                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
+                            <controls:PaytinIconView Grid.Column="0" IconKey="chart" Size="46" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                 <Label Text="Analytics" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                                 <Label Text="Charts and spending insights" FontSize="12" TextColor="#6F7668" />
                             </VerticalStackLayout>
-                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
-                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnAnalyticsTapped" /></HorizontalStackLayout.GestureRecognizers>
-                        </HorizontalStackLayout>
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnAnalyticsTapped" /></Grid.GestureRecognizers>
+                        </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
-                        <HorizontalStackLayout Spacing="14" Padding="10,12">
-                            <controls:PaytinIconView IconKey="bot" Size="46" Light="True" VerticalOptions="Center" />
-                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
+                            <controls:PaytinIconView Grid.Column="0" IconKey="bot" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                 <Label Text="AI Assistant" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                                 <Label Text="Chat about your money" FontSize="12" TextColor="#6F7668" />
                             </VerticalStackLayout>
-                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
-                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnChatTapped" /></HorizontalStackLayout.GestureRecognizers>
-                        </HorizontalStackLayout>
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnChatTapped" /></Grid.GestureRecognizers>
+                        </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
-                        <HorizontalStackLayout Spacing="14" Padding="10,12">
-                            <controls:PaytinIconView IconKey="bulb" Size="46" Light="True" VerticalOptions="Center" />
-                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
+                            <controls:PaytinIconView Grid.Column="0" IconKey="bulb" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                 <Label Text="Budget Ideas" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                                 <Label Text="AI suggestions for smarter budgets" FontSize="12" TextColor="#6F7668" />
                             </VerticalStackLayout>
-                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
-                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnBudgetSuggestionsTapped" /></HorizontalStackLayout.GestureRecognizers>
-                        </HorizontalStackLayout>
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnBudgetSuggestionsTapped" /></Grid.GestureRecognizers>
+                        </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
-                        <HorizontalStackLayout Spacing="14" Padding="10,12">
-                            <controls:PaytinIconView IconKey="calendar" Size="46" Light="True" VerticalOptions="Center" />
-                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
+                            <controls:PaytinIconView Grid.Column="0" IconKey="calendar" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                 <Label Text="Calendar" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                                 <Label Text="Money day by day" FontSize="12" TextColor="#6F7668" />
                             </VerticalStackLayout>
-                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
-                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnCalendarTapped" /></HorizontalStackLayout.GestureRecognizers>
-                        </HorizontalStackLayout>
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnCalendarTapped" /></Grid.GestureRecognizers>
+                        </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
-                        <HorizontalStackLayout Spacing="14" Padding="10,12">
-                            <controls:PaytinIconView IconKey="forecast" Size="46" VerticalOptions="Center" />
-                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
+                            <controls:PaytinIconView Grid.Column="0" IconKey="forecast" Size="46" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                 <Label Text="Forecasts" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                                 <Label Text="Predictions and smart insights" FontSize="12" TextColor="#6F7668" />
                             </VerticalStackLayout>
-                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
-                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnPredictionsTapped" /></HorizontalStackLayout.GestureRecognizers>
-                        </HorizontalStackLayout>
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnPredictionsTapped" /></Grid.GestureRecognizers>
+                        </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
-                        <HorizontalStackLayout Spacing="14" Padding="10,12">
-                            <controls:PaytinIconView IconKey="settings" Size="46" Light="True" VerticalOptions="Center" />
-                            <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
+                            <controls:PaytinIconView Grid.Column="0" IconKey="settings" Size="46" Light="True" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                 <Label Text="Profile &amp; Settings" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                                 <Label Text="Account, sync and preferences" FontSize="12" TextColor="#6F7668" />
                             </VerticalStackLayout>
-                            <Label Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
-                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnProfileTapped" /></HorizontalStackLayout.GestureRecognizers>
-                        </HorizontalStackLayout>
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                            <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnProfileTapped" /></Grid.GestureRecognizers>
+                        </Grid>
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>

@@ -17,6 +17,7 @@
             <converters:PercentageToColorConverter x:Key="PercentageColorConverter" />
             <converters:TransactionTypeToColorConverter x:Key="TransactionTypeColorConverter" />
             <converters:CategoryInitialConverter x:Key="InitialConverter" />
+            <converters:CountToBoolConverter x:Key="CountToBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -36,10 +37,16 @@
                         </VerticalStackLayout>
                         <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" VerticalOptions="Center">
                             <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToSettingsCommand}" /></Border.GestureRecognizers>
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToNotificationsCommand}" /></Border.GestureRecognizers>
                             <Grid>
                                 <controls:PaytinIconView IconKey="bell" ShowBadge="False" Light="True" Size="24" HorizontalOptions="Center" VerticalOptions="Center" />
-                                <Label Text="●" FontSize="10" TextColor="#E5484D" HorizontalOptions="End" VerticalOptions="Start" Margin="0,9,9,0" />
+                                <Border WidthRequest="20" HeightRequest="20" Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.2"
+                                        HorizontalOptions="End" VerticalOptions="Start" Margin="0,8,8,0"
+                                        IsVisible="{Binding UnreadNotifications, Converter={StaticResource CountToBoolConverter}}">
+                                    <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                    <Label Text="{Binding UnreadNotifications}" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource PayInk}"
+                                           HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Border>
                             </Grid>
                         </Border>
                     </Grid>

@@ -94,14 +94,14 @@
                 <Border Background="{StaticResource PayInk}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="16">
                     <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnAiAssistantTapped" /></Border.GestureRecognizers>
-                    <HorizontalStackLayout Spacing="12">
-                        <controls:PaytinIconView IconKey="bot" Size="46" Light="True" VerticalOptions="Center" />
-                        <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <controls:PaytinIconView Grid.Column="0" IconKey="bot" Size="46" Light="True" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                             <Label Text="AI Assistant" FontSize="15" FontAttributes="Bold" TextColor="White" />
                             <Label Text="Chat &amp; budget ideas · API key" FontSize="12" TextColor="White" Opacity="0.7" />
                         </VerticalStackLayout>
-                        <Label Text="›" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PayLime}" VerticalOptions="Center" />
-                    </HorizontalStackLayout>
+                        <Label Grid.Column="2" Text="›" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PayLime}" VerticalOptions="Center" />
+                    </Grid>
                 </Border>
 
                 <Border Style="{StaticResource CardFrameStyle}">

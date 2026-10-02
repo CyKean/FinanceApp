@@ -284,6 +284,25 @@ public class CountToBoolConverter : IValueConverter
     }
 }
 
+public class SeverityToLightConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        if (value is FinanceApp.Mobile.Helpers.NotificationSeverity severity)
+        {
+            // Info / Success read better on a lime badge; warnings stay ink.
+            return severity is FinanceApp.Mobile.Helpers.NotificationSeverity.Info
+                or FinanceApp.Mobile.Helpers.NotificationSeverity.Success;
+        }
+        return false;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
+
 public class ColorConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -556,15 +575,16 @@ public class InsightSeverityToIconConverter : IValueConverter
     {
         if (value is FinanceApp.Application.DTOs.InsightSeverity severity)
         {
+            // Lucide keys rendered by PaytinIconView (no emoji).
             return severity switch
             {
-                FinanceApp.Application.DTOs.InsightSeverity.Info => "ℹ️",
-                FinanceApp.Application.DTOs.InsightSeverity.Warning => "⚠️",
-                FinanceApp.Application.DTOs.InsightSeverity.Critical => "🔴",
-                _ => "ℹ️"
+                FinanceApp.Application.DTOs.InsightSeverity.Info => "bulb",
+                FinanceApp.Application.DTOs.InsightSeverity.Warning => "alert",
+                FinanceApp.Application.DTOs.InsightSeverity.Critical => "alertCircle",
+                _ => "bulb"
             };
         }
-        return "ℹ️";
+        return "bulb";
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)

@@ -72,6 +72,19 @@ public partial class CalendarViewModel : BaseViewModel
             var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
             Events = await _dashboardService.GetCalendarEventsAsync(userId.Value, startOfMonth, endOfMonth, cancellationToken: default);
+
+            // Preselect today (or keep the current selection) so the day list is never empty by surprise.
+            var target = SelectedDate ?? DateTime.Today;
+            if (target.Year == startOfMonth.Year && target.Month == startOfMonth.Month)
+            {
+                SelectedDate = target;
+                SelectedDayEvents = Events.Where(e => e.Date.Date == target.Date).ToList();
+            }
+            else
+            {
+                SelectedDate = null;
+                SelectedDayEvents = Array.Empty<CalendarEventDto>();
+            }
         }
         catch (Exception ex)
         {
@@ -113,6 +126,7 @@ public partial class CalendarViewModel : BaseViewModel
     {
         SelectedDate = date;
         SelectedDayEvents = Events.Where(e => e.Date.Date == date.Date).ToList();
+        await Task.CompletedTask;
     }
 
     [RelayCommand]

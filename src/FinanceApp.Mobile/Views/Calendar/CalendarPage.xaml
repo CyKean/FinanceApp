@@ -16,6 +16,7 @@
             <converters:TransactionTypeToColorConverter x:Key="TransactionTypeColorConverter" />
             <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:CountToBoolConverter x:Key="CountToBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -43,24 +44,24 @@
             <!-- Month Header -->
             <Border Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="8">
                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                    <Border WidthRequest="42" HeightRequest="42" Background="{StaticResource PayCream}" Stroke="{StaticResource PayInk}" StrokeThickness="1.2" VerticalOptions="Center">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                    <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" Background="{StaticResource PayCream}" Stroke="{StaticResource PayInk}" StrokeThickness="1.2" VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding PreviousMonthCommand}" /></Border.GestureRecognizers>
                         <Label Text="←" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
-                    <Label Text="{Binding SelectedMonth, StringFormat='{0:MMMM yyyy}'}" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" HorizontalOptions="Fill" HorizontalTextAlignment="Center" />
-                    <Border Background="{StaticResource PayCream}" Stroke="{StaticResource PayInk}" StrokeThickness="1.2" Padding="12,8" VerticalOptions="Center">
+                    <Label Grid.Column="1" Text="{Binding SelectedMonth, StringFormat='{0:MMMM yyyy}'}" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" HorizontalTextAlignment="Center" />
+                    <Border Grid.Column="2" Background="{StaticResource PayCream}" Stroke="{StaticResource PayInk}" StrokeThickness="1.2" Padding="12,8" VerticalOptions="Center">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding CurrentMonthCommand}" /></Border.GestureRecognizers>
                         <Label Text="Today" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                     </Border>
-                    <Border WidthRequest="42" HeightRequest="42" Background="{StaticResource PayInk}" StrokeThickness="0" VerticalOptions="Center">
+                    <Border Grid.Column="3" WidthRequest="42" HeightRequest="42" Background="{StaticResource PayInk}" StrokeThickness="0" VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NextMonthCommand}" /></Border.GestureRecognizers>
                         <Label Text="→" FontAttributes="Bold" TextColor="{StaticResource PayLime}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
-                </HorizontalStackLayout>
+                </Grid>
             </Border>
 
             <!-- Calendar Grid -->
@@ -85,29 +86,44 @@
             </Border>
 
             <!-- Selected Day Events -->
-            <Border Style="{StaticResource CardFrameStyle}" IsVisible="{Binding SelectedDayEvents.Count, Converter={StaticResource NullToBoolConverter}}">
+            <Border Style="{StaticResource CardFrameStyle}"
+                    IsVisible="{Binding SelectedDayEvents.Count, Converter={StaticResource CountToBoolConverter}}">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="{Binding SelectedDate, StringFormat='{0:MMMM dd, yyyy}'}" Style="{StaticResource SectionHeaderStyle}" />
-                    
-                    <CollectionView ItemsSource="{Binding SelectedDayEvents}" SelectionMode="None">
-                        <CollectionView.ItemTemplate>
+                    <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="{Binding SelectedDate, StringFormat='{0:MMMM dd, yyyy}'}" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                        <Border Grid.Column="1" Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="12,7">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                            <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnAddForDayTapped" /></Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Label Text="+" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="Add" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedDayEvents}" Spacing="0">
+                        <BindableLayout.ItemTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource TransactionItemFrameStyle}" Margin="0,4">
-                                    <HorizontalStackLayout Spacing="12">
-                                        <controls:PaytinIconView Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="40" VerticalOptions="Center" />
-                                        <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                            <Label Text="{Binding CategoryName}" Style="{StaticResource TransactionNameLabelStyle}" />
-                                            <Label Text="{Binding Notes}" Style="{StaticResource TransactionNotesLabelStyle}" 
+                                <Border Background="{StaticResource PayCard}" Stroke="#D3D9BE" StrokeThickness="1" Padding="12" Margin="0,4">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="20" /></Border.StrokeShape>
+                                    <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnEditEventTapped" /></Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <controls:PaytinIconView Grid.Column="0" Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="40" VerticalOptions="Center" />
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                                            <Label Text="{Binding CategoryName}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                            <Label Text="{Binding Notes}" FontSize="12" TextColor="#6F7668" LineBreakMode="WordWrap"
                                                    IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
                                         </VerticalStackLayout>
-                                        <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" 
-                                               Style="{StaticResource TransactionAmountLabelStyle}"
-                                               TextColor="{Binding Type, Converter={StaticResource TransactionTypeColorConverter}}" />
-                                    </HorizontalStackLayout>
+                                        <Label Grid.Column="2" Text="{Binding Amount, Converter={StaticResource MoneyConverter}}"
+                                               FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}"
+                                               VerticalOptions="Center" />
+                                    </Grid>
                                 </Border>
                             </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <Label Text="Tap an entry to edit it in Transactions." FontSize="11" TextColor="#9AA393" />
                 </VerticalStackLayout>
             </Border>
 
