@@ -24,7 +24,7 @@
     <!-- BUTTON STYLES — pill, Paytin -->
     <!-- ============================================ -->
 
-    <Style TargetType="Button">
+    <Style TargetType="Button" x:Key="BaseButtonStyle">
         <Setter Property="TextColor" Value="White" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
         <Setter Property="FontFamily" Value="SpaceGrotesk"/>
@@ -63,19 +63,21 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Button" x:Key="PrimaryButtonStyle" BasedOn="{StaticResource Button}">
+    <Style TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}" />
+
+    <Style TargetType="Button" x:Key="PrimaryButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
         <Setter Property="HeightRequest" Value="56"/>
         <Setter Property="FontSize" Value="16"/>
     </Style>
 
-    <Style TargetType="Button" x:Key="SecondaryButtonStyle" BasedOn="{StaticResource Button}">
+    <Style TargetType="Button" x:Key="SecondaryButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
         <Setter Property="TextColor" Value="{StaticResource PayInk}" />
         <Setter Property="BackgroundColor" Value="{StaticResource PayLime}" />
         <Setter Property="BorderColor" Value="{StaticResource PayInk}" />
         <Setter Property="HeightRequest" Value="52"/>
     </Style>
 
-    <Style TargetType="Button" x:Key="OutlineButtonStyle" BasedOn="{StaticResource Button}">
+    <Style TargetType="Button" x:Key="OutlineButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayCream}}" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
         <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineDark}}" />
@@ -83,7 +85,7 @@
         <Setter Property="HeightRequest" Value="52"/>
     </Style>
 
-    <Style TargetType="Button" x:Key="TextButtonStyle" BasedOn="{StaticResource Button}">
+    <Style TargetType="Button" x:Key="TextButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="BorderColor" Value="Transparent" />
@@ -92,14 +94,14 @@
         <Setter Property="HeightRequest" Value="36"/>
     </Style>
 
-    <Style TargetType="Button" x:Key="DangerButtonStyle" BasedOn="{StaticResource Button}">
+    <Style TargetType="Button" x:Key="DangerButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
         <Setter Property="TextColor" Value="White" />
         <Setter Property="BackgroundColor" Value="{StaticResource Error}" />
         <Setter Property="BorderColor" Value="{StaticResource Error}" />
         <Setter Property="HeightRequest" Value="52"/>
     </Style>
 
-    <Style TargetType="Button" x:Key="IconButtonStyle" BasedOn="{StaticResource Button}">
+    <Style TargetType="Button" x:Key="IconButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayCream}}" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
         <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineDark}}" />
@@ -112,14 +114,16 @@
     <!-- LABEL STYLES -->
     <!-- ============================================ -->
 
-    <Style TargetType="Label">
+    <Style TargetType="Label" x:Key="BaseLabelStyle">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="14" />
     </Style>
 
-    <Style TargetType="Label" x:Key="Headline" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" BasedOn="{StaticResource BaseLabelStyle}" />
+
+    <Style TargetType="Label" x:Key="Headline" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGroteskBold" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayCream}}" />
         <Setter Property="FontSize" Value="32" />
@@ -128,7 +132,7 @@
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
 
-    <Style TargetType="Label" x:Key="SubHeadline" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="SubHeadline" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
         <Setter Property="FontSize" Value="24" />
@@ -137,7 +141,7 @@
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
 
-    <Style TargetType="Label" x:Key="AppTitleStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="AppTitleStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGroteskBold" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
         <Setter Property="FontSize" Value="36" />
@@ -145,26 +149,26 @@
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
 
-    <Style TargetType="Label" x:Key="AppSubtitleStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="AppSubtitleStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
         <Setter Property="FontSize" Value="16" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
 
-    <Style TargetType="Label" x:Key="CaptionLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="CaptionLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="FormLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="FormLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
         <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
-    <Style TargetType="Label" x:Key="SectionHeaderStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="SectionHeaderStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="FontAttributes" Value="Bold"/>
@@ -172,21 +176,21 @@
         <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
-    <Style TargetType="Label" x:Key="BalanceLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="BalanceLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGroteskBold" />
         <Setter Property="FontSize" Value="28" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="AmountLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="AmountLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="UserEmailLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="UserEmailLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
@@ -468,10 +472,6 @@
         <Setter Property="Padding" Value="12"/>
     </Style>
 
-    <Style TargetType="Label" x:Key="BudgetNameLabelStyle" BasedOn="{StaticResource CategoryNameLabelStyle}"/>
-
-    <Style TargetType="Label" x:Key="GoalPercentLabelStyle" BasedOn="{StaticResource BudgetPercentLabelStyle}"/>
-
     <!-- Modern input container: wrap an Entry in this Border -->
     <Style TargetType="Border" x:Key="FieldBorderStyle">
         <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerLowestDark}}" />
@@ -493,26 +493,26 @@
     </Style>
 
     <!-- Modern type scale -->
-    <Style TargetType="Label" x:Key="DisplayLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="DisplayLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGroteskBold" />
         <Setter Property="FontSize" Value="34" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="TitleLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TitleLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="BodyLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="BodyLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="MutedLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="MutedLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
@@ -521,39 +521,39 @@
     <!-- LABEL STYLES - TRANSACTION RELATED -->
     <!-- ============================================ -->
 
-    <Style TargetType="Label" x:Key="TransactionNameLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TransactionNameLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="15" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="TransactionNotesLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TransactionNotesLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="TransactionDateLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TransactionDateLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="TransactionAmountLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TransactionAmountLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="TransactionAccountLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TransactionAccountLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="TransactionSeparatorLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TransactionSeparatorLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="SyncStatusLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="SyncStatusLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
@@ -562,24 +562,24 @@
     <!-- LABEL STYLES - CATEGORY RELATED -->
     <!-- ============================================ -->
 
-    <Style TargetType="Label" x:Key="CategoryNameLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="CategoryNameLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="15" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="CategoryAmountLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="CategoryAmountLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="CategoryPercentLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="CategoryPercentLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="InactiveLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="InactiveLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="TextColor" Value="{StaticResource Warning}" />
         <Setter Property="FontAttributes" Value="Bold"/>
@@ -591,34 +591,38 @@
 
     <Style TargetType="Label" x:Key="BudgetCategoryNameLabelStyle" BasedOn="{StaticResource CategoryNameLabelStyle}"/>
 
-    <Style TargetType="Label" x:Key="BudgetPercentageLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="BudgetPercentageLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
 
-    <Style TargetType="Label" x:Key="BudgetDetailCaptionStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="BudgetDetailCaptionStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="BudgetDetailValueStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="BudgetDetailValueStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="BudgetSpentLabelStyle" BasedOn="{StaticResource BudgetDetailValueStyle}"/>
-    <Style TargetType="Label" x:Key="BudgetOfLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="BudgetOfLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
         <Setter Property="VerticalOptions" Value="Center"/>
     </Style>
     <Style TargetType="Label" x:Key="BudgetTotalLabelStyle" BasedOn="{StaticResource BudgetDetailValueStyle}"/>
     <Style TargetType="Label" x:Key="BudgetPercentLabelStyle" BasedOn="{StaticResource BudgetPercentageLabelStyle}"/>
-    <Style TargetType="Label" x:Key="OverBudgetLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="OverBudgetLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
+
+    <Style TargetType="Label" x:Key="BudgetNameLabelStyle" BasedOn="{StaticResource CategoryNameLabelStyle}"/>
+
+    <Style TargetType="Label" x:Key="GoalPercentLabelStyle" BasedOn="{StaticResource BudgetPercentLabelStyle}"/>
 
     <!-- ============================================ -->
     <!-- LABEL STYLES - GOAL RELATED -->
@@ -626,28 +630,28 @@
 
     <Style TargetType="Label" x:Key="GoalNameLabelStyle" BasedOn="{StaticResource CategoryNameLabelStyle}"/>
 
-    <Style TargetType="Label" x:Key="GoalPercentageLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="GoalPercentageLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
 
     <Style TargetType="Label" x:Key="GoalCurrentLabelStyle" BasedOn="{StaticResource BudgetDetailValueStyle}"/>
-    <Style TargetType="Label" x:Key="GoalOfLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="GoalOfLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
         <Setter Property="VerticalOptions" Value="Center"/>
     </Style>
     <Style TargetType="Label" x:Key="GoalTargetLabelStyle" BasedOn="{StaticResource BudgetDetailValueStyle}"/>
-    <Style TargetType="Label" x:Key="GoalDaysLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="GoalDaysLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{StaticResource Warning}" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
-    <Style TargetType="Label" x:Key="GoalMonthlyLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="GoalMonthlyLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
-    <Style TargetType="Label" x:Key="GoalStatusLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="GoalStatusLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
@@ -656,19 +660,19 @@
     <!-- LABEL STYLES - ACCOUNT RELATED -->
     <!-- ============================================ -->
 
-    <Style TargetType="Label" x:Key="AccountNameLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="AccountNameLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="AccountTypeLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="AccountTypeLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
 
-    <Style TargetType="Label" x:Key="AccountBalanceLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="AccountBalanceLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
@@ -678,44 +682,44 @@
     <!-- LABEL STYLES - ANALYTICS / TREND RELATED -->
     <!-- ============================================ -->
 
-    <Style TargetType="Label" x:Key="TrendMonthLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TrendMonthLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="TrendCaptionLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TrendCaptionLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="TrendValueLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TrendValueLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
 
-    <Style TargetType="Label" x:Key="TrendIconStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TrendIconStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
 
-    <Style TargetType="Label" x:Key="TrendPercentLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="TrendPercentLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
 
-    <Style TargetType="Label" x:Key="InsightTitleLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="InsightTitleLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="InsightMessageLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="InsightMessageLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="InsightSeverityBadgeStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="InsightSeverityBadgeStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
@@ -723,18 +727,18 @@
         <Setter Property="Padding" Value="8,4"/>
     </Style>
 
-    <Style TargetType="Label" x:Key="AnomalyCategoryLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="AnomalyCategoryLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="15" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="AnomalyMessageLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="AnomalyMessageLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="AnomalyDeviationLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="AnomalyDeviationLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
@@ -747,23 +751,23 @@
     <!-- ============================================ -->
 
     <Style TargetType="Label" x:Key="SyncDetailCaptionStyle" BasedOn="{StaticResource BudgetDetailCaptionStyle}"/>
-    <Style TargetType="Label" x:Key="SyncDetailValueStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="SyncDetailValueStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="SyncErrorLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="SyncErrorLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{StaticResource Error}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="InfoLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="InfoLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="InfoValueLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="InfoValueLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
@@ -773,7 +777,7 @@
     <!-- LABEL STYLES - EMPTY STATE -->
     <!-- ============================================ -->
 
-    <Style TargetType="Label" x:Key="EmptyStateLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="EmptyStateLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="18" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
@@ -781,20 +785,20 @@
         <Setter Property="Margin" Value="0,8" />
     </Style>
 
-    <Style TargetType="Label" x:Key="EmptyStateSubLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="EmptyStateSubLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="Margin" Value="0,4" />
     </Style>
 
-    <Style TargetType="Label" x:Key="MonthLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="MonthLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="18" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
     </Style>
 
-    <Style TargetType="Label" x:Key="CalendarDayHeaderStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="CalendarDayHeaderStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
@@ -803,7 +807,7 @@
         <Setter Property="Margin" Value="2" />
     </Style>
 
-    <Style TargetType="Label" x:Key="ForgotPasswordLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="ForgotPasswordLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
         <Setter Property="FontAttributes" Value="Bold"/>
@@ -811,7 +815,7 @@
         <Setter Property="Margin" Value="0,4,0,0" />
     </Style>
 
-    <Style TargetType="Label" x:Key="ErrorLabelStyle" BasedOn="{StaticResource Label}">
+    <Style TargetType="Label" x:Key="ErrorLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{StaticResource Error}" />
         <Setter Property="HorizontalOptions" Value="Fill"/>
@@ -823,7 +827,12 @@
     <!-- ENTRY STYLE -->
     <!-- ============================================ -->
 
-    <Style TargetType="Entry" x:Key="EntryStyle" BasedOn="{StaticResource Entry}">
+    <Style TargetType="Entry" x:Key="BaseEntryStyle">
+        <Setter Property="FontSize" Value="16"/>
+    </Style>
+    <Style TargetType="Entry" BasedOn="{StaticResource BaseEntryStyle}" />
+
+    <Style TargetType="Entry" x:Key="EntryStyle" BasedOn="{StaticResource BaseEntryStyle}">
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="HeightRequest" Value="52"/>
@@ -840,7 +849,12 @@
     <!-- EDITOR STYLE -->
     <!-- ============================================ -->
 
-    <Style TargetType="Editor" x:Key="EditorStyle" BasedOn="{StaticResource Editor}">
+    <Style TargetType="Editor" x:Key="BaseEditorStyle">
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+    <Style TargetType="Editor" BasedOn="{StaticResource BaseEditorStyle}" />
+
+    <Style TargetType="Editor" x:Key="EditorStyle" BasedOn="{StaticResource BaseEditorStyle}">
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="HeightRequest" Value="100"/>
@@ -850,7 +864,12 @@
     <!-- PICKER STYLE -->
     <!-- ============================================ -->
 
-    <Style TargetType="Picker" x:Key="PickerStyle" BasedOn="{StaticResource Picker}">
+    <Style TargetType="Picker" x:Key="BasePickerStyle">
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+    <Style TargetType="Picker" BasedOn="{StaticResource BasePickerStyle}" />
+
+    <Style TargetType="Picker" x:Key="PickerStyle" BasedOn="{StaticResource BasePickerStyle}">
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="HeightRequest" Value="52"/>
@@ -864,7 +883,7 @@
     <!-- SWIPE ITEM STYLE -->
     <!-- ============================================ -->
 
-    <Style TargetType="SwipeItem" BasedOn="{StaticResource SwipeItem}">
+    <Style TargetType="SwipeItem">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource SurfaceContainerHighDark}}" />
     </Style>
 
@@ -872,7 +891,7 @@
     <!-- SEARCH BAR STYLE -->
     <!-- ============================================ -->
 
-    <Style TargetType="SearchBar" BasedOn="{StaticResource SearchBar}">
+    <Style TargetType="SearchBar">
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="HeightRequest" Value="48"/>
     </Style>

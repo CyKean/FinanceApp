@@ -73,14 +73,16 @@
                             <VerticalStackLayout Spacing="2" HorizontalOptions="Fill">
                                 <Label Text="Confidence" FontSize="12" FontAttributes="Bold" TextColor="White" Opacity="0.7" />
                                 <Border Background="{Binding ExpensePrediction.Confidence, Converter={StaticResource PredictionConfidenceColorConverter}}" 
-                                       Padding="8,4" CornerRadius="12" HorizontalOptions="Start">
+                                       Padding="8,4" HorizontalOptions="Start">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
                                     <Label Text="{Binding ExpensePrediction.Confidence}" TextColor="White" FontSize="12" FontAttributes="Bold" />
                                 </Border>
                             </VerticalStackLayout>
                         </HorizontalStackLayout>
                         
                         <Border Background="{Binding ExpensePrediction.Confidence, Converter={StaticResource PredictionConfidenceColorConverter}}" 
-                               Padding="12" CornerRadius="8" IsVisible="{Binding ExpensePrediction.Confidence, Converter={StaticResource PredictionConfidenceToBoolConverter}, ConverterParameter=InsufficientData}">
+                               Padding="12" IsVisible="{Binding ExpensePrediction.Confidence, Converter={StaticResource PredictionConfidenceToBoolConverter}, ConverterParameter=InsufficientData}">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
                             <Label Text="📊 Insufficient data for reliable predictions. Add more transactions to improve accuracy." 
                                    TextColor="White" FontSize="13" />
                         </Border>
@@ -154,9 +156,10 @@
                                     <Border Style="{StaticResource BudgetCardFrameStyle}" Margin="0,4">
                                         <VerticalStackLayout Spacing="8">
                                             <HorizontalStackLayout Spacing="12">
-                                                <Border WidthRequest="44" HeightRequest="44" CornerRadius="22" 
-                                                       Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}" 
-                                                       HasShadow="False" BorderColor="Transparent">
+                                                <Border WidthRequest="44" HeightRequest="44"
+                                                       Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
+                                                       Stroke="Transparent" StrokeThickness="0">
+                                                    <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                                                     <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="18" />
                                                 </Border>
                                                 <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">

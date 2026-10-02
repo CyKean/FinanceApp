@@ -47,23 +47,24 @@
                     <!-- VISA card (Paytin mock copy) -->
                     <Grid>
                         <Border Style="{StaticResource HeroCardStyle}" Padding="0" Margin="0,15,0,0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="34" /></Border.StrokeShape>
                             <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToAccountsCommand}" /></Border.GestureRecognizers>
-                            <Grid ColumnDefinitions="*,64" Padding="20,16,12,16">
-                                <!-- diagonal line texture -->
-                                <Grid Grid.ColumnSpan="2" VerticalOptions="FillAndExpand" InputTransparent="True">
-                                    <VerticalStackLayout Spacing="34" VerticalOptions="Center" HorizontalOptions="Center">
-                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
-                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
-                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
-                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
-                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
-                                        <BoxView HeightRequest="1" WidthRequest="900" Rotation="60" Color="White" Opacity="0.025" HorizontalOptions="Center" />
-                                    </VerticalStackLayout>
-                                </Grid>
+                            <Grid ColumnDefinitions="*,60" Padding="20,16,10,16">
+                                <!-- diagonal line texture: absolute so it never drives card height -->
+                                <AbsoluteLayout Grid.ColumnSpan="2" HorizontalOptions="Fill" VerticalOptions="Fill" IsClippedToBounds="True" InputTransparent="True">
+                                    <BoxView Color="White" Opacity="0.055" Rotation="60" AbsoluteLayout.LayoutBounds="0.5,0.04,1.7,0.008" AbsoluteLayout.LayoutFlags="All" />
+                                    <BoxView Color="White" Opacity="0.055" Rotation="60" AbsoluteLayout.LayoutBounds="0.5,0.16,1.7,0.008" AbsoluteLayout.LayoutFlags="All" />
+                                    <BoxView Color="White" Opacity="0.055" Rotation="60" AbsoluteLayout.LayoutBounds="0.5,0.28,1.7,0.008" AbsoluteLayout.LayoutFlags="All" />
+                                    <BoxView Color="White" Opacity="0.055" Rotation="60" AbsoluteLayout.LayoutBounds="0.5,0.40,1.7,0.008" AbsoluteLayout.LayoutFlags="All" />
+                                    <BoxView Color="White" Opacity="0.055" Rotation="60" AbsoluteLayout.LayoutBounds="0.5,0.52,1.7,0.008" AbsoluteLayout.LayoutFlags="All" />
+                                    <BoxView Color="White" Opacity="0.055" Rotation="60" AbsoluteLayout.LayoutBounds="0.5,0.64,1.7,0.008" AbsoluteLayout.LayoutFlags="All" />
+                                    <BoxView Color="White" Opacity="0.055" Rotation="60" AbsoluteLayout.LayoutBounds="0.5,0.76,1.7,0.008" AbsoluteLayout.LayoutFlags="All" />
+                                    <BoxView Color="White" Opacity="0.055" Rotation="60" AbsoluteLayout.LayoutBounds="0.5,0.88,1.7,0.008" AbsoluteLayout.LayoutFlags="All" />
+                                </AbsoluteLayout>
                                 <!-- card content -->
                                 <Grid Grid.Column="0">
                                     <VerticalStackLayout Spacing="4">
-                                        <Label Text="VISA" FontSize="13" FontAttributes="Bold" TextColor="White" Opacity="0.85" LetterSpacing="3" VerticalOptions="Center" />
+                                        <Label Text="VISA" FontSize="13" FontAttributes="Bold" TextColor="White" Opacity="0.85" CharacterSpacing="3" VerticalOptions="Center" />
                                         <Label Text="Balance" FontSize="12" TextColor="White" Opacity="0.65" Margin="0,10,0,0" />
                                         <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
                                             <Label Text="$" FontSize="20" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="White" VerticalOptions="End" Margin="0,0,0,4" />
@@ -75,20 +76,20 @@
                                             <Label Grid.Column="1" Text="Exp 07/26" FontSize="11" TextColor="White" Opacity="0.65" VerticalOptions="Center" />
                                         </Grid>
                                     </VerticalStackLayout>
-                                    <!-- lime sparkle + accents -->
-                                    <Polygon Points="11,0 13.2,8.8 22,11 13.2,13.2 11,22 8.8,13.2 0,11 8.8,8.8"
+                                    <!-- lime sparkle accents -->
+                                    <Polygon Points="10,0 12,8 20,10 12,12 10,20 8,12 0,10 8,8"
                                              Fill="{StaticResource PayLime}"
-                                             WidthRequest="22" HeightRequest="22"
-                                             HorizontalOptions="End" VerticalOptions="Start" Margin="0,40,60,0" />
-                                    <Label Text="+" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayLime}" Opacity="0.9"
-                                           HorizontalOptions="End" VerticalOptions="Start" Margin="0,68,34,0" />
-                                    <Label Text="+" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource PayLime}" Opacity="0.6"
-                                           HorizontalOptions="End" VerticalOptions="Start" Margin="0,24,104,0" />
+                                             WidthRequest="20" HeightRequest="20"
+                                             HorizontalOptions="End" VerticalOptions="Start" Margin="0,16,54,0" />
+                                    <Border WidthRequest="6" HeightRequest="6" Background="{StaticResource PayLime}" StrokeThickness="0" Opacity="0.7"
+                                            HorizontalOptions="End" VerticalOptions="Start" Margin="0,54,30,0">
+                                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                    </Border>
                                 </Grid>
                                 <!-- lime contactless bar -->
-                                <Border Grid.Column="1" Background="{StaticResource PayLime}" Stroke="{StaticResource PayLime}" StrokeThickness="0" WidthRequest="48" VerticalOptions="Fill" Margin="8,12,2,12">
+                                <Border Grid.Column="1" Background="{StaticResource PayLime}" Stroke="{StaticResource PayLime}" StrokeThickness="0" WidthRequest="42" VerticalOptions="Fill" Margin="10,14,4,14">
                                     <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                                    <Label Text=")))" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Label Text=")))" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Border>
                             </Grid>
                         </Border>

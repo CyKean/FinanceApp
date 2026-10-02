@@ -48,7 +48,7 @@
                 <Border Style="{StaticResource HeroCardStyle}">
                     <VerticalStackLayout Spacing="4">
                         <HorizontalStackLayout Spacing="8">
-                            <Label Text="VISA" FontSize="16" FontAttributes="Bold" TextColor="White" LetterSpacing="2" />
+                            <Label Text="VISA" FontSize="16" FontAttributes="Bold" TextColor="White" CharacterSpacing="2" />
                             <Border Background="{StaticResource PayLime}" StrokeThickness="0" Padding="10,4" HorizontalOptions="EndAndExpand">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                                 <Label Text="{Binding Accounts.Count, StringFormat='{0} cards'}" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />

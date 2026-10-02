@@ -151,7 +151,7 @@
                         <FlexLayout x:Name="EmojiContainer"
                                     Direction="Row"
                                     Wrap="Wrap"
-                                    Justify="Start" />
+                                    JustifyContent="Start" />
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>

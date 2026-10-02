@@ -83,10 +83,10 @@
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>
-                                    <SwipeItem Text="Edit" Background="#161B16"
+                                    <SwipeItem Text="Edit" BackgroundColor="#161B16"
                                                Command="{Binding Source={x:Reference BudgetsPageView}, Path=BindingContext.EditBudgetCommand}"
                                                CommandParameter="{Binding .}" />
-                                    <SwipeItem Text="Delete" Background="#DC2626"
+                                    <SwipeItem Text="Delete" BackgroundColor="#DC2626"
                                                Command="{Binding Source={x:Reference BudgetsPageView}, Path=BindingContext.DeleteBudgetCommand}"
                                                CommandParameter="{Binding .}" />
                                 </SwipeItems>

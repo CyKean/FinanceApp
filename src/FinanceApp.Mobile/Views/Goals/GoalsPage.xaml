@@ -30,21 +30,21 @@
                          <SwipeView>
                              <SwipeView.RightItems>
                                  <SwipeItems>
-                                     <SwipeItem Text="Edit" 
-                                                Background="#512BD4"
+                                     <SwipeItem Text="Edit"
+                                                BackgroundColor="#512BD4"
                                                 Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.EditGoalCommand}"
                                                 CommandParameter="{Binding .}" />
                                      <SwipeItem Text="Add Progress" 
-                                                Background="Green"
+                                                BackgroundColor="Green"
                                                 Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.AddProgressCommand}"
                                                 CommandParameter="{Binding .}" />
                                      <SwipeItem Text="Complete" 
-                                                Background="Blue"
+                                                BackgroundColor="Blue"
                                                 Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.CompleteGoalCommand}"
                                                 CommandParameter="{Binding .}"
                                                 IsVisible="{Binding Status, Converter={StaticResource GoalStatusVisibilityConverter}, ConverterParameter=Active}" />
                                      <SwipeItem Text="Delete" 
-                                                Background="Red"
+                                                BackgroundColor="Red"
                                                 Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.DeleteGoalCommand}"
                                                 CommandParameter="{Binding .}" />
                                  </SwipeItems>
@@ -52,9 +52,10 @@
                              <Border Style="{StaticResource GoalCardFrameStyle}" Margin="0,8">
                                  <VerticalStackLayout Spacing="12">
                                      <HorizontalStackLayout Spacing="12">
-                                         <Border WidthRequest="48" HeightRequest="48" CornerRadius="24" 
-                                                Background="{Binding Color, Converter={StaticResource ColorConverter}}" 
-                                                HasShadow="False" BorderColor="Transparent">
+                                         <Border WidthRequest="48" HeightRequest="48"
+                                                Background="{Binding Color, Converter={StaticResource ColorConverter}}"
+                                                Stroke="Transparent" StrokeThickness="0">
+                                             <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                                              <Label Text="{Binding Icon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
                                          </Border>
                                          <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
@@ -68,16 +69,16 @@
                                      </HorizontalStackLayout>
                                      <HorizontalStackLayout Spacing="16">
                                          <VerticalStackLayout Spacing="2">
-                                             <Label Text="Current" Style="{StaticResource GoalDetailCaptionStyle}" />
-                                             <Label Text="{Binding CurrentAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalDetailValueStyle}" TextColor="Green" />
+                                             <Label Text="Current" Style="{StaticResource BudgetDetailCaptionStyle}" />
+                                             <Label Text="{Binding CurrentAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetDetailValueStyle}" TextColor="Green" />
                                          </VerticalStackLayout>
                                          <VerticalStackLayout Spacing="2">
-                                             <Label Text="Target" Style="{StaticResource GoalDetailCaptionStyle}" />
-                                             <Label Text="{Binding TargetAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalDetailValueStyle}" />
+                                             <Label Text="Target" Style="{StaticResource BudgetDetailCaptionStyle}" />
+                                             <Label Text="{Binding TargetAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetDetailValueStyle}" />
                                          </VerticalStackLayout>
                                          <VerticalStackLayout Spacing="2">
-                                             <Label Text="Remaining" Style="{StaticResource GoalDetailCaptionStyle}" />
-                                             <Label Text="{Binding RemainingAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource GoalDetailValueStyle}" TextColor="Red" />
+                                             <Label Text="Remaining" Style="{StaticResource BudgetDetailCaptionStyle}" />
+                                             <Label Text="{Binding RemainingAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource BudgetDetailValueStyle}" TextColor="Red" />
                                          </VerticalStackLayout>
                                      </HorizontalStackLayout>
                                      <HorizontalStackLayout Spacing="16">
