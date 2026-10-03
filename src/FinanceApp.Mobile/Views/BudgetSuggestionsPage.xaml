@@ -19,7 +19,12 @@
     </ContentPage.Resources>
 
     <Grid>
+        <!-- A RefreshView only scrolls when its content is scrollable. The
+             suggestion list is a BindableLayout (a CollectionView cannot live
+             inside a RefreshView without gesture conflicts), so the content is
+             wrapped in a ScrollView to make the whole page scroll. -->
         <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+            <ScrollView>
             <VerticalStackLayout Spacing="16" Padding="20,16,20,28">
 
                 <!-- Header -->
@@ -50,9 +55,15 @@
                     <controls:PaytinIconView Grid.Column="2" IconKey="bulb" Size="46" Light="True" VerticalOptions="Center" />
                 </Grid>
 
-                <!-- Suggestions -->
-                <CollectionView ItemsSource="{Binding Suggestions}" SelectionMode="None">
-                    <CollectionView.ItemTemplate>
+                <!-- Suggestions.
+                     BindableLayout rather than a CollectionView: an unconstrained
+                     CollectionView inside a VerticalStackLayout gets unbounded
+                     height and renders nothing at all - not even the empty view -
+                     which is why this page used to come up blank. -->
+                <VerticalStackLayout Spacing="0"
+                                     BindableLayout.ItemsSource="{Binding Suggestions}"
+                                     IsVisible="{Binding HasSuggestions}">
+                    <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="dtos:BudgetSuggestionDto">
                             <Border Style="{StaticResource CardFrameStyle}" Margin="0,4" Padding="16">
                                 <VerticalStackLayout Spacing="10">
@@ -110,15 +121,30 @@
                                     </Grid>
                                 </VerticalStackLayout>
                             </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    <CollectionView.EmptyView>
-                        <controls:PaytinEmptyState Title="No suggestions right now"
-                                                 Subtitle="Once you have a few weeks of spending recorded, tailored budget ideas will appear here"
+</DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <!-- Empty state -->
+                <VerticalStackLayout Spacing="12" Padding="0,20,0,0" IsVisible="{Binding HasSuggestions, Converter={StaticResource InverseBoolConverter}}">
+                    <controls:PaytinEmptyState Title="No ideas yet"
+                                                 Subtitle="Suggestions come from your own spending - once a few weeks are recorded, categories that are over- or under-budgeted will show up here."
                                                  IconKey="bulb" />
-                    </CollectionView.EmptyView>
-                </CollectionView>
+                    <Label Text="{Binding ErrorMessage}"
+                           IsVisible="{Binding HasError}"
+                           Style="{StaticResource MutedLabelStyle}"
+                           HorizontalTextAlignment="Center" />
+                    <Button Text="Load sample data"
+                            Command="{Binding LoadSampleDataCommand}"
+                            IsVisible="{Binding CanLoadSampleData}"
+                            Style="{StaticResource OutlineButtonStyle}"
+                            HorizontalOptions="Center" />
+                    <ActivityIndicator IsRunning="{Binding IsPreparingSampleData}"
+                                       IsVisible="{Binding IsPreparingSampleData}"
+                                       Color="{StaticResource PayLimeDark}" />
+                </VerticalStackLayout>
             </VerticalStackLayout>
+            </ScrollView>
         </RefreshView>
 
         <!-- Toasts -->

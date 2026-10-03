@@ -19,9 +19,10 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\FinanceApp.Domain\FinanceApp.Domain.csproj" />
-    <ProjectReference Include="..\..\src\FinanceApp.Application\FinanceApp.Application.csproj" />
-  </ItemGroup>
+<ItemGroup>
+      <ProjectReference Include="..\..\src\FinanceApp.Domain\FinanceApp.Domain.csproj" />
+      <ProjectReference Include="..\..\src\FinanceApp.Application\FinanceApp.Application.csproj" />
+      <ProjectReference Include="..\..\src\FinanceApp.Infrastructure\FinanceApp.Infrastructure.csproj" />
+    </ItemGroup>
 
 </Project>

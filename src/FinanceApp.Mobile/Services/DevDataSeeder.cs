@@ -36,12 +36,11 @@ public class DevDataSeeder
 
         try
         {
+            if (await HasAnyDataAsync(userId, cancellationToken))
+                return;
+
             using var scope = _services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<FinanceAppDbContext>();
-
-            var hasData = await context.Transactions.AnyAsync(t => t.UserId == userId, cancellationToken);
-            if (hasData)
-                return;
 
             var categoryService = scope.ServiceProvider.GetRequiredService<ICategoryService>();
             await categoryService.InitializeDefaultCategoriesAsync(userId, cancellationToken);
@@ -121,13 +120,25 @@ public class DevDataSeeder
                 for (var i = 0; i < transportRuns; i++)
                     Add(TransactionType.Expense, rng.Next(40, 351), RandomDay(), cash, transportation, "Jeepney & Grab fare");
 
-                if (rng.Next(100) < 60)
+                // Shopping, entertainment and health are recorded every month
+                // rather than at random. Trends need at least four months of
+                // spending per category, and anomalies need five transactions
+                // with real variance in one category - random odds left those
+                // sections empty for most seeds.
+                for (var i = 0; i < rng.Next(2, 4); i++)
                     Add(TransactionType.Expense, rng.Next(500, 3001), RandomDay(), ewallet, shopping, "Clothes & gadgets");
-                if (rng.Next(100) < 70)
+
+                for (var i = 0; i < rng.Next(2, 4); i++)
                     Add(TransactionType.Expense, rng.Next(200, 901), RandomDay(), cash, entertainment, "Movies & games");
-                if (rng.Next(100) < 15)
+
+                for (var i = 0; i < rng.Next(1, 3); i++)
                     Add(TransactionType.Expense, rng.Next(400, 1801), RandomDay(), cash, health, "Pharmacy & clinic visit");
             }
+
+            // Two deliberate outliers so the anomaly detector has something to
+            // report instead of an empty "Unusual Spending" card.
+            Add(TransactionType.Expense, 18500m, MonthStart(1).AddDays(9), bank, entertainment, "Concert tickets");
+            Add(TransactionType.Expense, 14200m, MonthStart(2).AddDays(14), bank, shopping, "Laptop replacement");
 
             foreach (var transaction in transactions)
             {
@@ -196,6 +207,29 @@ public class DevDataSeeder
             _logger.LogError(ex, "Dev data seeding failed for user {UserId}", userId);
         }
     }
+
+    /// <summary>
+    /// Whether this account holds any transaction of its own. Used to decide
+    /// whether sample data is appropriate - it must never touch an account that
+    /// already has real data.
+    /// </summary>
+    public async Task<bool> HasAnyDataAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var scope = _services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<FinanceAppDbContext>();
+            return await context.Transactions.AnyAsync(t => t.UserId == userId, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not check for existing data for user {UserId}", userId);
+            return true;
+        }
+    }
+
+    private static DateTime MonthStart(int monthsAgo) =>
+        new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(-monthsAgo);
 
     private static Category Require(IEnumerable<Category> categories, string name, CategoryType type)
     {

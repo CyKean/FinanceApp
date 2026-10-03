@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:dtos="clr-namespace:FinanceApp.Application.DTOs;assembly=FinanceApp.Application"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
              x:Class="FinanceApp.Mobile.Views.Goals.GoalsPage"
              x:DataType="viewmodels:GoalsViewModel"
@@ -26,8 +27,8 @@
              <!-- Goals List -->
              <CollectionView ItemsSource="{Binding Goals}" SelectionMode="None">
                  <CollectionView.ItemTemplate>
-                     <DataTemplate>
-                         <SwipeView>
+<DataTemplate x:DataType="dtos:FinancialGoalDto">
+                        <SwipeView>
                              <SwipeView.RightItems>
                                  <SwipeItems>
                                      <SwipeItem Text="Edit"

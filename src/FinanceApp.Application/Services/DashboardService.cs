@@ -36,7 +36,12 @@ public class DashboardService : BaseService, IDashboardService
     public async Task<DashboardDto> GetDashboardAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var totalBalance = await _accountRepository.GetTotalBalanceAsync(userId, cancellationToken);
-        var today = DateTime.UtcNow.Date;
+
+        // Local, not UTC: transactions are stored with the dates the user
+        // entered. For a UTC+8 user, UtcNow.Date is yesterday between midnight
+        // and 08:00, so on the 1st of a month the whole dashboard reported the
+        // previous month.
+        var today = DateTime.Today;
         var startOfMonth = new DateTime(today.Year, today.Month, 1);
         var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 

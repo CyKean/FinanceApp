@@ -200,12 +200,22 @@ public class BudgetService : BaseService, IBudgetService
             if (cat != null) categories[catId] = cat;
         }
 
+        // Only persist when a spent amount actually moved. Saving unconditionally
+        // made every read take SQLite's write lock, so a page as innocent as
+        // Forecasts or Budget Ideas blocked the UI thread of whatever page loaded
+        // next - the UI thread then sat waiting on the lock and Android raised
+        // "Paytin isn't responding".
+        var changed = false;
+
         foreach (var budget in budgets)
         {
-            await CalculateAndSetSpentAmount(budget, cancellationToken);
+            changed |= await CalculateAndSetSpentAmount(budget, cancellationToken);
         }
 
-        await UnitOfWork.SaveChangesAsync(cancellationToken);
+        if (changed)
+        {
+            await UnitOfWork.SaveChangesAsync(cancellationToken);
+        }
 
         return budgets.Select(b => b.ToDto(
             categories.TryGetValue(b.CategoryId.Value, out var cat) ? cat.Name : "",
@@ -272,7 +282,12 @@ public class BudgetService : BaseService, IBudgetService
         await UnitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task CalculateAndSetSpentAmount(Budget budget, CancellationToken cancellationToken)
+    /// <summary>
+    /// Recomputes a budget's spent total from its transactions.
+    /// </summary>
+    /// <returns>True when the stored total moved, so the caller knows a save is
+    /// needed. False means the read was pure and no write lock was taken.</returns>
+    private async Task<bool> CalculateAndSetSpentAmount(Budget budget, CancellationToken cancellationToken)
     {
         var spent = await _transactionRepository.GetTotalByCategoryAsync(
             budget.UserId,
@@ -281,8 +296,12 @@ public class BudgetService : BaseService, IBudgetService
             budget.EndDate,
             cancellationToken);
 
+        var previous = budget.SpentAmount;
+
         budget.ResetSpending();
         budget.AddSpending(spent);
+
+        return budget.SpentAmount != previous;
     }
 
     /// <summary>

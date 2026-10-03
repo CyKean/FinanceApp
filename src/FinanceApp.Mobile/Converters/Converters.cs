@@ -223,7 +223,11 @@ public class MoneyToStringConverter : IValueConverter
                 return money.Amount.ToString("N2", culture);
             return money.ToString();
         }
-        return "₱0.00";
+
+        // Range bounds are nullable, so an unknown bound has to collapse to
+        // nothing rather than render a placeholder amount in the middle of a
+        // "min - max" line.
+        return string.Empty;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
