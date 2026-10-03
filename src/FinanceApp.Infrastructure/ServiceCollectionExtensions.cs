@@ -52,6 +52,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRecurringTransactionRepository, RecurringTransactionRepository>();
         services.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
         services.AddScoped<ISyncOperationRepository, SyncOperationRepository>();
+        services.AddScoped<ILocalAccountStore, LocalAccountStore>();
 
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddSingleton<IGuidGenerator, GuidGenerator>();
@@ -63,6 +64,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<SupabaseClientProvider>();
         services.AddScoped<ISupabaseSyncService, SupabaseSyncService>();
         services.AddScoped<ISyncService, SyncService>();
+        // Offline-first auth: credentials are verified against local SQLite, so
+        // register/sign-in never depend on Supabase being reachable.
+        services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
         return services;

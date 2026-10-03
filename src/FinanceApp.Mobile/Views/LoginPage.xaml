@@ -96,6 +96,7 @@
                         </HorizontalStackLayout>
                         <Label Text="Login to continue" IsVisible="{Binding IsRegisterMode, Converter={StaticResource InverseBoolConverter}}" FontSize="13" TextColor="{StaticResource FinoraMuted}" />
                         <Label Text="Start tracking in seconds" IsVisible="{Binding IsRegisterMode}" FontSize="13" TextColor="{StaticResource FinoraMuted}" />
+                        <Label Text="Accounts are kept on this device — register and sign in work with or without a connection." FontSize="12" TextColor="{StaticResource FinoraMuted}" Opacity="0.85" />
 
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Email" Style="{StaticResource FormLabelStyle}" />
@@ -124,6 +125,16 @@
                                     </Label.GestureRecognizers>
                                 </Label>
                             </HorizontalStackLayout>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6" IsVisible="{Binding IsRegisterMode}">
+                            <Label Text="Confirm password" Style="{StaticResource FormLabelStyle}" />
+                            <Border Style="{StaticResource FieldBorderStyle}">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalOptions="Center">
+                                    <controls:FinoraIconView IconKey="lock" Size="20" ShowBadge="False" Light="True" VerticalOptions="Center" />
+                                    <Entry Grid.Column="1" Text="{Binding ConfirmPassword}" IsPassword="True" Placeholder="Repeat your password" BackgroundColor="Transparent" TextColor="{StaticResource FinoraInk}" HeightRequest="48" VerticalOptions="Center" ReturnType="Done" />
+                                </Grid>
+                            </Border>
                         </VerticalStackLayout>
 
                         <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabelStyle}" IsVisible="{Binding HasError}" />

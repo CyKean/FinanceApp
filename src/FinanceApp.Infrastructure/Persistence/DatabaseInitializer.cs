@@ -8,6 +8,8 @@ public static class DatabaseInitializer
 {
     private static bool s_extraColumnsEnsured;
     private static readonly object s_extraColumnsLock = new();
+    private static bool s_localUsersTableEnsured;
+    private static readonly object s_localUsersTableLock = new();
 
     public static async Task InitializeAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
@@ -86,6 +88,57 @@ public static class DatabaseInitializer
         using var alter = connection.CreateCommand();
         alter.CommandText = $"ALTER TABLE \"{table}\" ADD COLUMN \"{column}\" {type}";
         alter.ExecuteNonQuery();
+    }
+
+    /// <summary>
+    /// Creates the LocalUsers table on databases that were created before local
+    /// (offline) accounts existed. EnsureCreated is a no-op once any table
+    /// exists, so it will never add this one to an existing install - without
+    /// this, registration would throw a "no such table" on upgraded apps.
+    /// Safe to call on every DbContext construction - runs once per process.
+    /// </summary>
+    public static void EnsureLocalUsersTable(FinanceAppDbContext context)
+    {
+        lock (s_localUsersTableLock)
+        {
+            if (s_localUsersTableEnsured)
+                return;
+            s_localUsersTableEnsured = true;
+        }
+
+        var connection = context.Database.GetDbConnection();
+        var wasClosed = connection.State != System.Data.ConnectionState.Open;
+        try
+        {
+            if (wasClosed)
+                connection.Open();
+
+            // Column names, types and the unique index mirror the EF mapping in
+            // OnModelCreating - SQLite is dynamically typed, so a drift here
+            // would surface as a runtime query error rather than a build error.
+            using var create = connection.CreateCommand();
+            create.CommandText =
+                """
+                CREATE TABLE IF NOT EXISTS "LocalUsers" (
+                    "Id" TEXT NOT NULL CONSTRAINT "PK_LocalUsers" PRIMARY KEY,
+                    "Email" TEXT NOT NULL,
+                    "PasswordHash" TEXT NOT NULL,
+                    "CreatedAt" TEXT NOT NULL,
+                    "LastLoginAt" TEXT NULL
+                )
+                """;
+            create.ExecuteNonQuery();
+
+            using var index = connection.CreateCommand();
+            index.CommandText =
+                "CREATE UNIQUE INDEX IF NOT EXISTS \"IX_LocalUsers_Email\" ON \"LocalUsers\" (\"Email\")";
+            index.ExecuteNonQuery();
+        }
+        finally
+        {
+            if (wasClosed)
+                connection.Close();
+        }
     }
 
     public static async Task MigrateAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)

@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 
 public partial class LoginViewModel : BaseViewModel
 {
+    private const int MinimumPasswordLength = 6;
+
     private readonly IAuthenticationService _authService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
@@ -18,6 +20,9 @@ public partial class LoginViewModel : BaseViewModel
 
     [ObservableProperty]
     private string _password = string.Empty;
+
+    [ObservableProperty]
+    private string _confirmPassword = string.Empty;
 
     [ObservableProperty]
     private bool _isRegisterMode;
@@ -51,27 +56,19 @@ public partial class LoginViewModel : BaseViewModel
         ClearError();
         _authService.RememberMe = IsRememberMe;
 
-        // Minimum visible loading time so the busy state is perceptible
-        // (auth currently resolves locally; real network calls will take longer).
-        var minBusyDelay = Task.Delay(1200);
-
         try
         {
-            AuthResultDto result;
-
-            if (IsRegisterMode)
-            {
-                result = await _authService.RegisterAsync(Email, Password);
-            }
-            else
-            {
-                result = await _authService.LoginAsync(Email, Password);
-            }
-
-            await minBusyDelay;
+            // Both paths resolve against the on-device account store, so this
+            // completes without waiting on a network round-trip.
+            var result = IsRegisterMode
+                ? await _authService.RegisterAsync(Email, Password)
+                : await _authService.LoginAsync(Email, Password);
 
             if (result.Success)
             {
+                Password = string.Empty;
+                ConfirmPassword = string.Empty;
+
                 await _dialogService.ShowToastAsync(IsRegisterMode ? "Account created!" : "Welcome back!");
                 await _navigationService.NavigateToAsync("//Dashboard");
             }
@@ -83,7 +80,7 @@ public partial class LoginViewModel : BaseViewModel
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during authentication");
-            SetError("An error occurred. Please try again.");
+            SetError("Something went wrong. Please try again.");
         }
         finally
         {
@@ -97,13 +94,16 @@ public partial class LoginViewModel : BaseViewModel
     {
         IsRegisterMode = !IsRegisterMode;
         Title = IsRegisterMode ? "Register" : "Login";
+        ConfirmPassword = string.Empty;
         ClearError();
     }
 
     [RelayCommand]
     private async Task ForgotPasswordAsync()
     {
-        await _dialogService.ShowAlertAsync("Reset Password", "Password reset functionality will be implemented in a future update.");
+        await _dialogService.ShowAlertAsync(
+            "Reset Password",
+            "Passwords are stored only on this device, so there is no email to send a reset link to. If you registered online before, sign in with your email and password when you have a connection.");
     }
 
     /// <summary>
@@ -136,18 +136,46 @@ public partial class LoginViewModel : BaseViewModel
             return false;
         }
 
-        if (string.IsNullOrWhiteSpace(Password))
+        if (!IsValidEmail(Email))
+        {
+            SetError("Enter a valid email address");
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(Password))
         {
             SetError("Password is required");
             return false;
         }
 
-        if (Password.Length < 6)
+        // Only enforce the floor on registration: an account created before the
+        // rule tightened must still be able to sign in.
+        if (IsRegisterMode && Password.Length < MinimumPasswordLength)
         {
-            SetError("Password must be at least 6 characters");
+            SetError($"Password must be at least {MinimumPasswordLength} characters");
+            return false;
+        }
+
+        if (IsRegisterMode && !string.Equals(Password, ConfirmPassword, StringComparison.Ordinal))
+        {
+            SetError("Passwords do not match");
             return false;
         }
 
         return true;
+    }
+
+    private static bool IsValidEmail(string email)
+    {
+        try
+        {
+            var trimmed = email.Trim();
+            var address = new System.Net.Mail.MailAddress(trimmed);
+            return address.Address == trimmed && address.Host.Contains('.') && !address.Host.EndsWith('.');
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

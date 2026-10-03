@@ -11,6 +11,9 @@ using Microsoft.Extensions.Options;
 /// </summary>
 public class SupabaseClientProvider
 {
+    /// <summary>Ceiling on the handshake so a dead network cannot stall startup.</summary>
+    private static readonly TimeSpan ConnectTimeout = TimeSpan.FromSeconds(8);
+
     private readonly DatabaseOptions _options;
     private readonly ILogger<SupabaseClientProvider> _logger;
     private readonly SemaphoreSlim _lock = new(1, 1);
@@ -27,8 +30,10 @@ public class SupabaseClientProvider
         !string.IsNullOrWhiteSpace(_options.SupabaseAnonKey);
 
     /// <summary>
-    /// Returns the shared client, or null when Supabase is not configured.
-    /// Throws only for genuine connection failures.
+    /// Returns the shared client, or null when Supabase is not configured or
+    /// cannot be reached. Never throws and never blocks for long: offline-first
+    /// means an unreachable backend is an expected state, not an error. Callers
+    /// fall back to local SQLite.
     /// </summary>
     public async Task<global::Supabase.Client?> TryGetClientAsync(CancellationToken cancellationToken = default)
     {
@@ -38,6 +43,25 @@ public class SupabaseClientProvider
         if (_client != null)
             return _client;
 
+        var connect = ConnectAsync(cancellationToken);
+
+        // InitializeAsync takes no cancellation token, so bound the wait rather
+        // than the work: a dead network must not stall app startup.
+        var completed = await Task.WhenAny(connect, Task.Delay(ConnectTimeout, cancellationToken));
+        cancellationToken.ThrowIfCancellationRequested();
+        if (completed != connect)
+        {
+            _logger.LogWarning(
+                "Supabase at {Url} did not respond within {Timeout}s. Continuing offline with local storage only.",
+                _options.SupabaseUrl, ConnectTimeout.TotalSeconds);
+            return null;
+        }
+
+        return await connect;
+    }
+
+    private async Task<global::Supabase.Client?> ConnectAsync(CancellationToken cancellationToken)
+    {
         await _lock.WaitAsync(cancellationToken);
         try
         {
@@ -55,6 +79,13 @@ public class SupabaseClientProvider
             _client = client;
             _logger.LogInformation("Supabase client connected to {Url}", _options.SupabaseUrl);
             return _client;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex,
+                "Could not reach Supabase at {Url}. Continuing offline with local storage only.",
+                _options.SupabaseUrl);
+            return null;
         }
         finally
         {

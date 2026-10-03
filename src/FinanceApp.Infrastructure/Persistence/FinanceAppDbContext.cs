@@ -18,8 +18,10 @@ public class FinanceAppDbContext : DbContext
         // to create the schema on every platform, so ensure it before first use.
         // Idempotent - a no-op when tables already exist.
         Database.EnsureCreated();
-        // Adds columns introduced after v1 (EnsureCreated never alters tables).
+        // Adds tables/columns introduced after v1 (EnsureCreated never alters an
+        // existing database).
         DatabaseInitializer.EnsureExtraColumns(this);
+        DatabaseInitializer.EnsureLocalUsersTable(this);
     }
 
     public DbSet<Account> Accounts => Set<Account>();
@@ -29,10 +31,24 @@ public class FinanceAppDbContext : DbContext
     public DbSet<RecurringTransaction> RecurringTransactions => Set<RecurringTransaction>();
     public DbSet<FinancialGoal> FinancialGoals => Set<FinancialGoal>();
     public DbSet<SyncOperation> SyncOperations => Set<SyncOperation>();
+    public DbSet<LocalUser> LocalUsers => Set<LocalUser>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // Device-local credentials. No soft-delete filter: a login lookup must
+        // still resolve an account regardless of anything else.
+        modelBuilder.Entity<LocalUser>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(320);
+            entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.CreatedAt).IsRequired();
+            entity.Property(e => e.LastLoginAt);
+            entity.HasIndex(e => e.Email).IsUnique();
+        });
 
         modelBuilder.Entity<Account>(entity =>
         {
