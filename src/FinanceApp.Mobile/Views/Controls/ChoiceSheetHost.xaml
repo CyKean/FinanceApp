@@ -17,10 +17,8 @@
                 Background="{StaticResource PayCard}"
                 Stroke="{StaticResource PayInk}"
                 StrokeThickness="1.5"
-                Padding="20,18"
-                WidthRequest="320"
+                Padding="20,18,20,30"
                 VerticalOptions="End"
-                Margin="16,0,16,24"
                 Opacity="0">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="30,30,0,0" />
@@ -45,7 +43,7 @@
                 <VerticalStackLayout x:Name="OptionsContainer" Spacing="8" />
                 <Button x:Name="CancelButton"
                         Text="Cancel"
-                        Style="{StaticResource OutlineButtonStyle}"
+                        Style="{StaticResource TextButtonStyle}"
                         HeightRequest="48"
                         Clicked="OnCancelTapped" />
             </VerticalStackLayout>

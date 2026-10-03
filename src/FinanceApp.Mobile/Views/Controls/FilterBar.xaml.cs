@@ -96,8 +96,10 @@ public partial class FilterBar : ContentView
 
     public FilterBar()
     {
-        InitializeComponent();
+        // Must precede InitializeComponent: the XAML binds ToggleCommand while
+        // parsing, and a plain CLR property never re-resolves once it is null.
         ToggleCommand = new Command(() => IsExpanded = !IsExpanded);
+        InitializeComponent();
         FilterIcon.Data = PaytinIcons.GetGeometry("funnel");
         SyncState();
     }

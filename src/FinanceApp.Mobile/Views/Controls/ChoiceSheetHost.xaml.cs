@@ -159,7 +159,9 @@ public partial class ChoiceSheetHost : ContentView
     /// <summary>Lime reads on the dark accents; ink on the lime ones.</summary>
     private static bool IsDarkAccent(Color color)
     {
-        var luminance = (0.299 * color.Red + 0.587 * color.Green + 0.114 * color.Blue) / 255d;
+        // Color.Red/Green/Blue are already normalised to 0..1, so this must not
+        // be scaled by 255 again or every accent reads as dark.
+        var luminance = 0.299 * color.Red + 0.587 * color.Green + 0.114 * color.Blue;
         return luminance < 0.55;
     }
 

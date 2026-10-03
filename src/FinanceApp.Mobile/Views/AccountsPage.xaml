@@ -115,11 +115,10 @@
                                             </VerticalStackLayout>
                                             <Border Grid.Column="2" WidthRequest="38" HeightRequest="38" Background="{StaticResource PayCream}" Stroke="{StaticResource PayInk}" StrokeThickness="1.2" VerticalOptions="Center">
                                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                                <Label Text="⋮" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center">
-                                                    <Label.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding Source={x:Reference AccountsPageView}, Path=BindingContext.AccountActionsCommand}" CommandParameter="{Binding .}" />
-                                                    </Label.GestureRecognizers>
-                                                </Label>
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference AccountsPageView}, Path=BindingContext.AccountActionsCommand}" CommandParameter="{Binding .}" />
+                                                </Border.GestureRecognizers>
+                                                <Label Text="⋮" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                                             </Border>
                                         </Grid>
                                     </Border>
