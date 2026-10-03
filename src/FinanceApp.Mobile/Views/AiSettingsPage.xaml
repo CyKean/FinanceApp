@@ -65,7 +65,7 @@
                             <Label Text="Model" FontSize="12" TextColor="White" Opacity="0.7" />
                             <Label Text="{Binding Model}" FontSize="12" FontAttributes="Bold" TextColor="White" />
                         </HorizontalStackLayout>
-                        <Label Text="Budgets, spending and balances are always answered on-device. Only open-ended questions use the provider."
+                        <Label Text="Most questions are answered on-device from your local database. Open-ended ones send a rounded summary - amounts, percentages and category names, but no transaction history, account names, or budget and goal names - to your provider."
                                FontSize="12" TextColor="White" Opacity="0.7"
                                LineBreakMode="WordWrap" />
                     </VerticalStackLayout>
@@ -75,7 +75,7 @@
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                     <VerticalStackLayout Spacing="8">
                         <Label Text="Provider" Style="{StaticResource SectionHeaderStyle}" />
-                        <Label Text="Free API keys work: pick a provider, paste its key below, then test the connection. Your budgets and balances always stay on-device."
+                        <Label Text="Free API keys work: pick a provider, paste its key below, then test the connection. Adding a key is what allows anything to be sent off-device."
                                Style="{StaticResource MutedLabelStyle}"
                                LineBreakMode="WordWrap" />
                         <Button Text="Choose a provider&#x2026;"
@@ -104,7 +104,7 @@
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                     <VerticalStackLayout Spacing="8">
                         <Label Text="API key" Style="{StaticResource SectionHeaderStyle}" />
-                        <Label Text="Paste an OpenAI-compatible API key. It is stored in this device's secure storage and never synced."
+                        <Label Text="Paste an OpenAI-compatible API key. It stays on this device and is never synced."
                                Style="{StaticResource MutedLabelStyle}"
                                LineBreakMode="WordWrap" />
                         <Border Style="{StaticResource FieldBorderStyle}">

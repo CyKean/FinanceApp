@@ -13,9 +13,17 @@ public class MauiSessionStore : ISessionStore
         try
         {
             await SecureStorage.SetAsync(key, value);
+
+            // SecureStorage can start working after a failed write earlier (the
+            // user sets a screen lock, say). Leaving the plaintext Preferences
+            // copy behind means LoadAsync keeps finding the unencrypted value,
+            // so a "downgraded" key would stay readable indefinitely.
+            if (Preferences.Get(key, null) is not null)
+                Preferences.Remove(key);
         }
         catch
         {
+            // No lock screen or keystore unavailable: keep it, but unencrypted.
             Preferences.Set(key, value);
         }
     }

@@ -19,7 +19,7 @@
     </ContentPage.Resources>
 
     <Grid>
-        <Grid RowDefinitions="Auto,*,Auto,Auto,Auto">
+        <Grid RowDefinitions="Auto,*,Auto,Auto,Auto,Auto">
 
             <!-- Header -->
             <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="18,14,18,8">
@@ -44,8 +44,11 @@
                 <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                     <Label Text="AI Assistant" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
                     <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                        <Label Text="●" FontSize="12" TextColor="{StaticResource PayLimeDark}" VerticalOptions="Center" />
-                        <Label Text="Your money, and money basics" FontSize="12" TextColor="#6F7668" VerticalOptions="Center" />
+                        <Label Text="●" FontSize="12" TextColor="{StaticResource PayLimeDark}" VerticalOptions="Center"
+                               IsVisible="{Binding IsConfigured}" />
+                        <Label Text="●" FontSize="12" TextColor="{StaticResource Error}" VerticalOptions="Center"
+                               IsVisible="{Binding IsConfigured, Converter={StaticResource InverseBoolConverter}}" />
+                        <Label Text="{Binding StatusLine}" FontSize="12" TextColor="#6F7668" VerticalOptions="Center" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
 
@@ -103,6 +106,11 @@
                                            TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
                                            FontSize="15"
                                            LineBreakMode="WordWrap" />
+                                    <Label Text="answered by cloud AI"
+                                           IsVisible="{Binding UsedCloud}"
+                                           TextColor="{StaticResource Warning}"
+                                           FontSize="10"
+                                           FontAttributes="Italic" />
                                     <Label Text="{Binding TimeLabel}"
                                            TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}"
                                            FontSize="11"
@@ -168,8 +176,24 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <!-- Composer -->
+            <!-- Error banner -->
             <Border Grid.Row="4"
+                    Margin="18,0,18,8"
+                    Padding="12,8"
+                    Background="{StaticResource ErrorContainer}"
+                    Stroke="{StaticResource Error}"
+                    StrokeThickness="1.2"
+                    IsVisible="{Binding HasError}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16" />
+                </Border.StrokeShape>
+                <Label Text="{Binding ErrorMessage}"
+                       FontSize="12"
+                       TextColor="{StaticResource OnErrorContainer}" />
+            </Border>
+
+            <!-- Composer -->
+            <Border Grid.Row="5"
                     Margin="18,6,18,18"
                     Padding="14,8,8,8"
                     Background="{StaticResource PayCard}"
@@ -197,6 +221,7 @@
                             WidthRequest="52"
                             HeightRequest="44"
                             Padding="0"
+                            IsEnabled="{Binding IsTyping, Converter={StaticResource InverseBoolConverter}}"
                             TextColor="White" />
                 </Grid>
             </Border>

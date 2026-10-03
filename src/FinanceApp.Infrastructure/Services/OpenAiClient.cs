@@ -48,8 +48,16 @@ public class OpenAiClient : IAiClient
     public Task<AiCompletionResult> TestAsync(CancellationToken cancellationToken = default) =>
         SendAsync("Reply with exactly the word OK.", new[] { new AiTurn(ChatRoles.User, "ping") }, maxTokens: 5, cancellationToken);
 
+    /// <summary>
+    /// Response cap for chat replies. The system prompt asks for at most four
+    /// short sentences, so 250 is comfortable headroom while capping the cost
+    /// of a runaway reply. Free tiers are the default provider, and output
+    /// tokens are billed the same as input there.
+    /// </summary>
+    private const int ChatMaxTokens = 250;
+
     public async Task<AiCompletionResult> CompleteAsync(string systemPrompt, IReadOnlyList<AiTurn> turns, CancellationToken cancellationToken = default)
-        => await SendAsync(systemPrompt, turns, maxTokens: 700, cancellationToken);
+        => await SendAsync(systemPrompt, turns, ChatMaxTokens, cancellationToken);
 
     private async Task<AiCompletionResult> SendAsync(string systemPrompt, IReadOnlyList<AiTurn> turns, int maxTokens, CancellationToken cancellationToken)
     {
@@ -84,30 +92,16 @@ public class OpenAiClient : IAiClient
             if (!response.IsSuccessStatusCode)
             {
                 var errorText = await response.Content.ReadAsStringAsync(cancellationToken);
-                _logger.LogWarning("AI request failed with {StatusCode}: {Body}", (int)response.StatusCode, Truncate(errorText));
+                var status = (int)response.StatusCode;
+                _logger.LogWarning("AI request failed with {StatusCode}: {Body}", status, Truncate(errorText));
+
                 var detail = TryGetErrorMessage(errorText);
-                var failureMessage = !string.IsNullOrWhiteSpace(detail)
-                    ? detail
-                    : (int)response.StatusCode == 404
-                        ? "Provider rejected the endpoint (404) — check the base URL"
-                        : $"AI request failed ({(int)response.StatusCode})";
+                var failureMessage = DescribeFailure(status, detail);
                 return new AiCompletionResult(false, null, failureMessage, IsConfigured: true);
             }
 
             var json = await response.Content.ReadAsStringAsync(cancellationToken);
-            using var document = JsonDocument.Parse(json);
-
-            if (document.RootElement.TryGetProperty("choices", out var choices) &&
-                choices.GetArrayLength() > 0 &&
-                choices[0].TryGetProperty("message", out var message) &&
-                message.TryGetProperty("content", out var content))
-            {
-                var text = content.GetString();
-                if (!string.IsNullOrWhiteSpace(text))
-                    return new AiCompletionResult(true, text, null, IsConfigured: true);
-            }
-
-            return new AiCompletionResult(false, null, "AI returned an empty response", IsConfigured: true);
+            return ParseCompletion(json);
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
@@ -130,6 +124,95 @@ public class OpenAiClient : IAiClient
         }
     }
 
+    /// <summary>
+    /// Reads choices[0].message.content out of an OpenAI-compatible payload.
+    /// <para>
+    /// Every step is shape-checked: some gateways answer with a different
+    /// capitalisation, a bare array, or a content array, and the previous
+    /// unguarded walk turned those valid responses into "Unexpected AI error".
+    /// </para>
+    /// </summary>
+    private static AiCompletionResult ParseCompletion(string json)
+    {
+        JsonDocument document;
+        try
+        {
+            document = JsonDocument.Parse(json);
+        }
+        catch (JsonException)
+        {
+            return new AiCompletionResult(false, null, "AI returned an invalid response", IsConfigured: true);
+        }
+
+        using (document)
+        {
+            var root = document.RootElement;
+            if (root.ValueKind != JsonValueKind.Object)
+                return new AiCompletionResult(false, null, "AI returned an unexpected response shape", IsConfigured: true);
+
+            if (!TryGet(root, "choices", out var choices) || choices.ValueKind != JsonValueKind.Array)
+                return new AiCompletionResult(false, null, "AI returned an empty response", IsConfigured: true);
+
+            foreach (var choice in choices.EnumerateArray())
+            {
+                if (choice.ValueKind != JsonValueKind.Object ||
+                    !TryGet(choice, "message", out var message) ||
+                    message.ValueKind != JsonValueKind.Object ||
+                    !TryGet(message, "content", out var content))
+                {
+                    continue;
+                }
+
+                var text = ReadContent(content);
+                if (string.IsNullOrWhiteSpace(text))
+                    continue;
+
+                // A reply cut off at max_tokens would otherwise be shown as if
+                // it were complete, mid-sentence, with no indication.
+                var truncated = TryGet(choice, "finish_reason", out var reason) &&
+                                 reason.ValueKind == JsonValueKind.String &&
+                                 reason.GetString() is "length";
+
+                if (truncated)
+                    text = text.TrimEnd() + " (reply was cut short by the model's token limit)";
+
+                return new AiCompletionResult(true, text, null, IsConfigured: true);
+            }
+
+            return new AiCompletionResult(false, null, "AI returned an empty response", IsConfigured: true);
+        }
+    }
+
+    /// <summary>Content is normally a string but some providers send parts.</summary>
+    private static string? ReadContent(JsonElement content) => content.ValueKind switch
+    {
+        JsonValueKind.String => content.GetString(),
+        JsonValueKind.Array => string.Concat(content.EnumerateArray()
+            .Select(part => part.ValueKind == JsonValueKind.Object && TryGet(part, "text", out var text)
+                ? text.GetString()
+                : null)
+            .Where(text => !string.IsNullOrEmpty(text))),
+        _ => null
+    };
+
+    private static bool TryGet(JsonElement element, string name, out JsonElement value)
+    {
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var property in element.EnumerateObject())
+            {
+                if (string.Equals(property.Name, name, StringComparison.OrdinalIgnoreCase))
+                {
+                    value = property.Value;
+                    return true;
+                }
+            }
+        }
+
+        value = default;
+        return false;
+    }
+
     private async Task<AiProviderSettings> GetSettingsAsync(CancellationToken cancellationToken)
     {
         AiProviderSettings? settings = null;
@@ -148,6 +231,34 @@ public class OpenAiClient : IAiClient
         return new AiProviderSettings(baseUrl.Trim().TrimEnd('/'), model.Trim());
     }
 
+    /// <summary>
+    /// Turns an HTTP failure into something the user can act on. The previous
+    /// version passed the raw provider message straight through, so an invalid
+    /// key and a bad base URL both surfaced as an opaque provider sentence.
+    /// </summary>
+    private static string DescribeFailure(int status, string? providerDetail)
+    {
+        var hint = status switch
+        {
+            400 when LooksLikeContextLength(providerDetail) =>
+                "The conversation is too long for this model. Clear the chat and try again, or pick a larger model in Settings - AI Assistant.",
+            401 or 403 =>
+                "Your API key was rejected. Check it in Settings - AI Assistant.",
+            404 =>
+                "Provider rejected the endpoint (404) - check the base URL in Settings - AI Assistant.",
+            429 =>
+                "Rate limit or quota reached. Wait a moment, or use a different key.",
+            _ => $"AI request failed ({status})"
+        };
+
+        return string.IsNullOrWhiteSpace(providerDetail) ? hint : $"{hint}. Provider said: {providerDetail}";
+    }
+
+    private static bool LooksLikeContextLength(string? detail) =>
+        detail is not null &&
+        (detail.Contains("context", StringComparison.OrdinalIgnoreCase) ||
+         detail.Contains("token", StringComparison.OrdinalIgnoreCase));
+
     private static string? TryGetErrorMessage(string body)
     {
         if (string.IsNullOrWhiteSpace(body))
@@ -156,10 +267,14 @@ public class OpenAiClient : IAiClient
         try
         {
             using var document = JsonDocument.Parse(body);
-            if (document.RootElement.TryGetProperty("error", out var error))
+            var root = document.RootElement;
+            if (root.ValueKind != JsonValueKind.Object)
+                return null;
+
+            if (TryGet(root, "error", out var error))
             {
                 if (error.ValueKind == JsonValueKind.Object &&
-                    error.TryGetProperty("message", out var message) &&
+                    TryGet(error, "message", out var message) &&
                     message.ValueKind == JsonValueKind.String)
                     return message.GetString();
 
@@ -167,12 +282,14 @@ public class OpenAiClient : IAiClient
                     return error.GetString();
             }
 
-            if (document.RootElement.TryGetProperty("message", out var topMessage) &&
+            if (TryGet(root, "message", out var topMessage) &&
                 topMessage.ValueKind == JsonValueKind.String)
                 return topMessage.GetString();
         }
         catch (JsonException)
         {
+            // A non-JSON error body (an HTML proxy page, for instance) just
+            // means there is no provider detail to surface.
         }
 
         return null;

@@ -50,9 +50,16 @@ public static class ChatRoles
     public const string Assistant = "assistant";
 }
 
-public record ChatMessageDto(Guid Id, string Role, string Content, DateTime SentAt)
+public record ChatMessageDto(Guid Id, string Role, string Content, DateTime SentAt, string? Source = null)
 {
     public bool IsUser => Role == ChatRoles.User;
+
+    /// <summary>
+    /// True when the answer came from the cloud provider rather than being
+    /// computed on-device. Stored so the UI can be honest about it; null on
+    /// messages written before this existed.
+    /// </summary>
+    public bool UsedCloud => string.Equals(Source, nameof(ChatReplySource.Assistant), StringComparison.Ordinal);
 
     public string TimeLabel => SentAt.ToString("HH:mm");
 }

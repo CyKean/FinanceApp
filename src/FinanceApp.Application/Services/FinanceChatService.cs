@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 public class FinanceChatService : IFinanceChatService
 {
     private const int AnalysisMonths = 3;
-    private const int HistoryTurnLimit = 12;
 
     private static readonly string[] SpendPhrases =
     {
@@ -60,6 +59,12 @@ public class FinanceChatService : IFinanceChatService
             var personalAnswer = await TryAnswerPersonalAsync(userId, lower, cancellationToken);
             if (personalAnswer is not null)
                 return personalAnswer;
+        }
+        catch (OperationCanceledException)
+        {
+            // Do not swallow cancellation and then keep going - that burned a
+            // paid round-trip on an already-cancelled request.
+            throw;
         }
         catch (Exception ex)
         {
@@ -408,21 +413,26 @@ public class FinanceChatService : IFinanceChatService
         var snapshot = await BuildSnapshotAsync(userId, cancellationToken);
         var systemPrompt =
             "You are the built-in finance assistant for FinanceApp, a personal budgeting app. " +
-            "Answer in at most 5 short sentences using plain text - no markdown, no tables, no headers. " +
+            "Answer in at most 4 short sentences using plain text - no markdown, no tables, no headers. " +
             "Use the user's financial snapshot below whenever it is relevant, and never invent numbers that are not in it. " +
+            "Figures in the snapshot are rounded approximations, so describe them as approximate " +
+            "('about', 'around') and never state them as exact amounts. " +
             "Be practical and friendly; for major financial decisions suggest speaking to a licensed professional. " +
             "If the snapshot does not contain the answer, say what information you would need.\n\n" +
             "Financial snapshot:\n" + snapshot;
 
-        var turns = new List<AiTurn>();
-        foreach (var message in history.Skip(Math.Max(0, history.Count - HistoryTurnLimit)))
-        {
-            if (string.IsNullOrWhiteSpace(message.Content)) continue;
-            turns.Add(new AiTurn(message.IsUser ? ChatRoles.User : ChatRoles.Assistant, message.Content));
-        }
-
-        if (!turns.Any(t => string.Equals(t.Content, question, StringComparison.Ordinal)))
-            turns.Add(new AiTurn(ChatRoles.User, question));
+        // Conversation history is deliberately not forwarded.
+        //
+        // Two reasons. Cost: replaying up to twelve turns meant re-sending every
+        // previous answer, which was the single largest token cost in the app and
+        // is what pushed long chats into Groq's 12K tokens-per-minute ceiling.
+        //
+        // Privacy: history holds answers from the on-device handlers, which quote
+        // real account names and individual transactions. Sending it meant asking
+        // "what's my balance?" could leak those figures on a later question. The
+        // snapshot already carries the financial context, so the assistant loses
+        // very little by seeing only the current question.
+        var turns = new List<AiTurn> { new(ChatRoles.User, question) };
 
         try
         {
@@ -442,12 +452,16 @@ public class FinanceChatService : IFinanceChatService
 
             _logger.LogWarning("AI request failed: {Error}", result.Error);
 
-            var offlineHint = result.Error is not null && result.Error.Contains("offline", StringComparison.OrdinalIgnoreCase)
-                ? " You appear to be offline."
-                : string.Empty;
-
             return new ChatReplyDto(
-                $"I could not reach the AI service right now.{offlineHint} Try again in a moment, or ask me about your budgets, spending, savings, or a general finance topic.",
+                DescribeFailure(result.Error),
+                ChatReplySource.Fallback);
+        }
+        catch (OperationCanceledException)
+        {
+            // A cancelled request is not a failure to report back as a reply.
+            _logger.LogInformation("AI assistant call cancelled for user {UserId}", userId);
+            return new ChatReplyDto(
+                "That request was cancelled before I could answer.",
                 ChatReplySource.Fallback);
         }
         catch (Exception ex)
@@ -459,6 +473,24 @@ public class FinanceChatService : IFinanceChatService
         }
     }
 
+    /// <summary>
+    /// Passes the client's reason through instead of flattening every failure
+    /// into one sentence: an invalid key, a rate limit and a wrong base URL all
+    /// need different things from the user, and the useful wording (already
+    /// written by the client) was being thrown away.
+    /// </summary>
+    private static string DescribeFailure(string? error)
+    {
+        if (string.IsNullOrWhiteSpace(error))
+        {
+            return "I could not reach the AI service right now. Try again in a moment, or ask me about " +
+                   "your budgets, spending, savings, or a general finance topic - those work without cloud AI.";
+        }
+
+        return $"{error}. You can check the key, base URL and model in Settings - AI Assistant. " +
+               "Meanwhile I can still answer questions about your budgets, spending and savings.";
+    }
+
     private async Task<string> BuildSnapshotAsync(Guid userId, CancellationToken cancellationToken)
     {
         try
@@ -467,27 +499,52 @@ public class FinanceChatService : IFinanceChatService
             var budgets = await _budgetService.GetActiveAsync(userId, DateTime.Today, cancellationToken);
             var goals = await _goalService.GetActiveAsync(userId, cancellationToken);
 
+            // Deliberately coarse. Two reasons, and both matter:
+            //  - Privacy. Exact balances and per-category amounts are far more
+            //    identifying than a ballpark, and budget/goal names are free text
+            //    the user typed ("Maria's gift", "Budi's school"), so they are
+            //    dropped entirely. Category names stay: there are a handful of
+            //    standard ones and the answer is useless without them.
+            //  - Cost. Every digit is a token, and free tiers are the default.
             var builder = new StringBuilder();
             builder.AppendLine($"Date: {DateTime.Now:yyyy-MM-dd}");
-            builder.AppendLine($"Total balance: {dashboard.TotalBalance}");
-            builder.AppendLine($"This month income: {dashboard.TotalIncome}, spending: {dashboard.TotalExpense}, net: {dashboard.NetAmount}, savings rate: {dashboard.SavingsRate}%");
+            builder.AppendLine($"Total balance: {Approx(dashboard.TotalBalance.Amount)} PHP");
+            builder.AppendLine(
+                $"This month: income {Approx(dashboard.TotalIncome.Amount)}, " +
+                $"spending {Approx(dashboard.TotalExpense.Amount)}, " +
+                $"net {Approx(dashboard.NetAmount.Amount)}, " +
+                $"savings rate {ApproxPercent(dashboard.SavingsRate)}");
 
-            if (dashboard.SpendingByCategory.Count > 0)
+            var topCategories = dashboard.SpendingByCategory
+                .OrderByDescending(c => c.Amount.Amount)
+                .Take(4)
+                .ToList();
+
+            if (topCategories.Count > 0)
             {
-                builder.AppendLine("Top spending categories this month: " + string.Join(", ",
-                    dashboard.SpendingByCategory.Take(5).Select(c => $"{c.CategoryName} {c.Amount} ({c.Percentage:0.#}%)")));
+                builder.AppendLine("Top spending categories: " + string.Join(", ",
+                    topCategories.Select(c => $"{c.CategoryName} {Approx(c.Amount.Amount)} ({ApproxPercent(c.Percentage)})")));
             }
 
             if (budgets.Count > 0)
             {
-                builder.AppendLine("Active budgets: " + string.Join(", ",
-                    budgets.Take(6).Select(b => $"{b.Name} {b.SpentAmount}/{b.Amount} ({b.PercentageUsed:0.#}%)")));
+                var nearLimit = budgets.Count(b => b.IsNearLimit || b.IsOverBudget);
+                var tightest = budgets.OrderByDescending(b => b.PercentageUsed).First();
+
+                builder.AppendLine(
+                    $"Budgets: {budgets.Count} active, {nearLimit} near or over limit, " +
+                    $"{budgets.Count - nearLimit} on track; tightest is at {ApproxPercent(tightest.PercentageUsed)}");
             }
 
             if (goals.Count > 0)
             {
-                builder.AppendLine("Active goals: " + string.Join(", ",
-                    goals.Take(4).Select(g => $"{g.Name} {g.ProgressPercentage:0.#}% (target {g.TargetAmount})")));
+                var nearest = goals.OrderBy(g => g.DaysRemaining).First();
+                var furthestTarget = goals.Max(g => g.TargetAmount.Amount);
+
+                builder.AppendLine(
+                    $"Goals: {goals.Count} active, nearest deadline in {Math.Max(nearest.DaysRemaining, 0)} days, " +
+                    $"best progress {ApproxPercent(goals.Max(g => g.ProgressPercentage))}, " +
+                    $"largest target {Approx(furthestTarget)} PHP");
             }
 
             return builder.ToString();
@@ -498,6 +555,30 @@ public class FinanceChatService : IFinanceChatService
             return "Financial data is unavailable at the moment.";
         }
     }
+
+    /// <summary>
+    /// Rounds to one significant step so the model reasons about magnitude
+    /// rather than exact figures, without inventing precision.
+    /// </summary>
+    private static string Approx(decimal amount)
+    {
+        var magnitude = Math.Abs(amount);
+
+        var step = magnitude switch
+        {
+            >= 100_000m => 10_000m,
+            >= 10_000m => 1_000m,
+            >= 1_000m => 100m,
+            >= 100m => 10m,
+            _ => 1m
+        };
+
+        return $"~{Math.Round(amount / step, MidpointRounding.AwayFromZero) * step:N0}";
+    }
+
+    /// <summary>Percentages to the nearest 5%, which is far more than the model needs.</summary>
+    private static string ApproxPercent(decimal percentage) =>
+        $"~{Math.Round(percentage / 5m, MidpointRounding.AwayFromZero) * 5m:N0}%";
 
     private static string CleanQuestionTail(string tail)
     {

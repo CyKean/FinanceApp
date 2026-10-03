@@ -15,9 +15,25 @@ public partial class ChatPage : ContentPage
         _viewModel.FocusRequested += OnFocusRequested;
     }
 
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        // The view-model is transient today, so this was not a live leak - but
+        // registering it as a singleton would have turned it into one.
+        _viewModel.MessagesChanged -= OnMessagesChanged;
+        _viewModel.FocusRequested -= OnFocusRequested;
+    }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+
+        _viewModel.MessagesChanged -= OnMessagesChanged;
+        _viewModel.MessagesChanged += OnMessagesChanged;
+        _viewModel.FocusRequested -= OnFocusRequested;
+        _viewModel.FocusRequested += OnFocusRequested;
+
         if (_viewModel.LoadCommand.CanExecute(null))
             await _viewModel.LoadCommand.ExecuteAsync(null);
     }
@@ -27,7 +43,16 @@ public partial class ChatPage : ContentPage
         var last = _viewModel.Messages.LastOrDefault();
         if (last is null) return;
 
-        MessagesCollectionView.ScrollTo(last, position: ScrollToPosition.End, animate: true);
+        // ScrollTo throws if the collection view is not realised, which is
+        // exactly the state it is in when a reply lands after the user left.
+        try
+        {
+            MessagesCollectionView.ScrollTo(last, position: ScrollToPosition.End, animate: true);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Could not scroll chat: {ex.Message}");
+        }
     }
 
     private void OnFocusRequested(object? sender, EventArgs e)

@@ -3,6 +3,7 @@ namespace FinanceApp.Mobile.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FinanceApp.Application.Interfaces;
+using FinanceApp.Infrastructure.Configuration;
 using FinanceApp.Mobile.Services;
 using Microsoft.Extensions.Logging;
 
@@ -14,13 +15,25 @@ public partial class AiSettingsViewModel : BaseViewModel
     private readonly IDialogService _dialogService;
     private readonly ILogger<AiSettingsViewModel> _logger;
 
+    // Groq is first, and shares AiOptions' defaults, so the provider pre-selected on
+    // a fresh install is always the same one the client falls back to. It is the
+    // only provider still publishing a per-model free-tier table and needs no
+    // card; its 70B model allows 1,000 requests/day and 100K tokens/day, which is
+    // plenty for a personal assistant. llama-3.1-8b-instant trades quality for
+    // 500K tokens/day.
+    //
+    // Google's free tier has been cut to roughly 20 requests/day, so it is listed
+    // but not recommended, and OpenRouter is reached through the openrouter/free
+    // router rather than a hardcoded ":free" id, because those catalogue entries
+    // appear and disappear constantly.
     private static readonly (string Name, string BaseUrl, string Model)[] Providers =
     {
-        ("Groq (free)", "https://api.groq.com/openai/v1", "llama-3.3-70b-versatile"),
-        ("Google Gemini (free)", "https://generativelanguage.googleapis.com/v1beta/openai/", "gemini-2.5-flash"),
-        ("OpenRouter (free models)", "https://openrouter.ai/api/v1", "google/gemma-4-31b-it:free"),
-        ("Cerebras (free)", "https://api.cerebras.ai/v1", "llama-3.3-70b-versatile"),
-        ("OpenAI (default)", "https://api.openai.com/v1", "gpt-4o-mini")
+        ("Groq - Llama 3.3 70B (free, default)", AiOptions.DefaultBaseUrl, AiOptions.DefaultModel),
+        ("Groq - Llama 3.1 8B (free, high volume)", AiOptions.DefaultBaseUrl, "llama-3.1-8b-instant"),
+        ("OpenRouter - any free model", "https://openrouter.ai/api/v1", "openrouter/free"),
+        ("Cerebras - Llama 3.3 70B (free)", "https://api.cerebras.ai/v1", "llama-3.3-70b-versatile"),
+        ("Google Gemini 2.5 Flash (free, low limit)", "https://generativelanguage.googleapis.com/v1beta/openai/", "gemini-2.5-flash"),
+        ("OpenAI (paid)", "https://api.openai.com/v1", "gpt-4o-mini")
     };
 
     [ObservableProperty]
@@ -163,9 +176,18 @@ public partial class AiSettingsViewModel : BaseViewModel
             var result = await _aiClient.TestAsync();
 
             if (result.Success)
-                await _dialogService.ShowSuccessAsync($"Connected — {settings.Model} replied");
+            {
+                // Name the host too: with several free tiers configured it is
+                // not obvious which one actually answered.
+                var host = Uri.TryCreate(settings.BaseUrl, UriKind.Absolute, out var parsed)
+                    ? parsed.Host
+                    : settings.BaseUrl;
+                await _dialogService.ShowSuccessAsync($"Connected to {host} — {settings.Model} replied");
+            }
             else
+            {
                 await _dialogService.ShowFailureAsync(result.Error ?? "Connection failed");
+            }
         }
         catch (Exception ex)
         {
@@ -193,6 +215,11 @@ public partial class AiSettingsViewModel : BaseViewModel
         try
         {
             await _sessionStore.RemoveAsync(AiClientDefaults.ApiKeySessionKey);
+
+            // Drop the provider preset too, otherwise the saved Groq/Gemini base
+            // URL and model linger and silently apply to the next key added.
+            await _settingsStore.ClearAsync();
+
             IsConfigured = false;
             await _dialogService.ShowSuccessAsync("API key removed");
         }

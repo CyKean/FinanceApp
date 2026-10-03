@@ -8,7 +8,6 @@ using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using FinanceApp.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 
 public partial class DashboardViewModel : BaseViewModel
