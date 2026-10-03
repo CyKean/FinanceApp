@@ -366,3 +366,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Supabase CLI local state. .temp/pooler-url is a postgres:// URI with an
+# inline database password, so this must never be committed.
+supabase/
