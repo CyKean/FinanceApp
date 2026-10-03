@@ -16,7 +16,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Grid RowDefinitions="Auto,*">
         <!-- Top bar: logo -->
         <HorizontalStackLayout Grid.Row="0" Padding="22,18,22,0" Spacing="8" VerticalOptions="Center">
             <Border WidthRequest="34" HeightRequest="34" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Background="Transparent" VerticalOptions="Center">
@@ -24,55 +24,48 @@
                 <Label Text="◈" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
             </Border>
             <Label Text="Paytin" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
-            <Label Text="Finance Mobile App" FontSize="12" TextColor="{StaticResource PayInk}" Opacity="0.7" HorizontalOptions="Fill" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+            <Label Text="Finance Mobile App" FontSize="12" TextColor="{StaticResource PayInk}" Opacity="0.7" VerticalOptions="Center" />
             <Label Text="● ● ●" FontSize="10" TextColor="{StaticResource PayInk}" Opacity="0.5" VerticalOptions="Center" />
         </HorizontalStackLayout>
 
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="0" Padding="22,8,22,12">
-                <!-- Doodle hero -->
-                <Grid HeightRequest="300" Margin="0,6,0,0">
-                    <Border Background="#BFE33F" Opacity="0.45" HeightRequest="230" WidthRequest="230" HorizontalOptions="Center" VerticalOptions="Center" StrokeThickness="0">
+            <VerticalStackLayout Spacing="0" Padding="22,8,22,28">
+                <!-- Doodle hero. Laid out with real rows/columns: the previous
+                     version absolutely positioned everything inside a fixed-height
+                     Grid and the children were clipped out of existence. -->
+                <Grid Margin="0,10,0,0" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto" RowSpacing="14">
+                    <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="12" HeightRequest="44" WidthRequest="44">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        <controls:PaytinIconView IconKey="trendup" Size="20" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
-                    <!-- floating chips -->
-                    <Border HorizontalOptions="Start" VerticalOptions="Start" Margin="6,18,0,0" Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="10" HeightRequest="44" WidthRequest="44">
-                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                        <Label Text="$" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+
+                    <Border Grid.Row="0" Grid.Column="1" Margin="12,0" Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="16,10" HorizontalOptions="Center">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                        <controls:PaytinIconView IconKey="card" Size="18" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
-                    <Border HorizontalOptions="Center" VerticalOptions="Start" Margin="0,8,0,0" Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="8,6">
+
+                    <Border Grid.Row="0" Grid.Column="2" Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="14,10" HorizontalOptions="End">
                         <Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
-                        <Label Text="▦▦" FontSize="16" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
-                    </Border>
-                    <Border HorizontalOptions="End" VerticalOptions="Start" Margin="0,26,4,0" Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="10,8" Rotation="-12">
-                        <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
-                        <VerticalStackLayout Spacing="0">
-                            <Label Text="━━" FontSize="10" TextColor="{StaticResource PayInk}" />
-                            <Label Text="▭" FontSize="12" TextColor="{StaticResource PayInk}" />
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView HeightRequest="2" WidthRequest="22" Color="{StaticResource PayInk}" HorizontalOptions="End" />
+                            <BoxView HeightRequest="2" WidthRequest="14" Color="{StaticResource PayInk}" HorizontalOptions="End" />
                         </VerticalStackLayout>
                     </Border>
-                    <!-- wallet guy (emoji composition, stands in for illustration) -->
-                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="0">
-                        <Label Text="👆" FontSize="44" HorizontalOptions="Start" Margin="10,0,0,0" />
-                        <Border Background="#E7F49A" Stroke="{StaticResource PayInk}" StrokeThickness="2" Padding="22,16" WidthRequest="210">
-                            <Border.StrokeShape><RoundRectangle CornerRadius="18" /></Border.StrokeShape>
-                            <VerticalStackLayout Spacing="6">
-                                <HorizontalStackLayout Spacing="8">
-                                    <Border WidthRequest="22" HeightRequest="22" Background="{StaticResource PayInk}" StrokeThickness="0" VerticalOptions="Center">
-                                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                        <Label Text="○" TextColor="{StaticResource PayLime}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
-                                    </Border>
-                                    <BoxView HeightRequest="2" WidthRequest="90" Color="{StaticResource PayInk}" VerticalOptions="Center" />
-                                </HorizontalStackLayout>
-                                <Label Text="(( ))" FontSize="22" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" />
-                                <Label Text="👛" FontSize="64" HorizontalOptions="Center" />
+
+                    <!-- wallet card, drawn with Lucide geometry rather than emoji
+                         so it renders identically on every device -->
+                    <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Background="#E7F49A" Stroke="{StaticResource PayInk}" StrokeThickness="2" Padding="20,16" HorizontalOptions="Center">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="20" /></Border.StrokeShape>
+                        <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="16">
+                            <VerticalStackLayout Spacing="10" VerticalOptions="Center">
+                                <Border WidthRequest="24" HeightRequest="24" Background="{StaticResource PayInk}" StrokeThickness="0">
+                                    <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                    <Label Text="○" TextColor="{StaticResource PayLime}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
+                                </Border>
+                                <BoxView HeightRequest="2" WidthRequest="44" Color="{StaticResource PayInk}" />
                             </VerticalStackLayout>
-                        </Border>
-                        <Label Text="🧾" FontSize="30" HorizontalOptions="Start" Margin="0,-10,0,0" Rotation="-18" />
-                    </VerticalStackLayout>
-                    <Border HorizontalOptions="End" VerticalOptions="End" Margin="0,0,18,40" Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" HeightRequest="34" WidthRequest="34">
-                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                        <Label Text="$" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <controls:PaytinIconView Grid.Column="1" IconKey="wallet" Size="58" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Grid>
                     </Border>
                 </Grid>
 
@@ -101,8 +94,8 @@
                                 <Label Text="● Secure" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
                             </Border>
                         </HorizontalStackLayout>
-                        <Label Text="Login to continue" IsVisible="{Binding IsRegisterMode, Converter={StaticResource InverseBoolConverter}}" FontSize="13" TextColor="#6F7668" />
-                        <Label Text="Start tracking in seconds" IsVisible="{Binding IsRegisterMode}" FontSize="13" TextColor="#6F7668" />
+                        <Label Text="Login to continue" IsVisible="{Binding IsRegisterMode, Converter={StaticResource InverseBoolConverter}}" FontSize="13" TextColor="{StaticResource PayMuted}" />
+                        <Label Text="Start tracking in seconds" IsVisible="{Binding IsRegisterMode}" FontSize="13" TextColor="{StaticResource PayMuted}" />
 
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Email" Style="{StaticResource FormLabelStyle}" />
@@ -151,29 +144,13 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- Bottom Skip / Let's Start -->
-        <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" Padding="22,8,22,20" VerticalOptions="Center" BackgroundColor="{StaticResource PayLime}">
-            <Label Grid.Column="0" Text="New here? Register" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center"
-                   IsVisible="{Binding IsRegisterMode, Converter={StaticResource InverseBoolConverter}}">
-                <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding ToggleModeCommand}" /></Label.GestureRecognizers>
-            </Label>
-            <Label Grid.Column="0" Text="Have an account? Login" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center"
-                   IsVisible="{Binding IsRegisterMode}">
-                <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding ToggleModeCommand}" /></Label.GestureRecognizers>
-            </Label>
-            <Label Grid.Column="1" Text="Let's Start" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,10,0">
-                <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding SubmitCommand}" /></Label.GestureRecognizers>
-            </Label>
-            <Border Grid.Column="2" WidthRequest="56" HeightRequest="56" Background="{StaticResource PayInk}" Stroke="{StaticResource PayInk}" StrokeThickness="1" VerticalOptions="Center">
-                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                <Label Text="↗" FontSize="24" TextColor="{StaticResource PayLime}" HorizontalOptions="Center" VerticalOptions="Center">
-                    <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding SubmitCommand}" /></Label.GestureRecognizers>
-                </Label>
-            </Border>
-        </Grid>
+        <!-- The old footer bar is gone: its arrow FAB and its "Let's Start"
+             label both ran SubmitCommand (duplicating the Login button) and
+             its "New here? Register" label duplicated the in-card toggle. It
+             also stole the height that made the auth card look truncated. -->
 
         <!-- Loading overlay -->
-        <controls:LoadingOverlay Grid.Row="0" Grid.RowSpan="3" IsLoading="{Binding IsBusy}" Text="{Binding BusyMessage}" />
-        <controls:ToastHost Grid.Row="0" Grid.RowSpan="3" />
+        <controls:LoadingOverlay Grid.Row="0" Grid.RowSpan="2" IsLoading="{Binding IsBusy}" Text="{Binding BusyMessage}" />
+        <controls:ToastHost Grid.Row="0" Grid.RowSpan="2" />
     </Grid>
 </ContentPage>

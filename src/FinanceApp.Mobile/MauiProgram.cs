@@ -69,6 +69,10 @@ public static class MauiProgram
                 (handler, view) => StripFieldUnderline(handler.PlatformView, view as Microsoft.Maui.Controls.Element));
             Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("FlatField",
                 (handler, view) => StripFieldUnderline(handler.PlatformView, view as Microsoft.Maui.Controls.Element));
+            // Entry was missing here, so every Entry in the app kept Android's
+            // default underline even inside a styled field border.
+            Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("FlatField",
+                (handler, view) => StripFieldUnderline(handler.PlatformView, view as Microsoft.Maui.Controls.Element));
         });
 #endif
 
@@ -218,8 +222,19 @@ public static class MauiProgram
 #if ANDROID
     private static void StripFieldUnderline(object? platformView, Microsoft.Maui.Controls.Element? element)
     {
-        if (element?.Parent is Microsoft.Maui.Controls.Border && platformView is Android.Views.View view)
-            view.Background = null;
+        if (platformView is not Android.Views.View view)
+            return;
+
+        // Styled fields are usually Border > Grid > control, so the direct parent
+        // is the Grid rather than the Border. Walk up looking for the Border.
+        for (var ancestor = element?.Parent; ancestor is not null; ancestor = ancestor.Parent)
+        {
+            if (ancestor is Microsoft.Maui.Controls.Border)
+            {
+                view.Background = null;
+                return;
+            }
+        }
     }
 #endif
 }
