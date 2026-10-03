@@ -68,6 +68,16 @@
 		<XamlCompilation>Skip</XamlCompilation>
 	</PropertyGroup>
 
+	<!-- Android Debug defaults EmbedAssembliesIntoApk to False, which enables Fast
+	     Deployment: assemblies are stripped out of the APK and pushed to the device
+	     at launch. That loses their embedded resources, so every page fails at
+	     runtime with "No embeddedresource found for FinanceApp.Mobile.App". Force the
+	     assemblies (and their embedded XAML) into the APK instead. The cost is a
+	     larger, slower-to-deploy APK, which is the right trade for Debug. -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug' And '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'android'">
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\financeapp_fg.svg" Color="#0E6B4F" />
