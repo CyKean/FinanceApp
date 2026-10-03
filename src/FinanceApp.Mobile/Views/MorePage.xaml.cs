@@ -70,6 +70,11 @@ public partial class MorePage : ContentPage
             MainThread.BeginInvokeOnMainThread(action);
     }
 
+    private async void OnAppOverviewTapped(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("AppOverview");
+    }
+
     private async void OnGoalsTapped(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("//Goals");

@@ -179,6 +179,7 @@ public static class MauiProgram
         builder.Services.AddTransient<PredictionsPage>();
         builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<MorePage>();
+        builder.Services.AddTransient<AppOverviewPage>();
         builder.Services.AddTransient<AddTransactionSheetPage>();
         builder.Services.AddTransient<ChatPage>();
         builder.Services.AddTransient<BudgetSuggestionsPage>();
@@ -200,6 +201,7 @@ public static class MauiProgram
         Routing.RegisterRoute("AddBudget", typeof(AddBudgetPage));
         Routing.RegisterRoute("EditBudget", typeof(AddBudgetPage));
         Routing.RegisterRoute("Goals", typeof(GoalsPage));
+        Routing.RegisterRoute("AppOverview", typeof(AppOverviewPage));
         Routing.RegisterRoute("AddGoal", typeof(AddGoalPage));
         Routing.RegisterRoute("EditGoal", typeof(AddGoalPage));
         Routing.RegisterRoute("Calendar", typeof(CalendarPage));

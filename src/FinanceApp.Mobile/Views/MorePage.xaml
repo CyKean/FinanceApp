@@ -35,14 +35,17 @@
                 </Grid>
 
                 <Border Style="{StaticResource HeroCardStyle}" Padding="18">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnAppOverviewTapped" />
+                    </Border.GestureRecognizers>
                     <Grid ColumnDefinitions="*,Auto">
                         <VerticalStackLayout Spacing="2" VerticalOptions="Center">
-                            <Label Text="Finora Pro" FontSize="16" FontAttributes="Bold" TextColor="White" />
-                            <Label Text="Insights, AI budgets and forecasts" FontSize="12" TextColor="White" Opacity="0.7" />
+                            <Label Text="Inside Finora" FontSize="16" FontAttributes="Bold" TextColor="White" />
+                            <Label Text="What the app does and how it works" FontSize="12" TextColor="White" Opacity="0.7" />
                         </VerticalStackLayout>
                         <Border Grid.Column="1" Background="{StaticResource FinoraLime}" StrokeThickness="0" Padding="14,10" VerticalOptions="Center">
                             <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                            <Label Text="Explore →" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                            <Label Text="Overview →" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
                         </Border>
                     </Grid>
                 </Border>
