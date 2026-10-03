@@ -258,6 +258,12 @@ public class NullToBoolConverter : IValueConverter
     {
         if (value is System.Collections.ICollection collection)
             return collection.Count > 0;
+
+        // A bound ".Count" arrives as an int, which is never null - without
+        // this every section bound to a count rendered permanently.
+        if (value is int count)
+            return count > 0;
+
         return value != null;
     }
 

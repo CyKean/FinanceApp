@@ -55,5 +55,6 @@ public record AnalyticsDto(
     decimal SavingsRate,
     Money AverageDailySpending,
     Money AverageMonthlySpending,
-    IReadOnlyList<CategorySpendingDto> HighestSpendingCategories
-);
+    IReadOnlyList<CategorySpendingDto> HighestSpendingCategories,
+    int DaysInPeriod,
+    decimal MonthsInPeriod);

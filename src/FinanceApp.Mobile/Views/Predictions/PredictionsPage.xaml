@@ -17,7 +17,6 @@
             <converters:PercentageToColorConverter x:Key="PercentageColorConverter" />
             <converters:TransactionTypeToColorConverter x:Key="TransactionTypeColorConverter" />
             <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
-            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
             <converters:ColorConverter x:Key="ColorConverter" />
             <converters:SavingsRateColorConverter x:Key="SavingsRateColorConverter" />
             <converters:GoalStatusVisibilityConverter x:Key="GoalStatusVisibilityConverter" />
@@ -49,7 +48,7 @@
                 </Grid>
 
                 <!-- Header -->
-                <Border Style="{StaticResource HeroCardStyle}" IsVisible="{Binding ExpensePrediction, Converter={StaticResource NullToBoolConverter}}">
+                <Border Style="{StaticResource HeroCardStyle}" IsVisible="{Binding ExpensePrediction, Converter={StaticResource CountToBoolConverter}}">
                     <VerticalStackLayout Spacing="8">
                         <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
                             <controls:PaytinIconView IconKey="sparkle" Size="44" Light="True" VerticalOptions="Center" />
@@ -90,7 +89,7 @@
                 </Border>
 
                 <!-- Category Predictions -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding ExpensePrediction.CategoryPredictions.Count, Converter={StaticResource NullToBoolConverter}}">
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding ExpensePrediction.CategoryPredictions.Count, Converter={StaticResource CountToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Category Breakdown" Style="{StaticResource SectionHeaderStyle}" />
                         <CollectionView ItemsSource="{Binding ExpensePrediction.CategoryPredictions}" HeightRequest="300">
@@ -117,7 +116,7 @@
                 </Border>
 
                 <!-- Spending Trends -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding SpendingTrends.Count, Converter={StaticResource NullToBoolConverter}}">
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding SpendingTrends.Count, Converter={StaticResource CountToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Spending Trends (6 months)" Style="{StaticResource SectionHeaderStyle}" />
                         <CollectionView ItemsSource="{Binding SpendingTrends}" HeightRequest="250">
@@ -147,7 +146,7 @@
                 </Border>
 
                 <!-- Budget Forecasts -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding BudgetForecasts.Count, Converter={StaticResource NullToBoolConverter}}">
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding BudgetForecasts.Count, Converter={StaticResource CountToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Budget Forecasts" Style="{StaticResource SectionHeaderStyle}" />
                         <CollectionView ItemsSource="{Binding BudgetForecasts}" HeightRequest="250">
@@ -198,7 +197,7 @@
                 </Border>
 
                 <!-- Smart Insights -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding Insights.Count, Converter={StaticResource NullToBoolConverter}}">
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding Insights.Count, Converter={StaticResource CountToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Smart Insights" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
                         <CollectionView ItemsSource="{Binding Insights}" HeightRequest="250">
@@ -223,7 +222,7 @@
                 </Border>
 
                 <!-- Anomalies -->
-                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding Anomalies.Count, Converter={StaticResource NullToBoolConverter}}">
+                <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,16,0,0" IsVisible="{Binding Anomalies.Count, Converter={StaticResource CountToBoolConverter}}">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Unusual Spending" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
                         <CollectionView ItemsSource="{Binding Anomalies}" HeightRequest="250">

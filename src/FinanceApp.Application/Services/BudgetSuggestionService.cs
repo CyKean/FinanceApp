@@ -34,9 +34,18 @@ public class BudgetSuggestionService : IBudgetSuggestionService
         {
             var analytics = await _dashboardService.GetAnalyticsAsync(userId, AnalysisMonths, cancellationToken);
             var activeBudgets = await _budgetService.GetActiveAsync(userId, DateTime.Today, cancellationToken);
+
+            // Overlapping budget periods can exist for one category, so sum
+            // them rather than silently picking an arbitrary winner.
             var budgetsByCategory = activeBudgets
                 .GroupBy(b => b.CategoryId.Value)
-                .ToDictionary(g => g.Key, g => g.First());
+                .ToDictionary(g => g.Key, g => g.OrderByDescending(b => b.Amount.Amount).First());
+
+            // The analytics window spans whole calendar months, so it is
+            // usually not AnalysisMonths long. Dividing by the requested count
+            // under-stated the monthly average by up to 3x depending on the day.
+            var monthsInPeriod = analytics.MonthsInPeriod > 0 ? analytics.MonthsInPeriod : AnalysisMonths;
+            var periodText = $"{analytics.DaysInPeriod} days";
 
             var suggestions = new List<BudgetSuggestionDto>();
 
@@ -44,13 +53,15 @@ public class BudgetSuggestionService : IBudgetSuggestionService
             {
                 if (category.Amount.Amount <= 0) continue;
 
-                var monthlyAverage = RoundUp(category.Amount.Divide(AnalysisMonths));
+                var monthlyAverage = RoundUp(ScaledToMonths(category.Amount, monthsInPeriod));
                 if (monthlyAverage.Amount < MinSuggestedAmount) continue;
+
+                var id = SuggestionId(category.CategoryId.Value, monthlyAverage.Amount);
 
                 if (!budgetsByCategory.TryGetValue(category.CategoryId.Value, out var budget))
                 {
                     suggestions.Add(new BudgetSuggestionDto(
-                        Guid.NewGuid(),
+                        id,
                         BudgetSuggestionKind.Create,
                         category.CategoryId,
                         category.CategoryName,
@@ -59,7 +70,7 @@ public class BudgetSuggestionService : IBudgetSuggestionService
                         monthlyAverage,
                         null,
                         null,
-                        $"You averaged {monthlyAverage} per month over the last {AnalysisMonths} months and have no budget for this category."));
+                        $"You averaged {monthlyAverage.Amount:N0} per month over the last {periodText} and have no budget for this category."));
                     continue;
                 }
 
@@ -69,7 +80,7 @@ public class BudgetSuggestionService : IBudgetSuggestionService
                     monthlyAverage - currentAmount >= new Money(MinChangeAmount, currentAmount.Currency))
                 {
                     suggestions.Add(new BudgetSuggestionDto(
-                        Guid.NewGuid(),
+                        id,
                         BudgetSuggestionKind.Increase,
                         category.CategoryId,
                         category.CategoryName,
@@ -78,13 +89,13 @@ public class BudgetSuggestionService : IBudgetSuggestionService
                         monthlyAverage,
                         currentAmount,
                         budget.Id,
-                        $"You averaged {monthlyAverage} per month but this budget is only {currentAmount}, so it is likely too tight."));
+                        $"You averaged {monthlyAverage.Amount:N0} per month over the last {periodText}, but this budget is {currentAmount.Amount:N0}, so it is likely too tight."));
                 }
                 else if (monthlyAverage < currentAmount.Multiply(DecreaseThreshold) &&
                          currentAmount - monthlyAverage >= new Money(MinChangeAmount, currentAmount.Currency))
                 {
                     suggestions.Add(new BudgetSuggestionDto(
-                        Guid.NewGuid(),
+                        id,
                         BudgetSuggestionKind.Decrease,
                         category.CategoryId,
                         category.CategoryName,
@@ -93,7 +104,7 @@ public class BudgetSuggestionService : IBudgetSuggestionService
                         monthlyAverage,
                         currentAmount,
                         budget.Id,
-                        $"You averaged {monthlyAverage} per month while this budget is {currentAmount}, so you could free up {currentAmount - monthlyAverage}."));
+                        $"You averaged {monthlyAverage.Amount:N0} per month over the last {periodText} while this budget is {currentAmount.Amount:N0}, so you could free up {(currentAmount - monthlyAverage).Amount:N0}."));
                 }
             }
 
@@ -108,6 +119,16 @@ public class BudgetSuggestionService : IBudgetSuggestionService
             return Array.Empty<BudgetSuggestionDto>();
         }
     }
+
+    /// <summary>
+    /// Stable key per category and proposed amount, so dismissing a suggestion
+    /// stays dismissed across reloads instead of resurfacing on every page load.
+    /// </summary>
+    private static string SuggestionId(Guid categoryId, decimal suggestedAmount) =>
+        $"budget-suggestion:{categoryId:N}:{suggestedAmount:0.00}";
+
+    private static Money ScaledToMonths(Money amount, decimal monthsInPeriod) =>
+        new(Math.Round(amount.Amount / monthsInPeriod, 2), amount.Currency);
 
     private static Money RoundUp(Money amount) =>
         new(Math.Ceiling(amount.Amount / 10m) * 10m, amount.Currency);

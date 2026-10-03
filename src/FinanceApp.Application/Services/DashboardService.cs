@@ -73,7 +73,7 @@ public class DashboardService : BaseService, IDashboardService
 
     public async Task<AnalyticsDto> GetAnalyticsAsync(Guid userId, int months, CancellationToken cancellationToken = default)
     {
-        var today = DateTime.UtcNow.Date;
+        var today = DateTime.Today;
         var startDate = today.AddMonths(-months + 1).Date;
 
         var monthlyIncome = await _transactionRepository.GetTotalByTypeAsync(userId, TransactionType.Income, startDate, today, cancellationToken);
@@ -86,14 +86,19 @@ public class DashboardService : BaseService, IDashboardService
             ? Math.Round(((monthlyIncome.Amount - monthlyExpense.Amount) / monthlyIncome.Amount) * 100, 2)
             : 0;
 
-        var daysInPeriod = (today - startDate).Days + 1;
-        var averageDailySpending = daysInPeriod > 0
-            ? new Money(Math.Round(monthlyExpense.Amount / daysInPeriod, 2), monthlyExpense.Currency)
-            : Money.Zero(monthlyExpense.Currency);
+        // The window spans whole calendar months, so it is rarely the requested
+        // number of months: asking for 3 on the 3rd gives 62 days. Callers that
+        // average per month have to divide by the elapsed span, not by "months".
+        var daysInPeriod = Math.Max(1, (today - startDate).Days + 1);
+        var monthsInPeriod = Math.Round(daysInPeriod / (365m / 12m), 4);
 
-        var averageMonthlySpending = months > 0
-            ? new Money(Math.Round(monthlyExpense.Amount / months, 2), monthlyExpense.Currency)
-            : Money.Zero(monthlyExpense.Currency);
+        var averageDailySpending = new Money(
+            Math.Round(monthlyExpense.Amount / daysInPeriod, 2),
+            monthlyExpense.Currency);
+
+        var averageMonthlySpending = new Money(
+            Math.Round(monthlyExpense.Amount / monthsInPeriod, 2),
+            monthlyExpense.Currency);
 
         var highestSpendingCategories = spendingByCategory
             .OrderByDescending(c => c.Amount.Amount)
@@ -109,7 +114,9 @@ public class DashboardService : BaseService, IDashboardService
             savingsRate,
             averageDailySpending,
             averageMonthlySpending,
-            highestSpendingCategories);
+            highestSpendingCategories,
+            daysInPeriod,
+            monthsInPeriod);
     }
 
     public async Task<IReadOnlyList<CalendarEventDto>> GetCalendarEventsAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)

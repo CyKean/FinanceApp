@@ -27,6 +27,7 @@ public record ExpensePredictionDto(
 public record SpendingTrendDto(
     CategoryId CategoryId,
     string CategoryName,
+    string CategoryIcon,
     SpendingTrend Trend,
     decimal ChangePercentage,
     Money CurrentAverage,
@@ -38,10 +39,13 @@ public record BudgetForecastDto(
     string BudgetName,
     CategoryId CategoryId,
     string CategoryName,
+    string CategoryIcon,
+    string CategoryColor,
     Money BudgetAmount,
     Money CurrentSpent,
     Money PredictedSpent,
     Money PredictedRemaining,
+    decimal PercentageUsed,
     bool WillExceedBudget,
     decimal ExceedPercentage
 );

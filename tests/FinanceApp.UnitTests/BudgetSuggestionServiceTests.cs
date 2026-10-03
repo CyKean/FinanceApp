@@ -41,6 +41,54 @@ public class BudgetSuggestionServiceTests
     }
 
     [Fact]
+    public async Task GetSuggestionsAsync_DividesByElapsedMonths_NotTheRequestedCount()
+    {
+        // The analytics window spans whole calendar months, so "3 months" is
+        // really ~2.03 months on the 3rd. Dividing by 3 under-stated the
+        // monthly average by roughly a third, which then produced an
+        // incorrect "lower your budget" recommendation.
+        var categoryId = Guid.NewGuid();
+        SetupAnalyticsOver(62, 2.0366m, new[] { Spending(categoryId, "Food", 6200m) });
+        SetupBudgets(new[] { CreateBudget(categoryId, "Food budget", 5000m) });
+
+        var result = await _service.GetSuggestionsAsync(Guid.NewGuid());
+
+        var suggestion = Assert.Single(result);
+        Assert.Equal(BudgetSuggestionKind.Decrease, suggestion.Kind);
+        Assert.Equal(new Money(3050m), suggestion.SuggestedAmount);
+    }
+
+    [Fact]
+    public async Task GetSuggestionsAsync_ProducesStableIds_AcrossReloads()
+    {
+        var categoryId = Guid.NewGuid();
+        SetupAnalytics(Spending(categoryId, "Food", 3000m));
+        SetupBudgets(Array.Empty<BudgetDto>());
+
+        var first = await _service.GetSuggestionsAsync(Guid.NewGuid());
+        var second = await _service.GetSuggestionsAsync(Guid.NewGuid());
+
+        // Dismissals are matched on this id, so a fresh Guid each load meant
+        // a dismissed suggestion came straight back on the next page visit.
+        Assert.Equal(first.Single().Id, second.Single().Id);
+        Assert.StartsWith("budget-suggestion:", first.Single().Id, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task GetSuggestionsAsync_UsesDifferentIds_ForDifferentCategories()
+    {
+        SetupAnalytics(
+            Spending(Guid.NewGuid(), "Food", 3000m),
+            Spending(Guid.NewGuid(), "Transport", 3000m));
+        SetupBudgets(Array.Empty<BudgetDto>());
+
+        var result = await _service.GetSuggestionsAsync(Guid.NewGuid());
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal(2, result.Select(s => s.Id).Distinct().Count());
+    }
+
+    [Fact]
     public async Task GetSuggestionsAsync_SuggestsIncrease_WhenBudgetIsTooLow()
     {
         var categoryId = Guid.NewGuid();
@@ -125,7 +173,10 @@ public class BudgetSuggestionServiceTests
         Assert.Empty(result);
     }
 
-    private void SetupAnalytics(params CategorySpendingDto[] categories)
+    private void SetupAnalytics(params CategorySpendingDto[] categories) =>
+        SetupAnalyticsOver(92, 3m, categories);
+
+    private void SetupAnalyticsOver(int daysInPeriod, decimal monthsInPeriod, CategorySpendingDto[] categories)
     {
         var analytics = new AnalyticsDto(
             new Money(50000m),
@@ -136,7 +187,9 @@ public class BudgetSuggestionServiceTests
             40m,
             new Money(1000m),
             new Money(10000m),
-            categories);
+            categories,
+            daysInPeriod,
+            monthsInPeriod);
 
         _dashboardService
             .Setup(x => x.GetAnalyticsAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))

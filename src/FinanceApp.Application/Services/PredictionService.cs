@@ -12,33 +12,41 @@ public class PredictionService : BaseService, IPredictionService
 {
     private readonly ITransactionRepository _transactionRepository;
     private readonly ICategoryRepository _categoryRepository;
-    private readonly IBudgetRepository _budgetRepository;
+    private readonly IBudgetService _budgetService;
     private readonly IRecurringTransactionRepository _recurringRepository;
     private readonly ILogger<PredictionService> _logger;
 
     private const int MinMonthsForPrediction = 2;
     private const int MinTransactionsForPrediction = 10;
 
+    /// <summary>Months of history behind the category forecast.</summary>
+    private const int ForecastHistoryMonths = 12;
+
+    /// <summary>Months of history behind the trend comparison.</summary>
+    private const int TrendHistoryMonths = 6;
+
     public PredictionService(
         IUnitOfWork unitOfWork,
         ITransactionRepository transactionRepository,
         ICategoryRepository categoryRepository,
-        IBudgetRepository budgetRepository,
+        IBudgetService budgetService,
         IRecurringTransactionRepository recurringRepository,
         ILogger<PredictionService> logger) : base(unitOfWork, logger)
     {
         _transactionRepository = transactionRepository;
         _categoryRepository = categoryRepository;
-        _budgetRepository = budgetRepository;
+        _budgetService = budgetService;
         _recurringRepository = recurringRepository;
         _logger = logger;
     }
 
     public async Task<PredictionResultDto> GeneratePredictionAsync(Guid userId, CancellationToken cancellationToken = default)
     {
+        // Computed once and shared: ForecastBudgetsAsync needs the same category
+        // prediction, and recomputing it doubled every query on this page.
         var expensePrediction = await PredictExpensesAsync(userId, 1, cancellationToken);
         var trends = await AnalyzeTrendsAsync(userId, cancellationToken);
-        var budgetForecasts = await ForecastBudgetsAsync(userId, cancellationToken);
+        var budgetForecasts = await ForecastBudgetsCoreAsync(userId, expensePrediction, cancellationToken);
         var insights = await GenerateInsightsAsync(userId, cancellationToken);
         var anomalies = await DetectAnomaliesAsync(userId, cancellationToken);
 
@@ -48,13 +56,13 @@ public class PredictionService : BaseService, IPredictionService
             budgetForecasts,
             insights,
             anomalies,
-            DateTime.UtcNow);
+            DateTime.Now);
     }
 
     public async Task<ExpensePredictionDto> PredictExpensesAsync(Guid userId, int monthsAhead, CancellationToken cancellationToken = default)
     {
-        var today = DateTime.UtcNow.Date;
-        var startDate = today.AddMonths(-12);
+        var today = DateTime.Today;
+        var startDate = today.AddMonths(-ForecastHistoryMonths);
 
         var expenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
             userId, TransactionType.Expense, startDate, today, cancellationToken);
@@ -74,42 +82,42 @@ public class PredictionService : BaseService, IPredictionService
                 activeExpenses.Count);
         }
 
-        var monthlyData = GroupByMonth(activeExpenses);
-        var monthsAnalyzed = monthlyData.Count;
-        var categoryPredictions = new List<CategoryPredictionDto>();
+        var monthlyTotals = MonthlyTotals(activeExpenses);
+        var monthsAnalyzed = monthlyTotals.Count;
 
         var categories = await _categoryRepository.GetActiveByTypeAsync(userId, CategoryType.Expense, cancellationToken);
-        var categoryDict = categories.ToDictionary(c => c.Id, c => c);
+
+        // Recurring rows are fetched once for the whole run rather than once per
+        // category: the previous per-category query ran N identical times.
+        var recurringByCategory = await GetRecurringMonthlyTotalsAsync(userId, cancellationToken);
+        var categoryPredictions = new List<CategoryPredictionDto>();
 
         foreach (var category in categories)
         {
             var catExpenses = activeExpenses.Where(e => e.CategoryId.Value == category.Id).ToList();
-            if (!catExpenses.Any())
+            if (catExpenses.Count == 0)
                 continue;
 
-            var catMonthlyData = GroupByMonth(catExpenses);
-            var prediction = CalculateCategoryPrediction(catMonthlyData, catExpenses);
-            var recurringAmount = await GetRecurringAmountForCategoryAsync(userId, new CategoryId(category.Id), cancellationToken);
-
-            var finalPredicted = prediction.predicted.Add(recurringAmount);
-            var minAmount = prediction.min.Add(recurringAmount);
-            var maxAmount = prediction.max.Add(recurringAmount);
+            var prediction = CalculateCategoryPrediction(MonthlyTotals(catExpenses));
+            var recurringAmount = recurringByCategory.TryGetValue(category.Id, out var recurring)
+                ? recurring
+                : Money.Zero("PHP");
 
             categoryPredictions.Add(new CategoryPredictionDto(
                 new CategoryId(category.Id),
                 category.Name,
                 category.Icon ?? "",
                 category.Color ?? "",
-                finalPredicted,
-                minAmount,
-                maxAmount));
+                prediction.predicted.Add(recurringAmount),
+                prediction.min.Add(recurringAmount),
+                prediction.max.Add(recurringAmount)));
         }
 
         var totalPredicted = categoryPredictions.Aggregate(Money.Zero("PHP"), (sum, cp) => sum.Add(cp.PredictedAmount));
         var minTotal = categoryPredictions.Aggregate(Money.Zero("PHP"), (sum, cp) => sum.Add(cp.MinAmount ?? Money.Zero("PHP")));
         var maxTotal = categoryPredictions.Aggregate(Money.Zero("PHP"), (sum, cp) => sum.Add(cp.MaxAmount ?? Money.Zero("PHP")));
 
-        var confidence = CalculateConfidence(monthsAnalyzed, activeExpenses.Count, monthlyData);
+        var confidence = CalculateConfidence(monthsAnalyzed, activeExpenses.Count, monthlyTotals);
 
         return new ExpensePredictionDto(
             totalPredicted,
@@ -124,8 +132,8 @@ public class PredictionService : BaseService, IPredictionService
 
     public async Task<IReadOnlyList<SpendingTrendDto>> AnalyzeTrendsAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var today = DateTime.UtcNow.Date;
-        var startDate = today.AddMonths(-6);
+        var today = DateTime.Today;
+        var startDate = today.AddMonths(-TrendHistoryMonths);
 
         var expenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
             userId, TransactionType.Expense, startDate, today, cancellationToken);
@@ -140,17 +148,17 @@ public class PredictionService : BaseService, IPredictionService
             if (catExpenses.Count < 3)
                 continue;
 
-            var monthlyData = GroupByMonth(catExpenses);
-            if (monthlyData.Count < 3)
+            // Oldest-first, so the tail is genuinely the most recent months and
+            // the head is the baseline to compare against. A trend needs at
+            // least one month of history to compare against, hence four.
+            var monthlyTotals = MonthlyTotals(catExpenses);
+            if (monthlyTotals.Count < 4)
                 continue;
 
-            var recentMonths = monthlyData.TakeLast(3).ToList();
-            var olderMonths = monthlyData.Take(monthlyData.Count - 3).ToList();
+            var recentAvg = monthlyTotals.TakeLast(3).Average(x => x.Total);
+            var olderAvg = monthlyTotals.Take(monthlyTotals.Count - 3).Average(x => x.Total);
 
-            var recentAvg = recentMonths.Any() ? recentMonths.Average(m => m.Value) : 0;
-            var olderAvg = olderMonths.Any() ? olderMonths.Average(m => m.Value) : 0;
-
-            if (olderAvg == 0)
+            if (olderAvg <= 0)
                 continue;
 
             var changePercent = Math.Round(((recentAvg - olderAvg) / olderAvg) * 100, 2);
@@ -161,6 +169,7 @@ public class PredictionService : BaseService, IPredictionService
             trends.Add(new SpendingTrendDto(
                 new CategoryId(category.Id),
                 category.Name,
+                category.Icon ?? "",
                 trend,
                 changePercent,
                 new Money(recentAvg, "PHP"),
@@ -172,11 +181,19 @@ public class PredictionService : BaseService, IPredictionService
 
     public async Task<IReadOnlyList<BudgetForecastDto>> ForecastBudgetsAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var today = DateTime.UtcNow.Date;
-        var activeBudgets = await _budgetRepository.GetActiveByUserIdAsync(userId, today, cancellationToken);
-        var forecasts = new List<BudgetForecastDto>();
-
         var expensePrediction = await PredictExpensesAsync(userId, 1, cancellationToken);
+        return await ForecastBudgetsCoreAsync(userId, expensePrediction, cancellationToken);
+    }
+
+    private async Task<IReadOnlyList<BudgetForecastDto>> ForecastBudgetsCoreAsync(
+        Guid userId,
+        ExpensePredictionDto expensePrediction,
+        CancellationToken cancellationToken)
+    {
+        // IBudgetService (not the repository) so SpentAmount is recalculated
+        // from the transactions rather than read from a possibly stale column.
+        var activeBudgets = await _budgetService.GetActiveAsync(userId, DateTime.Today, cancellationToken);
+        var forecasts = new List<BudgetForecastDto>();
         var categoryPredictions = expensePrediction.CategoryPredictions.ToDictionary(cp => cp.CategoryId, cp => cp);
 
         foreach (var budget in activeBudgets)
@@ -184,22 +201,32 @@ public class PredictionService : BaseService, IPredictionService
             if (!categoryPredictions.TryGetValue(budget.CategoryId, out var prediction))
                 continue;
 
-            var predictedSpent = budget.SpentAmount.Add(prediction.PredictedAmount);
-            var predictedRemaining = budget.Amount.Subtract(predictedSpent);
-            var willExceed = predictedSpent > budget.Amount;
+            // The category prediction is the expected spend for a whole month, so
+            // it is the projected end-of-period total in its own right - never
+            // something to add on top of what is already spent, which used to
+            // roughly double every forecast.
+            var projected = budget.SpentAmount.Amount >= prediction.PredictedAmount.Amount
+                ? budget.SpentAmount
+                : prediction.PredictedAmount;
+
+            var predictedRemaining = budget.Amount.Subtract(projected);
+            var willExceed = projected > budget.Amount;
             var exceedPercent = budget.Amount.Amount > 0
-                ? Math.Round(((predictedSpent.Amount - budget.Amount.Amount) / budget.Amount.Amount) * 100, 2)
+                ? Math.Round(((projected.Amount - budget.Amount.Amount) / budget.Amount.Amount) * 100, 2)
                 : 0;
 
             forecasts.Add(new BudgetForecastDto(
                 budget.Id,
                 budget.Name,
                 budget.CategoryId,
-                await GetCategoryNameAsync(budget.CategoryId, cancellationToken),
+                budget.CategoryName,
+                budget.CategoryIcon,
+                budget.CategoryColor,
                 budget.Amount,
                 budget.SpentAmount,
-                predictedSpent,
+                projected,
                 predictedRemaining,
+                budget.PercentageUsed,
                 willExceed,
                 exceedPercent));
         }
@@ -210,16 +237,20 @@ public class PredictionService : BaseService, IPredictionService
     public async Task<IReadOnlyList<SmartInsightDto>> GenerateInsightsAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var insights = new List<SmartInsightDto>();
-        var today = DateTime.UtcNow.Date;
+        var today = DateTime.Today;
         var startOfMonth = new DateTime(today.Year, today.Month, 1);
-        var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
         var prevMonthStart = startOfMonth.AddMonths(-1);
-        var prevMonthEnd = startOfMonth.AddDays(-1);
+
+        // Compare like with like: the month so far against the same number of
+        // days last month. Comparing day 1-10 against a full 31-day month
+        // guaranteed a "spending is 68% lower" insight on every single month.
+        var daysElapsed = today.Day;
+        var prevMonthComparableEnd = prevMonthStart.AddDays(daysElapsed - 1);
 
         var currentMonthExpenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
-            userId, TransactionType.Expense, startOfMonth, endOfMonth, cancellationToken);
+            userId, TransactionType.Expense, startOfMonth, today, cancellationToken);
         var prevMonthExpenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
-            userId, TransactionType.Expense, prevMonthStart, prevMonthEnd, cancellationToken);
+            userId, TransactionType.Expense, prevMonthStart, prevMonthComparableEnd, cancellationToken);
 
         var currentTotal = currentMonthExpenses.Where(e => !e.IsDeleted).Sum(e => e.Amount.Amount);
         var prevTotal = prevMonthExpenses.Where(e => !e.IsDeleted).Sum(e => e.Amount.Amount);
@@ -232,7 +263,7 @@ public class PredictionService : BaseService, IPredictionService
                 insights.Add(new SmartInsightDto(
                     "SpendingIncrease",
                     "Spending Increased",
-                    $"Your spending this month is {changePercent}% higher than last month.",
+                    $"You have spent {changePercent}% more so far this month than over the same days last month.",
                     InsightSeverity.Warning,
                     null,
                     null));
@@ -242,7 +273,7 @@ public class PredictionService : BaseService, IPredictionService
                 insights.Add(new SmartInsightDto(
                     "SpendingDecrease",
                     "Spending Decreased",
-                    $"Great job! Your spending this month is {Math.Abs(changePercent)}% lower than last month.",
+                    $"Nice work - you have spent {Math.Abs(changePercent)}% less so far this month than over the same days last month.",
                     InsightSeverity.Info,
                     null,
                     null));
@@ -256,9 +287,9 @@ public class PredictionService : BaseService, IPredictionService
             .OrderByDescending(x => x.Total)
             .ToList();
 
-        if (categorySpending.Any())
+        if (categorySpending.Count > 0)
         {
-            var topCategory = categorySpending.First();
+            var topCategory = categorySpending[0];
             var topCategoryEntity = await _categoryRepository.GetByIdAsync(topCategory.CategoryId, cancellationToken);
             var topCategoryName = topCategoryEntity?.Name ?? "Unknown";
 
@@ -274,7 +305,7 @@ public class PredictionService : BaseService, IPredictionService
                     insights.Add(new SmartInsightDto(
                         "CategoryIncrease",
                         $"{topCategoryName} Spending Increased",
-                        $"{topCategoryName} spending is {catChangePercent}% higher than last month.",
+                        $"{topCategoryName} spending is {catChangePercent}% higher than over the same days last month.",
                         InsightSeverity.Warning,
                         topCategory.CategoryId,
                         "Category"));
@@ -282,8 +313,8 @@ public class PredictionService : BaseService, IPredictionService
             }
         }
 
-        var savingsRate = await CalculateSavingsRateAsync(userId, startOfMonth, endOfMonth, cancellationToken);
-        var prevSavingsRate = await CalculateSavingsRateAsync(userId, prevMonthStart, prevMonthEnd, cancellationToken);
+        var savingsRate = await CalculateSavingsRateAsync(userId, startOfMonth, today, cancellationToken);
+        var prevSavingsRate = await CalculateSavingsRateAsync(userId, prevMonthStart, prevMonthComparableEnd, cancellationToken);
 
         if (prevSavingsRate > 0 && savingsRate > prevSavingsRate)
         {
@@ -296,20 +327,19 @@ public class PredictionService : BaseService, IPredictionService
                 null));
         }
 
-        var activeBudgets = await _budgetRepository.GetActiveByUserIdAsync(userId, today, cancellationToken);
+        var activeBudgets = await _budgetService.GetActiveAsync(userId, today, cancellationToken);
         foreach (var budget in activeBudgets)
         {
-            if (budget.IsNearLimit(90))
-            {
-                var category = await _categoryRepository.GetByIdAsync(budget.CategoryId.Value, cancellationToken);
-                insights.Add(new SmartInsightDto(
-                    "BudgetNearLimit",
-                    "Budget Near Limit",
-                    $"{category?.Name ?? "Budget"} is at {budget.GetPercentageUsed()}% of its limit.",
-                    InsightSeverity.Critical,
-                    budget.Id,
-                    "Budget"));
-            }
+            if (!budget.IsNearLimit)
+                continue;
+
+            insights.Add(new SmartInsightDto(
+                "BudgetNearLimit",
+                $"{budget.Name} Near Limit",
+                $"{budget.Name} is at {budget.PercentageUsed:F0}% of its {budget.Amount.Amount:N0} limit.",
+                InsightSeverity.Critical,
+                budget.Id,
+                "Budget"));
         }
 
         return insights;
@@ -317,7 +347,7 @@ public class PredictionService : BaseService, IPredictionService
 
     public async Task<IReadOnlyList<AnomalyDetectionDto>> DetectAnomaliesAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var today = DateTime.UtcNow.Date;
+        var today = DateTime.Today;
         var startDate = today.AddMonths(-3);
         var anomalies = new List<AnomalyDetectionDto>();
 
@@ -327,19 +357,24 @@ public class PredictionService : BaseService, IPredictionService
         var activeExpenses = expenses.Where(e => !e.IsDeleted).ToList();
         var categoryStats = activeExpenses
             .GroupBy(e => e.CategoryId.Value)
-            .Select(g => new
+            .Select(g =>
             {
-                CategoryId = g.Key,
-                Amounts = g.Select(e => e.Amount.Amount).ToList(),
-                Avg = g.Average(e => e.Amount.Amount),
-                StdDev = CalculateStdDev(g.Select(e => e.Amount.Amount).ToList())
+                var amounts = g.Select(e => e.Amount.Amount).ToList();
+                return new
+                {
+                    CategoryId = g.Key,
+                    Count = amounts.Count,
+                    Avg = amounts.Average(),
+                    StdDev = CalculateStdDev(amounts)
+                };
             })
-            .Where(s => s.Amounts.Count >= 5 && s.StdDev > 0)
+            .Where(s => s.Count >= 5 && s.Avg > 0 && s.StdDev > 0)
             .ToList();
 
         foreach (var stat in categoryStats)
         {
             var category = await _categoryRepository.GetByIdAsync(stat.CategoryId, cancellationToken);
+            var categoryName = category?.Name ?? "expense";
             var threshold = stat.Avg + (2 * stat.StdDev);
 
             var anomalousTransactions = activeExpenses
@@ -349,70 +384,74 @@ public class PredictionService : BaseService, IPredictionService
 
             foreach (var tx in anomalousTransactions)
             {
+                // stat.Avg is guarded above; keep the check local too so the
+                // decimal division can never throw if the filter ever changes.
+                if (stat.Avg <= 0)
+                    continue;
+
                 var deviation = Math.Round(((tx.Amount.Amount - stat.Avg) / stat.Avg) * 100, 2);
                 anomalies.Add(new AnomalyDetectionDto(
                     tx.Id,
                     tx.Date,
                     tx.Amount,
                     new CategoryId(tx.CategoryId.Value),
-                    category?.Name ?? "Unknown",
+                    categoryName,
                     new Money(Math.Max(0, stat.Avg - 2 * stat.StdDev), "PHP"),
-                    new Money(stat.Avg + 2 * stat.StdDev, "PHP"),
+                    new Money(threshold, "PHP"),
                     deviation,
-                    $"This {category?.Name ?? "expense"} of {tx.Amount} is {deviation}% higher than your typical {category?.Name?.ToLower() ?? "expense"}."));
+                    $"This {categoryName} of {tx.Amount.Amount:N0} is {deviation:0}% higher than your usual {categoryName} spend."));
             }
         }
 
         return anomalies.OrderByDescending(a => a.DeviationPercentage).ToList();
     }
 
-    private bool HasSufficientData(List<Transaction> expenses)
-    {
-        var monthlyData = GroupByMonth(expenses);
-        return monthlyData.Count >= MinMonthsForPrediction && expenses.Count >= MinTransactionsForPrediction;
-    }
+    private bool HasSufficientData(List<Transaction> expenses) =>
+        MonthlyTotals(expenses).Count >= MinMonthsForPrediction &&
+        expenses.Count >= MinTransactionsForPrediction;
 
-    private Dictionary<DateTime, decimal> GroupByMonth(List<Transaction> transactions)
-    {
-        return transactions
+    /// <summary>
+    /// Month key to total spend, as an explicitly ordered list, oldest month
+    /// first.
+    /// <para>
+    /// The ordering matters: the forecast weights the newest months most
+    /// heavily and the trend comparison splits "recent" from "older" off this
+    /// list. Transaction repositories return rows newest-first, so this has to
+    /// sort explicitly - otherwise "recent" silently meant "oldest" and every
+    /// trend came out backwards. A list rather than a dictionary because
+    /// <c>Dictionary</c> enumeration order is not a documented contract.
+    /// </para>
+    /// </summary>
+    private static List<(DateTime Month, decimal Total)> MonthlyTotals(List<Transaction> transactions) =>
+        transactions
             .GroupBy(t => new DateTime(t.Date.Year, t.Date.Month, 1))
-            .ToDictionary(
-                g => g.Key,
-                g => g.Sum(t => t.Amount.Amount));
-    }
+            .Select(g => (Month: g.Key, Total: g.Sum(t => t.Amount.Amount)))
+            .OrderBy(x => x.Month)
+            .ToList();
 
+    /// <summary>
+    /// Weighted moving average over the most recent months with a one standard
+    /// deviation band. Expects <paramref name="monthlyTotals"/> oldest-first.
+    /// </summary>
     private (Money predicted, Money min, Money max) CalculateCategoryPrediction(
-        Dictionary<DateTime, decimal> monthlyData,
-        List<Transaction> expenses)
+        List<(DateTime Month, decimal Total)> monthlyTotals)
     {
-        var values = monthlyData.Values.ToList();
+        var values = monthlyTotals.Select(x => x.Total).ToList();
         var recentValues = values.TakeLast(3).ToList();
 
-        decimal predicted;
-        decimal min;
-        decimal max;
-
-        if (recentValues.Count >= 3)
-        {
-            var weights = new[] { 0.5m, 0.3m, 0.2m };
-            predicted = recentValues.Zip(weights, (v, w) => v * w).Sum();
-        }
-        else
-        {
-            predicted = values.Average();
-        }
+        var predicted = recentValues.Count >= 3
+            ? recentValues.Zip(new[] { 0.5m, 0.3m, 0.2m }, (v, w) => v * w).Sum()
+            : values.Average();
 
         var stdDev = CalculateStdDev(values);
-        min = Math.Max(0, predicted - stdDev);
-        max = predicted + stdDev;
 
         return (
             new Money(Math.Round(predicted, 2), "PHP"),
-            new Money(Math.Round(min, 2), "PHP"),
-            new Money(Math.Round(max, 2), "PHP"));
+            new Money(Math.Round(Math.Max(0, predicted - stdDev), 2), "PHP"),
+            new Money(Math.Round(predicted + stdDev, 2), "PHP"));
     }
 
-    private decimal CalculateStdDev(List<decimal> values)
+    private static decimal CalculateStdDev(List<decimal> values)
     {
         if (values.Count < 2) return 0;
         var avg = values.Average();
@@ -420,13 +459,17 @@ public class PredictionService : BaseService, IPredictionService
         return (decimal)Math.Sqrt(variance);
     }
 
-    private PredictionConfidence CalculateConfidence(int monthsAnalyzed, int transactionCount, Dictionary<DateTime, decimal> monthlyData)
+    private PredictionConfidence CalculateConfidence(
+        int monthsAnalyzed,
+        int transactionCount,
+        List<(DateTime Month, decimal Total)> monthlyTotals)
     {
         if (monthsAnalyzed < MinMonthsForPrediction || transactionCount < MinTransactionsForPrediction)
             return PredictionConfidence.InsufficientData;
 
-        var values = monthlyData.Values.ToList();
-        var cv = values.Average() > 0 ? CalculateStdDev(values) / values.Average() : 1;
+        var values = monthlyTotals.Select(x => x.Total).ToList();
+        var average = values.Average();
+        var cv = average > 0 ? CalculateStdDev(values) / average : 1;
 
         if (monthsAnalyzed >= 6 && transactionCount >= 50 && cv < 0.3m)
             return PredictionConfidence.High;
@@ -436,35 +479,30 @@ public class PredictionService : BaseService, IPredictionService
         return PredictionConfidence.Low;
     }
 
-    private async Task<Money> GetRecurringAmountForCategoryAsync(Guid userId, CategoryId categoryId, CancellationToken cancellationToken)
+    /// <summary>
+    /// Monthly-equivalent recurring total per category, fetched once per run
+    /// instead of once per category.
+    /// </summary>
+    private async Task<Dictionary<Guid, Money>> GetRecurringMonthlyTotalsAsync(Guid userId, CancellationToken cancellationToken)
     {
         var recurring = await _recurringRepository.GetActiveByUserIdAsync(userId, cancellationToken);
-        var catRecurring = recurring.Where(r => r.CategoryId == categoryId && r.Type == TransactionType.Expense).ToList();
 
-        if (!catRecurring.Any())
-            return Money.Zero("PHP");
-
-        var monthlyTotal = catRecurring.Sum(r => GetMonthlyEquivalent(r.Amount, r.Frequency));
-        return new Money(Math.Round(monthlyTotal, 2), "PHP");
+        return recurring
+            .Where(r => r.Type == TransactionType.Expense && !r.EndDate.HasValue)
+            .GroupBy(r => r.CategoryId.Value)
+            .ToDictionary(
+                g => g.Key,
+                g => new Money(Math.Round(g.Sum(r => GetMonthlyEquivalent(r.Amount, r.Frequency)), 2), "PHP"));
     }
 
-    private decimal GetMonthlyEquivalent(Money amount, RecurringFrequency frequency)
+    private static decimal GetMonthlyEquivalent(Money amount, RecurringFrequency frequency) => frequency switch
     {
-        return frequency switch
-        {
-            RecurringFrequency.Daily => amount.Amount * 30,
-            RecurringFrequency.Weekly => amount.Amount * 4.33m,
-            RecurringFrequency.Monthly => amount.Amount,
-            RecurringFrequency.Yearly => amount.Amount / 12,
-            _ => amount.Amount
-        };
-    }
-
-    private async Task<string> GetCategoryNameAsync(CategoryId categoryId, CancellationToken cancellationToken)
-    {
-        var category = await _categoryRepository.GetByIdAsync(categoryId.Value, cancellationToken);
-        return category?.Name ?? "Unknown";
-    }
+        RecurringFrequency.Daily => amount.Amount * 30,
+        RecurringFrequency.Weekly => amount.Amount * 4.33m,
+        RecurringFrequency.Monthly => amount.Amount,
+        RecurringFrequency.Yearly => amount.Amount / 12,
+        _ => amount.Amount
+    };
 
     private async Task<decimal> CalculateSavingsRateAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
     {
@@ -473,7 +511,6 @@ public class PredictionService : BaseService, IPredictionService
 
         if (income.Amount == 0) return 0;
 
-        var net = income.Amount - expense.Amount;
-        return Math.Round((net / income.Amount) * 100, 2);
+        return Math.Round(((income.Amount - expense.Amount) / income.Amount) * 100, 2);
     }
 }

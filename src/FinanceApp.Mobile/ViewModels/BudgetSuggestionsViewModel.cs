@@ -15,8 +15,14 @@ public partial class BudgetSuggestionsViewModel : BaseViewModel
     private readonly IDialogService _dialogService;
     private readonly ILogger<BudgetSuggestionsViewModel> _logger;
 
+    /// <summary>Suggestions the user has closed, so reloads do not resurrect them.</summary>
+    private readonly HashSet<string> _dismissed = new(StringComparer.Ordinal);
+
     [ObservableProperty]
     private IReadOnlyList<BudgetSuggestionDto> _suggestions = Array.Empty<BudgetSuggestionDto>();
+
+    [ObservableProperty]
+    private bool _isApplying;
 
     public BudgetSuggestionsViewModel(
         IBudgetSuggestionService suggestionService,
@@ -46,7 +52,8 @@ public partial class BudgetSuggestionsViewModel : BaseViewModel
             var userId = await _authService.GetCurrentUserIdAsync();
             if (!userId.HasValue) return;
 
-            Suggestions = await _suggestionService.GetSuggestionsAsync(userId.Value);
+            var loaded = await _suggestionService.GetSuggestionsAsync(userId.Value);
+            Suggestions = loaded.Where(s => !_dismissed.Contains(s.Id)).ToList();
         }
         catch (Exception ex)
         {
@@ -62,7 +69,9 @@ public partial class BudgetSuggestionsViewModel : BaseViewModel
     [RelayCommand]
     private async Task ApplyAsync(BudgetSuggestionDto suggestion)
     {
-        if (suggestion is null) return;
+        if (suggestion is null || IsApplying) return;
+
+        IsApplying = true;
 
         try
         {
@@ -97,15 +106,18 @@ public partial class BudgetSuggestionsViewModel : BaseViewModel
                 await _dialogService.ShowSuccessAsync("Budget updated");
             }
 
+            // Applied for good: remember it so the next reload does not offer it again.
+            _dismissed.Add(suggestion.Id);
             Suggestions = Suggestions.Where(s => s.Id != suggestion.Id).ToList();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error applying budget suggestion {SuggestionId}", suggestion.Id);
-            if (ex is FinanceApp.Domain.Exceptions.ValidationException vex)
-                await _dialogService.ShowFailureAsync(vex.Message);
-            else
-                await _dialogService.ShowFailureAsync("Couldn't apply the suggestion");
+            await _dialogService.ShowFailureAsync(DescribeFailure(ex));
+        }
+        finally
+        {
+            IsApplying = false;
         }
     }
 
@@ -113,6 +125,7 @@ public partial class BudgetSuggestionsViewModel : BaseViewModel
     private void Dismiss(BudgetSuggestionDto suggestion)
     {
         if (suggestion is null) return;
+        _dismissed.Add(suggestion.Id);
         Suggestions = Suggestions.Where(s => s.Id != suggestion.Id).ToList();
     }
 
@@ -121,4 +134,18 @@ public partial class BudgetSuggestionsViewModel : BaseViewModel
     {
         await LoadAsync();
     }
+
+    /// <summary>
+    /// Validation failures come from FluentValidation, not the domain, so
+    /// catching only the domain type hid the real reason behind a generic
+    /// "couldn't apply" message.
+    /// </summary>
+    private static string DescribeFailure(Exception ex) => ex switch
+    {
+        FinanceApp.Domain.Exceptions.ValidationException domain =>
+            domain.Message,
+        FluentValidation.ValidationException fluent =>
+            string.Join(" ", fluent.Errors.Select(e => e.ErrorMessage)),
+        _ => "Couldn't apply the suggestion"
+    };
 }

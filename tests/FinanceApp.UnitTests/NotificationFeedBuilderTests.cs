@@ -188,7 +188,9 @@ public class NotificationFeedBuilderTests
                 {
                     new BudgetForecastDto(
                         budgetId, "Food", new CategoryId(Guid.NewGuid()), "Food",
-                        new Money(1000), new Money(800), new Money(1500), new Money(-500), true, 50)
+                        "🍔", "#FF6B6B",
+                        new Money(1000), new Money(800), new Money(1500), new Money(-500),
+                        80, true, 50)
                 }
             });
 

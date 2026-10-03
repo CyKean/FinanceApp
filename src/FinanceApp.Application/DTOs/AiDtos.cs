@@ -10,7 +10,7 @@ public enum BudgetSuggestionKind
 }
 
 public record BudgetSuggestionDto(
-    Guid Id,
+    string Id,
     BudgetSuggestionKind Kind,
     CategoryId CategoryId,
     string CategoryName,
@@ -35,13 +35,13 @@ public record BudgetSuggestionDto(
         _ => "✨"
     };
 
-    public string SuggestedText => SuggestedAmount.ToString();
+    public string SuggestedText => SuggestedAmount.Amount.ToString("N0");
 
     public string IconGlyph => string.IsNullOrEmpty(CategoryIcon) ? "🎯" : CategoryIcon;
 
     public string CurrentText => CurrentAmount is null
         ? "No budget set for this category"
-        : $"Current budget: {CurrentAmount}";
+        : $"Current budget: {CurrentAmount.Amount.ToString("N0")}";
 }
 
 public static class ChatRoles
