@@ -39,7 +39,7 @@ public partial class AddAccountPage : ContentPage
 
     private void BuildEmojiGrid()
     {
-        Views.Controls.PaytinIconPicker.Build(EmojiContainer, EmojiPalette.Icons, _viewModel.Icon, emoji =>
+        Views.Controls.FinoraIconPicker.Build(EmojiContainer, EmojiPalette.Icons, _viewModel.Icon, emoji =>
         {
             if (BindingContext is AddAccountViewModel vm)
                 vm.SelectIconCommand.Execute(emoji);

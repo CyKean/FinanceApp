@@ -14,7 +14,7 @@ public partial class ModernSelect : ContentView
     private static readonly Color Muted = Color.FromArgb("#6F7668");
     private static readonly Color Selection = Color.FromArgb("#E4EACB");
 
-    /// <summary>Badge fill, matching PaytinIconView's default ink circle.</summary>
+    /// <summary>Badge fill, matching FinoraIconView's default ink circle.</summary>
     private const string BadgeBackground = "#161B16";
 
     /// <summary>Glyph colour on the ink badge.</summary>
@@ -123,11 +123,11 @@ public partial class ModernSelect : ContentView
 
     /// <summary>
     /// Maps an item to a Lucide key. The stored value is usually an emoji, so it
-    /// goes through <see cref="PaytinIcons.Resolve"/>, which maps known emoji and
+    /// goes through <see cref="FinoraIcons.Resolve"/>, which maps known emoji and
     /// otherwise matches the item's name.
     /// </summary>
     private string ResolveIconKey(object? item, string? name) =>
-        PaytinIcons.Resolve(item is null ? null : ReadMember(item, IconMemberPath), name);
+        FinoraIcons.Resolve(item is null ? null : ReadMember(item, IconMemberPath), name);
 
     /// <summary>
     /// Builds a Lucide stroke glyph. <paramref name="directKey"/> bypasses
@@ -138,7 +138,7 @@ public partial class ModernSelect : ContentView
         Aspect = Microsoft.Maui.Controls.Stretch.Uniform,
         WidthRequest = size,
         HeightRequest = size,
-        Data = PaytinIcons.GetGeometry(directKey ?? ResolveIconKey(item, name)),
+        Data = FinoraIcons.GetGeometry(directKey ?? ResolveIconKey(item, name)),
         Stroke = stroke ?? OnBadge,
         StrokeThickness = 1.9,
         StrokeLineCap = PenLineCap.Round,
@@ -165,7 +165,7 @@ public partial class ModernSelect : ContentView
 
         FieldBadge.IsVisible = showBadge;
         if (showBadge)
-            FieldBadgeGlyph.Data = PaytinIcons.GetGeometry(ResolveIconKey(selected, GetDisplayText(selected)));
+            FieldBadgeGlyph.Data = FinoraIcons.GetGeometry(ResolveIconKey(selected, GetDisplayText(selected)));
 
         OptionsContainer.Children.Clear();
 

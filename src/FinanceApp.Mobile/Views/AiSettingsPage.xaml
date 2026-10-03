@@ -8,7 +8,7 @@
              x:DataType="viewmodels:AiSettingsViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource PayCream}"
+             BackgroundColor="{StaticResource FinoraCream}"
              x:Name="AiSettingsPageView">
 
     <ContentPage.Resources>
@@ -25,8 +25,8 @@
                 <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                     <Border WidthRequest="46" HeightRequest="46"
-                            Background="{StaticResource PayCard}"
-                            Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                            Background="{StaticResource FinoraCard}"
+                            Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
                             VerticalOptions="Center">
                         <Border.StrokeShape>
                             <Ellipse />
@@ -37,17 +37,17 @@
                         <Label Text="←"
                                FontSize="20"
                                FontAttributes="Bold"
-                               TextColor="{StaticResource PayInk}"
+                               TextColor="{StaticResource FinoraInk}"
                                VerticalOptions="Center"
                                HorizontalOptions="Center" />
                     </Border>
 
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                        <Label Text="AI Assistant" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                        <Label Text="AI Assistant" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
                         <Label Text="Connect a model for open answers" FontSize="12" TextColor="#6F7668" />
                     </VerticalStackLayout>
 
-                    <controls:PaytinIconView Grid.Column="2" IconKey="bot" Size="46" VerticalOptions="Center" />
+                    <controls:FinoraIconView Grid.Column="2" IconKey="bot" Size="46" VerticalOptions="Center" />
                 </Grid>
 
                 <!-- Status -->
@@ -55,10 +55,10 @@
                     <VerticalStackLayout Spacing="6">
                         <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
                             <Label Text="Status" FontSize="12" TextColor="White" Opacity="0.7" VerticalOptions="Center" />
-                            <Border Background="{StaticResource PayLime}" StrokeThickness="0" Padding="10,4" VerticalOptions="Center">
+                            <Border Background="{StaticResource FinoraLime}" StrokeThickness="0" Padding="10,4" VerticalOptions="Center">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                                 <Label Text="{Binding IsConfigured, Converter={StaticResource AiStatusConverter}}"
-                                       FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                       FontSize="11" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
                             </Border>
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Spacing="4">

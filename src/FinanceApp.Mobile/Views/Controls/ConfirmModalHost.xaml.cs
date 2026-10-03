@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Yes/no prompt. Destructive actions get a red badge with a warning glyph;
-/// everything else uses the lime tick, matching the rest of the Paytin theme.
+/// everything else uses the lime tick, matching the rest of the Finora theme.
 /// </summary>
 public partial class ConfirmModalHost : ContentView
 {
@@ -54,10 +54,10 @@ public partial class ConfirmModalHost : ContentView
         CancelButton.Text = string.IsNullOrWhiteSpace(request.CancelText) ? "Cancel" : request.CancelText;
         ConfirmButton.Text = string.IsNullOrWhiteSpace(request.ConfirmText) ? "Confirm" : request.ConfirmText;
 
-        var (accent, onAccent, glyph) = PaytinOverlay.ForConfirm(request.IsDestructive);
+        var (accent, onAccent, glyph) = FinoraOverlay.ForConfirm(request.IsDestructive);
         IconBadge.BackgroundColor = accent;
         Glyph.Stroke = onAccent;
-        Glyph.Data = PaytinIcons.GetGeometry(glyph);
+        Glyph.Data = FinoraIcons.GetGeometry(glyph);
 
         // A destructive confirm has to read as destructive, so it keeps the
         // Danger style; everything else uses the primary ink button.
@@ -66,11 +66,11 @@ public partial class ConfirmModalHost : ContentView
         IsVisible = true;
         Scrim.Opacity = 0;
         Card.Opacity = 0;
-        Card.Scale = PaytinOverlay.CardScaleIn;
+        Card.Scale = FinoraOverlay.CardScaleIn;
 
-        _ = Scrim.FadeToAsync(1, PaytinOverlay.ScrimFadeMs, Easing.CubicOut);
-        _ = Card.FadeToAsync(1, PaytinOverlay.CardInMs, Easing.CubicOut);
-        _ = Card.ScaleToAsync(1, PaytinOverlay.SpringMs, Easing.SpringOut);
+        _ = Scrim.FadeToAsync(1, FinoraOverlay.ScrimFadeMs, Easing.CubicOut);
+        _ = Card.FadeToAsync(1, FinoraOverlay.CardInMs, Easing.CubicOut);
+        _ = Card.ScaleToAsync(1, FinoraOverlay.SpringMs, Easing.SpringOut);
     }
 
     private void OnCancelTapped(object? sender, EventArgs e) => Complete(false);
@@ -90,9 +90,9 @@ public partial class ConfirmModalHost : ContentView
     private async Task HideAsync()
     {
         await Task.WhenAll(
-            Scrim.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
-            Card.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
-            Card.ScaleToAsync(PaytinOverlay.CardScaleOut, PaytinOverlay.CardOutMs, Easing.CubicIn));
+            Scrim.FadeToAsync(0, FinoraOverlay.CardOutMs, Easing.CubicIn),
+            Card.FadeToAsync(0, FinoraOverlay.CardOutMs, Easing.CubicIn),
+            Card.ScaleToAsync(FinoraOverlay.CardScaleOut, FinoraOverlay.CardOutMs, Easing.CubicIn));
         IsVisible = false;
     }
 

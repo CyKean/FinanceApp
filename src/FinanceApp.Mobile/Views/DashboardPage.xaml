@@ -9,7 +9,7 @@
              x:DataType="viewmodels:DashboardViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource PayCream}">
+             BackgroundColor="{StaticResource FinoraCream}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -27,31 +27,31 @@
                 <VerticalStackLayout Spacing="14" Padding="18,14,18,100">
                     <!-- Header -->
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
-                        <Border Grid.Column="0" WidthRequest="48" HeightRequest="48" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Background="#D9C6A5" VerticalOptions="Center">
+                        <Border Grid.Column="0" WidthRequest="48" HeightRequest="48" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Background="#D9C6A5" VerticalOptions="Center">
                             <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                            <Label Text="{Binding UserInitial}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="{Binding UserInitial}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                             <Label Text="{Binding UserName}" FontSize="12" TextColor="#6F7668" LineBreakMode="TailTruncation" />
-                            <Label Text="Welcome Back" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                            <Label Text="Welcome Back" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
                         </VerticalStackLayout>
-                        <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" VerticalOptions="Center">
+                        <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
                             <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                             <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToNotificationsCommand}" /></Border.GestureRecognizers>
                             <Grid>
-                                <controls:PaytinIconView IconKey="bell" ShowBadge="False" Light="True" Size="24" HorizontalOptions="Center" VerticalOptions="Center" />
-                                <Border WidthRequest="20" HeightRequest="20" Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.2"
+                                <controls:FinoraIconView IconKey="bell" ShowBadge="False" Light="True" Size="24" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Border WidthRequest="20" HeightRequest="20" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2"
                                         HorizontalOptions="End" VerticalOptions="Start" Margin="0,8,8,0"
                                         IsVisible="{Binding UnreadNotifications, Converter={StaticResource CountToBoolConverter}}">
                                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                    <Label Text="{Binding UnreadNotifications}" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource PayInk}"
+                                    <Label Text="{Binding UnreadNotifications}" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
                                            HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Border>
                             </Grid>
                         </Border>
                     </Grid>
 
-                    <!-- VISA card (Paytin mock copy) -->
+                    <!-- VISA card (Finora mock copy) -->
                     <Grid>
                         <Border Style="{StaticResource HeroCardStyle}" Padding="0" Margin="0,15,0,0">
                             <Border.StrokeShape><RoundRectangle CornerRadius="34" /></Border.StrokeShape>
@@ -75,39 +75,39 @@
                                         <Label Text="**** **** ****  7281" FontSize="13" FontAttributes="Bold" TextColor="White" Opacity="0.9" CharacterSpacing="1" Margin="0,10,0,0" />
                                         <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,0">
                                             <Label Grid.Column="0" Text="{Binding UserName}" FontSize="11" TextColor="White" Opacity="0.65" LineBreakMode="TailTruncation" VerticalOptions="Center" />
-                                            <Label Grid.Column="1" Text="Exp 07/26" FontSize="11" TextColor="{StaticResource PayLime}" Opacity="0.9" VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="Exp 07/26" FontSize="11" TextColor="{StaticResource FinoraLime}" Opacity="0.9" VerticalOptions="Center" />
                                         </Grid>
                                     </VerticalStackLayout>
                                     <!-- lime sparkle accents -->
                                     <Polygon Points="10,0 12,8 20,10 12,12 10,20 8,12 0,10 8,8"
-                                             Fill="{StaticResource PayLime}"
+                                             Fill="{StaticResource FinoraLime}"
                                              WidthRequest="26" HeightRequest="26"
                                              HorizontalOptions="End" VerticalOptions="Start" Margin="0,26,96,0" />
-                                    <Border WidthRequest="7" HeightRequest="7" Background="{StaticResource PayLime}" StrokeThickness="0" Opacity="0.8"
+                                    <Border WidthRequest="7" HeightRequest="7" Background="{StaticResource FinoraLime}" StrokeThickness="0" Opacity="0.8"
                                             HorizontalOptions="End" VerticalOptions="Start" Margin="0,74,62,0">
                                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                                     </Border>
                                 </Grid>
                                 <!-- lime contactless bar -->
-                                <Border Grid.Column="1" Background="{StaticResource PayLime}" Stroke="{StaticResource PayLime}" StrokeThickness="0" WidthRequest="38" VerticalOptions="Fill" Margin="10,20,4,20">
+                                <Border Grid.Column="1" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraLime}" StrokeThickness="0" WidthRequest="38" VerticalOptions="Fill" Margin="10,20,4,20">
                                     <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                                     <Path Aspect="Uniform" WidthRequest="20" HeightRequest="20" Data="M 3,4 A 6,6 0 0 1 3,16 M 8,2 A 11,11 0 0 1 8,18 M 13,0 A 16,16 0 0 1 13,20"
-                                          Stroke="{StaticResource PayInk}" StrokeThickness="1.6" StrokeLineCap="Round" Fill="Transparent"
+                                          Stroke="{StaticResource FinoraInk}" StrokeThickness="1.6" StrokeLineCap="Round" Fill="Transparent"
                                           HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Border>
                             </Grid>
                         </Border>
                         <!-- Set Budget pill straddling the top edge -->
                         <Border VerticalOptions="Start" HorizontalOptions="End" Margin="0,0,18,0"
-                                Background="{StaticResource PayLime}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="12,7">
+                                Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="12,7">
                             <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                             <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToBudgetsCommand}" /></Border.GestureRecognizers>
                             <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                                <Border WidthRequest="20" HeightRequest="20" Background="{StaticResource PayInk}" StrokeThickness="0" VerticalOptions="Center">
+                                <Border WidthRequest="20" HeightRequest="20" Background="{StaticResource FinoraInk}" StrokeThickness="0" VerticalOptions="Center">
                                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                    <Label Text="+" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayLime}" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,-2,0,0" />
+                                    <Label Text="+" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,-2,0,0" />
                                 </Border>
-                                <Label Text="Set Budget" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                                <Label Text="Set Budget" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
                             </HorizontalStackLayout>
                         </Border>
                     </Grid>
@@ -115,32 +115,32 @@
                     <!-- Quick actions -->
                     <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
                         <VerticalStackLayout Grid.Column="0" Spacing="6" HorizontalOptions="Center">
-                            <Border Style="{StaticResource PayCircleActionStyle}">
+                            <Border Style="{StaticResource FinoraCircleActionStyle}">
                                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToAiSuggestionsCommand}" /></Border.GestureRecognizers>
-                                <Path x:Name="QuickAIIcon" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" Stroke="{StaticResource PayInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Path x:Name="QuickAIIcon" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" Stroke="{StaticResource FinoraInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
-                            <Label Text="AI Ideas" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" />
+                            <Label Text="AI Ideas" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" Spacing="6" HorizontalOptions="Center">
-                            <Border Style="{StaticResource PayCircleActionStyle}">
+                            <Border Style="{StaticResource FinoraCircleActionStyle}">
                                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToAnalyticsCommand}" /></Border.GestureRecognizers>
-                                <Path x:Name="QuickStatsIcon" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" Stroke="{StaticResource PayInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Path x:Name="QuickStatsIcon" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" Stroke="{StaticResource FinoraInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
-                            <Label Text="Stats" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" />
+                            <Label Text="Stats" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="2" Spacing="6" HorizontalOptions="Center">
-                            <Border Style="{StaticResource PayCircleActionStyle}">
+                            <Border Style="{StaticResource FinoraCircleActionStyle}">
                                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToForecastsCommand}" /></Border.GestureRecognizers>
-                                <Path x:Name="QuickForecastIcon" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" Stroke="{StaticResource PayInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Path x:Name="QuickForecastIcon" Aspect="Uniform" WidthRequest="26" HeightRequest="26" StrokeThickness="2" Stroke="{StaticResource FinoraInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
-                            <Label Text="Forecast" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" />
+                            <Label Text="Forecast" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="3" Spacing="6" HorizontalOptions="Center">
-                            <Border Style="{StaticResource PayCircleActionStyle}">
+                            <Border Style="{StaticResource FinoraCircleActionStyle}">
                                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToMoreCommand}" /></Border.GestureRecognizers>
-                                <Path x:Name="QuickMoreIcon" Aspect="Uniform" WidthRequest="24" HeightRequest="24" StrokeThickness="2.5" Stroke="{StaticResource PayInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Path x:Name="QuickMoreIcon" Aspect="Uniform" WidthRequest="24" HeightRequest="24" StrokeThickness="2.5" Stroke="{StaticResource FinoraInk}" StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
-                            <Label Text="More" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" />
+                            <Label Text="More" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
                         </VerticalStackLayout>
                     </Grid>
 
@@ -153,28 +153,28 @@
                     <!-- Recent Activity -->
                     <VerticalStackLayout Spacing="10">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Grid.Column="0" Text="Recent Activity" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="See all ›" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center">
+                            <Label Grid.Column="0" Text="Recent Activity" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="See all ›" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center">
                                 <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToTransactionsCommand}" /></Label.GestureRecognizers>
                             </Label>
                         </Grid>
-                        <Border Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="8">
+                        <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="8">
                             <Border.StrokeShape><RoundRectangle CornerRadius="28" /></Border.StrokeShape>
                             <CollectionView ItemsSource="{Binding RecentTransactions}" SelectionMode="None" HeightRequest="268">
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="dtos:TransactionDto">
                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="10,10">
-                                            <controls:PaytinIconView Grid.Column="0" Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="46" VerticalOptions="Center" />
+                                            <controls:FinoraIconView Grid.Column="0" Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="46" VerticalOptions="Center" />
                                             <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
-                                                <Label Text="{Binding CategoryName}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                                <Label Text="{Binding CategoryName}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
                                                 <Label Text="{Binding Date, StringFormat='{0:dddd, dd MMMM}'}" FontSize="11" TextColor="#6F7668" />
                                             </VerticalStackLayout>
-                                            <Label Grid.Column="2" Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                                            <Label Grid.Column="2" Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
                                         </Grid>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
                                 <CollectionView.EmptyView>
-                                    <controls:PaytinEmptyState Title="No transactions yet"
+                                    <controls:FinoraEmptyState Title="No transactions yet"
                                                              Subtitle="Tap − Expense or + Income to add one"
                                                              IconKey="receipt" />
                                 </CollectionView.EmptyView>
@@ -182,18 +182,18 @@
                         </Border>
                     </VerticalStackLayout>
 
-                    <!-- Savings / budgets / goals (kept, Paytin style) -->
+                    <!-- Savings / budgets / goals (kept, Finora style) -->
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                        <Border Grid.Column="0" Style="{StaticResource PayLimeCardStyle}">
+                        <Border Grid.Column="0" Style="{StaticResource FinoraLimeCardStyle}">
                             <VerticalStackLayout Spacing="4">
-                                <Label Text="◉ Savings" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
-                                <Label Text="{Binding SavingsRate, StringFormat='{0:F1}%'}" FontSize="26" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
-                                <Label Text="of income saved" FontSize="11" TextColor="{StaticResource PayInk}" Opacity="0.7" />
+                                <Label Text="◉ Savings" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                <Label Text="{Binding SavingsRate, StringFormat='{0:F1}%'}" FontSize="26" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                <Label Text="of income saved" FontSize="11" TextColor="{StaticResource FinoraInk}" Opacity="0.7" />
                             </VerticalStackLayout>
                         </Border>
-                        <Border Grid.Column="1" Style="{StaticResource PayDarkCardStyle}">
+                        <Border Grid.Column="1" Style="{StaticResource FinoraDarkCardStyle}">
                             <VerticalStackLayout Spacing="4">
-                                <Label Text="◎ Budgets" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayLime}" />
+                                <Label Text="◎ Budgets" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" />
                                 <Label Text="{Binding ActiveBudgets.Count, StringFormat='{0} active'}" FontSize="20" FontAttributes="Bold" TextColor="White" />
                                 <Label Text="Keep it inside the lines" FontSize="11" TextColor="White" Opacity="0.7">
                                     <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToBudgetsCommand}" /></Label.GestureRecognizers>
@@ -205,8 +205,8 @@
                     <Border Style="{StaticResource CardFrameStyle}">
                         <VerticalStackLayout Spacing="10">
                             <Grid ColumnDefinitions="*,Auto">
-                                <Label Grid.Column="0" Text="Spending by Category" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
-                                <Label Grid.Column="1" Text="›" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}">
+                                <Label Grid.Column="0" Text="Spending by Category" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                <Label Grid.Column="1" Text="›" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}">
                                     <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToAnalyticsCommand}" /></Label.GestureRecognizers>
                                 </Label>
                             </Grid>
@@ -214,17 +214,17 @@
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="dtos:CategorySpendingDto">
                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="4,8">
-                                            <controls:PaytinIconView Grid.Column="0" Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="40" VerticalOptions="Center" />
+                                            <controls:FinoraIconView Grid.Column="0" Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="40" VerticalOptions="Center" />
                                             <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
-                                                <Label Text="{Binding CategoryName}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
-                                                <ProgressBar Progress="{Binding Percentage, Converter={StaticResource PercentageConverter}}" ProgressColor="{StaticResource PayInk}" HeightRequest="6" />
+                                                <Label Text="{Binding CategoryName}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                                <ProgressBar Progress="{Binding Percentage, Converter={StaticResource PercentageConverter}}" ProgressColor="{StaticResource FinoraInk}" HeightRequest="6" />
                                             </VerticalStackLayout>
-                                            <Label Grid.Column="2" Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                                            <Label Grid.Column="2" Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
                                         </Grid>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
                                 <CollectionView.EmptyView>
-                                    <controls:PaytinEmptyState Title="No spending data yet"
+                                    <controls:FinoraEmptyState Title="No spending data yet"
                                                              Subtitle="Add expenses to see your breakdown"
                                                              IconKey="chart" />
                                 </CollectionView.EmptyView>
@@ -235,8 +235,8 @@
                     <Border Style="{StaticResource CardFrameStyle}">
                         <VerticalStackLayout Spacing="10">
                             <Grid ColumnDefinitions="*,Auto">
-                                <Label Grid.Column="0" Text="Goals" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
-                                <Label Grid.Column="1" Text="›" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}">
+                                <Label Grid.Column="0" Text="Goals" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                <Label Grid.Column="1" Text="›" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}">
                                     <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding NavigateToGoalsCommand}" /></Label.GestureRecognizers>
                                 </Label>
                             </Grid>
@@ -244,17 +244,17 @@
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="dtos:FinancialGoalDto">
                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="4,8">
-                                            <controls:PaytinIconView Grid.Column="0" Icon="{Binding Icon}" Name="{Binding Name}" Size="38" VerticalOptions="Center" />
+                                            <controls:FinoraIconView Grid.Column="0" Icon="{Binding Icon}" Name="{Binding Name}" Size="38" VerticalOptions="Center" />
                                             <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
-                                                <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
-                                                <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}" ProgressColor="{StaticResource PayLimeDark}" HeightRequest="6" />
+                                                <Label Text="{Binding Name}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                                <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}" ProgressColor="{StaticResource FinoraLimeDark}" HeightRequest="6" />
                                             </VerticalStackLayout>
-                                            <Label Grid.Column="2" Text="{Binding ProgressPercentage, StringFormat='{0:F0}%'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                                            <Label Grid.Column="2" Text="{Binding ProgressPercentage, StringFormat='{0:F0}%'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
                                         </Grid>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
                                 <CollectionView.EmptyView>
-                                    <controls:PaytinEmptyState Title="No goals yet"
+                                    <controls:FinoraEmptyState Title="No goals yet"
                                                              Subtitle="Set a savings goal to get started"
                                                              IconKey="target" />
                                 </CollectionView.EmptyView>
@@ -266,8 +266,8 @@
             </ScrollView>
         </RefreshView>
 
-        <!-- Paytin tab bar (floating) -->
-        <controls:PaytinTabBar VerticalOptions="End" ActiveTab="Dashboard" />
+        <!-- Finora tab bar (floating) -->
+        <controls:FinoraTabBar VerticalOptions="End" ActiveTab="Dashboard" />
 
         <controls:TransactionSheetHost />
 

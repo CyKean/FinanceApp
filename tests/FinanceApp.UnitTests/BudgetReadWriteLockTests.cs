@@ -18,7 +18,7 @@ using Xunit;
 /// total. That used to end in an unconditional <c>SaveChangesAsync</c>, so simply
 /// viewing a page took SQLite's write lock.
 /// <para>
-/// The lock is what produced "Paytin isn't responding" on back: the AI page's
+/// The lock is what produced "Finora isn't responding" on back: the AI page's
 /// background pipeline held the write lock while the page being returned to
 /// reloaded synchronously on the UI thread, which then sat waiting on it. These
 /// tests pin the guarantee that a read which changes nothing performs no write.

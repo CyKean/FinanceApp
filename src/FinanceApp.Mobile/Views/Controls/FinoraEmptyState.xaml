@@ -2,19 +2,19 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
-             x:Class="FinanceApp.Mobile.Views.Controls.PaytinEmptyState"
+             x:Class="FinanceApp.Mobile.Views.Controls.FinoraEmptyState"
              x:Name="Root">
     <VerticalStackLayout Spacing="8"
                         Padding="20,18"
                         HorizontalOptions="Center"
                         VerticalOptions="Center">
-        <controls:PaytinIconView IconKey="{Binding IconKey, Source={x:Reference Root}}"
+        <controls:FinoraIconView IconKey="{Binding IconKey, Source={x:Reference Root}}"
                                 Size="56"
                                 HorizontalOptions="Center" />
         <Label Text="{Binding Title, Source={x:Reference Root}}"
                FontSize="15"
                FontAttributes="Bold"
-               TextColor="{StaticResource PayInk}"
+               TextColor="{StaticResource FinoraInk}"
                HorizontalOptions="Center"
                HorizontalTextAlignment="Center" />
         <Label Text="{Binding Subtitle, Source={x:Reference Root}}"

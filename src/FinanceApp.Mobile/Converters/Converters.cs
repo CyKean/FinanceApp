@@ -63,7 +63,7 @@ public class TransactionTypeToColorConverter : IValueConverter
 }
 
 /// <summary>
-/// Maps a <see cref="FinanceApp.Domain.Enums.TransactionType"/> onto the Paytin
+/// Maps a <see cref="FinanceApp.Domain.Enums.TransactionType"/> onto the Finora
 /// palette: Income is lime, Expense is ink. ConverterParameter selects the tone:
 /// "accent" (default) for the fill, "onAccent" for text/icon colour on that fill.
 /// </summary>
@@ -76,10 +76,10 @@ public class TransactionTypeToPayColorConverter : IValueConverter
 
         var key = (isIncome, onAccent) switch
         {
-            (true, false) => "PayLime",
-            (true, true) => "PayInk",
-            (false, false) => "PayInk",
-            _ => "PayLime"
+            (true, false) => "FinoraLime",
+            (true, true) => "FinoraInk",
+            (false, false) => "FinoraInk",
+            _ => "FinoraLime"
         };
 
         return ResolveColor(key);
@@ -100,7 +100,7 @@ public class TransactionTypeToPayColorConverter : IValueConverter
             }
         }
 
-        return key == "PayLime" ? Color.FromArgb("#CDF463") : Color.FromArgb("#161B16");
+        return key == "FinoraLime" ? Color.FromArgb("#CDF463") : Color.FromArgb("#161B16");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -311,7 +311,7 @@ public class SeverityToAccentConverter : IValueConverter
             FinanceApp.Application.Notifications.NotificationSeverity.Success => "Success",
             FinanceApp.Application.Notifications.NotificationSeverity.Warning => "Warning",
             FinanceApp.Application.Notifications.NotificationSeverity.Critical => "Error",
-            _ => "PayInk"
+            _ => "FinoraInk"
         };
 
         var resources = Application.Current?.Resources;
@@ -608,7 +608,7 @@ public class InsightSeverityToIconConverter : IValueConverter
     {
         if (value is FinanceApp.Application.DTOs.InsightSeverity severity)
         {
-            // Lucide keys rendered by PaytinIconView (no emoji).
+            // Lucide keys rendered by FinoraIconView (no emoji).
             return severity switch
             {
                 FinanceApp.Application.DTOs.InsightSeverity.Info => "bulb",
@@ -687,7 +687,7 @@ public class ManilaTimeConverter : IValueConverter
 }
 
 /// <summary>
-/// Paytin-style badge: first letter of the category name (e.g. "S" for Shopping).
+/// Finora-style badge: first letter of the category name (e.g. "S" for Shopping).
 /// Used instead of raw emoji so list icons match the mockup's minimal badges.
 /// </summary>
 public class CategoryInitialConverter : IValueConverter

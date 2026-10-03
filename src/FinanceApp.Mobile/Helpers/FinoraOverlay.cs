@@ -7,15 +7,15 @@ using FinanceApp.Mobile.Services;
 /// confirm, choice sheet).
 /// <para>
 /// These controls each used to hardcode Material palette values and text glyphs,
-/// which drifted from the Paytin theme used by the rest of the app. Everything
+/// which drifted from the Finora theme used by the rest of the app. Everything
 /// resolves from the app resources here instead, so one edit re-skins them all.
 /// </para>
 /// </summary>
-public static class PaytinOverlay
+public static class FinoraOverlay
 {
     // Fallbacks used only if a resource lookup fails (e.g. before App loads).
-    private const string InkKey = "PayInk";
-    private const string LimeKey = "PayLime";
+    private const string InkKey = "FinoraInk";
+    private const string LimeKey = "FinoraLime";
 
     /// <summary>Primary text and outline strokes.</summary>
     public static Color Ink => Resolve(InkKey, "#161B16");
@@ -24,8 +24,8 @@ public static class PaytinOverlay
     public static Color Lime => Resolve(LimeKey, "#CDF463");
 
     /// <summary>
-    /// Error accent. Kept outside the Paytin palette so failures read as
-    /// failures, and inline here because the Paytin palette has no red.
+    /// Error accent. Kept outside the Finora palette so failures read as
+    /// failures, and inline here because the Finora palette has no red.
     /// </summary>
     private static Color ErrorAccent => Resolve("#DC2626", "#DC2626");
 

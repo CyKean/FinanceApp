@@ -10,8 +10,8 @@
         <Grid x:Name="Scrim" BackgroundColor="#8C000000" Opacity="0" />
 
         <Border x:Name="Card"
-                Background="{StaticResource PayCard}"
-                Stroke="{StaticResource PayInk}"
+                Background="{StaticResource FinoraCard}"
+                Stroke="{StaticResource FinoraInk}"
                 StrokeThickness="1.5"
                 Padding="26,26,26,22"
                 WidthRequest="244"
@@ -51,7 +51,7 @@
                        HorizontalTextAlignment="Center"
                        LineBreakMode="WordWrap"
                        Opacity="0"
-                       TextColor="{StaticResource PayInk}" />
+                       TextColor="{StaticResource FinoraInk}" />
             </VerticalStackLayout>
         </Border>
     </Grid>

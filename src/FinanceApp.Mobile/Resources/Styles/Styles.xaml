@@ -4,16 +4,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!-- ============================================ -->
-    <!-- BASE COMPONENT STYLES — PAYTIN -->
+    <!-- BASE COMPONENT STYLES — FINORA -->
     <!-- ============================================ -->
 
     <Style TargetType="ActivityIndicator">
-        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
+        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
     </Style>
 
     <Style TargetType="IndicatorView">
         <Setter Property="IndicatorColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}"/>
-        <Setter Property="SelectedIndicatorColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}"/>
+        <Setter Property="SelectedIndicatorColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}"/>
     </Style>
 
     <Style TargetType="BoxView">
@@ -21,12 +21,12 @@
     </Style>
 
     <!-- ============================================ -->
-    <!-- BUTTON STYLES — pill, Paytin -->
+    <!-- BUTTON STYLES — pill, Finora -->
     <!-- ============================================ -->
 
     <Style TargetType="Button" x:Key="BaseButtonStyle">
         <Setter Property="TextColor" Value="White" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
         <Setter Property="FontFamily" Value="SpaceGrotesk"/>
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="FontAttributes" Value="Bold"/>
@@ -35,7 +35,7 @@
         <Setter Property="MinimumHeightRequest" Value="52"/>
         <Setter Property="MinimumWidthRequest" Value="52"/>
         <Setter Property="BorderWidth" Value="1.5" />
-        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
+        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -71,22 +71,22 @@
     </Style>
 
     <Style TargetType="Button" x:Key="SecondaryButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
-        <Setter Property="TextColor" Value="{StaticResource PayInk}" />
-        <Setter Property="BackgroundColor" Value="{StaticResource PayLime}" />
-        <Setter Property="BorderColor" Value="{StaticResource PayInk}" />
+        <Setter Property="TextColor" Value="{StaticResource FinoraInk}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource FinoraLime}" />
+        <Setter Property="BorderColor" Value="{StaticResource FinoraInk}" />
         <Setter Property="HeightRequest" Value="52"/>
     </Style>
 
     <Style TargetType="Button" x:Key="OutlineButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayCream}}" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraCream}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineDark}}" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="HeightRequest" Value="52"/>
     </Style>
 
     <Style TargetType="Button" x:Key="TextButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="BorderColor" Value="Transparent" />
         <Setter Property="Padding" Value="8,4"/>
@@ -102,9 +102,9 @@
     </Style>
 
     <Style TargetType="Button" x:Key="IconButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayCream}}" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraCream}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineDark}}" />
         <Setter Property="Padding" Value="0"/>
         <Setter Property="HeightRequest" Value="48"/>
         <Setter Property="WidthRequest" Value="48"/>
@@ -125,7 +125,7 @@
 
     <Style TargetType="Label" x:Key="Headline" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGroteskBold" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayCream}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraCream}}" />
         <Setter Property="FontSize" Value="32" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="HorizontalOptions" Value="Center" />
@@ -143,7 +143,7 @@
 
     <Style TargetType="Label" x:Key="AppTitleStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGroteskBold" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
         <Setter Property="FontSize" Value="36" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="HorizontalTextAlignment" Value="Center" />
@@ -197,12 +197,12 @@
     </Style>
 
     <!-- ============================================ -->
-    <!-- BORDER / CARD STYLES — PAYTIN chunky rounded -->
+    <!-- BORDER / CARD STYLES — FINORA chunky rounded -->
     <!-- ============================================ -->
 
     <Style TargetType="Border" x:Key="CardFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource CardStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -244,9 +244,9 @@
     </Style>
 
     <!-- Lime highlight card (Earning / CTA) -->
-    <Style TargetType="Border" x:Key="PayLimeCardStyle">
-        <Setter Property="Background" Value="{StaticResource PayLime}" />
-        <Setter Property="Stroke" Value="{StaticResource PayInk}" />
+    <Style TargetType="Border" x:Key="FinoraLimeCardStyle">
+        <Setter Property="Background" Value="{StaticResource FinoraLime}" />
+        <Setter Property="Stroke" Value="{StaticResource FinoraInk}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -262,9 +262,9 @@
     </Style>
 
     <!-- Dark stat card (Spending) -->
-    <Style TargetType="Border" x:Key="PayDarkCardStyle">
-        <Setter Property="Background" Value="{StaticResource PayInk}" />
-        <Setter Property="Stroke" Value="{StaticResource PayInk}" />
+    <Style TargetType="Border" x:Key="FinoraDarkCardStyle">
+        <Setter Property="Background" Value="{StaticResource FinoraInk}" />
+        <Setter Property="Stroke" Value="{StaticResource FinoraInk}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -280,9 +280,9 @@
     </Style>
 
     <!-- Small lime pill (Set Budget / period selected) -->
-    <Style TargetType="Border" x:Key="PayPillStyle">
-        <Setter Property="Background" Value="{StaticResource PayLime}" />
-        <Setter Property="Stroke" Value="{StaticResource PayInk}" />
+    <Style TargetType="Border" x:Key="FinoraPillStyle">
+        <Setter Property="Background" Value="{StaticResource FinoraLime}" />
+        <Setter Property="Stroke" Value="{StaticResource FinoraInk}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -293,9 +293,9 @@
     </Style>
 
     <!-- Cream circle action button -->
-    <Style TargetType="Border" x:Key="PayCircleActionStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineDark}}" />
+    <Style TargetType="Border" x:Key="FinoraCircleActionStyle">
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -309,8 +309,8 @@
 
     <!-- Frosted pill used inside hero cards -->
     <Style TargetType="Border" x:Key="GlassPillStyle">
-        <Setter Property="Background" Value="{StaticResource PayLime}" />
-        <Setter Property="Stroke" Value="{StaticResource PayInk}" />
+        <Setter Property="Background" Value="{StaticResource FinoraLime}" />
+        <Setter Property="Stroke" Value="{StaticResource FinoraInk}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -341,8 +341,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="FilterBarStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -354,8 +354,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="BudgetCardFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -366,8 +366,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="GoalCardFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -378,8 +378,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="TransactionItemFrameStyle" BasedOn="{StaticResource PressableRowStyle}">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayCreamDeep}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraCreamDeep}, Dark={StaticResource CardStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -390,8 +390,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="AccountItemFrameStyle" BasedOn="{StaticResource PressableRowStyle}">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource CardStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -402,8 +402,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="CategoryItemFrameStyle" BasedOn="{StaticResource PressableRowStyle}">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayCreamDeep}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraCreamDeep}, Dark={StaticResource CardStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -414,8 +414,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="TrendItemFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -427,7 +427,7 @@
 
     <Style TargetType="Border" x:Key="InsightCardFrameStyle">
         <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource InfoContainer}, Dark={StaticResource InfoContainer}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource Info}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource Info}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -450,8 +450,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="BudgetItemFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayCreamDeep}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraCreamDeep}, Dark={StaticResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -462,8 +462,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="GoalItemFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayCreamDeep}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraCreamDeep}, Dark={StaticResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -475,8 +475,8 @@
 
     <!-- Modern input container: wrap an Entry in this Border -->
     <Style TargetType="Border" x:Key="FieldBorderStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource PayCard}, Dark={StaticResource SurfaceContainerLowestDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerLowestDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -885,7 +885,7 @@
     <!-- ============================================ -->
 
     <Style TargetType="SwipeItem">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource SurfaceContainerHighDark}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource SurfaceContainerHighDark}}" />
     </Style>
 
     <!-- ============================================ -->
@@ -913,8 +913,8 @@
     <!-- ============================================ -->
 
     <Style TargetType="Shell">
-        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource PayCream}, Dark={StaticResource SurfaceDark}}" />
-        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
+        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource FinoraCream}, Dark={StaticResource SurfaceDark}}" />
+        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
         <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
         <Setter Property="Shell.DisabledColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
         <Setter Property="Shell.UnselectedColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OutlineDark}}" />
@@ -928,7 +928,7 @@
     <Style TargetType="NavigationPage">
         <Setter Property="BarBackgroundColor" Value="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource SurfaceDark}}" />
         <Setter Property="BarTextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
-        <Setter Property="IconColor" Value="{AppThemeBinding Light={StaticResource PayInk}, Dark={StaticResource PayLime}}" />
+        <Setter Property="IconColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
     </Style>
 
     <Style TargetType="TabbedPage">

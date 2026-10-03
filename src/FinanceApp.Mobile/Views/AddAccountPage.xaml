@@ -21,19 +21,19 @@
             <!-- Header -->
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
                 <Border WidthRequest="46" HeightRequest="46"
-                        Background="{StaticResource PayCard}"
-                        Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                        Background="{StaticResource FinoraCard}"
+                        Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
                         VerticalOptions="Center">
                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding CancelCommand}" /></Border.GestureRecognizers>
-                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}"
+                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
                            HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
                 <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                    <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                    <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
                     <Label Text="Wallets, banks and cash" FontSize="12" TextColor="#6F7668" />
                 </VerticalStackLayout>
-                <controls:PaytinIconView Grid.Column="2" IconKey="bank" Size="46" VerticalOptions="Center" />
+                <controls:FinoraIconView Grid.Column="2" IconKey="bank" Size="46" VerticalOptions="Center" />
             </Grid>
 
             <Label Text="{Binding ErrorMessage}"
@@ -92,7 +92,7 @@
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                     <VerticalStackLayout Spacing="10">
                         <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                            <controls:PaytinIconView Icon="{Binding Icon}" Name="{Binding Name}" Size="52" VerticalOptions="Center" />
+                            <controls:FinoraIconView Icon="{Binding Icon}" Name="{Binding Name}" Size="52" VerticalOptions="Center" />
                             <Label Text="Tap an icon below"
                                    Style="{StaticResource MutedLabelStyle}"
                                    VerticalOptions="Center"

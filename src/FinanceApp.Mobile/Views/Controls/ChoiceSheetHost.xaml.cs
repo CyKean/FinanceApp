@@ -61,9 +61,9 @@ public partial class ChoiceSheetHost : ContentView
         Card.Opacity = 0;
         Card.TranslationY = SlideIn;
 
-        _ = Scrim.FadeToAsync(1, PaytinOverlay.ScrimFadeMs, Easing.CubicOut);
-        _ = Card.FadeToAsync(1, PaytinOverlay.CardInMs, Easing.CubicOut);
-        _ = Card.TranslateToAsync(0, 0, PaytinOverlay.CardInMs, Easing.CubicOut);
+        _ = Scrim.FadeToAsync(1, FinoraOverlay.ScrimFadeMs, Easing.CubicOut);
+        _ = Card.FadeToAsync(1, FinoraOverlay.CardInMs, Easing.CubicOut);
+        _ = Card.TranslateToAsync(0, 0, FinoraOverlay.CardInMs, Easing.CubicOut);
     }
 
     /// <summary>Accent, Lucide key and destructive flag for a known option.</summary>
@@ -84,7 +84,7 @@ public partial class ChoiceSheetHost : ContentView
     private View CreateOptionRow(string option)
     {
         var (accent, glyph, destructive) = ResolveOption(option);
-        var accentColor = PaytinOverlay.Resolve(accent, accent);
+        var accentColor = FinoraOverlay.Resolve(accent, accent);
 
         var badge = new Border
         {
@@ -100,8 +100,8 @@ public partial class ChoiceSheetHost : ContentView
             Aspect = Microsoft.Maui.Controls.Stretch.Uniform,
             WidthRequest = 18,
             HeightRequest = 18,
-            Data = PaytinIcons.GetGeometry(glyph),
-            Stroke = IsDarkAccent(accentColor) ? PaytinOverlay.Lime : PaytinOverlay.Ink,
+            Data = FinoraIcons.GetGeometry(glyph),
+            Stroke = IsDarkAccent(accentColor) ? FinoraOverlay.Lime : FinoraOverlay.Ink,
             StrokeThickness = 2,
             StrokeLineCap = PenLineCap.Round,
             StrokeLineJoin = PenLineJoin.Round,
@@ -115,7 +115,7 @@ public partial class ChoiceSheetHost : ContentView
             Text = option,
             FontSize = 15,
             FontAttributes = FontAttributes.Bold,
-            TextColor = destructive ? accentColor : PaytinOverlay.Ink,
+            TextColor = destructive ? accentColor : FinoraOverlay.Ink,
             VerticalOptions = LayoutOptions.Center,
             HorizontalOptions = LayoutOptions.Fill
         };
@@ -141,7 +141,7 @@ public partial class ChoiceSheetHost : ContentView
             HeightRequest = 56,
             Padding = new Thickness(14, 0),
             Background = Colors.Transparent,
-            Stroke = PaytinOverlay.Ink,
+            Stroke = FinoraOverlay.Ink,
             StrokeThickness = 1.5,
             StrokeShape = new RoundRectangle { CornerRadius = 18 },
             Content = grid
@@ -180,9 +180,9 @@ public partial class ChoiceSheetHost : ContentView
     private async Task HideAsync()
     {
         await Task.WhenAll(
-            Scrim.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
-            Card.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
-            Card.TranslateToAsync(0, SlideIn, PaytinOverlay.CardOutMs, Easing.CubicIn));
+            Scrim.FadeToAsync(0, FinoraOverlay.CardOutMs, Easing.CubicIn),
+            Card.FadeToAsync(0, FinoraOverlay.CardOutMs, Easing.CubicIn),
+            Card.TranslateToAsync(0, SlideIn, FinoraOverlay.CardOutMs, Easing.CubicIn));
         IsVisible = false;
     }
 }

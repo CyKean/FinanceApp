@@ -14,8 +14,8 @@
         </Grid>
 
         <Border x:Name="Card"
-                Background="{StaticResource PayCard}"
-                Stroke="{StaticResource PayInk}"
+                Background="{StaticResource FinoraCard}"
+                Stroke="{StaticResource FinoraInk}"
                 StrokeThickness="1.5"
                 Padding="24,24,24,20"
                 WidthRequest="316"
@@ -51,14 +51,14 @@
                        FontSize="19"
                        FontAttributes="Bold"
                        HorizontalTextAlignment="Center"
-                       TextColor="{StaticResource PayInk}" />
+                       TextColor="{StaticResource FinoraInk}" />
 
                 <Label x:Name="MessageLabel"
                        FontSize="14"
                        HorizontalTextAlignment="Center"
                        LineBreakMode="WordWrap"
                        Margin="0,8,0,0"
-                       TextColor="{StaticResource PayMuted}" />
+                       TextColor="{StaticResource FinoraMuted}" />
 
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,22,0,0">
                     <Button x:Name="CancelButton"
@@ -70,7 +70,7 @@
                             Grid.Column="1"
                             Style="{StaticResource PrimaryButtonStyle}"
                             HeightRequest="48"
-                            TextColor="{StaticResource PayLime}"
+                            TextColor="{StaticResource FinoraLime}"
                             Clicked="OnConfirmTapped" />
                 </Grid>
             </VerticalStackLayout>

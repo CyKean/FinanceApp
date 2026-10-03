@@ -7,7 +7,7 @@ namespace FinanceApp.Mobile.Helpers;
 /// Pinned source: lucide-static 0.469.0.
 /// Resolution: stored emoji (or direct key) first, then owner-name keywords.
 /// </summary>
-public static class PaytinIcons
+public static class FinoraIcons
 {
     private static readonly Dictionary<string, string> EmojiMap = new(StringComparer.Ordinal)
     {

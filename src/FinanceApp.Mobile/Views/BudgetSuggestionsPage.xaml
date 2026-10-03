@@ -9,7 +9,7 @@
              x:DataType="viewmodels:BudgetSuggestionsViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource PayCream}"
+             BackgroundColor="{StaticResource FinoraCream}"
              x:Name="BudgetSuggestionsPageView">
 
     <ContentPage.Resources>
@@ -30,8 +30,8 @@
                 <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                     <Border WidthRequest="46" HeightRequest="46"
-                            Background="{StaticResource PayCard}"
-                            Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                            Background="{StaticResource FinoraCard}"
+                            Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
                             VerticalOptions="Center">
                         <Border.StrokeShape>
                             <Ellipse />
@@ -42,17 +42,17 @@
                         <Label Text="←"
                                FontSize="20"
                                FontAttributes="Bold"
-                               TextColor="{StaticResource PayInk}"
+                               TextColor="{StaticResource FinoraInk}"
                                VerticalOptions="Center"
                                HorizontalOptions="Center" />
                     </Border>
 
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                        <Label Text="AI Suggestions" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                        <Label Text="AI Suggestions" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
                         <Label Text="Budget ideas from your last 3 months" FontSize="12" TextColor="#6F7668" />
                     </VerticalStackLayout>
 
-                    <controls:PaytinIconView Grid.Column="2" IconKey="bulb" Size="46" Light="True" VerticalOptions="Center" />
+                    <controls:FinoraIconView Grid.Column="2" IconKey="bulb" Size="46" Light="True" VerticalOptions="Center" />
                 </Grid>
 
                 <!-- Suggestions.
@@ -68,7 +68,7 @@
                             <Border Style="{StaticResource CardFrameStyle}" Margin="0,4" Padding="16">
                                 <VerticalStackLayout Spacing="10">
                                     <Grid ColumnDefinitions="48,*,Auto" ColumnSpacing="12">
-                                        <controls:PaytinIconView Grid.Column="0" Icon="{Binding IconGlyph}" Name="{Binding CategoryName}" Size="48" VerticalOptions="Center" />
+                                        <controls:FinoraIconView Grid.Column="0" Icon="{Binding IconGlyph}" Name="{Binding CategoryName}" Size="48" VerticalOptions="Center" />
 
                                         <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
                                             <Label Text="{Binding CategoryName}"
@@ -76,7 +76,7 @@
                                             <Label Text="{Binding KindLabel}"
                                                    FontSize="12"
                                                    FontAttributes="Bold"
-                                                   TextColor="{StaticResource PayInk}" />
+                                                   TextColor="{StaticResource FinoraInk}" />
                                         </VerticalStackLayout>
 
                                         <Label Grid.Column="2"
@@ -92,7 +92,7 @@
                                                    FontSize="20"
                                                    FontAttributes="Bold"
                                                    FontFamily="SpaceGroteskBold"
-                                                   TextColor="{StaticResource PayInk}" />
+                                                   TextColor="{StaticResource FinoraInk}" />
                                         </VerticalStackLayout>
                                         <Label Grid.Column="1"
                                                Text="{Binding CurrentText}"
@@ -127,7 +127,7 @@
 
                 <!-- Empty state -->
                 <VerticalStackLayout Spacing="12" Padding="0,20,0,0" IsVisible="{Binding HasSuggestions, Converter={StaticResource InverseBoolConverter}}">
-                    <controls:PaytinEmptyState Title="No ideas yet"
+                    <controls:FinoraEmptyState Title="No ideas yet"
                                                  Subtitle="Suggestions come from your own spending - once a few weeks are recorded, categories that are over- or under-budgeted will show up here."
                                                  IconKey="bulb" />
                     <Label Text="{Binding ErrorMessage}"
@@ -141,7 +141,7 @@
                             HorizontalOptions="Center" />
                     <ActivityIndicator IsRunning="{Binding IsPreparingSampleData}"
                                        IsVisible="{Binding IsPreparingSampleData}"
-                                       Color="{StaticResource PayLimeDark}" />
+                                       Color="{StaticResource FinoraLimeDark}" />
                 </VerticalStackLayout>
             </VerticalStackLayout>
             </ScrollView>

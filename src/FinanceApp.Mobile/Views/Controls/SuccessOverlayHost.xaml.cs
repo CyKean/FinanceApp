@@ -50,15 +50,15 @@ public partial class SuccessOverlayHost : ContentView
     private async Task PlayAsync(SuccessAnimationRequest request)
     {
         var isFailure = request.Kind == AnimationKind.Failure;
-        var (accent, onAccent, glyph) = PaytinOverlay.ForResult(isFailure);
+        var (accent, onAccent, glyph) = FinoraOverlay.ForResult(isFailure);
 
         Badge.BackgroundColor = accent;
         Glyph.Stroke = onAccent;
-        Glyph.Data = PaytinIcons.GetGeometry(glyph);
+        Glyph.Data = FinoraIcons.GetGeometry(glyph);
         MessageLabel.Text = request.Message;
 
         Card.Opacity = 0;
-        Card.Scale = PaytinOverlay.CardScaleIn;
+        Card.Scale = FinoraOverlay.CardScaleIn;
         Card.TranslationX = 0;
         Scrim.Opacity = 0;
         Badge.Opacity = 0;
@@ -69,31 +69,31 @@ public partial class SuccessOverlayHost : ContentView
         MessageLabel.Opacity = 0;
         IsVisible = true;
 
-        _ = Scrim.FadeToAsync(1, PaytinOverlay.ScrimFadeMs, Easing.CubicOut);
+        _ = Scrim.FadeToAsync(1, FinoraOverlay.ScrimFadeMs, Easing.CubicOut);
         await Task.WhenAll(
-            Card.FadeToAsync(1, PaytinOverlay.CardInMs, Easing.CubicOut),
-            Card.ScaleToAsync(1, PaytinOverlay.SpringMs, Easing.SpringOut));
+            Card.FadeToAsync(1, FinoraOverlay.CardInMs, Easing.CubicOut),
+            Card.ScaleToAsync(1, FinoraOverlay.SpringMs, Easing.SpringOut));
         await Task.WhenAll(
-            Badge.FadeToAsync(1, PaytinOverlay.ScrimFadeMs, Easing.CubicOut),
-            Badge.ScaleToAsync(1, PaytinOverlay.SpringMs, Easing.SpringOut));
+            Badge.FadeToAsync(1, FinoraOverlay.ScrimFadeMs, Easing.CubicOut),
+            Badge.ScaleToAsync(1, FinoraOverlay.SpringMs, Easing.SpringOut));
         await Task.WhenAll(
-            Glyph.FadeToAsync(1, PaytinOverlay.CardInMs, Easing.CubicOut),
-            Glyph.ScaleToAsync(1, PaytinOverlay.SpringMs, Easing.SpringOut));
-        _ = MessageLabel.FadeToAsync(1, PaytinOverlay.CardInMs, Easing.CubicOut);
+            Glyph.FadeToAsync(1, FinoraOverlay.CardInMs, Easing.CubicOut),
+            Glyph.ScaleToAsync(1, FinoraOverlay.SpringMs, Easing.SpringOut));
+        _ = MessageLabel.FadeToAsync(1, FinoraOverlay.CardInMs, Easing.CubicOut);
 
         if (isFailure)
             await ShakeAsync();
 
-        await Task.Delay(isFailure ? PaytinOverlay.FailureHoldDuration : PaytinOverlay.HoldDuration);
+        await Task.Delay(isFailure ? FinoraOverlay.FailureHoldDuration : FinoraOverlay.HoldDuration);
 
         // A newer overlay may have taken over while this one was on screen.
         if (!ReferenceEquals(_active, request))
             return;
 
         await Task.WhenAll(
-            Scrim.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
-            Card.FadeToAsync(0, PaytinOverlay.CardOutMs, Easing.CubicIn),
-            Card.ScaleToAsync(PaytinOverlay.CardScaleOut, PaytinOverlay.CardOutMs, Easing.CubicIn));
+            Scrim.FadeToAsync(0, FinoraOverlay.CardOutMs, Easing.CubicIn),
+            Card.FadeToAsync(0, FinoraOverlay.CardOutMs, Easing.CubicIn),
+            Card.ScaleToAsync(FinoraOverlay.CardScaleOut, FinoraOverlay.CardOutMs, Easing.CubicIn));
 
         IsVisible = false;
         _active = null;

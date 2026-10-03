@@ -204,7 +204,7 @@ public class BudgetService : BaseService, IBudgetService
         // made every read take SQLite's write lock, so a page as innocent as
         // Forecasts or Budget Ideas blocked the UI thread of whatever page loaded
         // next - the UI thread then sat waiting on the lock and Android raised
-        // "Paytin isn't responding".
+        // "Finora isn't responding".
         var changed = false;
 
         foreach (var budget in budgets)

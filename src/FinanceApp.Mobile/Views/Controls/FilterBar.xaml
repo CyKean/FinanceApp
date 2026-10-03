@@ -9,36 +9,36 @@
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
             <Border x:Name="TogglePill"
                     Padding="14,0" HeightRequest="40"
-                    Background="{StaticResource PayCard}"
-                    Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                    Background="{StaticResource FinoraCard}"
+                    Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding ToggleCommand, Source={x:Reference Root}}" />
                 </Border.GestureRecognizers>
                 <HorizontalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center">
                     <Path x:Name="FilterIcon" Aspect="Uniform" WidthRequest="16" HeightRequest="16"
-                          Stroke="{StaticResource PayInk}" StrokeThickness="2"
+                          Stroke="{StaticResource FinoraInk}" StrokeThickness="2"
                           StrokeLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" />
                     <Label x:Name="ToggleLabel" Text="Filter" FontSize="13" FontAttributes="Bold"
-                           TextColor="{StaticResource PayInk}" VerticalOptions="Center" />
+                           TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
                 </HorizontalStackLayout>
             </Border>
 
             <Label x:Name="SummaryLabel" Grid.Column="1"
                    Text="{Binding ActiveSummary, Source={x:Reference Root}}"
-                   FontSize="12" TextColor="{StaticResource PayMuted}"
+                   FontSize="12" TextColor="{StaticResource FinoraMuted}"
                    LineBreakMode="TailTruncation"
                    HorizontalTextAlignment="End" VerticalOptions="Center" />
 
             <Border x:Name="ClearChip" Grid.Column="2"
                     Padding="14,0" HeightRequest="40"
-                    Background="{StaticResource PayInk}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                    Background="{StaticResource FinoraInk}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
                     IsVisible="{Binding HasActiveFilters, Source={x:Reference Root}}">
                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding ClearCommand, Source={x:Reference Root}}" />
                 </Border.GestureRecognizers>
-                <Label Text="Clear" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayLime}"
+                <Label Text="Clear" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}"
                        HorizontalOptions="Center" VerticalOptions="Center" />
             </Border>
         </Grid>
@@ -55,7 +55,7 @@
                                         Format="MMM dd, yyyy"
                                         MinimumDate="2020-01-01"
                                         HeightRequest="44"
-                                        TextColor="{StaticResource PayInk}" />
+                                        TextColor="{StaticResource FinoraInk}" />
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="4">
@@ -65,7 +65,7 @@
                                         Format="MMM dd, yyyy"
                                         MinimumDate="2020-01-01"
                                         HeightRequest="44"
-                                        TextColor="{StaticResource PayInk}" />
+                                        TextColor="{StaticResource FinoraInk}" />
                         </Border>
                     </VerticalStackLayout>
                 </Grid>
@@ -74,33 +74,33 @@
                      adds the "All" option the Picker never offered. -->
                 <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
                     <Border x:Name="TypeAllPill" HeightRequest="38"
-                            Background="Transparent" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                            Background="Transparent" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnTypeTapped" CommandParameter="all" />
                         </Border.GestureRecognizers>
                         <Label x:Name="TypeAllLabel" Text="All" FontSize="13" FontAttributes="Bold"
-                               TextColor="{StaticResource PayMuted}"
+                               TextColor="{StaticResource FinoraMuted}"
                                HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <Border x:Name="TypeIncomePill" Grid.Column="1" HeightRequest="38"
-                            Background="Transparent" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                            Background="Transparent" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnTypeTapped" CommandParameter="income" />
                         </Border.GestureRecognizers>
                         <Label x:Name="TypeIncomeLabel" Text="Income" FontSize="13" FontAttributes="Bold"
-                               TextColor="{StaticResource PayMuted}"
+                               TextColor="{StaticResource FinoraMuted}"
                                HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <Border x:Name="TypeExpensePill" Grid.Column="2" HeightRequest="38"
-                            Background="Transparent" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                            Background="Transparent" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnTypeTapped" CommandParameter="expense" />
                         </Border.GestureRecognizers>
                         <Label x:Name="TypeExpenseLabel" Text="Expense" FontSize="13" FontAttributes="Bold"
-                               TextColor="{StaticResource PayMuted}"
+                               TextColor="{StaticResource FinoraMuted}"
                                HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </Grid>
@@ -110,7 +110,7 @@
                             Command="{Binding ApplyCommand, Source={x:Reference Root}}"
                             Style="{StaticResource PrimaryButtonStyle}"
                             HeightRequest="44"
-                            TextColor="{StaticResource PayLime}"
+                            TextColor="{StaticResource FinoraLime}"
                             HorizontalOptions="Fill" />
                     <Button Grid.Column="1"
                             Text="Clear"

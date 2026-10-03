@@ -29,8 +29,8 @@
 
         <!-- Bottom sheet: TranslationY is the animation offset, set in code-behind -->
         <Border x:Name="Sheet" Grid.Row="1" TranslationY="900"
-                Background="{StaticResource PayCard}"
-                Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                Background="{StaticResource FinoraCard}"
+                Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
                 Padding="18,10,18,20">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="30,30,0,0" />
@@ -52,16 +52,16 @@
                     <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
                         <VerticalStackLayout Spacing="0" VerticalOptions="Center">
                             <Label Text="{Binding Title}" FontSize="20" FontAttributes="Bold"
-                                   FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
-                            <Label Text="Log money moving in or out" FontSize="12" TextColor="{StaticResource PayMuted}" />
+                                   FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
+                            <Label Text="Log money moving in or out" FontSize="12" TextColor="{StaticResource FinoraMuted}" />
                         </VerticalStackLayout>
                         <Border Grid.Column="1" WidthRequest="40" HeightRequest="40"
-                                Background="Transparent" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                                Background="Transparent" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
                             <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding CancelCommand}" />
                             </Border.GestureRecognizers>
-                            <Label Text="✕" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}"
+                            <Label Text="✕" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
                                    HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                     </Grid>
@@ -69,7 +69,7 @@
                     <!-- Mode banner: lime for income, ink for expense (mirrors the dashboard cards) -->
                     <Border Padding="16,12"
                             Background="{Binding TransactionType, Converter={StaticResource TypeAccent}}"
-                            Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                            Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><RoundRectangle CornerRadius="22" /></Border.StrokeShape>
 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
                             <Border WidthRequest="10" HeightRequest="10" VerticalOptions="Center"
@@ -89,18 +89,18 @@
 
                     <!-- Amount -->
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="Amount" Style="{StaticResource FormLabelStyle}" TextColor="{StaticResource PayInk}" />
+                        <Label Text="Amount" Style="{StaticResource FormLabelStyle}" TextColor="{StaticResource FinoraInk}" />
                         <Border Style="{StaticResource FieldBorderStyle}"
                                 Stroke="{Binding TransactionType, Converter={StaticResource TypeAccent}}">
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
                                 <Label Text="₱" FontSize="20" FontAttributes="Bold" FontFamily="SpaceGroteskBold"
-                                       TextColor="{StaticResource PayMuted}" VerticalOptions="Center" Margin="14,0,0,0" />
+                                       TextColor="{StaticResource FinoraMuted}" VerticalOptions="Center" Margin="14,0,0,0" />
                                 <Entry Grid.Column="1" Text="{Binding AmountText}"
                                        Keyboard="Numeric"
                                        Placeholder="0.00"
                                        BackgroundColor="Transparent"
-                                       TextColor="{StaticResource PayInk}"
-                                       PlaceholderColor="{StaticResource PayMuted}"
+                                       TextColor="{StaticResource FinoraInk}"
+                                       PlaceholderColor="{StaticResource FinoraMuted}"
                                        FontSize="22" FontAttributes="Bold" FontFamily="SpaceGroteskBold"
                                        HeightRequest="56"
                                        HorizontalTextAlignment="End" />
@@ -110,18 +110,18 @@
 
                     <!-- Date -->
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="Date" Style="{StaticResource FormLabelStyle}" TextColor="{StaticResource PayInk}" />
+                        <Label Text="Date" Style="{StaticResource FormLabelStyle}" TextColor="{StaticResource FinoraInk}" />
                         <Border Style="{StaticResource FieldBorderStyle}" Padding="14,0">
                             <DatePicker Date="{Binding Date}"
                                         Format="MMM dd, yyyy"
                                         HeightRequest="48"
-                                        TextColor="{StaticResource PayInk}" />
+                                        TextColor="{StaticResource FinoraInk}" />
                         </Border>
                     </VerticalStackLayout>
 
                     <!-- Account -->
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="Account" Style="{StaticResource FormLabelStyle}" TextColor="{StaticResource PayInk}" />
+                        <Label Text="Account" Style="{StaticResource FormLabelStyle}" TextColor="{StaticResource FinoraInk}" />
                         <controls:ModernSelect ItemsSource="{Binding Accounts}"
                                                SelectedItem="{Binding SelectedAccount}"
                                                Placeholder="Select Account"
@@ -141,19 +141,19 @@
                                 <Entry Text="{Binding NewAccountName}"
                                        Placeholder="Account name"
                                        BackgroundColor="Transparent"
-                                       TextColor="{StaticResource PayInk}"
+                                       TextColor="{StaticResource FinoraInk}"
                                        HeightRequest="44" />
                                 <Picker Title="Account type"
                                         ItemsSource="{Binding AccountTypes}"
                                         SelectedItem="{Binding NewAccountType}"
                                         BackgroundColor="Transparent"
-                                        TextColor="{StaticResource PayInk}"
+                                        TextColor="{StaticResource FinoraInk}"
                                         HeightRequest="44" />
                                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                                     <Button Text="Add"
                                             Command="{Binding SaveNewAccountCommand}"
                                             Style="{StaticResource PrimaryButtonStyle}"
-                                            TextColor="{StaticResource PayLime}"
+                                            TextColor="{StaticResource FinoraLime}"
                                             HeightRequest="44"
                                             HorizontalOptions="Fill" />
                                     <Button Grid.Column="1" Text="Cancel"
@@ -168,7 +168,7 @@
 
                     <!-- Category -->
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="Category" Style="{StaticResource FormLabelStyle}" TextColor="{StaticResource PayInk}" />
+                        <Label Text="Category" Style="{StaticResource FormLabelStyle}" TextColor="{StaticResource FinoraInk}" />
                         <controls:ModernSelect ItemsSource="{Binding Categories}"
                                                SelectedItem="{Binding SelectedCategory}"
                                                Placeholder="Select Category"
@@ -188,13 +188,13 @@
                                 <Entry Text="{Binding NewCategoryName}"
                                        Placeholder="Category name"
                                        BackgroundColor="Transparent"
-                                       TextColor="{StaticResource PayInk}"
+                                       TextColor="{StaticResource FinoraInk}"
                                        HeightRequest="44" />
                                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                                     <Button Text="Add"
                                             Command="{Binding SaveNewCategoryCommand}"
                                             Style="{StaticResource PrimaryButtonStyle}"
-                                            TextColor="{StaticResource PayLime}"
+                                            TextColor="{StaticResource FinoraLime}"
                                             HeightRequest="44"
                                             HorizontalOptions="Fill" />
                                     <Button Grid.Column="1" Text="Cancel"
@@ -209,14 +209,14 @@
 
                     <!-- Notes -->
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="Notes (Optional)" Style="{StaticResource FormLabelStyle}" TextColor="{StaticResource PayInk}" />
+                        <Label Text="Notes (Optional)" Style="{StaticResource FormLabelStyle}" TextColor="{StaticResource FinoraInk}" />
                         <Border Style="{StaticResource FieldBorderStyle}">
                             <Editor Text="{Binding Notes}"
                                     HeightRequest="72"
                                     Placeholder="Add a note..."
-                                    PlaceholderColor="{StaticResource PayMuted}"
+                                    PlaceholderColor="{StaticResource FinoraMuted}"
                                     BackgroundColor="Transparent"
-                                    TextColor="{StaticResource PayInk}" />
+                                    TextColor="{StaticResource FinoraInk}" />
                         </Border>
                     </VerticalStackLayout>
 

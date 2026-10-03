@@ -1,15 +1,15 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
-public partial class PaytinEmptyState : ContentView
+public partial class FinoraEmptyState : ContentView
 {
     public static readonly BindableProperty TitleProperty =
-        BindableProperty.Create(nameof(Title), typeof(string), typeof(PaytinEmptyState), "Nothing here yet");
+        BindableProperty.Create(nameof(Title), typeof(string), typeof(FinoraEmptyState), "Nothing here yet");
 
     public static readonly BindableProperty SubtitleProperty =
-        BindableProperty.Create(nameof(Subtitle), typeof(string), typeof(PaytinEmptyState), string.Empty);
+        BindableProperty.Create(nameof(Subtitle), typeof(string), typeof(FinoraEmptyState), string.Empty);
 
     public static readonly BindableProperty IconKeyProperty =
-        BindableProperty.Create(nameof(IconKey), typeof(string), typeof(PaytinEmptyState), "tag");
+        BindableProperty.Create(nameof(IconKey), typeof(string), typeof(FinoraEmptyState), "tag");
 
     public string Title
     {
@@ -29,7 +29,7 @@ public partial class PaytinEmptyState : ContentView
         set => SetValue(IconKeyProperty, value);
     }
 
-    public PaytinEmptyState()
+    public FinoraEmptyState()
     {
         InitializeComponent();
     }

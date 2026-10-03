@@ -14,10 +14,10 @@ public partial class DashboardPage : ContentPage
     {
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
-        QuickAIIcon.Data = PaytinIcons.GetGeometry("bulb");
-        QuickStatsIcon.Data = PaytinIcons.GetGeometry("chart");
-        QuickForecastIcon.Data = PaytinIcons.GetGeometry("forecast");
-        QuickMoreIcon.Data = PaytinIcons.GetGeometry("sliders");
+        QuickAIIcon.Data = FinoraIcons.GetGeometry("bulb");
+        QuickStatsIcon.Data = FinoraIcons.GetGeometry("chart");
+        QuickForecastIcon.Data = FinoraIcons.GetGeometry("forecast");
+        QuickMoreIcon.Data = FinoraIcons.GetGeometry("sliders");
     }
 
     protected override void OnAppearing()

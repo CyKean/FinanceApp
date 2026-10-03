@@ -43,10 +43,10 @@ public partial class ToastHost : ContentView
     {
         _hideTimer?.Stop();
 
-        var (accent, onAccent, glyph) = PaytinOverlay.ForToast(request.Kind);
+        var (accent, onAccent, glyph) = FinoraOverlay.ForToast(request.Kind);
         IconBadge.BackgroundColor = accent;
         Glyph.Stroke = onAccent;
-        Glyph.Data = PaytinIcons.GetGeometry(glyph);
+        Glyph.Data = FinoraIcons.GetGeometry(glyph);
         MessageLabel.Text = request.Message;
 
         IsVisible = true;
@@ -55,12 +55,12 @@ public partial class ToastHost : ContentView
         ToastRow.Scale = 0.96;
 
         _ = Task.WhenAll(
-            this.FadeToAsync(1, PaytinOverlay.ToastInMs, Easing.CubicOut),
-            ToastRow.TranslateToAsync(0, 0, PaytinOverlay.ToastInMs, Easing.CubicOut),
-            ToastRow.ScaleToAsync(1, PaytinOverlay.ToastInMs, Easing.CubicOut));
+            this.FadeToAsync(1, FinoraOverlay.ToastInMs, Easing.CubicOut),
+            ToastRow.TranslateToAsync(0, 0, FinoraOverlay.ToastInMs, Easing.CubicOut),
+            ToastRow.ScaleToAsync(1, FinoraOverlay.ToastInMs, Easing.CubicOut));
 
         _hideTimer = Dispatcher.CreateTimer();
-        _hideTimer.Interval = PaytinOverlay.ToastDuration;
+        _hideTimer.Interval = FinoraOverlay.ToastDuration;
         _hideTimer.IsRepeating = false;
         _hideTimer.Tick += OnHideTimerTicked;
         _hideTimer.Start();
@@ -79,9 +79,9 @@ public partial class ToastHost : ContentView
             return;
 
         await Task.WhenAll(
-            this.FadeToAsync(0, PaytinOverlay.ToastOutMs, Easing.CubicIn),
-            ToastRow.TranslateToAsync(0, SlideIn, PaytinOverlay.ToastOutMs, Easing.CubicIn),
-            ToastRow.ScaleToAsync(PaytinOverlay.CardScaleOut, PaytinOverlay.ToastOutMs, Easing.CubicIn));
+            this.FadeToAsync(0, FinoraOverlay.ToastOutMs, Easing.CubicIn),
+            ToastRow.TranslateToAsync(0, SlideIn, FinoraOverlay.ToastOutMs, Easing.CubicIn),
+            ToastRow.ScaleToAsync(FinoraOverlay.CardScaleOut, FinoraOverlay.ToastOutMs, Easing.CubicIn));
 
         IsVisible = false;
     }

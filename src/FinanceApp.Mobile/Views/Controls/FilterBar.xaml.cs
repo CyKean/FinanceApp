@@ -100,7 +100,7 @@ public partial class FilterBar : ContentView
         // parsing, and a plain CLR property never re-resolves once it is null.
         ToggleCommand = new Command(() => IsExpanded = !IsExpanded);
         InitializeComponent();
-        FilterIcon.Data = PaytinIcons.GetGeometry("funnel");
+        FilterIcon.Data = FinoraIcons.GetGeometry("funnel");
         SyncState();
     }
 

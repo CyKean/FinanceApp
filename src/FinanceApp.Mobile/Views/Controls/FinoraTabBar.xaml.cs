@@ -2,11 +2,11 @@ namespace FinanceApp.Mobile.Views.Controls;
 
 using FinanceApp.Mobile.Helpers;
 
-public partial class PaytinTabBar : ContentView
+public partial class FinoraTabBar : ContentView
 {
     public static readonly BindableProperty ActiveTabProperty =
-        BindableProperty.Create(nameof(ActiveTab), typeof(string), typeof(PaytinTabBar), "Dashboard",
-            propertyChanged: (b, _, _) => ((PaytinTabBar)b).Refresh());
+        BindableProperty.Create(nameof(ActiveTab), typeof(string), typeof(FinoraTabBar), "Dashboard",
+            propertyChanged: (b, _, _) => ((FinoraTabBar)b).Refresh());
 
     public string ActiveTab
     {
@@ -19,14 +19,14 @@ public partial class PaytinTabBar : ContentView
     private static readonly Color IdleCircle = Color.FromArgb("#2C332C");
     private static readonly Color IdleIcon = Color.FromArgb("#9AA393");
 
-    public PaytinTabBar()
+    public FinoraTabBar()
     {
         InitializeComponent();
-        IconDashboard.Data = PaytinIcons.GetGeometry("grid");
-        IconTransactions.Data = PaytinIcons.GetGeometry("swap");
-        IconAccounts.Data = PaytinIcons.GetGeometry("wallet");
-        IconBudgets.Data = PaytinIcons.GetGeometry("pie");
-        IconMore.Data = PaytinIcons.GetGeometry("sliders");
+        IconDashboard.Data = FinoraIcons.GetGeometry("grid");
+        IconTransactions.Data = FinoraIcons.GetGeometry("swap");
+        IconAccounts.Data = FinoraIcons.GetGeometry("wallet");
+        IconBudgets.Data = FinoraIcons.GetGeometry("pie");
+        IconMore.Data = FinoraIcons.GetGeometry("sliders");
         Refresh();
     }
 

@@ -20,7 +20,7 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display name -->
-		<ApplicationTitle>Paytin</ApplicationTitle>
+		<ApplicationTitle>Finora</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.financeapp.mobile</ApplicationId>

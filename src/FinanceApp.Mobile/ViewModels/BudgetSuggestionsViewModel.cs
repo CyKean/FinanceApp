@@ -115,7 +115,7 @@ public partial class BudgetSuggestionsViewModel : BaseViewModel
             // Seeding deliberately does NOT happen here. It is a few hundred
             // inserts, and firing that off as the page opens held SQLite's write
             // lock while the page the user came from reloaded on the UI thread,
-            // which is what produced "Paytin isn't responding" on back. The
+            // which is what produced "Finora isn't responding" on back. The
             // dashboard already seeds an empty account at startup, and the button
             // below covers the case where that did not happen.
             var hasData = await _devDataSeeder.HasAnyDataAsync(userId.Value, cts.Token);

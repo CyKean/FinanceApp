@@ -158,7 +158,7 @@ public partial class PredictionsViewModel : BaseViewModel
             // There is no async SQLite provider, so every repository call in this
             // pipeline completes synchronously on the calling thread. Running it
             // inline blocked the UI thread long enough for Android to raise
-            // "Paytin isn't responding", so the whole block goes to a worker.
+            // "Finora isn't responding", so the whole block goes to a worker.
             //
             // It also resolves its own DI scope. MAUI resolves pages from the
             // root provider, and AddDbContext is registered Scoped, so every
@@ -169,7 +169,7 @@ public partial class PredictionsViewModel : BaseViewModel
             // Seeding deliberately does NOT happen here. It is a few hundred
             // inserts, and firing that off as the page opens held SQLite's write
             // lock while the page the user came from reloaded on the UI thread,
-            // which is what produced "Paytin isn't responding" on back. The
+            // which is what produced "Finora isn't responding" on back. The
             // dashboard already seeds an empty account at startup, and the button
             // below covers the case where that did not happen.
             var hasData = await _devDataSeeder.HasAnyDataAsync(userId.Value, cts.Token);

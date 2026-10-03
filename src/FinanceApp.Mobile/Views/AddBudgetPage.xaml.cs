@@ -27,7 +27,7 @@ public partial class AddBudgetPage : ContentPage
 
     private void BuildEmojiGrid()
     {
-        Views.Controls.PaytinIconPicker.Build(EmojiContainer, EmojiPalette.Icons, _viewModel.Icon, emoji =>
+        Views.Controls.FinoraIconPicker.Build(EmojiContainer, EmojiPalette.Icons, _viewModel.Icon, emoji =>
         {
             if (BindingContext is AddBudgetViewModel vm)
                 vm.SelectIconCommand.Execute(emoji);

@@ -14,8 +14,8 @@
         </Grid>
 
         <Border x:Name="Card"
-                Background="{StaticResource PayCard}"
-                Stroke="{StaticResource PayInk}"
+                Background="{StaticResource FinoraCard}"
+                Stroke="{StaticResource FinoraInk}"
                 StrokeThickness="1.5"
                 Padding="20,18,20,30"
                 VerticalOptions="End"
@@ -33,12 +33,12 @@
                            FontSize="18"
                            FontAttributes="Bold"
                            HorizontalTextAlignment="Center"
-                           TextColor="{StaticResource PayInk}" />
+                           TextColor="{StaticResource FinoraInk}" />
                     <Label x:Name="SubtitleLabel"
                            Text="Select an option"
                            FontSize="13"
                            HorizontalTextAlignment="Center"
-                           TextColor="{StaticResource PayMuted}" />
+                           TextColor="{StaticResource FinoraMuted}" />
                 </VerticalStackLayout>
                 <VerticalStackLayout x:Name="OptionsContainer" Spacing="8" />
                 <Button x:Name="CancelButton"

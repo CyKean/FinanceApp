@@ -9,7 +9,7 @@
              x:DataType="viewmodels:PredictionsViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource PayCream}">
+             BackgroundColor="{StaticResource FinoraCream}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -46,19 +46,19 @@
                 <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
                     <Border WidthRequest="46" HeightRequest="46"
-                            Background="{StaticResource PayCard}"
-                            Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                            Background="{StaticResource FinoraCard}"
+                            Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
                             VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}"
+                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
                                HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                        <Label Text="Forecasts" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                        <Label Text="Forecasts" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
                         <Label Text="What next month looks like" FontSize="12" TextColor="#6F7668" />
                     </VerticalStackLayout>
-                    <controls:PaytinIconView Grid.Column="2" IconKey="forecast" Size="46" VerticalOptions="Center" />
+                    <controls:FinoraIconView Grid.Column="2" IconKey="forecast" Size="46" VerticalOptions="Center" />
                 </Grid>
 
                 <!-- Hero card.
@@ -69,7 +69,7 @@
                 <Border Style="{StaticResource HeroCardStyle}" IsVisible="{Binding HasAnyData}">
                     <VerticalStackLayout Spacing="12">
                         <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                            <controls:PaytinIconView IconKey="sparkle" Size="44" Light="True" VerticalOptions="Center" />
+                            <controls:FinoraIconView IconKey="sparkle" Size="44" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Spacing="0" VerticalOptions="Center" HorizontalOptions="Fill">
                                 <Label Text="Next Month Prediction" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="White" />
                                 <Label Text="{Binding ExpensePrediction.PredictionDate, StringFormat='Generated {0:MMM dd, yyyy}'}" FontSize="12" TextColor="White" Opacity="0.7" />
@@ -77,7 +77,7 @@
                         </HorizontalStackLayout>
 
                         <VerticalStackLayout Spacing="2">
-                            <Label Text="Predicted Expenses" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource PayLime}" />
+                            <Label Text="Predicted Expenses" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" />
                             <Label Text="{Binding ExpensePrediction.TotalPredicted, Converter={StaticResource MoneyConverter}}"
                                    FontSize="28" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="White" />
                         </VerticalStackLayout>
@@ -126,7 +126,7 @@
                                 <DataTemplate x:DataType="dtos:CategoryPredictionDto">
                                     <Border Style="{StaticResource CategoryItemFrameStyle}" Margin="0,4">
                                         <HorizontalStackLayout Spacing="12">
-                                            <controls:PaytinIconView Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="44" VerticalOptions="Center" />
+                                            <controls:FinoraIconView Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="44" VerticalOptions="Center" />
                                             <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                                 <Label Text="{Binding CategoryName}" Style="{StaticResource CategoryNameLabelStyle}" />
                                                 <ProgressBar Progress="{Binding PredictedAmount.Amount, Converter={StaticResource PercentageConverter}, ConverterParameter=div1000}"
@@ -166,7 +166,7 @@
                                 <DataTemplate x:DataType="dtos:SpendingTrendDto">
                                     <Border Style="{StaticResource TrendItemFrameStyle}" Margin="0,4">
                                         <HorizontalStackLayout Spacing="12">
-                                            <controls:PaytinIconView Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="40" VerticalOptions="Center" />
+                                            <controls:FinoraIconView Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="40" VerticalOptions="Center" />
                                             <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                                 <Label Text="{Binding CategoryName}" Style="{StaticResource CategoryNameLabelStyle}" />
                                                 <Label Text="{Binding Trend, Converter={StaticResource TrendToIconConverter}}" Style="{StaticResource TrendIconStyle}"
@@ -265,7 +265,7 @@
                 <!-- Smart Insights -->
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,4,0,0" IsVisible="{Binding HasAnyData}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Smart Insights" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                        <Label Text="Smart Insights" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
 
                         <VerticalStackLayout Spacing="0"
                                              BindableLayout.ItemsSource="{Binding Insights}"
@@ -275,7 +275,7 @@
                                     <Border Style="{StaticResource InsightCardFrameStyle}" Margin="0,4">
                                         <VerticalStackLayout Spacing="8">
                                             <HorizontalStackLayout Spacing="12">
-                                                <controls:PaytinIconView IconKey="{Binding Severity, Converter={StaticResource InsightSeverityToIconConverter}}"
+                                                <controls:FinoraIconView IconKey="{Binding Severity, Converter={StaticResource InsightSeverityToIconConverter}}"
                                                                         Size="38" VerticalOptions="Center" />
                                                 <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                                     <Label Text="{Binding Title}" Style="{StaticResource InsightTitleLabelStyle}" />
@@ -297,7 +297,7 @@
                 <!-- Anomalies -->
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,4,0,0" IsVisible="{Binding HasAnyData}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Unusual Spending" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                        <Label Text="Unusual Spending" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
 
                         <VerticalStackLayout Spacing="0"
                                              BindableLayout.ItemsSource="{Binding Anomalies}"
@@ -307,7 +307,7 @@
                                     <Border Style="{StaticResource AnomalyCardFrameStyle}" Margin="0,4">
                                         <VerticalStackLayout Spacing="8">
                                             <HorizontalStackLayout Spacing="12">
-                                                <controls:PaytinIconView IconKey="alertCircle" Size="34" VerticalOptions="Center" />
+                                                <controls:FinoraIconView IconKey="alertCircle" Size="34" VerticalOptions="Center" />
                                                 <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                                     <Label Text="{Binding CategoryName}" Style="{StaticResource AnomalyCategoryLabelStyle}" />
                                                     <Label Text="{Binding Message}" Style="{StaticResource AnomalyMessageLabelStyle}" />
@@ -349,16 +349,16 @@
 
                 <!-- Empty state: nothing at all to forecast from. -->
                 <VerticalStackLayout Spacing="14" IsVisible="{Binding HasNoData}">
-                    <controls:PaytinEmptyState Title="Not enough history yet"
+                    <controls:FinoraEmptyState Title="Not enough history yet"
                                               Subtitle="Forecasts need expenses recorded across at least two months, with 10 or more transactions. Keep logging and they will appear here."
                                               IconKey="forecast" />
 
-                    <Border Background="{StaticResource PayCard}"
-                            Stroke="{StaticResource PayInk}" StrokeThickness="1.5"
+                    <Border Background="{StaticResource FinoraCard}"
+                            Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
                             Padding="16" IsVisible="{Binding HasError}">
                         <Border.StrokeShape><RoundRectangle CornerRadius="14" /></Border.StrokeShape>
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Something went wrong" FontSize="14" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource PayInk}" />
+                            <Label Text="Something went wrong" FontSize="14" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
                             <Label Text="{Binding ErrorMessage}" FontSize="13" TextColor="#6F7668" />
                             <Button Text="Try again"
                                     Command="{Binding RefreshCommand}"
@@ -375,7 +375,7 @@
 
                     <ActivityIndicator IsRunning="{Binding IsPreparingSampleData}"
                                        IsVisible="{Binding IsPreparingSampleData}"
-                                       Color="{StaticResource PayLimeDark}" />
+                                       Color="{StaticResource FinoraLimeDark}" />
                 </VerticalStackLayout>
 
             </VerticalStackLayout>

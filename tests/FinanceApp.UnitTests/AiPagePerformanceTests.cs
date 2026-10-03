@@ -20,7 +20,7 @@ namespace FinanceApp.UnitTests;
 /// inside the budget. <para>
 /// There is no async EF Core provider for SQLite, so repository methods marked
 /// async complete synchronously on the calling thread. Anything slow here is a
-/// UI-thread freeze on the device, which is what produced the "Paytin isn't
+/// UI-thread freeze on the device, which is what produced the "Finora isn't
 /// responding" ANR - so the bound is generous but far below Android's five
 /// second input threshold.
 /// </para>

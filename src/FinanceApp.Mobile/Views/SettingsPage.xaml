@@ -9,7 +9,7 @@
              x:DataType="viewmodels:SettingsViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource PayCream}">
+             BackgroundColor="{StaticResource FinoraCream}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -23,30 +23,30 @@
         <ScrollView>
             <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
                 <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
-                    <Border WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                    <Border WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
-                    <Label Grid.Column="1" Text="Profile &amp; Settings" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
-                    <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource PayCard}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5">
+                    <Label Grid.Column="1" Text="Profile &amp; Settings" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                        <Label Text="•••" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="•••" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </Grid>
 
                 <Border Style="{StaticResource HeroCardStyle}">
                     <HorizontalStackLayout Spacing="14">
-                        <Border WidthRequest="60" HeightRequest="60" Background="{StaticResource PayLime}" Stroke="{StaticResource PayLime}" StrokeThickness="0">
+                        <Border WidthRequest="60" HeightRequest="60" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraLime}" StrokeThickness="0">
                             <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                            <Label Text="W" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="W" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                             <Label Text="Signed in as" FontSize="11" TextColor="White" Opacity="0.7" />
                             <Label Text="{Binding UserEmail}" FontSize="16" FontAttributes="Bold" TextColor="White" />
-                            <Border Background="{StaticResource PayLime}" StrokeThickness="0" Padding="10,3" HorizontalOptions="Start" Margin="0,4,0,0">
+                            <Border Background="{StaticResource FinoraLime}" StrokeThickness="0" Padding="10,3" HorizontalOptions="Start" Margin="0,4,0,0">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                                <Label Text="● Paytin member" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                                <Label Text="● Finora member" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
                             </Border>
                         </VerticalStackLayout>
                     </HorizontalStackLayout>
@@ -54,26 +54,26 @@
 
                 <Border Style="{StaticResource CardFrameStyle}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Synchronization" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                        <Label Text="Synchronization" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
                         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-                            <Border Padding="10" Background="{StaticResource PayCream}" StrokeThickness="0">
+                            <Border Padding="10" Background="{StaticResource FinoraCream}" StrokeThickness="0">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
-                                    <Label Text="{Binding SyncStatus.PendingCount}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="Center" />
+                                    <Label Text="{Binding SyncStatus.PendingCount}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
                                     <Label Text="Pending" FontSize="11" TextColor="#6F7668" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Border>
-                            <Border Grid.Column="1" Padding="10" Background="{StaticResource PayCream}" StrokeThickness="0">
+                            <Border Grid.Column="1" Padding="10" Background="{StaticResource FinoraCream}" StrokeThickness="0">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
                                     <Label Text="{Binding SyncStatus.FailedCount}" FontSize="18" FontAttributes="Bold" TextColor="#DC2626" HorizontalOptions="Center" />
                                     <Label Text="Failed" FontSize="11" TextColor="#6F7668" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Border>
-                            <Border Grid.Column="2" Padding="10" Background="{StaticResource PayInk}" StrokeThickness="0">
+                            <Border Grid.Column="2" Padding="10" Background="{StaticResource FinoraInk}" StrokeThickness="0">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
-                                    <Label Text="✓" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource PayLime}" HorizontalOptions="Center" />
+                                    <Label Text="✓" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" HorizontalOptions="Center" />
                                     <Label Text="Synced" FontSize="11" TextColor="White" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Border>
@@ -91,29 +91,29 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Background="{StaticResource PayInk}" Stroke="{StaticResource PayInk}" StrokeThickness="1.5" Padding="16">
+                <Border Background="{StaticResource FinoraInk}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="16">
                     <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnAiAssistantTapped" /></Border.GestureRecognizers>
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                        <controls:PaytinIconView Grid.Column="0" IconKey="bot" Size="46" Light="True" VerticalOptions="Center" />
+                        <controls:FinoraIconView Grid.Column="0" IconKey="bot" Size="46" Light="True" VerticalOptions="Center" />
                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                             <Label Text="AI Assistant" FontSize="15" FontAttributes="Bold" TextColor="White" />
                             <Label Text="Chat &amp; budget ideas · API key" FontSize="12" TextColor="White" Opacity="0.7" />
                         </VerticalStackLayout>
-                        <Label Grid.Column="2" Text="›" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PayLime}" VerticalOptions="Center" />
+                        <Label Grid.Column="2" Text="›" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" VerticalOptions="Center" />
                     </Grid>
                 </Border>
 
                 <Border Style="{StaticResource CardFrameStyle}">
                     <VerticalStackLayout Spacing="8">
-                        <Label Text="App Information" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource PayInk}" />
+                        <Label Text="App Information" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
                         <HorizontalStackLayout Spacing="12">
                             <Label Text="Version" FontSize="14" TextColor="#6F7668" />
-                            <Label Text="{Binding AppVersion}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="EndAndExpand" />
+                            <Label Text="{Binding AppVersion}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="EndAndExpand" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Spacing="12">
                             <Label Text="Theme" FontSize="14" TextColor="#6F7668" />
-                            <Label Text="Paytin Cream + Lime" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource PayInk}" HorizontalOptions="EndAndExpand" />
+                            <Label Text="Finora Cream + Lime" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="EndAndExpand" />
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>

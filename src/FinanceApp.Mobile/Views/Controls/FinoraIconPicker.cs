@@ -5,7 +5,7 @@ namespace FinanceApp.Mobile.Views.Controls;
 /// black-circle line-icon tiles instead of raw emoji. The selected tile
 /// gets a lime badge with an ink ring.
 /// </summary>
-public static class PaytinIconPicker
+public static class FinoraIconPicker
 {
     private static readonly Color Ink = Color.FromArgb("#161B16");
 
@@ -16,7 +16,7 @@ public static class PaytinIconPicker
         foreach (var emoji in emojis)
         {
             var isSelected = string.Equals((emoji ?? string.Empty).Trim(), selected, StringComparison.Ordinal);
-            var badge = new PaytinIconView
+            var badge = new FinoraIconView
             {
                 Icon = emoji,
                 Size = 42,

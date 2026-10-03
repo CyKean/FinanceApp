@@ -30,7 +30,7 @@ public partial class AddCategoryPage : ContentPage
 
     private void BuildEmojiGrid()
     {
-        Views.Controls.PaytinIconPicker.Build(EmojiContainer, EmojiPalette.Icons, _viewModel.Icon, emoji =>
+        Views.Controls.FinoraIconPicker.Build(EmojiContainer, EmojiPalette.Icons, _viewModel.Icon, emoji =>
         {
             if (BindingContext is AddCategoryViewModel vm)
                 vm.SelectIconCommand.Execute(emoji);
