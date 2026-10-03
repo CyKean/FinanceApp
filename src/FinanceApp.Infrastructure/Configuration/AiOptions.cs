@@ -11,7 +11,7 @@ public class AiOptions
     /// </summary>
     public const string DefaultBaseUrl = "https://api.groq.com/openai/v1";
 
-    public const string DefaultModel = "llama-3.3-70b-versatile";
+    public const string DefaultModel = "openai/gpt-oss-120b";
 
     public string BaseUrl { get; set; } = DefaultBaseUrl;
 
