@@ -4,7 +4,7 @@
 	     session id) otherwise resurrects stale/empty data over fresh installs,
 	     making it look like saved rows vanished. Revisit with backup rules
 	     once real Supabase Auth owns identity. -->
-	<application android:allowBackup="false" android:icon="@mipmap/financeapp_fg" android:roundIcon="@mipmap/financeapp_fg_round" android:supportsRtl="true"></application>
+	<application android:allowBackup="false" android:icon="@mipmap/finora_fg" android:roundIcon="@mipmap/finora_fg_round" android:supportsRtl="true"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
 </manifest>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Splash mark. Identical geometry to AppIcon/finora_fg.svg, shown against the
+  ink background declared by MauiSplashScreen's Color. On Android 12+ the
+  platform centres the app icon on the window background, so this file mainly
+  serves the platforms that still composite the splash image itself.
+-->
+<svg width="456" height="456" viewBox="0 0 456 456" version="1.1" xmlns="http://www.w3.org/2000/svg" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <rect x="77.5" y="77.5" width="301" height="301" rx="73" ry="73" style="fill:#CDF463;"/>
+    <path d="M125.4 287.3 A118.6 118.6 0 0 1 244 168.7 L330.6 168.7" style="fill:none;stroke:#161B16;stroke-width:50.2;stroke-linecap:round;stroke-linejoin:round;"/>
+</svg>

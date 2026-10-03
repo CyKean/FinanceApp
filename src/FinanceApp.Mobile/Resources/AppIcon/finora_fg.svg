@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Finora mark: a trajectory cut out of a tile.
+
+  A lime rounded tile with a single stroke removed from it in ink. The stroke
+  is the idea: a line that climbs and then settles into a plateau, which is
+  what the product does with money over time rather than storing a static
+  total. Nothing here spells the name out; it is read as "a line going
+  somewhere and then holding steady".
+
+  Why negative space rather than a lime stroke on ink: the tile gives the mark
+  a silhouette, so it still reads as an app icon at launcher size and after the
+  launcher applies its mask, instead of dissolving into a lone line.
+
+  Geometry notes:
+  - Tile is x/y 77.5, 301x301, corner radius 73, so it spans 77.5..378.5.
+    That is 66% of the 456 canvas, matching the radius (~150) that Android
+    adaptive icons guarantee survives masking. A larger tile would have its
+    rounded corners shaved off by the launcher mask.
+  - The stroke is one continuous path: a quarter arc of radius 118.6 rising
+    from (125.4, 287.3) to (244, 168.7), then a straight run out to
+    (330.6, 168.7). Round caps, width 50.2, so the corner reads as one
+    gesture rather than two shapes.
+  - Stroke bounds are x 100..356, y 144..312, centred on (228, 228) to match
+    the tile.
+  - Colours are locked as a pair: lime tile, ink knockout. Because the
+    knockout is the background colour, this needs an ink (#161B16) surround,
+    which is what MauiIcon's Color provides.
+-->
+<svg width="456" height="456" viewBox="0 0 456 456" version="1.1" xmlns="http://www.w3.org/2000/svg" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <rect x="77.5" y="77.5" width="301" height="301" rx="73" ry="73" style="fill:#CDF463;"/>
+    <path d="M125.4 287.3 A118.6 118.6 0 0 1 244 168.7 L330.6 168.7" style="fill:none;stroke:#161B16;stroke-width:50.2;stroke-linecap:round;stroke-linejoin:round;"/>
+</svg>

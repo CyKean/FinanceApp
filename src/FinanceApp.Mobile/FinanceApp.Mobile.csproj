@@ -79,11 +79,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\financeapp_fg.svg" Color="#0E6B4F" />
+		<!-- App Icon: lime tile with the growth curve cut out of it, on ink -->
+		<MauiIcon Include="Resources\AppIcon\finora_fg.svg" Color="#161B16" />
 
-		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0E6B4F" BaseSize="128,128" />
+		<!-- Splash Screen: same mark, ink background (was an off-palette green) -->
+		<MauiSplashScreen Include="Resources\Splash\finora_splash.svg" Color="#161B16" BaseSize="128,128" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
