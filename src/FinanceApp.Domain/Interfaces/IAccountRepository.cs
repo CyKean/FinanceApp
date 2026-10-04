@@ -10,4 +10,7 @@ public interface IAccountRepository : IRepository<Account>
     Task<Account?> GetDefaultAccountAsync(Guid userId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Account>> GetByTypeAsync(Guid userId, AccountType type, CancellationToken cancellationToken = default);
     Task<Money> GetTotalBalanceAsync(Guid userId, CancellationToken cancellationToken = default);
+
+    /// <summary>Batch lookup, so resolving names for a list costs one query.</summary>
+    Task<IReadOnlyDictionary<Guid, Account>> GetByIdsAsync(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken = default);
 }

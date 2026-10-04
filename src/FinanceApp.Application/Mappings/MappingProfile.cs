@@ -66,25 +66,45 @@ public static class MappingExtensions
         );
     }
 
-    public static BudgetDto ToDto(this Budget entity, string categoryName, string categoryIcon, string categoryColor)
+public static BudgetDto ToDto(this Budget entity, string categoryName, string categoryIcon, string categoryColor)
     {
+        return entity.ToDto(categoryName, categoryIcon, categoryColor, entity.SpentAmount);
+    }
+
+    /// <summary>
+    /// Projects a budget using a supplied spent amount instead of the stored one.
+    /// <para>
+    /// Callers that recompute spend during a read must use this. Writing the
+    /// recomputed value back (ResetSpending/AddSpending/SaveChanges) marked the
+    /// row dirty, bumped the Version concurrency token and queued a sync
+    /// operation, so simply viewing the dashboard took SQLite's write lock and
+    /// told the server about a change the server never made.
+    /// </para>
+    /// </summary>
+    public static BudgetDto ToDto(this Budget entity, string categoryName, string categoryIcon, string categoryColor, Money spentAmount)
+    {
+        var remaining = entity.Amount.Subtract(spentAmount);
+        var percentageUsed = entity.Amount.Amount == 0
+            ? 0
+            : Math.Round((spentAmount.Amount / entity.Amount.Amount) * 100, 2);
+
         return new BudgetDto(
             entity.Id,
             entity.Name,
             entity.Amount,
-            entity.SpentAmount,
-            entity.GetRemainingAmount(),
-            entity.GetPercentageUsed(),
+            spentAmount,
+            remaining,
+            percentageUsed,
             entity.StartDate,
             entity.EndDate,
-              entity.CategoryId,
-              categoryName,
-              categoryIcon,
-              categoryColor,
-              entity.Icon ?? categoryIcon,
-              entity.Color ?? categoryColor,
-              entity.IsOverBudget(),
-            entity.IsNearLimit(),
+            entity.CategoryId,
+            categoryName,
+            categoryIcon,
+            categoryColor,
+            entity.Icon ?? categoryIcon,
+            entity.Color ?? categoryColor,
+            spentAmount > entity.Amount,
+            percentageUsed >= 80,
             entity.SyncStatus,
             entity.LastSyncedAt,
             entity.CreatedAt,

@@ -172,33 +172,22 @@ public class BudgetService : BaseService, IBudgetService
     public async Task<IReadOnlyList<BudgetDto>> GetAllAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var budgets = await _budgetRepository.GetByUserIdAsync(userId, cancellationToken);
-        var categoryIds = budgets.Select(b => b.CategoryId.Value).Distinct().ToList();
+        var categories = await _categoryRepository.GetByIdsAsync(
+            budgets.Select(b => b.CategoryId.Value).Distinct().ToList(), cancellationToken);
 
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
+        return budgets.Select(b =>
         {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
+            categories.TryGetValue(b.CategoryId.Value, out var cat);
 
-        return budgets.Select(b => b.ToDto(
-            categories.TryGetValue(b.CategoryId.Value, out var cat) ? cat.Name : "",
-            categories.TryGetValue(b.CategoryId.Value, out cat) ? cat.Icon ?? "" : "",
-            categories.TryGetValue(b.CategoryId.Value, out cat) ? cat.Color ?? "" : ""
-        )).ToList();
+            return b.ToDto(cat?.Name ?? "", cat?.Icon ?? "", cat?.Color ?? "");
+        }).ToList();
     }
 
     public async Task<IReadOnlyList<BudgetDto>> GetActiveAsync(Guid userId, DateTime asOfDate, CancellationToken cancellationToken = default)
     {
         var budgets = await _budgetRepository.GetActiveByUserIdAsync(userId, asOfDate, cancellationToken);
-        var categoryIds = budgets.Select(b => b.CategoryId.Value).Distinct().ToList();
-
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
-        {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
+        var categories = await _categoryRepository.GetByIdsAsync(
+            budgets.Select(b => b.CategoryId.Value).Distinct().ToList(), cancellationToken);
 
         // Only persist when a spent amount actually moved. Saving unconditionally
         // made every read take SQLite's write lock, so a page as innocent as
@@ -217,11 +206,12 @@ public class BudgetService : BaseService, IBudgetService
             await UnitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        return budgets.Select(b => b.ToDto(
-            categories.TryGetValue(b.CategoryId.Value, out var cat) ? cat.Name : "",
-            categories.TryGetValue(b.CategoryId.Value, out cat) ? cat.Icon ?? "" : "",
-            categories.TryGetValue(b.CategoryId.Value, out cat) ? cat.Color ?? "" : ""
-        )).ToList();
+        return budgets.Select(b =>
+        {
+            categories.TryGetValue(b.CategoryId.Value, out var cat);
+
+            return b.ToDto(cat?.Name ?? "", cat?.Icon ?? "", cat?.Color ?? "");
+        }).ToList();
     }
 
     public async Task<BudgetDto?> GetActiveForCategoryAsync(Guid userId, CategoryId categoryId, DateTime asOfDate, CancellationToken cancellationToken = default)

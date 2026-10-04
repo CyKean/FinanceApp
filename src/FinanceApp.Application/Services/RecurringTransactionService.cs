@@ -167,82 +167,66 @@ public class RecurringTransactionService : BaseService, IRecurringTransactionSer
         return recurring.ToDto(account?.Name ?? "", category?.Name ?? "");
     }
 
+    /// <summary>
+    /// Resolves the account and category names for a page of recurrences in two
+    /// queries. Fetching them one id at a time made a list of N cost 2N
+    /// round-trips, and this runs on every Recurring page appearance.
+    /// </summary>
+    private async Task<(IReadOnlyDictionary<Guid, Account> Accounts, IReadOnlyDictionary<Guid, Category> Categories)>
+        LoadLookupsAsync(IReadOnlyList<RecurringTransaction> recurrings, CancellationToken cancellationToken)
+    {
+        if (recurrings.Count == 0)
+            return (new Dictionary<Guid, Account>(), new Dictionary<Guid, Category>());
+
+        var accounts = await _accountRepository.GetByIdsAsync(
+            recurrings.Select(r => r.AccountId.Value).Distinct().ToList(), cancellationToken);
+
+        var categories = await _categoryRepository.GetByIdsAsync(
+            recurrings.Select(r => r.CategoryId.Value).Distinct().ToList(), cancellationToken);
+
+        return (accounts, categories);
+    }
+
     public async Task<IReadOnlyList<RecurringTransactionDto>> GetAllAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var recurrings = await _recurringRepository.GetByUserIdAsync(userId, cancellationToken);
-        var accountIds = recurrings.Select(r => r.AccountId.Value).Distinct().ToList();
-        var categoryIds = recurrings.Select(r => r.CategoryId.Value).Distinct().ToList();
+        var (accounts, categories) = await LoadLookupsAsync(recurrings, cancellationToken);
 
-        var accounts = new Dictionary<Guid, Account>();
-        foreach (var accId in accountIds)
+        return recurrings.Select(r =>
         {
-            var acc = await _accountRepository.GetByIdAsync(accId, cancellationToken);
-            if (acc != null) accounts[accId] = acc;
-        }
+            accounts.TryGetValue(r.AccountId.Value, out var acc);
+            categories.TryGetValue(r.CategoryId.Value, out var cat);
 
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
-        {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
-
-        return recurrings.Select(r => r.ToDto(
-            accounts.TryGetValue(r.AccountId.Value, out var acc) ? acc.Name : "",
-            categories.TryGetValue(r.CategoryId.Value, out var cat) ? cat.Name : ""
-        )).ToList();
+            return r.ToDto(acc?.Name ?? "", cat?.Name ?? "");
+        }).ToList();
     }
 
     public async Task<IReadOnlyList<RecurringTransactionDto>> GetActiveAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var recurrings = await _recurringRepository.GetActiveByUserIdAsync(userId, cancellationToken);
-        var accountIds = recurrings.Select(r => r.AccountId.Value).Distinct().ToList();
-        var categoryIds = recurrings.Select(r => r.CategoryId.Value).Distinct().ToList();
+        var (accounts, categories) = await LoadLookupsAsync(recurrings, cancellationToken);
 
-        var accounts = new Dictionary<Guid, Account>();
-        foreach (var accId in accountIds)
+        return recurrings.Select(r =>
         {
-            var acc = await _accountRepository.GetByIdAsync(accId, cancellationToken);
-            if (acc != null) accounts[accId] = acc;
-        }
+            accounts.TryGetValue(r.AccountId.Value, out var acc);
+            categories.TryGetValue(r.CategoryId.Value, out var cat);
 
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
-        {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
-
-        return recurrings.Select(r => r.ToDto(
-            accounts.TryGetValue(r.AccountId.Value, out var acc) ? acc.Name : "",
-            categories.TryGetValue(r.CategoryId.Value, out var cat) ? cat.Name : ""
-        )).ToList();
+            return r.ToDto(acc?.Name ?? "", cat?.Name ?? "");
+        }).ToList();
     }
 
     public async Task<IReadOnlyList<RecurringTransactionDto>> GetDueAsync(Guid userId, DateTime asOfDate, CancellationToken cancellationToken = default)
     {
         var recurrings = await _recurringRepository.GetDueTransactionsAsync(userId, asOfDate, cancellationToken);
-        var accountIds = recurrings.Select(r => r.AccountId.Value).Distinct().ToList();
-        var categoryIds = recurrings.Select(r => r.CategoryId.Value).Distinct().ToList();
+        var (accounts, categories) = await LoadLookupsAsync(recurrings, cancellationToken);
 
-        var accounts = new Dictionary<Guid, Account>();
-        foreach (var accId in accountIds)
+        return recurrings.Select(r =>
         {
-            var acc = await _accountRepository.GetByIdAsync(accId, cancellationToken);
-            if (acc != null) accounts[accId] = acc;
-        }
+            accounts.TryGetValue(r.AccountId.Value, out var acc);
+            categories.TryGetValue(r.CategoryId.Value, out var cat);
 
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
-        {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
-
-        return recurrings.Select(r => r.ToDto(
-            accounts.TryGetValue(r.AccountId.Value, out var acc) ? acc.Name : "",
-            categories.TryGetValue(r.CategoryId.Value, out var cat) ? cat.Name : ""
-        )).ToList();
+            return r.ToDto(acc?.Name ?? "", cat?.Name ?? "");
+        }).ToList();
     }
 
     public async Task ProcessDueTransactionsAsync(Guid userId, DateTime asOfDate, CancellationToken cancellationToken = default)

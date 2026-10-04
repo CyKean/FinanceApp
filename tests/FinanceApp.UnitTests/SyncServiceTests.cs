@@ -54,6 +54,8 @@ public class SyncServiceTests
             .ReturnsAsync(new List<FinancialGoal>());
         _mockSyncRepository.Setup(x => x.GetByEntityAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<SyncOperation>());
+        _mockSyncRepository.Setup(x => x.GetTrackedEntitiesAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HashSet<(string, Guid)>());
         _mockLogger = new Mock<ILogger<SyncService>>();
 
         var mockUnitOfWork = new Mock<IUnitOfWork>();

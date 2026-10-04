@@ -11,6 +11,13 @@ using Microsoft.Extensions.Logging;
 
 public class DashboardService : BaseService, IDashboardService
 {
+    /// <summary>
+    /// Every aggregate in the repository layer returns PHP, so the charts label
+    /// themselves consistently instead of each caller guessing. This also
+    /// replaces a dead query whose three branches all returned the same literal.
+    /// </summary>
+    private const string DefaultCurrency = "PHP";
+
     private readonly IAccountRepository _accountRepository;
     private readonly ITransactionRepository _transactionRepository;
     private readonly ICategoryRepository _categoryRepository;
@@ -127,25 +134,28 @@ public class DashboardService : BaseService, IDashboardService
     public async Task<IReadOnlyList<CalendarEventDto>> GetCalendarEventsAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
     {
         var transactions = await _transactionRepository.GetByDateRangeAsync(userId, startDate, endDate, cancellationToken);
-        var categoryIds = transactions.Select(t => t.CategoryId.Value).Distinct().ToList();
+        if (transactions.Count == 0)
+            return Array.Empty<CalendarEventDto>();
 
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
-        {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
+        // One query for every category in the month rather than one per category.
+        var categories = await _categoryRepository.GetByIdsAsync(
+            transactions.Select(t => t.CategoryId.Value).Distinct().ToList(), cancellationToken);
 
         return transactions
             .Where(t => !t.IsDeleted)
-            .Select(t => new CalendarEventDto(
-                t.Date,
-                t.Type,
-                t.Amount,
-                categories.TryGetValue(t.CategoryId.Value, out var cat) ? cat.Name : "",
-                categories.TryGetValue(t.CategoryId.Value, out cat) ? cat.Icon ?? "" : "",
-                categories.TryGetValue(t.CategoryId.Value, out cat) ? cat.Color ?? "" : "",
-                t.Notes))
+            .Select(t =>
+            {
+                categories.TryGetValue(t.CategoryId.Value, out var cat);
+
+                return new CalendarEventDto(
+                    t.Date,
+                    t.Type,
+                    t.Amount,
+                    cat?.Name ?? "",
+                    cat?.Icon ?? "",
+                    cat?.Color ?? "",
+                    t.Notes);
+            })
             .OrderBy(e => e.Date)
             .ToList();
     }
@@ -154,29 +164,28 @@ public class DashboardService : BaseService, IDashboardService
         IReadOnlyList<Transaction> transactions,
         CancellationToken cancellationToken)
     {
-        var accountIds = transactions.Select(t => t.AccountId.Value).Distinct().ToList();
-        var categoryIds = transactions.Select(t => t.CategoryId.Value).Distinct().ToList();
+        if (transactions.Count == 0)
+            return Array.Empty<TransactionDto>();
 
-        var accounts = new Dictionary<Guid, Account>();
-        foreach (var accId in accountIds)
+        // Two queries for the whole list, not one per transaction. Ten recent
+        // transactions used to cost twenty round-trips.
+        var accounts = await _accountRepository.GetByIdsAsync(
+            transactions.Select(t => t.AccountId.Value).Distinct().ToList(), cancellationToken);
+
+        var categories = await _categoryRepository.GetByIdsAsync(
+            transactions.Select(t => t.CategoryId.Value).Distinct().ToList(), cancellationToken);
+
+        return transactions.Select(t =>
         {
-            var acc = await _accountRepository.GetByIdAsync(accId, cancellationToken);
-            if (acc != null) accounts[accId] = acc;
-        }
+            accounts.TryGetValue(t.AccountId.Value, out var acc);
+            categories.TryGetValue(t.CategoryId.Value, out var cat);
 
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
-        {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
-
-        return transactions.Select(t => t.ToDto(
-            accounts.TryGetValue(t.AccountId.Value, out var acc) ? acc.Name : "",
-            categories.TryGetValue(t.CategoryId.Value, out var cat) ? cat.Name : "",
-            categories.TryGetValue(t.CategoryId.Value, out cat) ? cat.Icon ?? "" : "",
-            categories.TryGetValue(t.CategoryId.Value, out cat) ? cat.Color ?? "" : ""
-        )).ToList();
+            return t.ToDto(
+                acc?.Name ?? "",
+                cat?.Name ?? "",
+                cat?.Icon ?? "",
+                cat?.Color ?? "");
+        }).ToList();
     }
 
     private async Task<IReadOnlyList<CategorySpendingDto>> GetSpendingByCategoryAsync(
@@ -185,42 +194,28 @@ public class DashboardService : BaseService, IDashboardService
         DateTime endDate,
         CancellationToken cancellationToken)
     {
-        var expenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
-            userId, TransactionType.Expense, startDate, endDate, cancellationToken);
+        // One aggregate instead of materialising every expense row in the window
+        // just to group them.
+        var categoryTotals = await _transactionRepository.GetCategoryTotalsAsync(userId, startDate, endDate, cancellationToken);
+        if (categoryTotals.Count == 0)
+            return Array.Empty<CategorySpendingDto>();
 
-        var categoryTotals = expenses
-            .Where(e => !e.IsDeleted)
-            .GroupBy(e => e.CategoryId)
-            .Select(g => new { CategoryId = g.Key, Total = g.Sum(e => e.Amount.Amount) })
-            .OrderByDescending(x => x.Total)
-            .ToList();
+        var categories = await _categoryRepository.GetByIdsAsync(
+            categoryTotals.Select(t => t.CategoryId).ToList(), cancellationToken);
 
         var totalAmount = categoryTotals.Sum(x => x.Total);
-        var categoryIds = categoryTotals.Select(x => x.CategoryId.Value).ToList();
-
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
-        {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
-
-        var currency = categoryTotals.FirstOrDefault()?.CategoryId != null
-            ? (await _categoryRepository.GetByIdAsync(categoryTotals.First().CategoryId.Value, cancellationToken))?.Name != null
-                ? "PHP"
-                : "PHP"
-            : "PHP";
 
         return categoryTotals.Select(x =>
         {
-            var cat = categories.TryGetValue(x.CategoryId.Value, out var c) ? c : null;
+            categories.TryGetValue(x.CategoryId, out var cat);
             var percentage = totalAmount > 0 ? Math.Round((x.Total / totalAmount) * 100, 2) : 0;
+
             return new CategorySpendingDto(
-                x.CategoryId,
+                new CategoryId(x.CategoryId),
                 cat?.Name ?? "Unknown",
                 cat?.Icon ?? "",
                 cat?.Color ?? "",
-                new Money(x.Total, currency),
+                new Money(x.Total, DefaultCurrency),
                 percentage);
         }).ToList();
     }
@@ -230,23 +225,36 @@ public class DashboardService : BaseService, IDashboardService
         int months,
         CancellationToken cancellationToken)
     {
-        var today = DateTime.UtcNow.Date;
-        var results = new List<MonthlyTrendDto>();
+        // Local, not UTC, for the same reason GetDashboardAsync uses it: a UTC+8
+        // user between midnight and 08:00 was being bucketed into the previous
+        // month, which put the current month in the future and dropped a period.
+        var today = DateTime.Today;
+        var firstMonth = new DateTime(today.Year, today.Month, 1).AddMonths(-(months - 1));
 
-        for (int i = months - 1; i >= 0; i--)
+        // One round-trip for the whole chart. It used to be two queries per month,
+        // so a six-month trend was twelve.
+        var totals = await _transactionRepository.GetMonthlyTotalsAsync(userId, firstMonth, today, cancellationToken);
+
+        var byMonth = totals
+            .GroupBy(t => (t.Year, t.Month))
+            .ToDictionary(g => g.Key, g => g.ToDictionary(t => t.Type, t => t.Total));
+
+        var results = new List<MonthlyTrendDto>(months);
+        for (var i = 0; i < months; i++)
         {
-            var monthStart = new DateTime(today.Year, today.Month, 1).AddMonths(-i);
-            var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+            var month = firstMonth.AddMonths(i);
 
-            var income = await _transactionRepository.GetTotalByTypeAsync(userId, TransactionType.Income, monthStart, monthEnd, cancellationToken);
-            var expense = await _transactionRepository.GetTotalByTypeAsync(userId, TransactionType.Expense, monthStart, monthEnd, cancellationToken);
+            byMonth.TryGetValue((month.Year, month.Month), out var forMonth);
 
-            results.Add(new MonthlyTrendDto(
-                monthStart.Year,
-                monthStart.Month,
-                income,
-                expense,
-                income.Subtract(expense)));
+            var income = forMonth is not null && forMonth.TryGetValue(TransactionType.Income, out var inTotal)
+                ? new Money(inTotal, DefaultCurrency)
+                : Money.Zero(DefaultCurrency);
+
+            var expense = forMonth is not null && forMonth.TryGetValue(TransactionType.Expense, out var outTotal)
+                ? new Money(outTotal, DefaultCurrency)
+                : Money.Zero(DefaultCurrency);
+
+            results.Add(new MonthlyTrendDto(month.Year, month.Month, income, expense, income.Subtract(expense)));
         }
 
         return results;
@@ -256,35 +264,45 @@ public class DashboardService : BaseService, IDashboardService
         IReadOnlyList<Budget> budgets,
         CancellationToken cancellationToken)
     {
-        var categoryIds = budgets.Select(b => b.CategoryId.Value).Distinct().ToList();
+        if (budgets.Count == 0)
+            return Array.Empty<BudgetDto>();
 
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
-        {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
+        var categories = await _categoryRepository.GetByIdsAsync(
+            budgets.Select(b => b.CategoryId.Value).Distinct().ToList(), cancellationToken);
 
-        foreach (var budget in budgets)
+        // Budgets usually share a window (the current month), so they are grouped
+        // by window and answered with one aggregate each - N queries became 1.
+        // Nothing is written back: spent is projected into the DTO instead, so a
+        // dashboard visit no longer takes SQLite's write lock.
+        var spentByCategory = new Dictionary<Guid, decimal>();
+
+        foreach (var window in budgets
+                     .GroupBy(b => (Start: b.StartDate.Date, End: b.EndDate.Date)))
         {
-            var spent = await _transactionRepository.GetTotalByCategoryAsync(
-                budget.UserId,
-                budget.CategoryId,
-                budget.StartDate,
-                budget.EndDate,
+            var totals = await _transactionRepository.GetCategoryTotalsAsync(
+                userId: budgets[0].UserId,
+                categoryIds: window.Select(b => b.CategoryId.Value).ToList(),
+                startDate: window.Key.Start,
+                endDate: window.Key.End,
                 cancellationToken);
 
-            budget.ResetSpending();
-            budget.AddSpending(spent);
+            foreach (var total in totals)
+            {
+                spentByCategory[total.CategoryId] = total.Total;
+            }
         }
 
-        await UnitOfWork.SaveChangesAsync(cancellationToken);
+        return budgets.Select(b =>
+        {
+            categories.TryGetValue(b.CategoryId.Value, out var cat);
+            spentByCategory.TryGetValue(b.CategoryId.Value, out var spent);
 
-        return budgets.Select(b => b.ToDto(
-            categories.TryGetValue(b.CategoryId.Value, out var cat) ? cat.Name : "",
-            categories.TryGetValue(b.CategoryId.Value, out cat) ? cat.Icon ?? "" : "",
-            categories.TryGetValue(b.CategoryId.Value, out cat) ? cat.Color ?? "" : ""
-        )).ToList();
+            return b.ToDto(
+                cat?.Name ?? "",
+                cat?.Icon ?? "",
+                cat?.Color ?? "",
+                new Money(spent, b.Amount.Currency));
+        }).ToList();
     }
 
     private IReadOnlyList<FinancialGoalDto> MapGoalsToDto(IReadOnlyList<FinancialGoal> goals)

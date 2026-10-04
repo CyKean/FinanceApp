@@ -305,6 +305,9 @@ public class PredictionServiceTests
             .ReturnsAsync(new List<Category> { category });
         _categories.Setup(x => x.GetByIdAsync(categoryId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(category);
+        _categories.Setup(x => x.GetByIdsAsync(It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((IReadOnlyCollection<Guid> _, CancellationToken _) =>
+                new Dictionary<Guid, Category> { [categoryId] = category });
     }
 
     private static IReadOnlyList<Transaction> NewestFirst(IEnumerable<Transaction> source) =>

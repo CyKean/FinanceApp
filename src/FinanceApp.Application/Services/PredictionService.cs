@@ -371,10 +371,17 @@ public class PredictionService : BaseService, IPredictionService
             .Where(s => s.Count >= 5 && s.Avg > 0 && s.StdDev > 0)
             .ToList();
 
+        // One query for every category that could be anomalous, rather than one per
+        // qualifying category - this runs inside the notification rebuild, which
+        // the dashboard triggers on every appearance.
+        var categoryNames = await _categoryRepository.GetByIdsAsync(
+            categoryStats.Select(s => s.CategoryId).ToList(), cancellationToken);
+
         foreach (var stat in categoryStats)
         {
-            var category = await _categoryRepository.GetByIdAsync(stat.CategoryId, cancellationToken);
-            var categoryName = category?.Name ?? "expense";
+            var categoryName = categoryNames.TryGetValue(stat.CategoryId, out var category)
+                ? category.Name
+                : "expense";
             var threshold = stat.Avg + (2 * stat.StdDev);
 
             var anomalousTransactions = activeExpenses

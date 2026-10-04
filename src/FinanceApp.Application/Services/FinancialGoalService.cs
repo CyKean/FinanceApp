@@ -168,36 +168,43 @@ public class FinancialGoalService : BaseService, IFinancialGoalService
     public async Task<IReadOnlyList<FinancialGoalDto>> GetAllAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var goals = await _goalRepository.GetByUserIdAsync(userId, cancellationToken);
-        var accountIds = goals.Where(g => g.LinkedAccountId.HasValue).Select(g => g.LinkedAccountId!.Value.Value).Distinct().ToList();
+        var accounts = await LoadLinkedAccountsAsync(goals, cancellationToken);
 
-        var accounts = new Dictionary<Guid, Account>();
-        foreach (var accId in accountIds)
-        {
-            var a = await _accountRepository.GetByIdAsync(accId, cancellationToken);
-            if (a != null) accounts[accId] = a;
-        }
-
-        return goals.Select(g => g.ToDto(
-            g.LinkedAccountId.HasValue && accounts.TryGetValue(g.LinkedAccountId.Value.Value, out var a) ? a.Name : null
-        )).ToList();
+        return goals.Select(g => g.ToDto(LinkedAccountName(g, accounts))).ToList();
     }
 
     public async Task<IReadOnlyList<FinancialGoalDto>> GetActiveAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var goals = await _goalRepository.GetActiveByUserIdAsync(userId, cancellationToken);
-        var accountIds = goals.Where(g => g.LinkedAccountId.HasValue).Select(g => g.LinkedAccountId!.Value.Value).Distinct().ToList();
+        var accounts = await LoadLinkedAccountsAsync(goals, cancellationToken);
 
-        var accounts = new Dictionary<Guid, Account>();
-        foreach (var accId in accountIds)
-        {
-            var a = await _accountRepository.GetByIdAsync(accId, cancellationToken);
-            if (a != null) accounts[accId] = a;
-        }
-
-        return goals.Select(g => g.ToDto(
-            g.LinkedAccountId.HasValue && accounts.TryGetValue(g.LinkedAccountId.Value.Value, out var a) ? a.Name : null
-        )).ToList();
+        return goals.Select(g => g.ToDto(LinkedAccountName(g, accounts))).ToList();
     }
+
+    /// <summary>
+    /// One query for every linked account rather than one per linked goal.
+    /// </summary>
+    private async Task<IReadOnlyDictionary<Guid, Account>> LoadLinkedAccountsAsync(
+        IReadOnlyList<FinancialGoal> goals,
+        CancellationToken cancellationToken)
+    {
+        var accountIds = goals
+            .Where(g => g.LinkedAccountId.HasValue)
+            .Select(g => g.LinkedAccountId!.Value.Value)
+            .Distinct()
+            .ToList();
+
+        if (accountIds.Count == 0)
+            return new Dictionary<Guid, Account>();
+
+        return await _accountRepository.GetByIdsAsync(accountIds, cancellationToken);
+    }
+
+    private static string? LinkedAccountName(FinancialGoal goal, IReadOnlyDictionary<Guid, Account> accounts) =>
+        goal.LinkedAccountId.HasValue &&
+        accounts.TryGetValue(goal.LinkedAccountId.Value.Value, out var account)
+            ? account.Name
+            : null;
 
     public async Task AddProgressAsync(Guid id, GoalProgressDto dto, Guid userId, CancellationToken cancellationToken = default)
     {

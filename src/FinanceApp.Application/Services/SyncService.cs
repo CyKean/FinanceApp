@@ -264,21 +264,40 @@ public class SyncService : BaseService, ISyncService, IDisposable
 
     private async Task EnqueueMissingOperationsAsync(Guid userId, CancellationToken cancellationToken)
     {
-        await EnqueueMissingAsync("Account", await _accountRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
-        await EnqueueMissingAsync("Category", await _categoryRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
-        await EnqueueMissingAsync("Transaction", await _transactionRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
-        await EnqueueMissingAsync("Budget", await _budgetRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
-        await EnqueueMissingAsync("RecurringTransaction", await _recurringRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
-        await EnqueueMissingAsync("FinancialGoal", await _goalRepository.GetByUserIdAsync(userId, cancellationToken), userId, cancellationToken);
+// Fetched once and consulted in memory below. It used to be a query per
+        // entity, so every sync run cost one round-trip per row the user owns, on
+        // a loop that runs every minute.
+        var tracked = await _syncRepository.GetTrackedEntitiesAsync(userId, cancellationToken);
+        var changed = false;
+
+        changed |= await EnqueueMissingAsync("Account", await _accountRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
+        changed |= await EnqueueMissingAsync("Category", await _categoryRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
+        changed |= await EnqueueMissingAsync("Transaction", await _transactionRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
+        changed |= await EnqueueMissingAsync("Budget", await _budgetRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
+        changed |= await EnqueueMissingAsync("RecurringTransaction", await _recurringRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
+        changed |= await EnqueueMissingAsync("FinancialGoal", await _goalRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
+
+        // Only when something was actually queued. Saving unconditionally took
+        // SQLite's write lock on every sync tick even when the outbox was whole.
+        if (changed)
+        {
+            await UnitOfWork.SaveChangesAsync(cancellationToken);
+        }
     }
 
-    private async Task EnqueueMissingAsync<T>(string entityType, IReadOnlyList<T> entities, Guid userId, CancellationToken cancellationToken)
+    private async Task<bool> EnqueueMissingAsync<T>(
+        string entityType,
+        IReadOnlyList<T> entities,
+        Guid userId,
+        IReadOnlySet<(string EntityType, Guid EntityId)> tracked,
+        CancellationToken cancellationToken)
         where T : Entity
     {
+        var changed = false;
+
         foreach (var entity in entities)
         {
-            var existing = await _syncRepository.GetByEntityAsync(entityType, entity.Id, cancellationToken);
-            if (existing.Count > 0)
+            if (tracked.Contains((entityType, entity.Id)))
                 continue;
 
             var operationType = entity.SyncStatus == SyncStatus.PendingDelete
@@ -288,9 +307,11 @@ public class SyncService : BaseService, ISyncService, IDisposable
             await _syncRepository.AddAsync(
                 new SyncOperation(entityType, entity.Id, operationType, userId),
                 cancellationToken);
+
+            changed = true;
         }
 
-        await UnitOfWork.SaveChangesAsync(cancellationToken);
+        return changed;
     }
 
     private async Task<IReadOnlyList<SyncOperation>> CoalesceOperationsAsync(

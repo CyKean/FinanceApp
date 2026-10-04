@@ -166,6 +166,35 @@ public class AiFeatureIntegrationTests
             .Setup(x => x.GetByUserIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Guid _, CancellationToken _) => (IReadOnlyList<Transaction>)_data);
 
+        // Mirrors the real aggregate: expenses only, in the window, grouped by
+        // category, optionally narrowed to a set of categories.
+        _transactions
+            .Setup(x => x.GetCategoryTotalsAsync(
+                It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .Returns((Guid _, DateTime from, DateTime to, CancellationToken _) =>
+                Task.FromResult<IReadOnlyList<CategoryTotal>>(CategoryTotals(from, to)));
+
+        _transactions
+            .Setup(x => x.GetCategoryTotalsAsync(
+                It.IsAny<Guid>(), It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .Returns((Guid _, IReadOnlyCollection<Guid> categoryIds, DateTime from, DateTime to, CancellationToken _) =>
+                Task.FromResult<IReadOnlyList<CategoryTotal>>(
+                    CategoryTotals(from, to).Where(t => categoryIds.Contains(t.CategoryId)).ToList()));
+
+        _transactions
+            .Setup(x => x.GetMonthlyTotalsAsync(
+                It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .Returns((Guid _, DateTime from, DateTime to, CancellationToken _) =>
+            {
+                var totals = _data
+                    .Where(t => t.UserId == _userId && !t.IsDeleted && t.Date >= from.Date && t.Date <= to.Date)
+                    .GroupBy(t => (t.Date.Year, t.Date.Month, t.Type))
+                    .Select(g => new MonthlyTotal(g.Key.Year, g.Key.Month, g.Key.Type, g.Sum(t => t.Amount.Amount)))
+                    .ToList();
+
+                return Task.FromResult<IReadOnlyList<MonthlyTotal>>(totals);
+            });
+
         _categories
             .Setup(x => x.GetActiveByTypeAsync(It.IsAny<Guid>(), It.IsAny<CategoryType>(), It.IsAny<CancellationToken>()))
             .Returns((Guid _, CategoryType type, CancellationToken _) =>
@@ -204,6 +233,26 @@ public class AiFeatureIntegrationTests
                 return Task.FromResult<Category?>(category);
             });
 
+        _categories
+            .Setup(x => x.GetByIdsAsync(It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<CancellationToken>()))
+            .Returns((IReadOnlyCollection<Guid> ids, CancellationToken _) =>
+            {
+                var map = new Dictionary<Guid, Category>();
+                foreach (var id in ids)
+                {
+                    var name = _categoryIds.FirstOrDefault(kv => kv.Value == id).Key;
+                    if (name is null) continue;
+
+                    var isIncome = name is "Salary" or "Freelance";
+                    var category = new Category(name, isIncome ? CategoryType.Income : CategoryType.Expense,
+                        _userId, "icon", "#FF6B6B", null, false, 0);
+                    typeof(Entity).GetProperty(nameof(Entity.Id))?.SetValue(category, id);
+                    map[id] = category;
+                }
+
+                return Task.FromResult<IReadOnlyDictionary<Guid, Category>>(map);
+            });
+
         _budgets
             .Setup(x => x.GetActiveByUserIdAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
             .Returns((Guid _, DateTime asOf, CancellationToken _) =>
@@ -211,6 +260,15 @@ public class AiFeatureIntegrationTests
                     .Where(b => b.UserId == _userId && b.StartDate <= asOf.Date && b.EndDate >= asOf.Date)
                     .ToList()));
     }
+
+    /// <summary>Mirrors the real aggregate: expenses only, in window, grouped by category.</summary>
+    private List<CategoryTotal> CategoryTotals(DateTime from, DateTime to) =>
+        _data
+            .Where(t => t.UserId == _userId && t.Type == TransactionType.Expense && !t.IsDeleted &&
+                        t.Date >= from.Date && t.Date <= to.Date)
+            .GroupBy(t => t.CategoryId.Value)
+            .Select(g => new CategoryTotal(g.Key, g.Sum(t => t.Amount.Amount)))
+            .ToList();
 
     private void AddCurrentMonthBudgets(params (string Name, string Category, decimal Amount)[] specs)
     {

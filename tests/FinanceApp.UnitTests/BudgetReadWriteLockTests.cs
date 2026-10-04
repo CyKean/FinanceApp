@@ -75,6 +75,11 @@ public class BudgetReadWriteLockTests
             .Setup(x => x.GetByIdAsync(new CategoryId(categoryId), It.IsAny<CancellationToken>()))
             .ReturnsAsync(category);
 
+        _categories
+            .Setup(x => x.GetByIdsAsync(It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((IReadOnlyCollection<Guid> _, CancellationToken _) =>
+                new Dictionary<Guid, Category> { [categoryId] = category });
+
         _transactions
             .Setup(x => x.GetTotalByCategoryAsync(
                 userId, new CategoryId(categoryId), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))

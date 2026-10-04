@@ -32,6 +32,12 @@ public class BudgetServiceTests
         _mockLogger = new Mock<ILogger<BudgetService>>();
         _mockNotificationService = new Mock<INotificationService>();
 
+        // List paths resolve names through the batch lookup. Moq's default for an
+        // unstubbed IReadOnlyDictionary is null, which would blow up tests that
+        // don't care about names; individual tests override this where they do.
+        _mockCategoryRepository.Setup(x => x.GetByIdsAsync(It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((IReadOnlyCollection<Guid> _, CancellationToken _) => new Dictionary<Guid, Category>());
+
         _createValidator = new CreateBudgetDtoValidator();
         _updateValidator = new UpdateBudgetDtoValidator();
 
@@ -63,6 +69,12 @@ public class BudgetServiceTests
 
         _mockCategoryRepository.Setup(x => x.GetByIdAsync(new CategoryId(categoryId), It.IsAny<CancellationToken>()))
             .ReturnsAsync(category);
+
+        // Name resolution goes through the batch lookup now, so the single-id
+        // setup above is only still needed by the create/update paths.
+        _mockCategoryRepository.Setup(x => x.GetByIdsAsync(It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((IReadOnlyCollection<Guid> _, CancellationToken _) =>
+                new Dictionary<Guid, Category> { [categoryId] = category });
         
         _mockBudgetRepository.Setup(x => x.GetActiveForCategoryAsync(userId, new CategoryId(categoryId), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Budget?)null);
@@ -127,6 +139,12 @@ public class BudgetServiceTests
         _mockCategoryRepository.Setup(x => x.GetByIdAsync(new CategoryId(categoryId), It.IsAny<CancellationToken>()))
             .ReturnsAsync(category);
 
+        // Name resolution goes through the batch lookup now, so the single-id
+        // setup above is only still needed by the create/update paths.
+        _mockCategoryRepository.Setup(x => x.GetByIdsAsync(It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((IReadOnlyCollection<Guid> _, CancellationToken _) =>
+                new Dictionary<Guid, Category> { [categoryId] = category });
+
         var dto = new CreateBudgetDto(
             "Salary Budget",
             new Money(5000),
@@ -159,6 +177,12 @@ public class BudgetServiceTests
         
         _mockCategoryRepository.Setup(x => x.GetByIdAsync(new CategoryId(categoryId), It.IsAny<CancellationToken>()))
             .ReturnsAsync(category);
+
+        // Name resolution goes through the batch lookup now, so the single-id
+        // setup above is only still needed by the create/update paths.
+        _mockCategoryRepository.Setup(x => x.GetByIdsAsync(It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((IReadOnlyCollection<Guid> _, CancellationToken _) =>
+                new Dictionary<Guid, Category> { [categoryId] = category });
 
         _mockTransactionRepository.Setup(x => x.GetTotalByCategoryAsync(
             userId, new CategoryId(categoryId), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))

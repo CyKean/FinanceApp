@@ -43,4 +43,15 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
 
         return new Money(total, "PHP");
     }
+
+    public async Task<IReadOnlyDictionary<Guid, Account>> GetByIdsAsync(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        if (ids.Count == 0)
+            return new Dictionary<Guid, Account>();
+
+        return await DbSet
+            .AsNoTracking()
+            .Where(a => ids.Contains(a.Id))
+            .ToDictionaryAsync(a => a.Id, cancellationToken);
+    }
 }

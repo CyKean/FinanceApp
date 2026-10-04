@@ -3,6 +3,7 @@ namespace FinanceApp.Application.Services;
 using FinanceApp.Application.DTOs;
 using FinanceApp.Application.Interfaces;
 using FinanceApp.Application.Validators;
+using FinanceApp.Domain.Common;
 using FinanceApp.Domain.Entities;
 using FinanceApp.Domain.Enums;
 using FinanceApp.Domain.Interfaces;
@@ -233,66 +234,42 @@ public class TransactionService : BaseService, ITransactionService
     {
         await _filterValidator.ValidateAndThrowAsync(filter, cancellationToken);
 
-        IReadOnlyList<Transaction> transactions;
+        // Paging happens in SQL. It used to happen here, after loading every row
+        // the user has ever had, so opening page 1 read the whole history to
+        // throw almost all of it away - and the cost grew forever.
+        var query = new TransactionQuery
+        {
+            StartDate = filter.StartDate,
+            EndDate = filter.EndDate,
+            Type = filter.Type,
+            AccountId = filter.AccountId?.Value,
+            CategoryId = filter.CategoryId?.Value
+        };
 
-        if (filter.StartDate.HasValue && filter.EndDate.HasValue && filter.Type.HasValue)
-        {
-            transactions = await _transactionRepository.GetByTypeAndDateRangeAsync(
-                userId, filter.Type.Value, filter.StartDate.Value, filter.EndDate.Value, cancellationToken);
-        }
-        else if (filter.StartDate.HasValue && filter.EndDate.HasValue)
-        {
-            transactions = await _transactionRepository.GetByDateRangeAsync(
-                userId, filter.StartDate.Value, filter.EndDate.Value, cancellationToken);
-        }
-        else if (filter.Type.HasValue)
-        {
-            transactions = await _transactionRepository.GetByTypeAsync(userId, filter.Type.Value, cancellationToken);
-        }
-        else if (filter.AccountId.HasValue)
-        {
-            transactions = await _transactionRepository.GetByAccountIdAsync(userId, filter.AccountId.Value, cancellationToken);
-        }
-        else if (filter.CategoryId.HasValue)
-        {
-            transactions = await _transactionRepository.GetByCategoryIdAsync(userId, filter.CategoryId.Value, cancellationToken);
-        }
-        else
-        {
-            transactions = await _transactionRepository.GetByUserIdAsync(userId, cancellationToken);
-        }
+        var result = await _transactionRepository.GetPagedAsync(
+            userId, query, filter.Page, filter.PageSize, cancellationToken);
 
-        var result = transactions
-            .Where(t => !t.IsDeleted)
-            .OrderByDescending(t => t.Date)
-            .ThenByDescending(t => t.CreatedAt)
-            .Skip((filter.Page - 1) * filter.PageSize)
-            .Take(filter.PageSize)
-            .ToList();
+        if (result.Count == 0)
+            return Array.Empty<TransactionDto>();
 
-        var accountIds = result.Select(t => t.AccountId.Value).Distinct().ToList();
-        var categoryIds = result.Select(t => t.CategoryId.Value).Distinct().ToList();
+        // Two queries for the page, not one per row.
+        var accounts = await _accountRepository.GetByIdsAsync(
+            result.Select(t => t.AccountId.Value).Distinct().ToList(), cancellationToken);
 
-        var accounts = new Dictionary<Guid, Account>();
-        foreach (var accId in accountIds)
+        var categories = await _categoryRepository.GetByIdsAsync(
+            result.Select(t => t.CategoryId.Value).Distinct().ToList(), cancellationToken);
+
+        return result.Select(t =>
         {
-            var acc = await _accountRepository.GetByIdAsync(accId, cancellationToken);
-            if (acc != null) accounts[accId] = acc;
-        }
+            accounts.TryGetValue(t.AccountId.Value, out var acc);
+            categories.TryGetValue(t.CategoryId.Value, out var cat);
 
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
-        {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
-
-        return result.Select(t => t.ToDto(
-            accounts.TryGetValue(t.AccountId.Value, out var acc) ? acc.Name : "",
-            categories.TryGetValue(t.CategoryId.Value, out var cat) ? cat.Name : "",
-            categories.TryGetValue(t.CategoryId.Value, out cat) ? cat.Icon ?? "" : "",
-            categories.TryGetValue(t.CategoryId.Value, out cat) ? cat.Color ?? "" : ""
-        )).ToList();
+            return t.ToDto(
+                acc?.Name ?? "",
+                cat?.Name ?? "",
+                cat?.Icon ?? "",
+                cat?.Color ?? "");
+        }).ToList();
     }
 
     public async Task<TransactionSummaryDto> GetSummaryAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
@@ -300,41 +277,40 @@ public class TransactionService : BaseService, ITransactionService
         var totalIncome = await _transactionRepository.GetTotalByTypeAsync(userId, TransactionType.Income, startDate, endDate, cancellationToken);
         var totalExpense = await _transactionRepository.GetTotalByTypeAsync(userId, TransactionType.Expense, startDate, endDate, cancellationToken);
 
-        var transactions = await _transactionRepository.GetByDateRangeAsync(userId, startDate, endDate, cancellationToken);
+        // COUNT(*) rather than loading every row in the window to call .Count()
+        // on the list. This runs on the same page load as GetAllAsync.
+        var count = await _transactionRepository.CountByDateRangeAsync(userId, startDate, endDate, cancellationToken);
 
         return new TransactionSummaryDto(
             totalIncome,
             totalExpense,
             totalIncome.Subtract(totalExpense),
-            transactions.Count(t => !t.IsDeleted));
+            count);
     }
 
     public async Task<IReadOnlyList<TransactionDto>> GetRecentAsync(Guid userId, int count, CancellationToken cancellationToken = default)
     {
         var transactions = await _transactionRepository.GetRecentAsync(userId, count, cancellationToken);
-        var accountIds = transactions.Select(t => t.AccountId.Value).Distinct().ToList();
-        var categoryIds = transactions.Select(t => t.CategoryId.Value).Distinct().ToList();
+        if (transactions.Count == 0)
+            return Array.Empty<TransactionDto>();
 
-        var accounts = new Dictionary<Guid, Account>();
-        foreach (var accId in accountIds)
+        var accounts = await _accountRepository.GetByIdsAsync(
+            transactions.Select(t => t.AccountId.Value).Distinct().ToList(), cancellationToken);
+
+        var categories = await _categoryRepository.GetByIdsAsync(
+            transactions.Select(t => t.CategoryId.Value).Distinct().ToList(), cancellationToken);
+
+        return transactions.Select(t =>
         {
-            var acc = await _accountRepository.GetByIdAsync(accId, cancellationToken);
-            if (acc != null) accounts[accId] = acc;
-        }
+            accounts.TryGetValue(t.AccountId.Value, out var acc);
+            categories.TryGetValue(t.CategoryId.Value, out var cat);
 
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
-        {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
-
-        return transactions.Select(t => t.ToDto(
-            accounts.TryGetValue(t.AccountId.Value, out var acc) ? acc.Name : "",
-            categories.TryGetValue(t.CategoryId.Value, out var cat) ? cat.Name : "",
-            categories.TryGetValue(t.CategoryId.Value, out cat) ? cat.Icon ?? "" : "",
-            categories.TryGetValue(t.CategoryId.Value, out cat) ? cat.Color ?? "" : ""
-        )).ToList();
+            return t.ToDto(
+                acc?.Name ?? "",
+                cat?.Name ?? "",
+                cat?.Icon ?? "",
+                cat?.Color ?? "");
+        }).ToList();
     }
 
     public async Task<Money> GetTotalByCategoryAsync(Guid userId, CategoryId categoryId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
@@ -345,23 +321,24 @@ public class TransactionService : BaseService, ITransactionService
     public async Task<IReadOnlyList<TransactionDto>> GetByAccountAsync(Guid userId, AccountId accountId, CancellationToken cancellationToken = default)
     {
         var transactions = await _transactionRepository.GetByAccountIdAsync(userId, accountId, cancellationToken);
+        if (transactions.Count == 0)
+            return Array.Empty<TransactionDto>();
 
-        var categoryIds = transactions.Select(t => t.CategoryId.Value).Distinct().ToList();
-        var categories = new Dictionary<Guid, Category>();
-        foreach (var catId in categoryIds)
-        {
-            var cat = await _categoryRepository.GetByIdAsync(catId, cancellationToken);
-            if (cat != null) categories[catId] = cat;
-        }
+        var categories = await _categoryRepository.GetByIdsAsync(
+            transactions.Select(t => t.CategoryId.Value).Distinct().ToList(), cancellationToken);
 
         var account = await _accountRepository.GetByIdAsync(accountId.Value, cancellationToken);
 
-        return transactions.Select(t => t.ToDto(
-            account?.Name ?? "",
-            categories.TryGetValue(t.CategoryId.Value, out var cat) ? cat.Name : "",
-            categories.TryGetValue(t.CategoryId.Value, out cat) ? cat.Icon ?? "" : "",
-            categories.TryGetValue(t.CategoryId.Value, out cat) ? cat.Color ?? "" : ""
-        )).ToList();
+        return transactions.Select(t =>
+        {
+            categories.TryGetValue(t.CategoryId.Value, out var cat);
+
+            return t.ToDto(
+                account?.Name ?? "",
+                cat?.Name ?? "",
+                cat?.Icon ?? "",
+                cat?.Color ?? "");
+        }).ToList();
     }
 
     private async Task ValidateTransactionAsync(CreateTransactionDto dto, Guid userId, CancellationToken cancellationToken)

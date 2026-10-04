@@ -34,6 +34,19 @@ public class SyncOperationRepository : BaseRepository<SyncOperation>, ISyncOpera
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlySet<(string EntityType, Guid EntityId)>> GetTrackedEntitiesAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var pairs = await DbSet
+            .AsNoTracking()
+            .Where(s => s.UserId == userId)
+            .Select(s => new { s.EntityType, s.EntityId })
+            .ToListAsync(cancellationToken);
+
+        return pairs
+            .Select(p => (p.EntityType, p.EntityId))
+            .ToHashSet();
+    }
+
     public async Task<int> GetPendingCountAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         return await DbSet

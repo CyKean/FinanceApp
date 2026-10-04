@@ -8,15 +8,17 @@ using FinanceApp.Domain.Common;
 
 public class FinanceAppDbContext : DbContext
 {
-    private readonly Guid _currentUserId;
-
-    public FinanceAppDbContext(DbContextOptions<FinanceAppDbContext> options, Guid currentUserId = default)
+    public FinanceAppDbContext(DbContextOptions<FinanceAppDbContext> options)
         : base(options)
     {
-        _currentUserId = currentUserId;
         // Offline-first guarantee: hosted-service startup is not a reliable place
         // to create the schema on every platform, so ensure it before first use.
         // Idempotent - a no-op when tables already exist.
+        //
+        // Deliberately not memoised behind a "once per process" flag. This is a
+        // metadata probe costing microseconds, and a process-wide guard silently
+        // skips schema creation for any second database in the same process -
+        // which is exactly how "no such table" regressions happen.
         Database.EnsureCreated();
         // Adds tables/columns introduced after v1 (EnsureCreated never alters an
         // existing database).

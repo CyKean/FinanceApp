@@ -52,4 +52,18 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
         return await DbSet
             .FirstOrDefaultAsync(c => c.UserId == userId && c.Name == name && c.Type == type, cancellationToken);
     }
+
+    public async Task<IReadOnlyDictionary<Guid, Category>> GetByIdsAsync(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        if (ids.Count == 0)
+            return new Dictionary<Guid, Category>();
+
+        // No tracking: these are read purely to fill in names for a DTO, and the
+        // shared context would otherwise hold every one of them for the life of
+        // the process.
+        return await DbSet
+            .AsNoTracking()
+            .Where(c => ids.Contains(c.Id))
+            .ToDictionaryAsync(c => c.Id, cancellationToken);
+    }
 }
