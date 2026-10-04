@@ -14,6 +14,7 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly IConnectivityService _connectivityService;
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly AppUpdatePromptService _updatePrompt;
     private readonly ILogger<SettingsViewModel> _logger;
 
     [ObservableProperty]
@@ -32,7 +33,10 @@ public partial class SettingsViewModel : BaseViewModel
     private bool _isPeriodicSyncEnabled;
 
     [ObservableProperty]
-    private string _appVersion = "1.0.0";
+    private bool _isCheckingForUpdates;
+
+    [ObservableProperty]
+    private string _appVersion = string.Empty;
 
     public SettingsViewModel(
         IAuthenticationService authService,
@@ -40,6 +44,7 @@ public partial class SettingsViewModel : BaseViewModel
         IConnectivityService connectivityService,
         INavigationService navigationService,
         IDialogService dialogService,
+        AppUpdatePromptService updatePrompt,
         ILogger<SettingsViewModel> logger)
     {
         _authService = authService;
@@ -47,6 +52,7 @@ public partial class SettingsViewModel : BaseViewModel
         _connectivityService = connectivityService;
         _navigationService = navigationService;
         _dialogService = dialogService;
+        _updatePrompt = updatePrompt;
         _logger = logger;
         Title = "Settings";
     }
@@ -64,6 +70,10 @@ public partial class SettingsViewModel : BaseViewModel
             var userId = await _authService.GetCurrentUserIdAsync();
             var email = await _authService.GetCurrentUserEmailAsync();
             UserEmail = email ?? "Not logged in";
+
+            // Read from the installed package rather than a hard-coded string, so
+            // this can never drift from the version that is actually running.
+            AppVersion = _updatePrompt.InstalledVersion;
 
             if (userId.HasValue)
             {
@@ -204,5 +214,24 @@ public partial class SettingsViewModel : BaseViewModel
     private async Task RefreshAsync()
     {
         await LoadAsync();
+    }
+
+    /// <summary>
+    /// Ignores the automatic check's cache and asks GitHub right now.
+    /// </summary>
+    [RelayCommand]
+    private async Task CheckForUpdatesAsync()
+    {
+        if (IsCheckingForUpdates) return;
+
+        IsCheckingForUpdates = true;
+        try
+        {
+            await _updatePrompt.CheckNowAsync();
+        }
+        finally
+        {
+            IsCheckingForUpdates = false;
+        }
     }
 }

@@ -125,6 +125,11 @@ public static class MauiProgram
         builder.Services.AddSingleton<ChatHistoryStore>();
         builder.Services.AddSingleton<IAiSettingsStore, AiSettingsStore>();
 
+        // In-app update check: the user is told when a newer release is published
+        // on GitHub, which is how Finora is distributed outside the Play Store.
+        builder.Services.AddSingleton<MauiInstalledVersionProvider>();
+        builder.Services.AddSingleton<AppUpdatePromptService>();
+
         // Notifications: the feed is app-wide so every bell shares one badge, and
         // the watcher keeps it fresh and surfaces new alerts to the user.
         builder.Services.AddSingleton<INotificationStateStore, PreferencesNotificationStateStore>();

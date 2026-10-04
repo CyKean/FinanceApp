@@ -280,5 +280,10 @@
         <controls:TransactionSheetHost />
 
         <controls:ToastHost />
+
+        <!-- Hosts the "a newer Finora is available" prompt. The dashboard is the
+             landing page after sign-in, which is where Play Store also surfaces
+             its in-app update prompt. -->
+        <controls:ConfirmModalHost />
     </Grid>
 </ContentPage>

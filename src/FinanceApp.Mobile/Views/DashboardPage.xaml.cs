@@ -9,6 +9,7 @@ public partial class DashboardPage : ContentPage
 {
     private readonly DashboardViewModel _viewModel;
     private TransactionSheetService? _sheetService;
+    private AppUpdatePromptService? _updatePrompt;
 
     public DashboardPage(DashboardViewModel viewModel)
     {
@@ -40,6 +41,37 @@ public partial class DashboardPage : ContentPage
         }
 
         _ = _viewModel.LoadCommand.ExecuteAsync(null);
+
+        PromptForUpdate();
+    }
+
+    /// <summary>
+    /// Asks whether a newer Finora has been published. The service throttles the
+    /// check itself, so this is safe to call on every appearance.
+    /// </summary>
+    private void PromptForUpdate()
+    {
+        _updatePrompt ??= Microsoft.Maui.Controls.Application.Current?.Handler?.MauiContext?.Services
+            .GetService<AppUpdatePromptService>();
+
+        if (_updatePrompt is null)
+            return;
+
+        // Fire-and-forget: an update check must never delay or block the dashboard,
+        // and the service handles its own failures. The delay lets the dashboard
+        // paint before any modal appears.
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(1500);
+                await _updatePrompt.PromptIfAvailableAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Update prompt failed: {ex.Message}");
+            }
+        });
     }
 
     protected override void OnDisappearing()

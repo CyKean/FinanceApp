@@ -139,3 +139,36 @@ Release APKs are published through GitHub Releases. To cut a release, bump
 `ApplicationDisplayVersion` and `ApplicationVersion` in
 `src/FinanceApp.Mobile/FinanceApp.Mobile.csproj`, then tag the matching commit
 `vMAJOR.MINOR.PATCH`.
+
+### In-app updates
+
+Finora is not on the Play Store, so Google's in-app update service is not
+available to it. Instead the app checks the public GitHub releases endpoint for
+its own repository and, when a newer version has been published, shows a prompt
+when the dashboard appears. Like Play Store's own in-app updates, nothing is
+pushed to the device: the app finds out the next time it is opened.
+
+Tapping **Download** opens the release APK in the browser, from where Android's
+installer takes over. Installing over an existing Finora requires the same
+signing key and a higher `ApplicationVersion`, which the release process above
+guarantees.
+
+Configure it under the `AppUpdate` section of `appsettings.json`:
+
+| Key | Description |
+| --- | --- |
+| `AppUpdate:Enabled` | Set to `false` to switch the prompt off |
+| `AppUpdate:Owner` | Repository owner |
+| `AppUpdate:Repository` | Repository name |
+| `AppUpdate:CacheHours` | How long a check result is trusted |
+| `AppUpdate:TimeoutSeconds` | Network timeout for the check |
+
+The cache matters: GitHub allows only 60 unauthenticated API requests per hour
+per IP address, and every Finora install on a network shares that budget. A
+result is therefore reused for `CacheHours` (default 12), and a user who taps
+**Later** is not asked again about the same version. `Settings` also has a
+manual **Check for updates** button that bypasses the cache.
+
+The repository must stay public for this to work; a private repository's release
+endpoint requires authentication, and embedding a token in the APK would leak it
+to anyone who unzips the app.

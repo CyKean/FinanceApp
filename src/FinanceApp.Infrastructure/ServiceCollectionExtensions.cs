@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName));
         services.Configure<AiOptions>(configuration.GetSection(AiOptions.SectionName));
+        services.Configure<AppUpdateOptions>(configuration.GetSection(AppUpdateOptions.SectionName));
 
         services.AddHttpClient(OpenAiClient.HttpClientName)
             .ConfigureHttpClient((sp, client) =>
@@ -34,6 +35,16 @@ public static class ServiceCollectionExtensions
                 client.Timeout = TimeSpan.FromSeconds(Math.Max(5, aiOptions.TimeoutSeconds));
             });
         services.AddSingleton<IAiClient, OpenAiClient>();
+
+        // Update check: short timeout and no automatic retries, so a slow or
+        // unreachable GitHub can never delay app startup.
+        services.AddHttpClient(GitHubAppUpdateService.HttpClientName)
+            .ConfigureHttpClient((sp, client) =>
+            {
+                var updateOptions = sp.GetRequiredService<IOptions<AppUpdateOptions>>().Value;
+                client.Timeout = TimeSpan.FromSeconds(Math.Max(3, updateOptions.TimeoutSeconds));
+            });
+        services.AddSingleton<IAppUpdateService, GitHubAppUpdateService>();
 
         services.AddDbContext<FinanceAppDbContext>((sp, options) =>
         {

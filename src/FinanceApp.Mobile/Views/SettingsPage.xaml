@@ -115,6 +115,13 @@
                             <Label Text="Theme" FontSize="14" TextColor="#6F7668" />
                             <Label Text="Finora Cream + Lime" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="EndAndExpand" />
                         </HorizontalStackLayout>
+                        <Button Text="Check for updates" Command="{Binding CheckForUpdatesCommand}" IsEnabled="{Binding IsCheckingForUpdates, Converter={StaticResource InverseBoolConverter}}" Style="{StaticResource PrimaryButtonStyle}">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="{x:Type Button}" Binding="{Binding IsCheckingForUpdates}" Value="True">
+                                    <Setter Property="Text" Value="Checking..." />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
                     </VerticalStackLayout>
                 </Border>
 
