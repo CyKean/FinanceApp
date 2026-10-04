@@ -24,11 +24,12 @@ public class SkeletonWallet : SkeletonPage
 
     private static View BuildTotalCard()
     {
-        var card = SkeletonShapes.Card(104, radius: 20);
-        card.Content = SkeletonShapes.VStack(10,
-            SkeletonShapes.Bar(190, 11, width: 84),
-            SkeletonShapes.Bar(190, 26, width: 168),
-            SkeletonShapes.Bar(190, 10, width: 112));
+        // Dark, because the balance card it stands in for is dark - a light
+        // placeholder made the page change colour when loading finished.
+        var card = SkeletonShapes.DarkCard(168, 24,
+            SkeletonShapes.Bar(190, 11, width: 54, fill: SkeletonPalette.Ink),
+            SkeletonShapes.Bar(190, 26, width: 168, fill: SkeletonPalette.Ink),
+            SkeletonShapes.Bar(190, 12, width: 112, fill: SkeletonPalette.Ink));
 
         return card;
     }

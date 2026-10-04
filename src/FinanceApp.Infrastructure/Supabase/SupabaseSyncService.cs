@@ -22,18 +22,24 @@ public class SupabaseSyncService : ISupabaseSyncService
 
     private static readonly string[] BudgetOptionalColumns = { "icon", "color", "linked_account_id" };
 
+    private static readonly string[] AccountOptionalColumns = { "initial_balance_amount" };
+
     private readonly SupabaseClientProvider _clientProvider;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IAccountBalanceService _accountBalanceService;
     private readonly ILogger<SupabaseSyncService> _logger;
     private volatile bool _budgetPushOmitsOptionalColumns;
+    private volatile bool _accountsUseLegacyShape;
 
     public SupabaseSyncService(
         SupabaseClientProvider clientProvider,
         IUnitOfWork unitOfWork,
+        IAccountBalanceService accountBalanceService,
         ILogger<SupabaseSyncService> logger)
     {
         _clientProvider = clientProvider;
         _unitOfWork = unitOfWork;
+        _accountBalanceService = accountBalanceService;
         _logger = logger;
     }
 
@@ -61,27 +67,86 @@ public class SupabaseSyncService : ISupabaseSyncService
         }
         else
         {
-            await client.From<AccountRecord>().Upsert(new AccountRecord
+            try
             {
-                Id = entity.Id,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt,
-                IsDeleted = entity.IsDeleted,
-                Version = entity.Version,
-                Name = entity.Name,
-                Type = entity.Type.ToString(),
-                BalanceAmount = entity.Balance.Amount,
-                BalanceCurrency = entity.Balance.Currency,
-                Description = entity.Description,
-                Icon = entity.Icon,
-                Color = entity.Color,
-                UserId = entity.UserId,
-                IsDefault = entity.IsDefault,
-                SortOrder = entity.SortOrder
-            });
+                await UpsertAccountAsync(client, entity, _accountsUseLegacyShape);
+            }
+            catch (Exception ex) when (!_accountsUseLegacyShape && IsMissingColumn(ex, "accounts", AccountOptionalColumns))
+            {
+                _logger.LogWarning(
+                    "Supabase accounts table is missing initial_balance_amount; pushing without them. {Error}",
+                    ex.Message);
+                _accountsUseLegacyShape = true;   // sticky for process lifetime
+                await UpsertAccountAsync(client, entity, true);
+            }
         }
 
         _logger.LogDebug("Synced account {AccountId} ({OperationType})", entity.Id, operationType);
+    }
+
+    private static async Task UpsertAccountAsync(global::Supabase.Client client, Account entity, bool omitInitialBalance)
+    {
+        var common = new
+        {
+            Id = entity.Id,
+            CreatedAt = entity.CreatedAt,
+            UpdatedAt = entity.UpdatedAt,
+            IsDeleted = entity.IsDeleted,
+            Version = entity.Version,
+            Name = entity.Name,
+            Type = entity.Type.ToString(),
+            BalanceAmount = entity.Balance.Amount,
+            BalanceCurrency = entity.Balance.Currency,
+            Description = entity.Description,
+            Icon = entity.Icon,
+            Color = entity.Color,
+            UserId = entity.UserId,
+            IsDefault = entity.IsDefault,
+            SortOrder = entity.SortOrder
+        };
+
+        if (omitInitialBalance)
+        {
+            await client.From<AccountRecordLite>().Upsert(new AccountRecordLite
+            {
+                Id = common.Id,
+                CreatedAt = common.CreatedAt,
+                UpdatedAt = common.UpdatedAt,
+                IsDeleted = common.IsDeleted,
+                Version = common.Version,
+                Name = common.Name,
+                Type = common.Type,
+                BalanceAmount = common.BalanceAmount,
+                BalanceCurrency = common.BalanceCurrency,
+                Description = common.Description,
+                Icon = common.Icon,
+                Color = common.Color,
+                UserId = common.UserId,
+                IsDefault = common.IsDefault,
+                SortOrder = common.SortOrder
+            });
+            return;
+        }
+
+        await client.From<AccountRecord>().Upsert(new AccountRecord
+        {
+            Id = common.Id,
+            CreatedAt = common.CreatedAt,
+            UpdatedAt = common.UpdatedAt,
+            IsDeleted = common.IsDeleted,
+            Version = common.Version,
+            Name = common.Name,
+            Type = common.Type,
+            BalanceAmount = common.BalanceAmount,
+            BalanceCurrency = common.BalanceCurrency,
+            InitialBalanceAmount = entity.InitialBalanceAmount,
+            Description = common.Description,
+            Icon = common.Icon,
+            Color = common.Color,
+            UserId = common.UserId,
+            IsDefault = common.IsDefault,
+            SortOrder = common.SortOrder
+        });
     }
 
     public async Task SyncCategoryAsync(Category entity, SyncOperationType operationType, CancellationToken cancellationToken = default)
@@ -190,12 +255,20 @@ public class SupabaseSyncService : ISupabaseSyncService
         _logger.LogDebug("Synced budget {BudgetId} ({OperationType})", entity.Id, operationType);
     }
 
-    private static bool IsMissingBudgetOptionalColumn(Exception exception)
+    private static bool IsMissingBudgetOptionalColumn(Exception exception) =>
+        IsMissingColumn(exception, "budgets", BudgetOptionalColumns);
+
+    /// <summary>
+    /// True when PostgREST rejected the request because the table lacks one of
+    /// the given columns, which is how a project that predates a migration is
+    /// detected without a version handshake.
+    /// </summary>
+    private static bool IsMissingColumn(Exception exception, string table, string[] columns)
     {
         var match = MissingColumnRegex.Match(exception.ToString());
         return match.Success &&
-               match.Groups["table"].Value.Equals("budgets", StringComparison.OrdinalIgnoreCase) &&
-               BudgetOptionalColumns.Contains(match.Groups["column"].Value, StringComparer.OrdinalIgnoreCase);
+               match.Groups["table"].Value.Equals(table, StringComparison.OrdinalIgnoreCase) &&
+               columns.Contains(match.Groups["column"].Value, StringComparer.OrdinalIgnoreCase);
     }
 
     private static async Task UpsertBudgetAsync(global::Supabase.Client client, Budget entity, bool omitOptionalColumns)
@@ -354,10 +427,32 @@ public class SupabaseSyncService : ISupabaseSyncService
         merged += await TryPullAsync("recurring", () => PullRecurringAsync(client, userId, cancellationToken), e => lastError = e);
         merged += await TryPullAsync("goals", () => PullGoalsAsync(client, userId, cancellationToken), e => lastError = e);
 
+        // Two devices can each hold an account badged as the default - one made
+        // here before any of the user's data arrived, one arriving from the server
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         if (merged == 0 && lastError != null)
             throw lastError;
+
+        // The transaction table has just been merged, and a transaction carries
+        // no balance of its own - the balances come from adding it up per
+        // account. Without this step an account that gained a transaction on
+        // another device would keep the balance it had before the pull, which is
+        // how a balance used to reappear at its pre-sync figure.
+        await _accountBalanceService.RecalculateAllAsync(userId, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Two devices can each hold an account badged as the default - one made
+        // here before any of the user's data arrived, one arriving from the server
+        // already flagged - and the app needs exactly one. After the saves, so the
+        // check sees the rows this pull just inserted: a query runs against the
+        // database, not the pending changes.
+        var demoted = await _unitOfWork.Accounts.EnsureSingleDefaultAsync(userId, cancellationToken);
+        if (demoted > 0)
+        {
+            _logger.LogInformation("Demoted {Count} duplicate default account(s) for user {UserId}", demoted, userId);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
 
         _logger.LogInformation("Pulled {Count} server rows for user {UserId}", merged, userId);
         return merged;
@@ -395,10 +490,16 @@ public class SupabaseSyncService : ISupabaseSyncService
                 var local = await _unitOfWork.Accounts.GetByIdAsync(record.Id, ct);
                 if (local == null)
                 {
+                    // The opening balance comes across so this device derives the
+                    // same balance the other one did. Starting from the server's
+                    // cached balance instead would count the transactions that
+                    // are about to be pulled a second time.
+                    var initialBalance = new Money(record.InitialBalanceAmount, record.BalanceCurrency);
+
                     var created = new Account(
                         record.Name,
                         Enum.Parse<AccountType>(record.Type),
-                        new Money(record.BalanceAmount, record.BalanceCurrency),
+                        initialBalance,
                         record.UserId,
                         record.Description,
                         record.Icon,
@@ -407,7 +508,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                         record.SortOrder);
                     // Adopt server identity for the freshly built row.
                     await _unitOfWork.Accounts.AddAsync(created, ct);
-                    created.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
+                    created.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
                     merged++;
                 }
                 else if (!IsPending(local.SyncStatus))
@@ -415,7 +516,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                     if (record.IsDeleted)
                     {
                         local.MarkAsDeleted();
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, true);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, true);
                         await _unitOfWork.Accounts.UpdateAsync(local, ct);
                         merged++;
                     }
@@ -423,13 +524,18 @@ public class SupabaseSyncService : ISupabaseSyncService
                     {
                         local.UpdateName(record.Name);
                         local.UpdateType(Enum.Parse<AccountType>(record.Type));
-                        local.SetBalance(new Money(record.BalanceAmount, record.BalanceCurrency));
+                        // Deliberately not the server's balance column: it is a
+                        // cache of "opening balance plus transactions", and the
+                        // transactions are merged separately below, so adopting
+                        // it here is what put a stale figure back after a sync.
+                        // The balance is derived from the transactions once the
+                        // pull has finished instead.
                         local.UpdateDescription(record.Description);
                         local.UpdateIcon(record.Icon);
                         local.UpdateColor(record.Color);
                         local.UpdateSortOrder(record.SortOrder);
                         if (record.IsDefault) local.SetAsDefault(); else local.UnsetAsDefault();
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, false);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, false);
                         await _unitOfWork.Accounts.UpdateAsync(local, ct);
                         merged++;
                     }
@@ -469,9 +575,9 @@ public class SupabaseSyncService : ISupabaseSyncService
                         record.IsSystem,
                         record.SortOrder);
                     await _unitOfWork.Categories.AddAsync(created, ct);
-                    created.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
+                    created.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
                     if (!record.IsActive) created.Deactivate();
-                    created.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
+                    created.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
                     merged++;
                 }
                 else if (!IsPending(local.SyncStatus))
@@ -479,7 +585,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                     if (record.IsDeleted)
                     {
                         local.MarkAsDeleted();
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, true);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, true);
                         await _unitOfWork.Categories.UpdateAsync(local, ct);
                         merged++;
                     }
@@ -491,7 +597,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                         local.UpdateSortOrder(record.SortOrder);
                         local.SetParentCategory(record.ParentCategoryId);
                         if (record.IsActive) local.Activate(); else local.Deactivate();
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, false);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, false);
                         await _unitOfWork.Categories.UpdateAsync(local, ct);
                         merged++;
                     }
@@ -531,7 +637,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                         record.Notes,
                         record.RecurringTransactionId);
                     await _unitOfWork.Transactions.AddAsync(created, ct);
-                    created.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
+                    created.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
                     merged++;
                 }
                 else if (!IsPending(local.SyncStatus))
@@ -539,7 +645,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                     if (record.IsDeleted)
                     {
                         local.MarkAsDeleted();
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, true);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, true);
                         await _unitOfWork.Transactions.UpdateAsync(local, ct);
                         merged++;
                     }
@@ -550,7 +656,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                         local.UpdateNotes(record.Notes);
                         local.UpdateAccount(new AccountId(record.AccountId));
                         local.UpdateCategory(new CategoryId(record.CategoryId));
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, false);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, false);
                         await _unitOfWork.Transactions.UpdateAsync(local, ct);
                         merged++;
                     }
@@ -594,7 +700,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                     created.UpdateIcon(record.Icon);
                     created.UpdateColor(record.Color);
                     created.UpdateLinkedAccount(record.LinkedAccountId.HasValue ? new AccountId(record.LinkedAccountId.Value) : null);
-                    created.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
+                    created.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
                     merged++;
                 }
                 else if (!IsPending(local.SyncStatus))
@@ -602,7 +708,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                     if (record.IsDeleted)
                     {
                         local.MarkAsDeleted();
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, true);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, true);
                         await _unitOfWork.Budgets.UpdateAsync(local, ct);
                         merged++;
                     }
@@ -616,7 +722,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                         local.UpdateColor(record.Color);
                         local.UpdateLinkedAccount(record.LinkedAccountId.HasValue ? new AccountId(record.LinkedAccountId.Value) : null);
                         local.SetSpentAmount(new Money(record.SpentAmount, record.Currency));
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, false);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, false);
                         await _unitOfWork.Budgets.UpdateAsync(local, ct);
                         merged++;
                     }
@@ -660,7 +766,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                     await _unitOfWork.RecurringTransactions.AddAsync(created, ct);
                     if (!record.IsActive) created.Deactivate();
                     if (record.LastGeneratedAt.HasValue) created.RecordGeneration(record.LastGeneratedAt.Value);
-                    created.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
+                    created.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
                     merged++;
                 }
                 else if (!IsPending(local.SyncStatus))
@@ -668,7 +774,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                     if (record.IsDeleted)
                     {
                         local.MarkAsDeleted();
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, true);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, true);
                         await _unitOfWork.RecurringTransactions.UpdateAsync(local, ct);
                         merged++;
                     }
@@ -683,7 +789,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                         local.UpdateNotes(record.Notes);
                         if (record.IsActive) local.Activate(); else local.Deactivate();
                         if (record.LastGeneratedAt.HasValue) local.RecordGeneration(record.LastGeneratedAt.Value);
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, false);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, false);
                         await _unitOfWork.RecurringTransactions.UpdateAsync(local, ct);
                         merged++;
                     }
@@ -726,7 +832,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                     await _unitOfWork.FinancialGoals.AddAsync(created, ct);
                     created.SetProgress(new Money(record.CurrentAmount, record.TargetCurrency));
                     created.SetStatus(Enum.Parse<GoalStatus>(record.Status));
-                    created.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
+                    created.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, record.IsDeleted);
                     merged++;
                 }
                 else if (!IsPending(local.SyncStatus))
@@ -734,7 +840,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                     if (record.IsDeleted)
                     {
                         local.MarkAsDeleted();
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, true);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, true);
                         await _unitOfWork.FinancialGoals.UpdateAsync(local, ct);
                         merged++;
                     }
@@ -749,7 +855,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                         local.UpdateLinkedAccount(record.LinkedAccountId.HasValue ? new AccountId(record.LinkedAccountId.Value) : null);
                         local.SetProgress(new Money(record.CurrentAmount, record.TargetCurrency));
                         local.SetStatus(Enum.Parse<GoalStatus>(record.Status));
-                        local.AdoptRemoteState(record.CreatedAt, record.UpdatedAt, record.Version, false);
+                        local.AdoptRemoteState(record.Id, record.CreatedAt, record.UpdatedAt, record.Version, false);
                         merged += 1;
                         await _unitOfWork.FinancialGoals.UpdateAsync(local, ct);
                     }

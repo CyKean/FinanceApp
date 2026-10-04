@@ -38,6 +38,70 @@ public class AccountRecord : PostgrestModels.BaseModel
     [PostgrestAttributes.Column("balance_currency")]
     public string BalanceCurrency { get; set; } = "PHP";
 
+    /// <summary>
+    /// The balance the account was opened with, in <see cref="BalanceCurrency"/>.
+    /// Carried separately from <see cref="BalanceAmount"/> because it is the input
+    /// a balance is derived from, and the derived figure is not authoritative
+    /// enough to rebuild it.
+    /// </summary>
+    [PostgrestAttributes.Column("initial_balance_amount")]
+    public decimal InitialBalanceAmount { get; set; }
+
+    [PostgrestAttributes.Column("description")]
+    public string? Description { get; set; }
+
+    [PostgrestAttributes.Column("icon")]
+    public string? Icon { get; set; }
+
+    [PostgrestAttributes.Column("color")]
+    public string? Color { get; set; }
+
+    [PostgrestAttributes.Column("user_id")]
+    public Guid UserId { get; set; }
+
+    [PostgrestAttributes.Column("is_default")]
+    public bool IsDefault { get; set; }
+
+    [PostgrestAttributes.Column("sort_order")]
+    public int SortOrder { get; set; }
+}
+
+/// <summary>
+/// <see cref="AccountRecord"/> without the initial-balance columns, for Supabase
+/// projects whose accounts table predates migration 0003. PostgREST rejects the
+/// whole request when a selected column does not exist, so reading and writing
+/// these accounts needs a shape the older table can answer.
+/// </summary>
+[PostgrestAttributes.Table("accounts")]
+public class AccountRecordLite : PostgrestModels.BaseModel
+{
+    [PostgrestAttributes.PrimaryKey("id", false)]
+    public Guid Id { get; set; }
+
+    [PostgrestAttributes.Column("created_at")]
+    public DateTime CreatedAt { get; set; }
+
+    [PostgrestAttributes.Column("updated_at")]
+    public DateTime UpdatedAt { get; set; }
+
+    [PostgrestAttributes.Column("is_deleted")]
+    public bool IsDeleted { get; set; }
+
+    [PostgrestAttributes.Column("version")]
+    public int Version { get; set; }
+
+    [PostgrestAttributes.Column("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [PostgrestAttributes.Column("type")]
+    public string Type { get; set; } = string.Empty;
+
+    [PostgrestAttributes.Column("balance_amount")]
+    public decimal BalanceAmount { get; set; }
+
+    [PostgrestAttributes.Column("balance_currency")]
+    public string BalanceCurrency { get; set; } = "PHP";
+
     [PostgrestAttributes.Column("description")]
     public string? Description { get; set; }
 

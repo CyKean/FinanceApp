@@ -18,6 +18,7 @@ public class RecurringTransactionService : BaseService, IRecurringTransactionSer
     private readonly IAccountRepository _accountRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly ITransactionRepository _transactionRepository;
+    private readonly IAccountBalanceService _accountBalanceService;
     private readonly CreateRecurringTransactionDtoValidator _createValidator;
     private readonly UpdateRecurringTransactionDtoValidator _updateValidator;
 
@@ -27,6 +28,7 @@ public class RecurringTransactionService : BaseService, IRecurringTransactionSer
         IAccountRepository accountRepository,
         ICategoryRepository categoryRepository,
         ITransactionRepository transactionRepository,
+        IAccountBalanceService accountBalanceService,
         CreateRecurringTransactionDtoValidator createValidator,
         UpdateRecurringTransactionDtoValidator updateValidator,
         ILogger<RecurringTransactionService> logger) : base(unitOfWork, logger)
@@ -35,6 +37,7 @@ public class RecurringTransactionService : BaseService, IRecurringTransactionSer
         _accountRepository = accountRepository;
         _categoryRepository = categoryRepository;
         _transactionRepository = transactionRepository;
+        _accountBalanceService = accountBalanceService;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
     }
@@ -233,6 +236,10 @@ public class RecurringTransactionService : BaseService, IRecurringTransactionSer
     {
         var dueTransactions = await _recurringRepository.GetDueTransactionsAsync(userId, asOfDate, cancellationToken);
 
+        // Balances are derived from saved transactions, so they are refreshed
+        // once after the save rather than per generated row inside the loop.
+        var affectedAccounts = new HashSet<Guid>();
+
         foreach (var recurring in dueTransactions)
         {
             if (!recurring.IsActive)
@@ -253,22 +260,20 @@ public class RecurringTransactionService : BaseService, IRecurringTransactionSer
 
             await _transactionRepository.AddAsync(transaction, cancellationToken);
 
-            var balanceChange = transaction.Type == TransactionType.Income
-                ? transaction.Amount
-                : new Money(-transaction.Amount.Amount, transaction.Amount.Currency);
-
-            account.AdjustBalance(balanceChange);
-            await _accountRepository.UpdateAsync(account, cancellationToken);
-
             recurring.RecordGeneration(asOfDate);
             recurring.MarkAsPendingUpdate();
             await _recurringRepository.UpdateAsync(recurring, cancellationToken);
+
+            affectedAccounts.Add(account.Id);
 
             Logger.LogInformation("Generated transaction {TransactionId} from recurring {RecurringId} for user {UserId}",
                 transaction.Id, recurring.Id, userId);
         }
 
         await UnitOfWork.SaveChangesAsync(cancellationToken);
+
+        foreach (var accountId in affectedAccounts)
+            await _accountBalanceService.RecalculateAsync(accountId, cancellationToken);
     }
 
     public async Task ActivateAsync(Guid id, Guid userId, CancellationToken cancellationToken = default)

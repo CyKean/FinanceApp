@@ -19,6 +19,7 @@ public class TransactionService : BaseService, ITransactionService
     private readonly IAccountRepository _accountRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly IBudgetService _budgetService;
+    private readonly IAccountBalanceService _accountBalanceService;
     private readonly CreateTransactionDtoValidator _createValidator;
     private readonly UpdateTransactionDtoValidator _updateValidator;
     private readonly TransactionFilterDtoValidator _filterValidator;
@@ -29,6 +30,7 @@ public class TransactionService : BaseService, ITransactionService
         IAccountRepository accountRepository,
         ICategoryRepository categoryRepository,
         IBudgetService budgetService,
+        IAccountBalanceService accountBalanceService,
         CreateTransactionDtoValidator createValidator,
         UpdateTransactionDtoValidator updateValidator,
         TransactionFilterDtoValidator filterValidator,
@@ -38,6 +40,7 @@ public class TransactionService : BaseService, ITransactionService
         _accountRepository = accountRepository;
         _categoryRepository = categoryRepository;
         _budgetService = budgetService;
+        _accountBalanceService = accountBalanceService;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
         _filterValidator = filterValidator;
@@ -78,11 +81,11 @@ public class TransactionService : BaseService, ITransactionService
 
             await _transactionRepository.AddAsync(transaction, cancellationToken);
 
-            var balanceChange = dto.Type == TransactionType.Income ? dto.Amount : new Money(-dto.Amount.Amount, dto.Amount.Currency);
-            account.AdjustBalance(balanceChange);
-            await _accountRepository.UpdateAsync(account, cancellationToken);
-
             await UnitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Derived from the saved row rather than nudged by hand, so the
+            // balance cannot end up disagreeing with the transaction list.
+            await _accountBalanceService.RecalculateAsync(transaction.AccountId.Value, cancellationToken);
 
             // Update budget spending for expense transactions
             if (dto.Type == TransactionType.Expense)
@@ -112,7 +115,6 @@ public class TransactionService : BaseService, ITransactionService
             if (transaction.UserId != userId)
                 throw new DomainExceptions.NotFoundException("Transaction", id);
 
-            var oldAmount = transaction.Amount;
             var oldType = transaction.Type;
             var oldDate = transaction.Date;
             var oldAccountId = transaction.AccountId;
@@ -156,9 +158,13 @@ public class TransactionService : BaseService, ITransactionService
             transaction.MarkAsPendingUpdate();
             await _transactionRepository.UpdateAsync(transaction, cancellationToken);
 
-            await AdjustAccountBalancesAsync(transaction, oldAmount, oldType, oldAccountId, oldCategoryId, dto, cancellationToken);
-
             await UnitOfWork.SaveChangesAsync(cancellationToken);
+
+            // A moved transaction leaves one balance and joins another, so both
+            // are derived again from their own transactions.
+            await _accountBalanceService.RecalculateAsync(oldAccountId.Value, cancellationToken);
+            if (transaction.AccountId != oldAccountId)
+                await _accountBalanceService.RecalculateAsync(transaction.AccountId.Value, cancellationToken);
 
             // Keep budget spending accurate when an expense moves or changes size.
             if (oldType == TransactionType.Expense)
@@ -190,21 +196,19 @@ public class TransactionService : BaseService, ITransactionService
                 throw new DomainExceptions.NotFoundException("Transaction", id);
 
             var account = await _accountRepository.GetByIdAsync(transaction.AccountId.Value, cancellationToken);
-            if (account != null && account.UserId == userId)
-            {
-                var balanceChange = transaction.Type == TransactionType.Income
-                    ? new Money(-transaction.Amount.Amount, transaction.Amount.Currency)
-                    : transaction.Amount;
-
-                account.AdjustBalance(balanceChange);
-                await _accountRepository.UpdateAsync(account, cancellationToken);
-            }
+            var accountBelongsToUser = account != null && account.UserId == userId;
 
             transaction.MarkAsDeleted();
             transaction.MarkAsPendingDelete();
             await _transactionRepository.UpdateAsync(transaction, cancellationToken);
 
             await UnitOfWork.SaveChangesAsync(cancellationToken);
+
+            // The reversal is not applied by hand: the soft-deleted transaction
+            // drops out of the account's transactions, so deriving the balance
+            // again hands the spending back.
+            if (accountBelongsToUser)
+                await _accountBalanceService.RecalculateAsync(account!.Id, cancellationToken);
 
             // Deleting an expense frees its budget back up.
             if (transaction.Type == TransactionType.Expense)
@@ -368,37 +372,5 @@ public class TransactionService : BaseService, ITransactionService
         var budget = await _budgetService.GetActiveForCategoryAsync(userId, categoryId, date, cancellationToken);
         if (budget != null)
             await _budgetService.RecalculateSpentAsync(budget.Id, userId, cancellationToken);
-    }
-
-    private async Task AdjustAccountBalancesAsync(
-        Transaction transaction,
-        Money oldAmount,
-        TransactionType oldType,
-        AccountId oldAccountId,
-        CategoryId oldCategoryId,
-        UpdateTransactionDto dto,
-        CancellationToken cancellationToken)
-    {
-        var oldAccount = await _accountRepository.GetByIdAsync(oldAccountId.Value, cancellationToken);
-        if (oldAccount != null)
-        {
-            var oldBalanceChange = oldType == TransactionType.Income ? oldAmount : new Money(-oldAmount.Amount, oldAmount.Currency);
-            var newBalanceChange = transaction.Type == TransactionType.Income ? transaction.Amount : new Money(-transaction.Amount.Amount, transaction.Amount.Currency);
-
-            var netChange = newBalanceChange.Subtract(oldBalanceChange);
-            oldAccount.AdjustBalance(netChange);
-            await _accountRepository.UpdateAsync(oldAccount, cancellationToken);
-        }
-
-        if (dto.AccountId.HasValue && dto.AccountId.Value != oldAccountId)
-        {
-            var newAccount = await _accountRepository.GetByIdAsync(dto.AccountId.Value.Value, cancellationToken);
-            if (newAccount != null)
-            {
-                var newBalanceChange = transaction.Type == TransactionType.Income ? transaction.Amount : new Money(-transaction.Amount.Amount, transaction.Amount.Currency);
-                newAccount.AdjustBalance(newBalanceChange);
-                await _accountRepository.UpdateAsync(newAccount, cancellationToken);
-            }
-        }
     }
 }

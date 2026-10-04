@@ -57,6 +57,11 @@ CREATE TABLE accounts (
     type account_type NOT NULL,
     balance_amount DECIMAL(18,2) NOT NULL DEFAULT 0,
     balance_currency TEXT NOT NULL DEFAULT 'PHP',
+    -- Derived: initial_balance_amount plus this account's transactions. Clients
+    -- recompute it from the transactions rather than trusting this column.
+    -- The opening balance below is the part that cannot be derived, so it is
+    -- stored; without it another device cannot reproduce this account's balance.
+    initial_balance_amount DECIMAL(18,2) NOT NULL DEFAULT 0,
     description TEXT,
     icon TEXT,
     color TEXT,

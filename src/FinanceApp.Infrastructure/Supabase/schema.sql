@@ -10,8 +10,16 @@ create table if not exists accounts (
     version integer not null default 1,
     name text not null,
     type text not null,
+    -- Derived: initial_balance_amount plus this account's transactions. Kept as
+    -- a column so the server can show it too, but clients recompute it from
+    -- the transactions rather than trusting it.
     balance_amount numeric(18,2) not null default 0,
     balance_currency text not null default 'PHP',
+    -- The balance the account was opened with, in balance_currency. This is the
+    -- input a balance is derived from, so it has to survive the round trip:
+    -- without it another device cannot work out what an account's balance
+    -- should be.
+    initial_balance_amount numeric(18,2) not null default 0,
     description text,
     icon text,
     color text,

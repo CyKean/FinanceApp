@@ -80,6 +80,7 @@ public static class MauiProgram
         builder.Services.AddInfrastructure(builder.Configuration, FileSystem.AppDataDirectory);
 
         // Application Services
+        builder.Services.AddScoped<IAccountBalanceService, AccountBalanceService>();
         builder.Services.AddScoped<IAccountService, AccountService>();
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         builder.Services.AddScoped<ITransactionService, TransactionService>();

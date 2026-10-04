@@ -4,6 +4,7 @@ using FinanceApp.Application.DTOs;
 using FinanceApp.Application.Interfaces;
 using FinanceApp.Domain.Enums;
 using FinanceApp.Domain.ValueObjects;
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -30,6 +31,15 @@ public partial class AccountsViewModel : BaseViewModel
 
     [ObservableProperty]
     private Money _totalBalance = Money.Zero();
+
+    /// <summary>Holder name on the balance card, matching the dashboard's.</summary>
+    [ObservableProperty]
+    private string _userName = UserDisplay.FallbackName;
+
+    /// <summary>How many accounts the balance card covers.</summary>
+    public int AccountCount => Accounts.Count;
+
+    partial void OnAccountsChanged(IReadOnlyList<AccountDto> value) => OnPropertyChanged(nameof(AccountCount));
 
     public bool IsAccountsTab => !ShowHistory;
 
@@ -95,6 +105,7 @@ public partial class AccountsViewModel : BaseViewModel
             Accounts = loaded.Item1;
             TotalBalance = loaded.Item2;
             History = loaded.Item3;
+            UserName = UserDisplay.NameFromEmail(await _authService.GetCurrentUserEmailAsync());
 
             MarkLoaded();
         }

@@ -24,3 +24,11 @@ public record CategoryTotal(Guid CategoryId, decimal Total);
 
 /// <summary>Income or expense for one calendar month. Produced by an aggregate, not a row.</summary>
 public record MonthlyTotal(int Year, int Month, TransactionType Type, decimal Total);
+
+/// <summary>
+/// What one account's transactions add up to: income minus expense, in the
+/// currency the transactions were recorded in. Added to an account's initial
+/// balance this is the account's balance, which is why it is kept separate from
+/// the stored figure and recomputed on demand.
+/// </summary>
+public record AccountNetAmount(Guid AccountId, decimal Amount, string Currency);

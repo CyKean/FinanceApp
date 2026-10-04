@@ -247,4 +247,32 @@ public class TransactionRepository : BaseRepository<Transaction>, ITransactionRe
     public async Task<int> CountByDateRangeAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default) =>
         await DbSet.AsNoTracking()
             .CountAsync(t => t.UserId == userId && t.Date >= startDate.Date && t.Date <= endDate.Date, cancellationToken);
+
+    public async Task<IReadOnlyList<AccountNetAmount>> GetNetAmountsByAccountAsync(
+        Guid userId,
+        AccountId? accountId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = DbSet.AsNoTracking().Where(t => t.UserId == userId);
+        if (accountId.HasValue)
+        {
+            var wanted = accountId.Value;
+            query = query.Where(t => t.AccountId == wanted);
+        }
+
+        // Grouped by currency as well as account: an account's balance is only
+        // the sum of movements in the currency it is held in, and Money refuses
+        // to add across currencies.
+        var rows = await query
+            .Select(t => new { t.AccountId, t.Type, Amount = t.Amount.Amount, Currency = t.Amount.Currency })
+            .ToListAsync(cancellationToken);
+
+        return rows
+            .GroupBy(r => new { AccountId = r.AccountId.Value, r.Currency })
+            .Select(g => new AccountNetAmount(
+                g.Key.AccountId,
+                g.Sum(r => r.Type == TransactionType.Income ? r.Amount : -r.Amount),
+                g.Key.Currency))
+            .ToList();
+    }
 }

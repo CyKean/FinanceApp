@@ -44,6 +44,26 @@ public class AccountRepository : BaseRepository<Account>, IAccountRepository
         return new Money(total, "PHP");
     }
 
+    public async Task<int> EnsureSingleDefaultAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var defaults = await DbSet
+            .Where(a => a.UserId == userId && a.IsDefault)
+            .OrderByDescending(a => a.UpdatedAt)
+            .ThenByDescending(a => a.CreatedAt)
+            .ToListAsync(cancellationToken);
+
+        // Everything but the newest is demoted. Pending, so the correction travels
+        // to the other devices instead of being rediscovered on each of them.
+        foreach (var account in defaults.Skip(1))
+        {
+            account.UnsetAsDefault();
+            account.MarkAsPendingUpdate();
+            await UpdateAsync(account, cancellationToken);
+        }
+
+        return Math.Max(0, defaults.Count - 1);
+    }
+
     public async Task<IReadOnlyDictionary<Guid, Account>> GetByIdsAsync(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken = default)
     {
         if (ids.Count == 0)

@@ -63,6 +63,15 @@ public class FinanceAppDbContext : DbContext
                 b.Property(m => m.Amount).HasColumnName("Balance").HasColumnType("decimal(18,2)").IsRequired();
                 b.Property(m => m.Currency).HasColumnName("BalanceCurrency").HasMaxLength(3).IsRequired().HasDefaultValue("PHP");
             });
+            // A plain column rather than a second Money owned navigation: EF names
+            // an owned entity's shadow key after its owner ("AccountId"), and two
+            // Money navigations on one entity then claim the same key and resolve
+            // to each other's instance.
+            entity.Property(e => e.InitialBalanceAmount)
+                .HasColumnName("InitialBalance")
+                .HasColumnType("decimal(18,2)")
+                .IsRequired()
+                .HasDefaultValue(0m);
             entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.Icon).HasMaxLength(50);
             entity.Property(e => e.Color).HasMaxLength(7);
@@ -72,7 +81,17 @@ public class FinanceAppDbContext : DbContext
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.UpdatedAt).IsRequired();
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
-            entity.Property(e => e.Version).IsRequired().IsConcurrencyToken();
+            // Deliberately not a concurrency token, on every entity in this model.
+            // As one, every UPDATE carried "WHERE Version = <what this context
+            // loaded>", and two DbContexts write the same rows: the long-lived one
+            // the UI reads through, and the short-lived one the background sync
+            // pushes from. Marking a row synced bumps Version, so each sync
+            // invalidated every other context's copy and its next write failed
+            // with "expected to affect 1 row(s), but actually affected 0" -
+            // a save the user had every right to expect to work. There is no
+            // other writer to race in a single on-device SQLite file, and
+            // conflicts are resolved by the sync pull-merge, not by the database.
+            entity.Property(e => e.Version).IsRequired();
 
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => new { e.UserId, e.IsDefault });
@@ -95,7 +114,7 @@ public class FinanceAppDbContext : DbContext
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.UpdatedAt).IsRequired();
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
-            entity.Property(e => e.Version).IsRequired().IsConcurrencyToken();
+            entity.Property(e => e.Version).IsRequired();
 
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => new { e.UserId, e.Type });
@@ -124,7 +143,7 @@ public class FinanceAppDbContext : DbContext
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.UpdatedAt).IsRequired();
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
-            entity.Property(e => e.Version).IsRequired().IsConcurrencyToken();
+            entity.Property(e => e.Version).IsRequired();
 
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => new { e.UserId, e.Date });
@@ -163,7 +182,7 @@ public class FinanceAppDbContext : DbContext
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.UpdatedAt).IsRequired();
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
-            entity.Property(e => e.Version).IsRequired().IsConcurrencyToken();
+            entity.Property(e => e.Version).IsRequired();
 
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => new { e.UserId, e.StartDate, e.EndDate });
@@ -198,7 +217,7 @@ public class FinanceAppDbContext : DbContext
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.UpdatedAt).IsRequired();
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
-            entity.Property(e => e.Version).IsRequired().IsConcurrencyToken();
+            entity.Property(e => e.Version).IsRequired();
 
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => new { e.UserId, e.IsActive });
@@ -235,7 +254,7 @@ public class FinanceAppDbContext : DbContext
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.UpdatedAt).IsRequired();
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
-            entity.Property(e => e.Version).IsRequired().IsConcurrencyToken();
+            entity.Property(e => e.Version).IsRequired();
 
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => new { e.UserId, e.Status });
@@ -258,7 +277,7 @@ public class FinanceAppDbContext : DbContext
             entity.Property(e => e.UserId).IsRequired();
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.UpdatedAt).IsRequired();
-            entity.Property(e => e.Version).IsRequired().IsConcurrencyToken();
+            entity.Property(e => e.Version).IsRequired();
 
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => new { e.UserId, e.Status });

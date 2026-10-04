@@ -67,6 +67,7 @@ public class QueryCountTests : IDisposable
         services.AddScoped<IFinancialGoalRepository, FinancialGoalRepository>();
         services.AddScoped<IRecurringTransactionRepository, RecurringTransactionRepository>();
         services.AddScoped<ISyncOperationRepository, SyncOperationRepository>();
+        services.AddScoped<IAccountBalanceService, AccountBalanceService>();
 
         _provider = services.BuildServiceProvider();
         _scope = _provider.CreateScope();
@@ -96,6 +97,7 @@ public class QueryCountTests : IDisposable
             sp.GetRequiredService<IAccountRepository>(),
             sp.GetRequiredService<ICategoryRepository>(),
             Mock.Of<IBudgetService>(),
+            sp.GetRequiredService<IAccountBalanceService>(),
             new CreateTransactionDtoValidator(),
             new UpdateTransactionDtoValidator(),
             new TransactionFilterDtoValidator(),

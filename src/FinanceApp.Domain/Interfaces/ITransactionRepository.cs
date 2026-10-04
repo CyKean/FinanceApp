@@ -38,4 +38,17 @@ public interface ITransactionRepository : IRepository<Transaction>
 
     /// <summary>Row count over a window, for a COUNT in SQL rather than in memory.</summary>
     Task<int> CountByDateRangeAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Net amount of every account's transactions (income positive, expense
+    /// negative) in one query. This is what an account's running balance is
+    /// derived from. Pass an account id to narrow it to one account, which
+    /// matters on the single-account paths: without it, saving one transaction
+    /// would read the user's entire history to add up one account.
+    /// <para>
+    /// One entry per account and currency, so the caller can pick the movements
+    /// matching the currency an account is held in.
+    /// </para>
+    /// </summary>
+    Task<IReadOnlyList<AccountNetAmount>> GetNetAmountsByAccountAsync(Guid userId, AccountId? accountId = null, CancellationToken cancellationToken = default);
 }

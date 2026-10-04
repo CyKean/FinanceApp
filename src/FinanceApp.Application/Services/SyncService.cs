@@ -114,19 +114,12 @@ public class SyncService : BaseService, ISyncService, IDisposable
             await EnqueueMissingOperationsAsync(userId, _syncCts.Token);
 
             var pendingOperations = await _syncRepository.GetPendingByUserIdAsync(userId, _syncCts.Token);
-            if (!pendingOperations.Any())
-            {
-                _logger.LogInformation("No pending operations for user {UserId}", userId);
-                return new SyncResultDto(true, 0, 0, null);
-            }
 
-            // Collapse duplicate ops for the same row (edit x3 offline = 1 push).
-            // A Delete anywhere in the group wins; otherwise the latest op covers all.
-            pendingOperations = await CoalesceOperationsAsync(pendingOperations, _syncCts.Token);
-            if (!pendingOperations.Any())
+            if (pendingOperations.Any())
             {
-                await UnitOfWork.SaveChangesAsync(_syncCts.Token);
-                return new SyncResultDto(true, 0, 0, null);
+                // Collapse duplicate ops for the same row (edit x3 offline = 1 push).
+                // A Delete anywhere in the group wins; otherwise the latest op covers all.
+                pendingOperations = await CoalesceOperationsAsync(pendingOperations, _syncCts.Token);
             }
 
             var syncedCount = 0;
@@ -134,6 +127,20 @@ public class SyncService : BaseService, ISyncService, IDisposable
             var pulledCount = 0;
             var failedCount = 0;
             string? lastError = null;
+
+            if (pendingOperations.Any())
+            {
+                _logger.LogInformation("Pushing {Count} pending operations for user {UserId}", pendingOperations.Count, userId);
+            }
+            else
+            {
+                // Nothing to push is the normal state on a device that is only
+                // reading, and on a newly signed-in one. It is not a reason to skip
+                // the pull: returning here meant a second device never downloaded
+                // anything at all, so its accounts had to be re-created by hand and
+                // those copies were then pushed back up beside the originals.
+                _logger.LogInformation("No pending operations for user {UserId}; pulling server changes", userId);
+            }
 
             foreach (var operation in pendingOperations)
             {

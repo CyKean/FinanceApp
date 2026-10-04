@@ -1,12 +1,16 @@
 namespace FinanceApp.Infrastructure.Persistence;
 
+using System.Collections.Concurrent;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 public static class DatabaseInitializer
 {
-    private static bool s_extraColumnsEnsured;
+    // Keyed by database rather than a single flag: a process can hold more than
+    // one database (an upgrade running alongside live data, a test harness), and a
+    // global flag would leave the second one unpatched.
+    private static readonly ConcurrentDictionary<string, bool> s_extraColumnsEnsured = new(StringComparer.OrdinalIgnoreCase);
     private static readonly object s_extraColumnsLock = new();
     private static bool s_localUsersTableEnsured;
     private static readonly object s_localUsersTableLock = new();
@@ -44,18 +48,18 @@ public static class DatabaseInitializer
     /// <summary>
     /// Adds columns introduced after v1 to databases created by older builds.
     /// EnsureCreated only creates missing TABLES, never missing columns.
-    /// Safe to call on every DbContext construction - runs once per process.
+    /// Safe to call on every DbContext construction - runs once per database.
     /// </summary>
     public static void EnsureExtraColumns(FinanceAppDbContext context)
     {
+        var connection = context.Database.GetDbConnection();
+
         lock (s_extraColumnsLock)
         {
-            if (s_extraColumnsEnsured)
+            if (!s_extraColumnsEnsured.TryAdd(connection.DataSource, true))
                 return;
-            s_extraColumnsEnsured = true;
         }
 
-        var connection = context.Database.GetDbConnection();
         var wasClosed = connection.State != System.Data.ConnectionState.Open;
         try
         {
@@ -65,6 +69,19 @@ public static class DatabaseInitializer
             EnsureColumn(connection, "Budgets", "Icon", "TEXT");
             EnsureColumn(connection, "Budgets", "Color", "TEXT");
             EnsureColumn(connection, "Budgets", "LinkedAccountId", "TEXT");
+
+            // Balances are now derived from an account's opening balance plus its
+            // transactions, so an existing install has to keep the balance it
+            // already shows as the opening balance. Without this backfill every
+            // pre-existing account would restart from zero and lose its history.
+            // Seeding only happens on the run that adds the column, so it cannot
+            // later mistake a re-opened account for an unmigrated one.
+            if (EnsureColumn(connection, "Accounts", "InitialBalance", "NOT NULL DEFAULT 0"))
+            {
+                using var seed = connection.CreateCommand();
+                seed.CommandText = "UPDATE \"Accounts\" SET \"InitialBalance\" = \"Balance\"";
+                seed.ExecuteNonQuery();
+            }
         }
         finally
         {
@@ -73,7 +90,7 @@ public static class DatabaseInitializer
         }
     }
 
-    private static void EnsureColumn(System.Data.Common.DbConnection connection, string table, string column, string type)
+    private static bool EnsureColumn(System.Data.Common.DbConnection connection, string table, string column, string type)
     {
         using var pragma = connection.CreateCommand();
         pragma.CommandText = $"PRAGMA table_info(\"{table}\")";
@@ -81,13 +98,17 @@ public static class DatabaseInitializer
         while (reader.Read())
         {
             if (string.Equals(reader.GetString(1), column, StringComparison.OrdinalIgnoreCase))
-                return;
+            {
+                reader.Close();
+                return false;
+            }
         }
         reader.Close();
 
         using var alter = connection.CreateCommand();
         alter.CommandText = $"ALTER TABLE \"{table}\" ADD COLUMN \"{column}\" {type}";
         alter.ExecuteNonQuery();
+        return true;
     }
 
     /// <summary>

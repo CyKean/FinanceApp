@@ -31,7 +31,7 @@
                       IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
             <ScrollView>
             <VerticalStackLayout Spacing="14" Padding="18,14,18,100">
-                <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                <Grid ColumnDefinitions="Auto,*" VerticalOptions="Center">
                     <Border WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeTapped" /></Border.GestureRecognizers>
@@ -41,31 +41,69 @@
                         <Label Text="Accounts" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
                         <Label Text="Wallets, banks and cash in one place" FontSize="12" TextColor="#6F7668" />
                     </VerticalStackLayout>
-                    <Border Grid.Column="2" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="12,8">
-                        <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                        <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding AddAccountCommand}" /></Border.GestureRecognizers>
-                        <Label Text="+ Add" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                    </Border>
+                    <!-- Adding an account moved onto the balance card's pill,
+                         mirroring where the dashboard puts its action. -->
                 </Grid>
 
-                <!-- VISA-style hero (live total) -->
-                <Border Style="{StaticResource HeroCardStyle}">
-                    <VerticalStackLayout Spacing="4">
-                        <HorizontalStackLayout Spacing="8">
-                            <Label Text="VISA" FontSize="16" FontAttributes="Bold" TextColor="White" CharacterSpacing="2" />
-                            <Border Background="{StaticResource FinoraLime}" StrokeThickness="0" Padding="10,4" HorizontalOptions="EndAndExpand">
+                <!-- Balance card: the same one the dashboard shows, so the two
+                     screens do not disagree about how the money is presented. -->
+                <Grid>
+                    <Border Style="{StaticResource HeroCardStyle}" Padding="0" Margin="0,15,0,0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="34" /></Border.StrokeShape>
+                        <Grid ColumnDefinitions="*,54" Padding="20,20,8,20">
+                            <!-- diagonal line texture: single scaled path, so the rotation is never layout-dependent -->
+                            <Path Grid.ColumnSpan="2" Aspect="Fill" Fill="Transparent"
+                                  Stroke="White" StrokeThickness="0.5" Opacity="0.06"
+                                  HorizontalOptions="Fill" VerticalOptions="Fill"
+                                  InputTransparent="True"
+                                  Data="M -60,100 L -2.3,0 M -48.3,100 L 9.4,0 M -36.6,100 L 21.1,0 M -24.9,100 L 32.8,0 M -13.2,100 L 44.5,0 M -1.5,100 L 56.2,0 M 10.2,100 L 67.9,0 M 21.9,100 L 79.6,0 M 33.6,100 L 91.3,0 M 45.3,100 L 103,0 M 57,100 L 114.7,0 M 68.7,100 L 126.4,0 M 80.4,100 L 138.1,0 M 92.1,100 L 149.8,0 M 103.8,100 L 161.5,0" />
+                            <Grid Grid.Column="0">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="VISA" FontSize="13" FontAttributes="Bold" TextColor="White" Opacity="0.85" CharacterSpacing="3" VerticalOptions="Center" />
+                                    <Label Text="Total Balance" FontSize="12" TextColor="White" Opacity="0.65" Margin="0,10,0,0" />
+                                    <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                        <Label Text="₱" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="White" Opacity="0.9" VerticalOptions="End" Margin="0,0,0,3" />
+                                        <Label Text="{Binding TotalBalance.Amount, StringFormat='{0:N2}'}" FontSize="26" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="White" LineBreakMode="NoWrap" VerticalOptions="End" />
+                                    </HorizontalStackLayout>
+                                    <Label Text="**** **** ****  7281" FontSize="13" FontAttributes="Bold" TextColor="White" Opacity="0.9" CharacterSpacing="1" Margin="0,10,0,0" />
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,10,0,0">
+                                        <Label Grid.Column="0" Text="{Binding UserName}" FontSize="11" TextColor="White" Opacity="0.65" LineBreakMode="TailTruncation" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="{Binding AccountCount, StringFormat='{0} accounts'}" FontSize="11" TextColor="{StaticResource FinoraLime}" Opacity="0.9" VerticalOptions="Center" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                                <!-- lime sparkle accents -->
+                                <Polygon Points="10,0 12,8 20,10 12,12 10,20 8,12 0,10 8,8"
+                                         Fill="{StaticResource FinoraLime}"
+                                         WidthRequest="26" HeightRequest="26"
+                                         HorizontalOptions="End" VerticalOptions="Start" Margin="0,26,96,0" />
+                                <Border WidthRequest="7" HeightRequest="7" Background="{StaticResource FinoraLime}" StrokeThickness="0" Opacity="0.8"
+                                        HorizontalOptions="End" VerticalOptions="Start" Margin="0,74,62,0">
+                                    <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                </Border>
+                            </Grid>
+                            <!-- lime contactless bar -->
+                            <Border Grid.Column="1" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraLime}" StrokeThickness="0" WidthRequest="38" VerticalOptions="Fill" Margin="10,20,4,20">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                                <Label Text="{Binding Accounts.Count, StringFormat='{0} cards'}" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                <Path Aspect="Uniform" WidthRequest="20" HeightRequest="20" Data="M 3,4 A 6,6 0 0 1 3,16 M 8,2 A 11,11 0 0 1 8,18 M 13,0 A 16,16 0 0 1 13,20"
+                                      Stroke="{StaticResource FinoraInk}" StrokeThickness="1.6" StrokeLineCap="Round" Fill="Transparent"
+                                      HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
+                        </Grid>
+                    </Border>
+                    <!-- Add account pill straddling the top edge -->
+                    <Border VerticalOptions="Start" HorizontalOptions="End" Margin="0,0,18,0"
+                            Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="12,7">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                        <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding AddAccountCommand}" /></Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Border WidthRequest="20" HeightRequest="20" Background="{StaticResource FinoraInk}" StrokeThickness="0" VerticalOptions="Center">
+                                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                <Label Text="+" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,-2,0,0" />
+                            </Border>
+                            <Label Text="Account" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
                         </HorizontalStackLayout>
-                        <Label Text="Total Balance" FontSize="12" TextColor="White" Opacity="0.7" Margin="0,8,0,0" />
-                        <HorizontalStackLayout Spacing="6">
-                            <Label Text="$" FontSize="20" FontAttributes="Bold" TextColor="White" VerticalOptions="End" Margin="0,0,0,4" />
-                            <Label Text="{Binding TotalBalance.Amount, StringFormat='{0:N2}'}" FontSize="34" FontAttributes="Bold" TextColor="White" />
-                        </HorizontalStackLayout>
-                        <Label Text="●●●●  ●●●●  ●●●●  7281" FontSize="12" FontAttributes="Bold" TextColor="White" Opacity="0.8" />
-                    </VerticalStackLayout>
-                </Border>
+                    </Border>
+                </Grid>
 
                 <!-- Tabs -->
                 <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="6">

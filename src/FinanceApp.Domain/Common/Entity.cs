@@ -80,9 +80,17 @@ public abstract class Entity
     /// <summary>
     /// Adopts server state during pull-merge (last-write-wins).
     /// Marks the row synced so the outbox does not re-push it.
+    /// <para>
+    /// The id is taken rather than assumed because these ids are minted by the
+    /// client and used as the sync key on both sides. An entity built from a server
+    /// row keeps a freshly generated id by default, which means the next sync
+    /// cannot match the row it came from: it builds another copy, pushes that back
+    /// up, and the account multiplies on every sync.
+    /// </para>
     /// </summary>
-    public void AdoptRemoteState(DateTime createdAt, DateTime updatedAt, int version, bool isDeleted)
+    public void AdoptRemoteState(Guid id, DateTime createdAt, DateTime updatedAt, int version, bool isDeleted)
     {
+        Id = id;
         CreatedAt = createdAt;
         UpdatedAt = updatedAt;
         Version = version;
