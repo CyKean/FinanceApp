@@ -19,15 +19,17 @@ public class AccountService : BaseService, IAccountService
     private readonly ITransactionRepository _transactionRepository;
     private readonly IBudgetRepository _budgetRepository;
     private readonly IFinancialGoalRepository _goalRepository;
+    private readonly ICategoryService _categoryService;
     private readonly CreateAccountDtoValidator _createValidator;
     private readonly UpdateAccountDtoValidator _updateValidator;
 
-    public AccountService(
+public AccountService(
         IUnitOfWork unitOfWork,
         IAccountRepository accountRepository,
         ITransactionRepository transactionRepository,
         IBudgetRepository budgetRepository,
         IFinancialGoalRepository goalRepository,
+        ICategoryService categoryService,
         CreateAccountDtoValidator createValidator,
         UpdateAccountDtoValidator updateValidator,
         ILogger<AccountService> logger) : base(unitOfWork, logger)
@@ -36,6 +38,7 @@ public class AccountService : BaseService, IAccountService
         _transactionRepository = transactionRepository;
         _budgetRepository = budgetRepository;
         _goalRepository = goalRepository;
+        _categoryService = categoryService;
         _createValidator = createValidator;
         _updateValidator = updateValidator;
     }
@@ -64,6 +67,14 @@ public class AccountService : BaseService, IAccountService
             isDefault);
 
         await _accountRepository.AddAsync(account, cancellationToken);
+
+        // Default categories are an app default, not demo content, and a user
+        // cannot record anything without one. They used to arrive as a side
+        // effect of the demo seeder, which left a brand new account with no
+        // categories at all once that was switched off. Idempotent, so this is
+        // cheap on every subsequent account.
+        await _categoryService.InitializeDefaultCategoriesAsync(userId, cancellationToken);
+
         await UnitOfWork.SaveChangesAsync(cancellationToken);
 
         Logger.LogInformation("Created account {AccountId} for user {UserId}", account.Id, userId);

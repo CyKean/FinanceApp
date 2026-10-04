@@ -12,9 +12,20 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 /// <summary>
-/// Development-phase demo data seeder. When Database:SeedDemoData is true and the
-/// signed-in user has no accounts and no transactions yet, it populates ~12 months
-/// of realistic PHP data so charts and dashboards are not empty during development.
+/// Demo data seeder - <b>disabled</b>.
+/// <para>
+/// The seeding body is commented out below and Database:SeedDemoData ships as
+/// false. It used to run on every dashboard load and write a few hundred rows of
+/// invented PHP transactions into any account that was merely empty, so a real
+/// user opened the app to a balance and a spending breakdown they had never
+/// entered - and, because those were writes, it also queued sync operations and
+/// uploaded fabricated figures to the backend.
+/// </para>
+/// <para>
+/// The class is kept because <see cref="HasAnyDataAsync"/> is still used to tell
+/// an empty account from one with real data. Uncommenting the body and flipping
+/// the flag is the whole of restoring this.
+/// </para>
 /// </summary>
 public class DevDataSeeder
 {
@@ -29,8 +40,20 @@ public class DevDataSeeder
         _logger = logger;
     }
 
-    public async Task SeedIfEmptyAsync(Guid userId, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// No-op. Demo data is not seeded; see the class remarks.
+    /// </summary>
+    public Task SeedIfEmptyAsync(Guid userId, CancellationToken cancellationToken = default)
     {
+        if (_options.Value.SeedDemoData)
+        {
+            _logger.LogWarning(
+                "Database:SeedDemoData is enabled but demo seeding is disabled in code. Ignoring the flag.");
+        }
+
+        return Task.CompletedTask;
+
+#if false // SEEDING DISABLED
         if (!_options.Value.SeedDemoData)
             return;
 
@@ -120,11 +143,6 @@ public class DevDataSeeder
                 for (var i = 0; i < transportRuns; i++)
                     Add(TransactionType.Expense, rng.Next(40, 351), RandomDay(), cash, transportation, "Jeepney & Grab fare");
 
-                // Shopping, entertainment and health are recorded every month
-                // rather than at random. Trends need at least four months of
-                // spending per category, and anomalies need five transactions
-                // with real variance in one category - random odds left those
-                // sections empty for most seeds.
                 for (var i = 0; i < rng.Next(2, 4); i++)
                     Add(TransactionType.Expense, rng.Next(500, 3001), RandomDay(), ewallet, shopping, "Clothes & gadgets");
 
@@ -135,8 +153,6 @@ public class DevDataSeeder
                     Add(TransactionType.Expense, rng.Next(400, 1801), RandomDay(), cash, health, "Pharmacy & clinic visit");
             }
 
-            // Two deliberate outliers so the anomaly detector has something to
-            // report instead of an empty "Unusual Spending" card.
             Add(TransactionType.Expense, 18500m, MonthStart(1).AddDays(9), bank, entertainment, "Concert tickets");
             Add(TransactionType.Expense, 14200m, MonthStart(2).AddDays(14), bank, shopping, "Laptop replacement");
 
@@ -195,9 +211,6 @@ public class DevDataSeeder
             context.AddRange(recurring);
             await context.SaveChangesAsync(cancellationToken);
 
-            // NOTE: outbox rows for seeded data are intentionally kept - the sync
-            // backfill picks them up so seeds upload like everything else.
-
             _logger.LogInformation(
                 "Seeded demo data for user {UserId}: {Accounts} accounts, {Transactions} transactions, {Budgets} budgets, 2 goals, {Recurring} recurring",
                 userId, accountsById.Count, transactions.Count, budgets.Count, recurring.Count);
@@ -206,6 +219,7 @@ public class DevDataSeeder
         {
             _logger.LogError(ex, "Dev data seeding failed for user {UserId}", userId);
         }
+#endif
     }
 
     /// <summary>

@@ -228,7 +228,10 @@ public partial class PredictionsViewModel : BaseViewModel
             var userId = await _authService.GetCurrentUserIdAsync();
             if (!userId.HasValue) return;
 
-            await Task.Run(() => _devDataSeeder.SeedIfEmptyAsync(userId.Value), CancellationToken.None);
+            // Demo data seeding is disabled, so this button no longer has anything
+            // to do. The whole action is commented out along with the seeder body;
+            // see DevDataSeeder.
+            // await Task.Run(() => _devDataSeeder.SeedIfEmptyAsync(userId.Value), CancellationToken.None);
 
             SetCanLoadSampleData(false);
             await LoadAsync();
