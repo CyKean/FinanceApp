@@ -7,6 +7,7 @@ using FinanceApp.Domain.ValueObjects;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 public partial class TransactionsViewModel : BaseViewModel
@@ -51,7 +52,9 @@ public partial class TransactionsViewModel : BaseViewModel
           TransactionSheetRequest sheetRequest,
           TransactionSheetService transactionSheetService,
           IDialogService dialogService,
+          IServiceScopeFactory scopeFactory,
           ILogger<TransactionsViewModel> logger)
+        : base(scopeFactory)
     {
         _transactionService = transactionService;
         _categoryService = categoryService;
@@ -70,6 +73,10 @@ public partial class TransactionsViewModel : BaseViewModel
     {
         if (IsBusy) return;
 
+        // Shell keeps this page alive, so coming back here should be free unless
+        // something was actually written.
+        if (CanSkipReload()) return;
+
         IsBusy = true;
         ClearError();
         _currentPage = 1;
@@ -80,8 +87,24 @@ public partial class TransactionsViewModel : BaseViewModel
             if (!userId.HasValue) return;
 
             Filter = Filter with { Page = 1, PageSize = PageSize };
-            Transactions = await _transactionService.GetAllAsync(userId.Value, Filter);
-            Summary = await _transactionService.GetSummaryAsync(userId.Value, Filter.StartDate ?? DateTime.Today.AddMonths(-1), Filter.EndDate ?? DateTime.Today);
+
+            var start = Filter.StartDate ?? DateTime.Today.AddMonths(-1);
+            var end = Filter.EndDate ?? DateTime.Today;
+            var filter = Filter;
+
+            var loaded = await QueryOffUiThreadAsync(async services =>
+            {
+                var transactionService = services.GetRequiredService<ITransactionService>();
+
+                return (
+                    await transactionService.GetAllAsync(userId.Value, filter),
+                    await transactionService.GetSummaryAsync(userId.Value, start, end));
+            });
+
+            Transactions = loaded.Item1;
+            Summary = loaded.Item2;
+
+            MarkLoaded();
         }
         catch (Exception ex)
         {
@@ -108,7 +131,12 @@ public partial class TransactionsViewModel : BaseViewModel
 
             _currentPage++;
             Filter = Filter with { Page = _currentPage };
-            var moreTransactions = await _transactionService.GetAllAsync(userId.Value, Filter);
+            var filter = Filter;
+            var page = _currentPage;
+
+            var moreTransactions = await QueryOffUiThreadAsync(services =>
+                services.GetRequiredService<ITransactionService>().GetAllAsync(userId.Value, filter));
+
             Transactions = Transactions.Concat(moreTransactions).ToList();
         }
         catch (Exception ex)
@@ -198,6 +226,9 @@ public partial class TransactionsViewModel : BaseViewModel
     private async Task ApplyFilterAsync()
     {
         IsFilterExpanded = false;
+        // A new filter asks for different rows, so the still-current check does
+        // not apply even though nothing was written.
+        InvalidateLoad();
         await LoadAsync();
     }
 
@@ -206,12 +237,14 @@ public partial class TransactionsViewModel : BaseViewModel
     {
         Filter = new TransactionFilterDto();
         IsFilterExpanded = false;
+        InvalidateLoad();
         await LoadAsync();
     }
 
     [RelayCommand]
     private async Task RefreshAsync()
     {
+        InvalidateLoad();
         await LoadAsync();
     }
 }

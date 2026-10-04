@@ -39,7 +39,10 @@
          rather than nested CollectionViews: nested collections inside a
          ScrollView fight over the vertical drag gesture and each one needs a
          fixed HeightRequest, which is what clipped the lists. -->
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+    <controls:SkeletonForecasts IsVisible="{Binding IsInitialLoading}" />
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+                  IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
         <ScrollView>
             <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
 
@@ -85,13 +88,11 @@
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14">
                             <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
                                 <Label Text="Range" FontSize="12" FontAttributes="Bold" TextColor="White" Opacity="0.7" />
-                                <Label FontSize="13" FontAttributes="Bold" TextColor="White" LineBreakMode="TailTruncation">
-                                    <Label.FormattedString>
-                                        <Span Text="{Binding ExpensePrediction.MinTotal, Converter={StaticResource MoneyConverter}}" />
-                                        <Span Text=" - " />
-                                        <Span Text="{Binding ExpensePrediction.MaxTotal, Converter={StaticResource MoneyConverter}}" />
-                                    </Label.FormattedString>
-                                </Label>
+                                <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                    <Label Text="{Binding ExpensePrediction.MinTotal, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="White" />
+                                    <Label Text="-" FontSize="13" FontAttributes="Bold" TextColor="White" />
+                                    <Label Text="{Binding ExpensePrediction.MaxTotal, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="White" />
+                                </HorizontalStackLayout>
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
@@ -134,13 +135,11 @@
                                             </VerticalStackLayout>
                                             <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
                                                 <Label Text="{Binding PredictedAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource CategoryAmountLabelStyle}" />
-                                                <Label Style="{StaticResource CategoryPercentLabelStyle}">
-                                                    <Label.FormattedString>
-                                                        <Span Text="{Binding MinAmount, Converter={StaticResource MoneyConverter}}" />
-                                                        <Span Text=" - " />
-                                                        <Span Text="{Binding MaxAmount, Converter={StaticResource MoneyConverter}}" />
-                                                    </Label.FormattedString>
-                                                </Label>
+                                                <HorizontalStackLayout Spacing="4" HorizontalOptions="End">
+                                                    <Label Text="{Binding MinAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource CategoryPercentLabelStyle}" />
+                                                    <Label Text="-" Style="{StaticResource CategoryPercentLabelStyle}" />
+                                                    <Label Text="{Binding MaxAmount, Converter={StaticResource MoneyConverter}}" Style="{StaticResource CategoryPercentLabelStyle}" />
+                                                </HorizontalStackLayout>
                                             </VerticalStackLayout>
                                         </HorizontalStackLayout>
                                     </Border>
@@ -176,21 +175,23 @@
                                                 <Label Text="{Binding ChangePercentage, StringFormat='{0:+0.0;-0.0;0}%'}"
                                                        Style="{StaticResource TrendPercentLabelStyle}"
                                                        TextColor="{Binding Trend, Converter={StaticResource TrendToColorConverter}}" />
-                                                <!-- "Current: {Binding ...}" rendered the binding as
-                                                     literal text - a MarkupExtension has to be the
-                                                     whole attribute value, so this is a FormattedString. -->
-                                                <Label Style="{StaticResource TrendCaptionLabelStyle}">
-                                                    <Label.FormattedString>
-                                                        <Span Text="Current: " />
-                                                        <Span Text="{Binding CurrentAverage, Converter={StaticResource MoneyConverter}}" />
-                                                    </Label.FormattedString>
-                                                </Label>
-                                                <Label Style="{StaticResource TrendCaptionLabelStyle}">
-                                                    <Label.FormattedString>
-                                                        <Span Text="Previous: " />
-                                                        <Span Text="{Binding PreviousAverage, Converter={StaticResource MoneyConverter}}" />
-                                                    </Label.FormattedString>
-                                                </Label>
+                                                <!-- "Current: {Binding ...}" rendered the binding as literal
+                                                     text, because a MarkupExtension has to be the whole
+                                                     attribute value. It was worked around with a
+                                                     FormattedString of Spans, which then threw at runtime on
+                                                     Android: "Property FormattedString is null or is not
+                                                     IEnumerable". Debug builds skip XamlC, so that markup is
+                                                     parsed by the runtime loader, which cannot resolve a
+                                                     page-level converter referenced from inside a Span. A row
+                                                     of plain Labels does the same job and parses. -->
+                                                <HorizontalStackLayout Spacing="0">
+                                                    <Label Text="Current: " Style="{StaticResource TrendCaptionLabelStyle}" />
+                                                    <Label Text="{Binding CurrentAverage, Converter={StaticResource MoneyConverter}}" Style="{StaticResource TrendCaptionLabelStyle}" />
+                                                </HorizontalStackLayout>
+                                                <HorizontalStackLayout Spacing="0">
+                                                    <Label Text="Previous: " Style="{StaticResource TrendCaptionLabelStyle}" />
+                                                    <Label Text="{Binding PreviousAverage, Converter={StaticResource MoneyConverter}}" Style="{StaticResource TrendCaptionLabelStyle}" />
+                                                </HorizontalStackLayout>
                                             </VerticalStackLayout>
                                         </HorizontalStackLayout>
                                     </Border>
@@ -322,13 +323,11 @@
                                                 </VerticalStackLayout>
                                                 <VerticalStackLayout Grid.Column="1" Spacing="2">
                                                     <Label Text="Typical Range" Style="{StaticResource AnomalyDetailCaptionStyle}" />
-                                                    <Label Style="{StaticResource AnomalyDetailValueStyle}" LineBreakMode="TailTruncation">
-                                                        <Label.FormattedString>
-                                                            <Span Text="{Binding TypicalMin, Converter={StaticResource MoneyConverter}}" />
-                                                            <Span Text=" - " />
-                                                            <Span Text="{Binding TypicalMax, Converter={StaticResource MoneyConverter}}" />
-                                                        </Label.FormattedString>
-                                                    </Label>
+                                                    <HorizontalStackLayout Spacing="4">
+                                                        <Label Text="{Binding TypicalMin, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AnomalyDetailValueStyle}" />
+                                                        <Label Text="-" Style="{StaticResource AnomalyDetailValueStyle}" />
+                                                        <Label Text="{Binding TypicalMax, Converter={StaticResource MoneyConverter}}" Style="{StaticResource AnomalyDetailValueStyle}" />
+                                                    </HorizontalStackLayout>
                                                 </VerticalStackLayout>
                                                 <VerticalStackLayout Grid.Column="2" Spacing="2">
                                                     <Label Text="Date" Style="{StaticResource AnomalyDetailCaptionStyle}" />

@@ -6,6 +6,7 @@ using FinanceApp.Application.Notifications;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 public partial class NotificationsViewModel : BaseViewModel
@@ -29,7 +30,9 @@ public partial class NotificationsViewModel : BaseViewModel
         INavigationService navigationService,
         INotificationCenter center,
         NotificationWatcher watcher,
+        IServiceScopeFactory scopeFactory,
         ILogger<NotificationsViewModel> logger)
+        : base(scopeFactory)
     {
         _navigationService = navigationService;
         _center = center;
@@ -50,6 +53,10 @@ public partial class NotificationsViewModel : BaseViewModel
     {
         if (IsBusy) return;
 
+        // The centre is a singleton, so this page usually still holds the feed.
+        // Rebuilding it means running the whole prediction pipeline again.
+        if (CanSkipReload()) return;
+
         IsBusy = true;
         ClearError();
 
@@ -57,6 +64,7 @@ public partial class NotificationsViewModel : BaseViewModel
         {
             await _watcher.RefreshAsync();
             Project();
+            MarkLoaded();
         }
         catch (Exception ex)
         {
@@ -70,7 +78,11 @@ public partial class NotificationsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private Task RefreshAsync() => LoadAsync();
+    private async Task RefreshAsync()
+    {
+        InvalidateLoad();
+        await LoadAsync();
+    }
 
     [RelayCommand]
     private void MarkAllRead()

@@ -15,15 +15,21 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:ColorConverter x:Key="ColorConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid>
+        <!-- Suggestions are cards, so they get card-shaped placeholders rather
+             than the row skeleton. -->
+        <controls:SkeletonBudgetIdeas IsVisible="{Binding IsInitialLoading}" />
+
         <!-- A RefreshView only scrolls when its content is scrollable. The
              suggestion list is a BindableLayout (a CollectionView cannot live
              inside a RefreshView without gesture conflicts), so the content is
              wrapped in a ScrollView to make the whole page scroll. -->
-        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+                      IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
             <ScrollView>
             <VerticalStackLayout Spacing="16" Padding="20,16,20,28">
 

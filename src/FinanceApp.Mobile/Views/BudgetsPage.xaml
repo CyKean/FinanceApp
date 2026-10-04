@@ -22,7 +22,8 @@
     </ContentPage.Resources>
 
     <Grid>
-    <controls:SkeletonView IsVisible="{Binding IsInitialLoading}" RowCount="5" Margin="18,18,18,0" />
+    <!-- Budget rows carry a spending-progress line under the text. -->
+    <controls:SkeletonBudgets IsVisible="{Binding IsInitialLoading}" />
 
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
                   IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">

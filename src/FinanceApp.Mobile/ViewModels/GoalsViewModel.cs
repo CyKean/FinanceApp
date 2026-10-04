@@ -7,6 +7,7 @@ using FinanceApp.Domain.ValueObjects;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 public partial class GoalsViewModel : BaseViewModel
@@ -42,7 +43,9 @@ public partial class GoalsViewModel : BaseViewModel
         INavigationService navigationService,
         IDialogService dialogService,
         GoalHistoryStore historyStore,
+        IServiceScopeFactory scopeFactory,
         ILogger<GoalsViewModel> logger)
+        : base(scopeFactory)
     {
         _goalService = goalService;
         _accountService = accountService;
@@ -70,6 +73,8 @@ public partial class GoalsViewModel : BaseViewModel
     {
         if (IsBusy) return;
 
+        if (CanSkipReload()) return;
+
         IsBusy = true;
         ClearError();
 
@@ -78,8 +83,20 @@ public partial class GoalsViewModel : BaseViewModel
             var userId = await _authService.GetCurrentUserIdAsync();
             if (!userId.HasValue) return;
 
-            Goals = await _goalService.GetAllAsync(userId.Value);
-            History = await _historyStore.GetAllAsync(userId.Value);
+            var loaded = await QueryOffUiThreadAsync(async services =>
+            {
+                var goalService = services.GetRequiredService<IFinancialGoalService>();
+                var historyStore = services.GetRequiredService<GoalHistoryStore>();
+
+                return (
+                    await goalService.GetAllAsync(userId.Value),
+                    await historyStore.GetAllAsync(userId.Value));
+            });
+
+            Goals = loaded.Item1;
+            History = loaded.Item2;
+
+            MarkLoaded();
         }
         catch (Exception ex)
         {
@@ -208,6 +225,7 @@ public partial class GoalsViewModel : BaseViewModel
     [RelayCommand]
     private async Task RefreshAsync()
     {
+        InvalidateLoad();
         await LoadAsync();
     }
 }

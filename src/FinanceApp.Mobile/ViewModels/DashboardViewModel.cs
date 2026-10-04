@@ -8,6 +8,7 @@ using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 public partial class DashboardViewModel : BaseViewModel
@@ -21,6 +22,7 @@ public partial class DashboardViewModel : BaseViewModel
     private readonly INotificationCenter _notificationCenter;
     private readonly NotificationWatcher _notificationWatcher;
     private readonly ILogger<DashboardViewModel> _logger;
+    private readonly IServiceScopeFactory _scopeFactory;
 
     [ObservableProperty]
     private int _unreadNotifications;
@@ -70,7 +72,9 @@ public partial class DashboardViewModel : BaseViewModel
         DevDataSeeder devDataSeeder,
         INotificationCenter notificationCenter,
         NotificationWatcher notificationWatcher,
+        IServiceScopeFactory scopeFactory,
         ILogger<DashboardViewModel> logger)
+        : base(scopeFactory)
     {
         _dashboardService = dashboardService;
         _authService = authService;
@@ -80,17 +84,29 @@ public partial class DashboardViewModel : BaseViewModel
         _devDataSeeder = devDataSeeder;
         _notificationCenter = notificationCenter;
         _notificationWatcher = notificationWatcher;
+        _scopeFactory = scopeFactory;
         _logger = logger;
         Title = "Dashboard";
 
         UnreadNotifications = _notificationCenter.UnreadCount;
-        _notificationCenter.Changed += OnNotificationsChanged;
     }
+
+    /// <summary>
+    /// Subscribes to badge changes. The centre is a singleton and this view model
+    /// is not, so subscribing in the constructor leaks a handler per instance.
+    /// </summary>
+    public void Attach() => _notificationCenter.Changed += OnNotificationsChanged;
+
+    public void Detach() => _notificationCenter.Changed -= OnNotificationsChanged;
 
     [RelayCommand]
     private async Task LoadAsync()
     {
         if (IsBusy) return;
+
+        // A tab tap back to the dashboard should be instant. Shell keeps this page
+        // alive, so the data is still here unless something wrote since.
+        if (CanSkipReload()) return;
 
         IsBusy = true;
         ClearError();
@@ -108,19 +124,38 @@ public partial class DashboardViewModel : BaseViewModel
                 return;
             }
 
-            await _devDataSeeder.SeedIfEmptyAsync(userId.Value);
+            var dashboard = await QueryOffUiThreadAsync(async services =>
+            {
+                // Demo data seeding is disabled. It ran on every dashboard load
+                // and wrote a few hundred rows into a brand new account, so a
+                // real user saw figures they never entered - and, being writes,
+                // they also queued sync operations for data the user did not
+                // create.
+                //
+                // Still reachable on purpose from Forecasts and Budget Ideas via
+                // their explicit "load sample data" action, which is a user
+                // decision rather than something the app does behind their back.
+                //
+                // var seeder = services.GetRequiredService<DevDataSeeder>();
+                // await seeder.SeedIfEmptyAsync(userId.Value);
 
-            Dashboard = await _dashboardService.GetDashboardAsync(userId.Value);
+                var dashboardService = services.GetRequiredService<IDashboardService>();
+                return await dashboardService.GetDashboardAsync(userId.Value);
+            });
 
-            TotalBalance = Dashboard.TotalBalance;
-            TotalIncome = Dashboard.TotalIncome;
-            TotalExpense = Dashboard.TotalExpense;
-            NetAmount = Dashboard.NetAmount;
-            SavingsRate = Dashboard.SavingsRate;
-            RecentTransactions = Dashboard.RecentTransactions.Take(4).ToList();
-            SpendingByCategory = Dashboard.SpendingByCategory;
-            ActiveBudgets = Dashboard.ActiveBudgets;
-            ActiveGoals = Dashboard.ActiveGoals;
+            Dashboard = dashboard;
+
+            TotalBalance = dashboard.TotalBalance;
+            TotalIncome = dashboard.TotalIncome;
+            TotalExpense = dashboard.TotalExpense;
+            NetAmount = dashboard.NetAmount;
+            SavingsRate = dashboard.SavingsRate;
+            RecentTransactions = dashboard.RecentTransactions.Take(4).ToList();
+            SpendingByCategory = dashboard.SpendingByCategory;
+            ActiveBudgets = dashboard.ActiveBudgets;
+            ActiveGoals = dashboard.ActiveGoals;
+
+            MarkLoaded();
 
             // Keep the bell badge and any new alerts current on the landing page.
             await _notificationWatcher.RefreshAsync();
@@ -226,6 +261,9 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task RefreshAsync()
     {
+        // Pull-to-refresh is an explicit request to re-read, so it must not be
+        // short-circuited by the still-current data check.
+        InvalidateLoad();
         await LoadAsync();
     }
 }

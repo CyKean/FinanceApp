@@ -22,8 +22,7 @@
     </ContentPage.Resources>
 
     <Grid>
-        <controls:SkeletonView IsVisible="{Binding IsInitialLoading}" RowCount="6"
-                               RowHeight="64" HasLeadingCircle="False" Margin="18,18,18,0" />
+        <controls:SkeletonCalendar IsVisible="{Binding IsInitialLoading}" />
 
         <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
                       IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">

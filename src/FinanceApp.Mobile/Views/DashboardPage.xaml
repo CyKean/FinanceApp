@@ -23,11 +23,11 @@
     </ContentPage.Resources>
 
     <Grid>
-        <!-- The dashboard is the landing page, so its first paint is the one the
-             user always sees. Taller rows, no leading circle: it is cards, not a
-             list. -->
-        <controls:SkeletonView IsVisible="{Binding IsInitialLoading}" RowCount="4"
-                               RowHeight="96" HasLeadingCircle="False" Margin="18,18,18,0" />
+        <!-- Section-for-section mirror of this page: hero card, quick actions, recent
+             activity rows, savings/budgets pair, category donut. A generic row
+             skeleton still jumped, because the real dashboard is none of those
+             things. -->
+        <controls:SkeletonDashboard IsVisible="{Binding IsInitialLoading}" />
 
         <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
                       IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">

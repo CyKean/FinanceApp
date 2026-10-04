@@ -96,13 +96,29 @@ public partial class FinoraIconView : ContentView
         Refresh();
     }
 
+    /// <summary>
+    /// The icon key this instance last parsed.
+    /// <para>
+    /// Every one of the seven bindable properties calls Refresh, and setting them
+    /// from XAML means a full SVG-path tokenize per property per list row - on the
+    /// UI thread, while a list is being realised. Parsing is only skipped when the
+    /// resolved key is unchanged, so the geometry instance still belongs to this
+    /// control alone: sharing one across Path elements is what breaks Android.
+    /// </para>
+    /// </summary>
+    private string? _parsedKey;
+
     private void Refresh()
     {
         if (Badge == null || Glyph == null)
             return;
 
         var key = FinoraIcons.Resolve(Icon, Name, IconKey);
-        Glyph.Data = FinoraIcons.GetGeometry(key);
+        if (!string.Equals(key, _parsedKey, StringComparison.Ordinal))
+        {
+            _parsedKey = key;
+            Glyph.Data = FinoraIcons.GetGeometry(key);
+        }
 
         var accent = Accent;
         Glyph.Stroke = accent is not null ? ContrastOn(accent) : Light ? Ink : Colors.White;

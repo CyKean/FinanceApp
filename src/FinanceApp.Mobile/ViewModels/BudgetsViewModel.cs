@@ -7,6 +7,7 @@ using FinanceApp.Domain.ValueObjects;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 public partial class BudgetsViewModel : BaseViewModel
@@ -32,7 +33,9 @@ public partial class BudgetsViewModel : BaseViewModel
         IAuthenticationService authService,
         INavigationService navigationService,
         IDialogService dialogService,
+        IServiceScopeFactory scopeFactory,
         ILogger<BudgetsViewModel> logger)
+        : base(scopeFactory)
     {
         _budgetService = budgetService;
         _categoryService = categoryService;
@@ -48,6 +51,8 @@ public partial class BudgetsViewModel : BaseViewModel
     {
         if (IsBusy) return;
 
+        if (CanSkipReload()) return;
+
         IsBusy = true;
         ClearError();
 
@@ -56,7 +61,11 @@ public partial class BudgetsViewModel : BaseViewModel
             var userId = await _authService.GetCurrentUserIdAsync();
             if (!userId.HasValue) return;
 
-            Budgets = await _budgetService.GetActiveAsync(userId.Value, CurrentMonth);
+            var asOf = CurrentMonth;
+            Budgets = await QueryOffUiThreadAsync(services =>
+                services.GetRequiredService<IBudgetService>().GetActiveAsync(userId.Value, asOf));
+
+            MarkLoaded();
         }
         catch (Exception ex)
         {
@@ -153,6 +162,7 @@ public partial class BudgetsViewModel : BaseViewModel
     [RelayCommand]
     private async Task RefreshAsync()
     {
+        InvalidateLoad();
         await LoadAsync();
     }
 }

@@ -6,6 +6,7 @@ using FinanceApp.Domain.ValueObjects;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 public partial class CalendarViewModel : BaseViewModel
@@ -42,7 +43,9 @@ public partial class CalendarViewModel : BaseViewModel
         IAuthenticationService authService,
         INavigationService navigationService,
         IDialogService dialogService,
+        IServiceScopeFactory scopeFactory,
         ILogger<CalendarViewModel> logger)
+        : base(scopeFactory)
     {
         _dashboardService = dashboardService;
         _authService = authService;
@@ -60,6 +63,8 @@ public partial class CalendarViewModel : BaseViewModel
     {
         if (IsBusy) return;
 
+        if (CanSkipReload()) return;
+
         IsBusy = true;
         ClearError();
 
@@ -71,7 +76,11 @@ public partial class CalendarViewModel : BaseViewModel
             var startOfMonth = new DateTime(SelectedMonth.Year, SelectedMonth.Month, 1);
             var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
-            Events = await _dashboardService.GetCalendarEventsAsync(userId.Value, startOfMonth, endOfMonth, cancellationToken: default);
+            Events = await QueryOffUiThreadAsync(services =>
+                services.GetRequiredService<IDashboardService>().GetCalendarEventsAsync(
+                    userId.Value, startOfMonth, endOfMonth, cancellationToken: default));
+
+            MarkLoaded();
 
             // Preselect today (or keep the current selection) so the day list is never empty by surprise.
             var target = SelectedDate ?? DateTime.Today;
@@ -132,6 +141,7 @@ public partial class CalendarViewModel : BaseViewModel
     [RelayCommand]
     private async Task RefreshAsync()
     {
+        InvalidateLoad();
         await LoadAsync();
     }
 

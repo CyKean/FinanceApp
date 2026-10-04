@@ -7,6 +7,7 @@ using FinanceApp.Domain.ValueObjects;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 public partial class CategoriesViewModel : BaseViewModel
@@ -33,7 +34,9 @@ public partial class CategoriesViewModel : BaseViewModel
         IAuthenticationService authService,
         INavigationService navigationService,
         IDialogService dialogService,
+        IServiceScopeFactory scopeFactory,
         ILogger<CategoriesViewModel> logger)
+        : base(scopeFactory)
     {
         _categoryService = categoryService;
         _authService = authService;
@@ -48,6 +51,8 @@ public partial class CategoriesViewModel : BaseViewModel
     {
         if (IsBusy) return;
 
+        if (CanSkipReload()) return;
+
         IsBusy = true;
         ClearError();
 
@@ -56,8 +61,19 @@ public partial class CategoriesViewModel : BaseViewModel
             var userId = await _authService.GetCurrentUserIdAsync();
             if (!userId.HasValue) return;
 
-            ExpenseCategories = await _categoryService.GetActiveByTypeAsync(userId.Value, CategoryType.Expense);
-            IncomeCategories = await _categoryService.GetActiveByTypeAsync(userId.Value, CategoryType.Income);
+            var loaded = await QueryOffUiThreadAsync(async services =>
+            {
+                var categoryService = services.GetRequiredService<ICategoryService>();
+
+                return (
+                    await categoryService.GetActiveByTypeAsync(userId.Value, CategoryType.Expense),
+                    await categoryService.GetActiveByTypeAsync(userId.Value, CategoryType.Income));
+            });
+
+            ExpenseCategories = loaded.Item1;
+            IncomeCategories = loaded.Item2;
+
+            MarkLoaded();
         }
         catch (Exception ex)
         {
@@ -191,6 +207,7 @@ public partial class CategoriesViewModel : BaseViewModel
     [RelayCommand]
     private async Task RefreshAsync()
     {
+        InvalidateLoad();
         await LoadAsync();
     }
 

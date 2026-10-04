@@ -65,9 +65,18 @@ public sealed class NotificationWatcher : IDisposable
 
             // Scoped per refresh, same as the sync worker, so the feed never
             // holds a DbContext for the lifetime of the app.
-            using var scope = _services.CreateScope();
-            var feedBuilder = scope.ServiceProvider.GetRequiredService<INotificationFeedBuilder>();
-            var items = await feedBuilder.BuildAsync(userId.Value, cancellationToken);
+            //
+            // And on a worker, because building the feed runs the prediction
+            // pipeline, which is dozens of SQLite reads. Awaited inline this
+            // blocked the UI thread on every dashboard load - the dashboard calls
+            // RefreshAsync at the end of its own load - as well as on the
+            // five-minute poll.
+            var items = await Task.Run(async () =>
+            {
+                using var scope = _services.CreateScope();
+                var feedBuilder = scope.ServiceProvider.GetRequiredService<INotificationFeedBuilder>();
+                return await feedBuilder.BuildAsync(userId.Value, cancellationToken);
+            }, cancellationToken);
 
             Announce(_center.Publish(items));
         }

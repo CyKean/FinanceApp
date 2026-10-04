@@ -14,6 +14,7 @@ public partial class DashboardPage : ContentPage
     {
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
+
         QuickAIIcon.Data = FinoraIcons.GetGeometry("bulb");
         QuickStatsIcon.Data = FinoraIcons.GetGeometry("chart");
         QuickForecastIcon.Data = FinoraIcons.GetGeometry("forecast");
@@ -23,6 +24,10 @@ public partial class DashboardPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+
+        // Paired with Detach below: the notification centre is a singleton, so a
+        // subscription taken in the view model constructor outlives the page.
+        _viewModel.Attach();
 
         // The add sheet is an overlay, so there is no navigation to trigger a
         // reload — refresh when it reports a saved transaction instead.
@@ -42,6 +47,7 @@ public partial class DashboardPage : ContentPage
         base.OnDisappearing();
         _sheetService?.Saved -= OnTransactionSaved;
         _sheetService = null;
+        _viewModel.Detach();
     }
 
     private async void OnTransactionSaved()

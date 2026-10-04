@@ -203,6 +203,12 @@ public class AuthenticationService : IAuthenticationService
         await ClearStoredSessionAsync(cancellationToken);
         AuthStateChanged?.Invoke(new AuthStateChangedEventArgs(false, null, null));
 
+        // The shell is a singleton, so pages - and the data cached on their view
+        // models - outlive the session. Without this the next sign-in could be
+        // short-circuited as "still current" and the previous user's figures would
+        // be sitting on screen.
+        FinanceApp.Application.SyncNotifications.RaiseDataChanged();
+
         _logger.LogInformation("Signed out {Email}", email);
 
         // Detached so signing out is instant offline. Clearing the stored session

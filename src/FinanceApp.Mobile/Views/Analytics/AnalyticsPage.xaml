@@ -17,10 +17,8 @@
     </ContentPage.Resources>
 
     <Grid>
-    <!-- Card-shaped placeholders: this page is summary cards and charts, so the
-         list-row skeleton used elsewhere would misrepresent what is loading. -->
-    <controls:SkeletonView IsVisible="{Binding IsInitialLoading}" RowCount="4"
-                           RowHeight="110" HasLeadingCircle="False" Margin="18,18,18,0" />
+    <!-- Four stat tiles then the charts in page order. -->
+    <controls:SkeletonAnalytics IsVisible="{Binding IsInitialLoading}" />
 
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
                   IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">

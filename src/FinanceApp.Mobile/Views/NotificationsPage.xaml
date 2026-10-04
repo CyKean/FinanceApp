@@ -57,8 +57,10 @@
             </Border>
         </VerticalStackLayout>
 
-        <!-- Row 1 so the header stays put and only the feed is replaced. -->
-        <controls:SkeletonView Grid.Row="1" IsVisible="{Binding IsInitialLoading}" RowCount="6" Margin="18,12,18,0" />
+        <!-- Row 1 so the header stays put and only the feed is replaced. Alerts are
+             text-forward, so no leading avatar on those rows. -->
+        <controls:SkeletonView Grid.Row="1" IsVisible="{Binding IsInitialLoading}" RowCount="6"
+                               RowHeight="84" HasLeadingCircle="False" HasTrailingValue="True" Margin="18,12,18,0" />
 
         <RefreshView Grid.Row="1" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
                      IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">

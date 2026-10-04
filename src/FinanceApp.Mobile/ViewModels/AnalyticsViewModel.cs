@@ -6,6 +6,7 @@ using FinanceApp.Domain.ValueObjects;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 public partial class AnalyticsViewModel : BaseViewModel
@@ -36,7 +37,9 @@ public partial class AnalyticsViewModel : BaseViewModel
         IAuthenticationService authService,
         INavigationService navigationService,
         IDialogService dialogService,
+        IServiceScopeFactory scopeFactory,
         ILogger<AnalyticsViewModel> logger)
+        : base(scopeFactory)
     {
         _dashboardService = dashboardService;
         _authService = authService;
@@ -51,6 +54,8 @@ public partial class AnalyticsViewModel : BaseViewModel
     {
         if (IsBusy) return;
 
+        if (CanSkipReload()) return;
+
         IsBusy = true;
         ClearError();
 
@@ -59,7 +64,12 @@ public partial class AnalyticsViewModel : BaseViewModel
             var userId = await _authService.GetCurrentUserIdAsync();
             if (!userId.HasValue) return;
 
-            Analytics = await _dashboardService.GetAnalyticsAsync(userId.Value, SelectedMonths, CancellationToken.None);
+            var months = SelectedMonths;
+
+            Analytics = await QueryOffUiThreadAsync(services =>
+                services.GetRequiredService<IDashboardService>().GetAnalyticsAsync(userId.Value, months, CancellationToken.None));
+
+            MarkLoaded();
         }
         catch (Exception ex)
         {
@@ -75,6 +85,7 @@ public partial class AnalyticsViewModel : BaseViewModel
     [RelayCommand]
     private async Task RefreshAsync()
     {
+        InvalidateLoad();
         await LoadAsync();
     }
 

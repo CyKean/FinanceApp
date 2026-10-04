@@ -7,6 +7,7 @@ using FinanceApp.Domain.ValueObjects;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 public partial class AccountsViewModel : BaseViewModel
@@ -40,7 +41,9 @@ public partial class AccountsViewModel : BaseViewModel
         INavigationService navigationService,
         IDialogService dialogService,
         AccountHistoryStore historyStore,
+        IServiceScopeFactory scopeFactory,
         ILogger<AccountsViewModel> logger)
+        : base(scopeFactory)
     {
         _accountService = accountService;
         _authService = authService;
@@ -67,6 +70,9 @@ public partial class AccountsViewModel : BaseViewModel
     {
         if (IsBusy) return;
 
+        // Returning to this tab should not re-read anything if nothing changed.
+        if (CanSkipReload()) return;
+
         IsBusy = true;
         ClearError();
 
@@ -75,9 +81,22 @@ public partial class AccountsViewModel : BaseViewModel
             var userId = await _authService.GetCurrentUserIdAsync();
             if (!userId.HasValue) return;
 
-            Accounts = await _accountService.GetAllAsync(userId.Value);
-            TotalBalance = await _accountService.GetTotalBalanceAsync(userId.Value);
-            History = await _historyStore.GetAllAsync(userId.Value);
+            var loaded = await QueryOffUiThreadAsync(async services =>
+            {
+                var accountService = services.GetRequiredService<IAccountService>();
+                var historyStore = services.GetRequiredService<AccountHistoryStore>();
+
+                return (
+                    await accountService.GetAllAsync(userId.Value),
+                    await accountService.GetTotalBalanceAsync(userId.Value),
+                    await historyStore.GetAllAsync(userId.Value));
+            });
+
+            Accounts = loaded.Item1;
+            TotalBalance = loaded.Item2;
+            History = loaded.Item3;
+
+            MarkLoaded();
         }
         catch (Exception ex)
         {
@@ -198,6 +217,7 @@ public partial class AccountsViewModel : BaseViewModel
     [RelayCommand]
     private async Task RefreshAsync()
     {
+        InvalidateLoad();
         await LoadAsync();
     }
 }
