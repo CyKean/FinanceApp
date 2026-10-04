@@ -111,3 +111,31 @@ FinanceApp.slnx
 ```
 dotnet test tests/FinanceApp.UnitTests/FinanceApp.UnitTests.csproj
 ```
+
+### Android release signing
+
+Release builds are signed with the production key, and that key must never change:
+if it does, no later APK can update an already-installed Finora. The keystore and
+its passwords are deliberately **not** in this repository. Supply them as
+environment variables before building:
+
+```
+set FinoraKeyStorePath=C:\path\to\finora-release.keystore
+set FinoraKeyAlias=finora
+set FinoraKeyStorePassword=<store password>
+set FinoraKeyPassword=<key password>
+```
+
+Then build the signed APK:
+
+```
+dotnet publish src/FinanceApp.Mobile/FinanceApp.Mobile.csproj -f net10.0-android -c Release
+```
+
+If those variables are missing, the Release build fails on purpose rather than
+falling back to the shared debug key.
+
+Release APKs are published through GitHub Releases. To cut a release, bump
+`ApplicationDisplayVersion` and `ApplicationVersion` in
+`src/FinanceApp.Mobile/FinanceApp.Mobile.csproj`, then tag the matching commit
+`vMAJOR.MINOR.PATCH`.

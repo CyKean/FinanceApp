@@ -26,7 +26,7 @@
 		<ApplicationId>com.financeapp.mobile</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
@@ -77,6 +77,43 @@
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug' And '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'android'">
 		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
 	</PropertyGroup>
+
+	<!-- Android Release signing.
+
+	     Credentials come from environment variables (FinoraKeyStorePath, FinoraKeyAlias,
+	     FinoraKeyStorePassword, FinoraKeyPassword) so the keystore and its passwords
+	     never enter the repository. If they are absent, the build fails below instead
+	     of falling back to the shared debug key, which would produce an APK that can
+	     never be updated by a properly signed release.
+
+	     Losing this key means no later Finora APK can update an installed Finora, so
+	     back the keystore up somewhere safe before the first release. -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' And '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'android'">
+		<AndroidKeyStore>true</AndroidKeyStore>
+		<AndroidSigningKeyStore>$(FinoraKeyStorePath)</AndroidSigningKeyStore>
+		<AndroidSigningStorePass>$(FinoraKeyStorePassword)</AndroidSigningStorePass>
+		<AndroidSigningKeyAlias>$(FinoraKeyAlias)</AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass>$(FinoraKeyPassword)</AndroidSigningKeyPass>
+	</PropertyGroup>
+
+	<Target Name="RequireFinoraReleaseSigningCredentials"
+					BeforeTargets="Build;Publish"
+					Condition="'$(Configuration)' == 'Release' And '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'android'">
+		<Error Condition="'$(FinoraKeyStorePath)' == '' Or '$(FinoraKeyAlias)' == '' Or '$(FinoraKeyStorePassword)' == '' Or '$(FinoraKeyPassword)' == ''"
+					   Text="Release Android builds must be signed with the production key. Set the environment variables FinoraKeyStorePath, FinoraKeyAlias, FinoraKeyStorePassword and FinoraKeyPassword (see README, 'Android release signing') and rebuild." />
+		<Error Condition="!Exists('$(FinoraKeyStorePath)')"
+					   Text="The keystore '$(FinoraKeyStorePath)' does not exist. Restore the production keystore for this repository." />
+	</Target>
+
+	<!-- The Android SDK falls back to the shared debug key unless AndroidKeyStore is
+	     exactly 'True', and it does so without a warning. Catch that here rather than
+	     shipping an APK signed by a key that no user will ever be able to update from. -->
+	<Target Name="RejectDebugKeySignedAndroidRelease"
+					AfterTargets="_ResolveAndroidSigningKey"
+					Condition="'$(Configuration)' == 'Release' And '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'android'">
+		<Error Condition="'$(_ApkDebugKeyStore)' != '' And '$(_ApkKeyStore)' == '$(_ApkDebugKeyStore)'"
+					   Text="This Release Android build resolved to the shared Android debug keystore instead of the Finora production key. Check the AndroidKeyStore/AndroidSigning* properties in FinanceApp.Mobile.csproj." />
+	</Target>
 
 	<ItemGroup>
 		<!-- App Icon: lime tile with the growth curve cut out of it, on ink -->

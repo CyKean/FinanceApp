@@ -53,6 +53,9 @@ public class BudgetService : BaseService, IBudgetService
         if (category.UserId != userId)
             throw new DomainExceptions.NotFoundException("Category", dto.CategoryId.Value);
 
+        if (category.Type != CategoryType.Expense)
+            throw new DomainExceptions.ValidationException("Budgets can only be created for expense categories", "BUDGET_CATEGORY_NOT_EXPENSE");
+
         var existingBudget = await _budgetRepository.GetActiveForCategoryAsync(userId, dto.CategoryId, dto.StartDate, cancellationToken);
         if (existingBudget != null)
             throw new DomainExceptions.ValidationException("An active budget already exists for this category in the selected period", "BUDGET_EXISTS");
@@ -289,7 +292,7 @@ public class BudgetService : BaseService, IBudgetService
         var previous = budget.SpentAmount;
 
         budget.ResetSpending();
-        budget.AddSpending(spent);
+        budget.AddSpending(spent ?? Money.Zero(budget.Amount.Currency));
 
         return budget.SpentAmount != previous;
     }

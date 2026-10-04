@@ -370,3 +370,10 @@ FodyWeavers.xsd
 # Supabase CLI local state. .temp/pooler-url is a postgres:// URI with an
 # inline database password, so this must never be committed.
 supabase/
+
+# Android signing material. The production keystore is the only thing that can
+# sign an update to an installed Finora, so it must never be committed.
+*.keystore
+*.jks
+*.p12
+android-signing/
