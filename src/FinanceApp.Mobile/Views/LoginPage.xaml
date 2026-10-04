@@ -30,6 +30,16 @@
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Spacing="0" Padding="22,8,22,28">
+
+                <!-- Restoring a remembered session. Holds the whole screen until
+                     the check finishes so the form never flashes before the app
+                     redirects to the dashboard. -->
+                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsRestoringSession}" VerticalOptions="Center" Margin="0,60,0,0">
+                    <ActivityIndicator IsRunning="{Binding IsRestoringSession}" Color="{StaticResource FinoraInk}" HeightRequest="34" />
+                    <Label Text="Restoring your session…" FontSize="14" TextColor="{StaticResource FinoraMuted}" HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="0" IsVisible="{Binding IsRestoringSession, Converter={StaticResource InverseBoolConverter}}">
                 <!-- Doodle hero. Laid out with real rows/columns: the previous
                      version absolutely positioned everything inside a fixed-height
                      Grid and the children were clipped out of existence. -->
@@ -152,6 +162,7 @@
                         <Button Text="Have an account? Login" Command="{Binding ToggleModeCommand}" IsVisible="{Binding IsRegisterMode}" Style="{StaticResource OutlineButtonStyle}" />
                     </VerticalStackLayout>
                 </Border>
+                </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>
 

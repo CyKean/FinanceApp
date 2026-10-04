@@ -30,6 +30,18 @@ public partial class LoginViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isRememberMe = true;
 
+    /// <summary>
+    /// True from launch until the remembered session has been resolved.
+    /// <para>
+    /// Restoring a session is not instant - it reads the secure store and, if
+    /// Supabase is configured, may go to the network. Without this the login form
+    /// flashes up for a frame or two before the app silently redirects to the
+    /// dashboard, which reads as a glitch on every cold start.
+    /// </para>
+    /// </summary>
+    [ObservableProperty]
+    private bool _isRestoringSession = true;
+
     public LoginViewModel(
         IAuthenticationService authService,
         INavigationService navigationService,
@@ -112,20 +124,27 @@ public partial class LoginViewModel : BaseViewModel
     /// </summary>
     public async Task<bool> CheckSavedSessionAsync()
     {
+        bool authenticated;
         try
         {
-            if (await _authService.IsAuthenticatedAsync())
-            {
-                await _navigationService.NavigateToAsync("//Dashboard");
-                return true;
-            }
+            authenticated = await _authService.IsAuthenticatedAsync();
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Saved session check failed");
+            authenticated = false;
         }
 
-        return false;
+        if (!authenticated)
+        {
+            IsRestoringSession = false;
+            return false;
+        }
+
+        // Deliberately left true: the shell is navigating away, and flipping it
+        // now would flash the login form on the way out.
+        await _navigationService.NavigateToAsync("//Dashboard");
+        return true;
     }
 
     private bool ValidateInput()

@@ -10,7 +10,20 @@
              Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource FinoraCream}">
 
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+    <!-- Card-shaped placeholders: this page is summary cards and charts, so the
+         list-row skeleton used elsewhere would misrepresent what is loading. -->
+    <controls:SkeletonView IsVisible="{Binding IsInitialLoading}" RowCount="4"
+                           RowHeight="110" HasLeadingCircle="False" Margin="18,18,18,0" />
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+                  IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
         <ScrollView>
             <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
 
@@ -240,4 +253,5 @@
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>
+    </Grid>
 </ContentPage>

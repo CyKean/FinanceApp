@@ -18,11 +18,19 @@
             <converters:TransactionTypeToColorConverter x:Key="TransactionTypeColorConverter" />
             <converters:CategoryInitialConverter x:Key="InitialConverter" />
             <converters:CountToBoolConverter x:Key="CountToBoolConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid>
-        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <!-- The dashboard is the landing page, so its first paint is the one the
+             user always sees. Taller rows, no leading circle: it is cards, not a
+             list. -->
+        <controls:SkeletonView IsVisible="{Binding IsInitialLoading}" RowCount="4"
+                               RowHeight="96" HasLeadingCircle="False" Margin="18,18,18,0" />
+
+        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+                      IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
             <ScrollView>
                 <VerticalStackLayout Spacing="14" Padding="18,14,18,100">
                     <!-- Header -->

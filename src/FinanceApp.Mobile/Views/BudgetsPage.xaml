@@ -22,7 +22,10 @@
     </ContentPage.Resources>
 
     <Grid>
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+    <controls:SkeletonView IsVisible="{Binding IsInitialLoading}" RowCount="5" Margin="18,18,18,0" />
+
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+                  IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
         <ScrollView>
         <VerticalStackLayout Spacing="14" Padding="18,14,18,100">
             <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">

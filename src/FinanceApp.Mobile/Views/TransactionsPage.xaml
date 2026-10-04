@@ -23,7 +23,12 @@
     </ContentPage.Resources>
 
     <Grid>
-        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <!-- First load only. A refresh keeps the rows already on screen, because
+             blanking a populated list reads as data loss. -->
+        <controls:SkeletonView IsVisible="{Binding IsInitialLoading}" RowCount="7" Margin="18,18,18,0" />
+
+        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+                      IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
             <CollectionView ItemsSource="{Binding Transactions}"
                             SelectionMode="None"
                             RemainingItemsThreshold="5"

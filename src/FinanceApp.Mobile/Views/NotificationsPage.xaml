@@ -57,7 +57,11 @@
             </Border>
         </VerticalStackLayout>
 
-        <RefreshView Grid.Row="1" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+        <!-- Row 1 so the header stays put and only the feed is replaced. -->
+        <controls:SkeletonView Grid.Row="1" IsVisible="{Binding IsInitialLoading}" RowCount="6" Margin="18,12,18,0" />
+
+        <RefreshView Grid.Row="1" Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+                     IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
             <ScrollView>
                 <VerticalStackLayout Spacing="10" Padding="18,4,18,20">
 

@@ -21,7 +21,12 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+    <Grid>
+        <controls:SkeletonView IsVisible="{Binding IsInitialLoading}" RowCount="6"
+                               RowHeight="64" HasLeadingCircle="False" Margin="18,18,18,0" />
+
+        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+                      IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
         <ScrollView>
         <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
             <!-- Header -->
@@ -137,4 +142,5 @@
         </VerticalStackLayout>
         </ScrollView>
     </RefreshView>
+    </Grid>
 </ContentPage>
