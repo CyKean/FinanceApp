@@ -72,14 +72,25 @@ public static class DatabaseInitializer
 
             // Balances are now derived from an account's opening balance plus its
             // transactions, so an existing install has to keep the balance it
-            // already shows as the opening balance. Without this backfill every
-            // pre-existing account would restart from zero and lose its history.
+            // already shows as the opening balance - less the movements already
+            // counted into it, or the first recalculation would count them twice
+            // and an account that had spent 100 of 200 would reappear at zero.
             // Seeding only happens on the run that adds the column, so it cannot
             // later mistake a re-opened account for an unmigrated one.
             if (EnsureColumn(connection, "Accounts", "InitialBalance", "NOT NULL DEFAULT 0"))
             {
                 using var seed = connection.CreateCommand();
-                seed.CommandText = "UPDATE \"Accounts\" SET \"InitialBalance\" = \"Balance\"";
+                seed.CommandText = TableExists(connection, "Transactions")
+                    ? """
+                      UPDATE "Accounts" SET "InitialBalance" = "Balance" - COALESCE((
+                          SELECT SUM(CASE WHEN "Type" = 1 THEN "Amount" ELSE -"Amount" END)
+                          FROM "Transactions"
+                          WHERE "Transactions"."AccountId" = "Accounts"."Id"
+                            AND "Transactions"."IsDeleted" = 0
+                            AND "Transactions"."Currency" = "Accounts"."BalanceCurrency"
+                      ), 0)
+                      """
+                    : "UPDATE \"Accounts\" SET \"InitialBalance\" = \"Balance\"";
                 seed.ExecuteNonQuery();
             }
         }
@@ -109,6 +120,22 @@ public static class DatabaseInitializer
         alter.CommandText = $"ALTER TABLE \"{table}\" ADD COLUMN \"{column}\" {type}";
         alter.ExecuteNonQuery();
         return true;
+    }
+
+    /// <summary>
+    /// Whether a table is there to query. The backfill above reads across to
+    /// Transactions, and an unguarded read of a table the database has never had
+    /// would fail the whole upgrade rather than just skipping the subtraction.
+    /// </summary>
+    private static bool TableExists(System.Data.Common.DbConnection connection, string table)
+    {
+        using var lookup = connection.CreateCommand();
+        lookup.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = @name";
+        var parameter = lookup.CreateParameter();
+        parameter.ParameterName = "@name";
+        parameter.Value = table;
+        lookup.Parameters.Add(parameter);
+        return Convert.ToInt32(lookup.ExecuteScalar()) > 0;
     }
 
     /// <summary>

@@ -2,6 +2,7 @@ namespace FinanceApp.Infrastructure.Supabase;
 
 using System.Text.RegularExpressions;
 using FinanceApp.Application.Interfaces;
+using FinanceApp.Application.Services;
 using FinanceApp.Domain.Entities;
 using FinanceApp.Domain.Enums;
 using FinanceApp.Domain.Interfaces;
@@ -16,8 +17,15 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public class SupabaseSyncService : ISupabaseSyncService
 {
+    /// <summary>
+    /// The two shapes PostgREST uses to report a column the table does not have:
+    /// the schema-cache complaint it raises while resolving a select, and the one
+    /// Postgres raises when an upsert names a column that is not there. .NET lets
+    /// both alternatives write into the same group names, so callers need not care
+    /// which one arrived.
+    /// </summary>
     private static readonly Regex MissingColumnRegex = new(
-        @"Could not find the '(?<column>[^']+)' column of '(?<table>[^']+)'",
+        @"Could not find the '(?<column>[^']+)' column of '(?<table>[^']+)'|column ""(?<column>[^""]+)"" of relation ""(?<table>[^""]+)"" does not exist",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     private static readonly string[] BudgetOptionalColumns = { "icon", "color", "linked_account_id" };
@@ -27,6 +35,7 @@ public class SupabaseSyncService : ISupabaseSyncService
     private readonly SupabaseClientProvider _clientProvider;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAccountBalanceService _accountBalanceService;
+    private readonly SyncDeduplicationService _deduplication;
     private readonly ILogger<SupabaseSyncService> _logger;
     private volatile bool _budgetPushOmitsOptionalColumns;
     private volatile bool _accountsUseLegacyShape;
@@ -41,6 +50,10 @@ public class SupabaseSyncService : ISupabaseSyncService
         _unitOfWork = unitOfWork;
         _accountBalanceService = accountBalanceService;
         _logger = logger;
+        // Built here rather than injected: it shares this service's unit of work
+        // and needs no interface of its own - it is a repair pass over the rows
+        // the pull has just merged, not a service the app calls.
+        _deduplication = new SyncDeduplicationService(unitOfWork, logger);
     }
 
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
@@ -434,6 +447,12 @@ public class SupabaseSyncService : ISupabaseSyncService
         if (merged == 0 && lastError != null)
             throw lastError;
 
+        // Rows left duplicated by the build this replaces are repaired now that
+        // they are all here: the pull is the only moment both copies of an
+        // account are in one database, and the deletions it queues are pushed by
+        // the caller's second pass, after this.
+        await RepairDuplicatesAsync(userId, cancellationToken);
+
         // The transaction table has just been merged, and a transaction carries
         // no balance of its own - the balances come from adding it up per
         // account. Without this step an account that gained a transaction on
@@ -472,8 +491,58 @@ public class SupabaseSyncService : ISupabaseSyncService
         }
     }
 
+    /// <summary>
+    /// Merges the rows an older build left duplicated. A repair rather than the
+    /// sync itself, so a bad row costs the repair and not the pull: the six
+    /// tables have already been merged and are worth keeping.
+    /// </summary>
+    private async Task RepairDuplicatesAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var repaired = await _deduplication.DeduplicateAsync(userId, cancellationToken);
+            if (repaired > 0)
+                _logger.LogInformation("Merged {Repaired} duplicate rows while pulling for user {UserId}", repaired, userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Duplicate repair failed for user {UserId}; leaving the rows as they are", userId);
+        }
+    }
+
     private static bool IsPending(SyncStatus status) =>
         status is SyncStatus.PendingCreate or SyncStatus.PendingUpdate or SyncStatus.PendingDelete;
+
+    /// <summary>
+    /// The opening balance a pulled account row carries.
+    /// <para>
+    /// A project that predates migration 0003 has no such column, and the select
+    /// asks for whatever the table has rather than failing: the property simply
+    /// arrives unset. Reading it as zero would give every account an opening
+    /// balance of zero, and the recalculation at the end of the pull would then
+    /// write that over the balance the user was looking at - the original report,
+    /// by another route. The figure the server does hold is the balance itself,
+    /// which older builds never managed to update (the nudge was dropped once the
+    /// row had synced), so for them it is still the opening balance.
+    /// </para>
+    /// </summary>
+    private decimal InitialBalanceOf(AccountRecord record)
+    {
+        if (record.InitialBalanceAmount is { } initial)
+            return initial;
+
+        if (!_accountsUseLegacyShape)
+        {
+            // Sticky for the process: every later push of an account drops the
+            // column too, rather than failing on it once per sync.
+            _accountsUseLegacyShape = true;
+            _logger.LogWarning(
+                "Supabase accounts table has no initial_balance_amount (migration 0003 not applied); " +
+                "taking the opening balance from balance_amount and pushing accounts without the column");
+        }
+
+        return record.BalanceAmount;
+    }
 
     private async Task<int> PullAccountsAsync(global::Supabase.Client client, Guid userId, CancellationToken ct)
     {
@@ -494,7 +563,7 @@ public class SupabaseSyncService : ISupabaseSyncService
                     // same balance the other one did. Starting from the server's
                     // cached balance instead would count the transactions that
                     // are about to be pulled a second time.
-                    var initialBalance = new Money(record.InitialBalanceAmount, record.BalanceCurrency);
+                    var initialBalance = new Money(InitialBalanceOf(record), record.BalanceCurrency);
 
                     var created = new Account(
                         record.Name,

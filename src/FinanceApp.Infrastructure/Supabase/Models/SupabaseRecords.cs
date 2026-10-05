@@ -43,9 +43,16 @@ public class AccountRecord : PostgrestModels.BaseModel
     /// Carried separately from <see cref="BalanceAmount"/> because it is the input
     /// a balance is derived from, and the derived figure is not authoritative
     /// enough to rebuild it.
+    /// <para>
+    /// Nullable to detect a project that predates migration 0003: the select asks
+    /// for every column the table has, so a table without this one simply leaves
+    /// it out of the answer rather than failing the request, and a non-nullable
+    /// value would silently read as zero - an opening balance of zero, which the
+    /// next recalculation then writes over every balance with.
+    /// </para>
     /// </summary>
     [PostgrestAttributes.Column("initial_balance_amount")]
-    public decimal InitialBalanceAmount { get; set; }
+    public decimal? InitialBalanceAmount { get; set; }
 
     [PostgrestAttributes.Column("description")]
     public string? Description { get; set; }

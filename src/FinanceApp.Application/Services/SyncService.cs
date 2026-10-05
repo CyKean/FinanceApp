@@ -113,7 +113,8 @@ public class SyncService : BaseService, ISyncService, IDisposable
             // whole local database eventually lands in Supabase.
             await EnqueueMissingOperationsAsync(userId, _syncCts.Token);
 
-            var pendingOperations = await _syncRepository.GetPendingByUserIdAsync(userId, _syncCts.Token);
+            var pendingOperations = await _syncRepository.GetPendingByUserIdAsync(userId, _syncCts.Token)
+                ?? new List<SyncOperation>();
 
             if (pendingOperations.Any())
             {
@@ -142,28 +143,11 @@ public class SyncService : BaseService, ISyncService, IDisposable
                 _logger.LogInformation("No pending operations for user {UserId}; pulling server changes", userId);
             }
 
-            foreach (var operation in pendingOperations)
-            {
-                if (_syncCts.Token.IsCancellationRequested)
-                    break;
-
-                try
-                {
-                    await ProcessSyncOperationWithRetryAsync(operation, userId, _syncCts.Token);
-                    operation.MarkAsSynced();
-                    await _syncRepository.UpdateAsync(operation, _syncCts.Token);
-                    syncedCount++;
-                    pushedCount++;
-                }
-                catch (Exception ex)
-                {
-                    operation.IncrementRetry(SyncErrorSanitizer.Sanitize(ex.Message));
-                    await _syncRepository.UpdateAsync(operation, _syncCts.Token);
-                    failedCount++;
-                    lastError = SyncErrorSanitizer.Sanitize(ex.Message);
-                    _logger.LogError(ex, "Failed to sync operation {OperationId} for user {UserId}", operation.Id, userId);
-                }
-            }
+            var pushed = await PushAsync(pendingOperations, userId, _syncCts.Token);
+            syncedCount += pushed.Synced;
+            pushedCount += pushed.Synced;
+            failedCount += pushed.Failed;
+            lastError = pushed.LastError;
 
             await UnitOfWork.SaveChangesAsync(_syncCts.Token);
 
@@ -181,6 +165,27 @@ public class SyncService : BaseService, ISyncService, IDisposable
                 failedCount++;
                 lastError = SyncErrorSanitizer.Sanitize(ex.Message);
                 _logger.LogError(ex, "Pull failed for user {UserId}", userId);
+            }
+
+            // The pull can queue work of its own. Merging a row duplicated by the
+            // build this replaces retires the spare, and that deletion - plus the
+            // updates that moved the spare's references onto the survivor - only
+            // exists once the pull has run, so nothing pushed it above. Ops the
+            // first pass already attempted are left alone: a failure there is
+            // recorded and will be retried on the next tick.
+            var queuedByThePull = (await _syncRepository.GetPendingByUserIdAsync(userId, _syncCts.Token) ?? new List<SyncOperation>())
+                .Where(o => !pushed.Attempted.Contains(o.Id))
+                .ToList();
+
+            if (queuedByThePull.Count > 0)
+            {
+                _logger.LogInformation("Pushing {Count} operations the pull queued for user {UserId}", queuedByThePull.Count, userId);
+                var afterPull = await PushAsync(queuedByThePull, userId, _syncCts.Token);
+                syncedCount += afterPull.Synced;
+                pushedCount += afterPull.Synced;
+                failedCount += afterPull.Failed;
+                lastError = afterPull.LastError ?? lastError;
+                await UnitOfWork.SaveChangesAsync(_syncCts.Token);
             }
 
             _logger.LogInformation("Sync completed for user {UserId}: {Synced} synced ({Pushed} pushed, {Pulled} pulled), {Failed} failed", userId, syncedCount, pushedCount, pulledCount, failedCount);
@@ -354,6 +359,71 @@ public class SyncService : BaseService, ISyncService, IDisposable
         await UnitOfWork.SaveChangesAsync(cancellationToken);
         return survivors.OrderBy(o => o.CreatedAt).ToList();
     }
+
+    /// <summary>
+    /// Pushes a batch of operations, in the order <see cref="OrderForPush"/> puts
+    /// them, and reports which ones it touched so a later pass can tell the work
+    /// still owed from the work already tried.
+    /// </summary>
+    private async Task<(int Synced, int Failed, string? LastError, HashSet<Guid> Attempted)> PushAsync(
+        IReadOnlyList<SyncOperation> operations,
+        Guid userId,
+        CancellationToken cancellationToken)
+    {
+        var synced = 0;
+        var failed = 0;
+        string? lastError = null;
+        var attempted = new HashSet<Guid>();
+
+        foreach (var operation in OrderForPush(operations))
+        {
+            if (cancellationToken.IsCancellationRequested)
+                break;
+
+            attempted.Add(operation.Id);
+
+            try
+            {
+                await ProcessSyncOperationWithRetryAsync(operation, userId, cancellationToken);
+                operation.MarkAsSynced();
+                await _syncRepository.UpdateAsync(operation, cancellationToken);
+                synced++;
+            }
+            catch (Exception ex)
+            {
+                operation.IncrementRetry(SyncErrorSanitizer.Sanitize(ex.Message));
+                await _syncRepository.UpdateAsync(operation, cancellationToken);
+                failed++;
+                lastError = SyncErrorSanitizer.Sanitize(ex.Message);
+                _logger.LogError(ex, "Failed to sync operation {OperationId} for user {UserId}", operation.Id, userId);
+            }
+        }
+
+        return (synced, failed, lastError, attempted);
+    }
+
+    /// <summary>
+    /// Creates and updates first, in the order they were queued, and deletes last,
+    /// heaviest-referenced table first. The server refuses to drop a row something
+    /// still points at, so the updates that re-home a merged row's references must
+    /// land before the deletion of the row they moved off - and a transaction must
+    /// go before the account or category it names.
+    /// </summary>
+    private static IOrderedEnumerable<SyncOperation> OrderForPush(IReadOnlyList<SyncOperation> operations) =>
+        operations
+            .OrderBy(o => o.OperationType == SyncOperationType.Delete ? 1 : 0)
+            .ThenBy(o => o.OperationType == SyncOperationType.Delete ? -DeleteDepth(o.EntityType) : 0)
+            .ThenBy(o => o.CreatedAt);
+
+    /// <summary>How far down the reference graph a row sits: a transaction names
+    /// an account and a category, so it has to be deleted before either.</summary>
+    private static int DeleteDepth(string entityType) => entityType switch
+    {
+        "Transaction" or "Budget" or "RecurringTransaction" => 3,
+        "FinancialGoal" => 2,
+        "Category" => 1,
+        _ => 0
+    };
 
     private async Task ProcessSyncOperationWithRetryAsync(SyncOperation operation, Guid userId, CancellationToken cancellationToken)
     {

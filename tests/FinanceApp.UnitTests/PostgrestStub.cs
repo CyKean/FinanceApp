@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,12 +56,84 @@ public sealed class PostgrestStub : IDisposable
 
     public string Url => $"http://127.0.0.1:{Port}";
 
+    /// <summary>Request lines the client sent, in order - for asserting what the
+    /// transport actually asks the server for.</summary>
+    public IReadOnlyList<string> Requests => _requests.ToList();
+
+    private readonly ConcurrentQueue<string> _requests = new();
+
     public int Count(string table) => _tables.TryGetValue(table, out var rows) ? rows.Count : 0;
+
+    /// <summary>
+    /// Puts a row on the server as it is, for fixtures that need to hand the
+    /// client something no push of ours would produce - a row from before a
+    /// migration, say, missing a column the current model expects.
+    /// </summary>
+    public void Put(string table, string id, string json) =>
+        _tables.GetOrAdd(table, _ => new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase))[id] = json;
+
+    /// <summary>
+    /// Changes a row already on the server, in place. A null value takes the
+    /// column out of the row altogether, which is how a table that has not run a
+    /// migration yet answers: the column is not there, rather than there and null.
+    /// </summary>
+    public void Edit(string table, string id, params (string Field, object? Value)[] fields)
+    {
+        if (!_tables.TryGetValue(table, out var rows) || !rows.TryGetValue(id, out var source))
+            throw new InvalidOperationException($"No {table} row {id} to edit.");
+
+        var row = JsonNode.Parse(source)!.AsObject();
+        foreach (var (field, value) in fields)
+        {
+            if (value is null)
+            {
+                row.Remove(field);
+            }
+            else if (value is JsonNode jsonNode)
+            {
+                row[field] = jsonNode;
+            }
+            else
+            {
+                row[field] = JsonSerializer.SerializeToNode(value);
+            }
+        }
+
+        rows[id] = row.ToJsonString();
+    }
 
     public IReadOnlyDictionary<string, string> Rows(string table) =>
         _tables.TryGetValue(table, out var rows)
             ? rows.ToDictionary(p => p.Key, p => p.Value)
             : new Dictionary<string, string>();
+
+    /// <summary>
+    /// Copies a row the client already posted under a fresh id, applying the
+    /// given fields first - the shape of a row the build this replaces left
+    /// behind: the same account, category or expense again, sitting in Supabase
+    /// beside the original under an id nobody chose to keep. The first field
+    /// must therefore be <c>id</c>.
+    /// </summary>
+    public string Duplicate(string table, string fromId, params (string Field, object? Value)[] fields)
+    {
+        if (!_tables.TryGetValue(table, out var rows) || !rows.TryGetValue(fromId, out var source))
+            throw new InvalidOperationException($"No {table} row {fromId} to duplicate.");
+
+        var row = JsonNode.Parse(source)!.AsObject();
+        foreach (var (field, value) in fields)
+        {
+            if (value is JsonNode jsonNode)
+                row[field] = jsonNode;
+            else if (value is null)
+                row[field] = null;
+            else
+                row[field] = JsonSerializer.SerializeToNode(value);
+        }
+
+        var id = row["id"]!.GetValue<string>();
+        rows[id] = row.ToJsonString();
+        return id;
+    }
 
     private static int FreePort()
     {
@@ -101,6 +174,7 @@ public sealed class PostgrestStub : IDisposable
         var request = context.Request;
         var table = TableName(request.Url?.AbsolutePath);
         var method = request.HttpMethod;
+        _requests.Enqueue($"{method} {request.Url?.PathAndQuery}");
 
         var body = "[]";
         context.Response.StatusCode = 200;

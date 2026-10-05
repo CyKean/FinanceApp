@@ -1,27 +1,12 @@
-namespace FinanceApp.UnitTests;
+﻿namespace FinanceApp.UnitTests;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using FinanceApp.Application.DTOs;
-using FinanceApp.Application.Interfaces;
-using FinanceApp.Application.Services;
-using FinanceApp.Application.Validators;
 using FinanceApp.Domain.Entities;
 using FinanceApp.Domain.Enums;
-using FinanceApp.Domain.Interfaces;
 using FinanceApp.Domain.ValueObjects;
-using FinanceApp.Infrastructure.Configuration;
-using FinanceApp.Infrastructure.Persistence;
-using FinanceApp.Infrastructure.Repositories;
-using FinanceApp.Infrastructure.Supabase;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
 /// <summary>
@@ -43,15 +28,15 @@ using Xunit;
 public class SecondDeviceSyncTests : IDisposable
 {
     private readonly PostgrestStub _cloud = new();
-    private readonly Device _phone;
-    private readonly Device _secondDevice;
+    private readonly TestDevice _phone;
+    private readonly TestDevice _secondDevice;
 
     private static readonly Guid UserId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
     public SecondDeviceSyncTests()
     {
-        _phone = new Device(_cloud);
-        _secondDevice = new Device(_cloud);
+        _phone = new TestDevice(_cloud);
+        _secondDevice = new TestDevice(_cloud);
     }
 
     [Fact]
@@ -174,130 +159,4 @@ public class SecondDeviceSyncTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// One install of the app: a database and the services over it.
-    /// <para>
-    /// Everything shares a single DbContext on purpose. EF only saves what is
-    /// tracked by the context whose SaveChanges is called, so wiring services
-    /// against two contexts over one database writes nothing and turns the test
-    /// into a no-op that passes for the wrong reason.
-    /// </para>
-    /// </summary>
-    private sealed class Device : IDisposable
-    {
-        private readonly SqliteConnection _connection;
-        private readonly FinanceAppDbContext _context;
-
-        public Device(PostgrestStub cloud)
-        {
-            Cloud = cloud;
-            _connection = new SqliteConnection("Data Source=:memory:");
-            _connection.Open();
-            _context = new FinanceAppDbContext(
-                new DbContextOptionsBuilder<FinanceAppDbContext>().UseSqlite(_connection).Options);
-
-            Accounts = new AccountRepository(_context);
-            Categories = new CategoryRepository(_context);
-            Transactions = new TransactionRepository(_context);
-
-            Work = new UnitOfWork(
-                _context,
-                Accounts,
-                Categories,
-                Transactions,
-                new BudgetRepository(_context),
-                new RecurringTransactionRepository(_context),
-                new FinancialGoalRepository(_context),
-                new SyncOperationRepository(_context));
-
-            Balances = new AccountBalanceService(
-                Work, Accounts, Transactions, NullLogger<AccountBalanceService>.Instance);
-        }
-
-        public AccountRepository Accounts { get; }
-        public CategoryRepository Categories { get; }
-        public TransactionRepository Transactions { get; }
-        public IUnitOfWork Work { get; }
-        public AccountBalanceService Balances { get; }
-        public PostgrestStub Cloud { get; }
-
-        public ISupabaseSyncService Transport() =>
-            new SupabaseSyncService(
-                new SupabaseClientProvider(
-                    Options.Create(new DatabaseOptions
-                    {
-                        SupabaseUrl = Cloud.Url,
-                        SupabaseAnonKey = "stub-anon-key"
-                    }),
-                    NullLogger<SupabaseClientProvider>.Instance),
-                Work,
-                Balances,
-                NullLogger<SupabaseSyncService>.Instance);
-
-        public SyncService Sync() =>
-            new SyncService(
-                Work,
-                new SyncOperationRepository(_context),
-                Transactions,
-                Accounts,
-                Categories,
-                new BudgetRepository(_context),
-                new RecurringTransactionRepository(_context),
-                new FinancialGoalRepository(_context),
-                Transport(),
-                Online(),
-                NullLogger<SyncService>.Instance);
-
-        public AccountService Accounts_() =>
-            new AccountService(
-                Work,
-                Accounts,
-                Transactions,
-                new BudgetRepository(_context),
-                new FinancialGoalRepository(_context),
-                Mock.Of<ICategoryService>(),
-                new CreateAccountDtoValidator(),
-                new UpdateAccountDtoValidator(),
-                NullLogger<AccountService>.Instance);
-
-        private static IConnectivityService Online()
-        {
-            var connectivity = new Mock<IConnectivityService>();
-            connectivity.Setup(x => x.CheckConnectivityAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(NetworkAccess.Internet);
-            return connectivity.Object;
-        }
-
-        public List<(string Name, decimal Balance)> ReadAccounts()
-        {
-            using var command = _connection.CreateCommand();
-            command.CommandText =
-                "SELECT \"Name\", \"Balance\" FROM \"Accounts\" WHERE \"IsDeleted\" = 0 ORDER BY \"Name\", \"Balance\"";
-            using var reader = command.ExecuteReader();
-            var rows = new List<(string, decimal)>();
-            while (reader.Read())
-                rows.Add((reader.GetString(0), Convert.ToDecimal(reader.GetValue(1))));
-            return rows;
-        }
-
-        public int CountDefaults()
-        {
-            using var command = _connection.CreateCommand();
-            command.CommandText = "SELECT COUNT(*) FROM \"Accounts\" WHERE \"IsDefault\" = 1 AND \"IsDeleted\" = 0";
-            return Convert.ToInt32(command.ExecuteScalar());
-        }
-
-        public int CountTransactions()
-        {
-            using var command = _connection.CreateCommand();
-            command.CommandText = "SELECT COUNT(*) FROM \"Transactions\" WHERE \"IsDeleted\" = 0";
-            return Convert.ToInt32(command.ExecuteScalar());
-        }
-
-        public void Dispose()
-        {
-            _context.Dispose();
-            _connection.Dispose();
-        }
-    }
 }
