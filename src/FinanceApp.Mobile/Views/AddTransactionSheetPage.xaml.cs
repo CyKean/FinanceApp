@@ -1,6 +1,7 @@
 namespace FinanceApp.Mobile.Views;
 
 using FinanceApp.Domain.Enums;
+using FinanceApp.Mobile.Services;
 using FinanceApp.Mobile.ViewModels;
 
 [QueryProperty(nameof(TransactionTypeParam), "type")]
@@ -39,6 +40,7 @@ public partial class AddTransactionSheetPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        _ = AddSheetReminder.WarnIfNeededAsync();
 
         // Shell reuses the page instance, so reset before animating in again.
         _isDismissing = false;

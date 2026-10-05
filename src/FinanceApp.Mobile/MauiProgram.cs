@@ -144,6 +144,7 @@ public static class MauiProgram
         builder.Services.AddHostedService<DatabaseInitializer>();
         builder.Services.AddHostedService<RecurringTransactionProcessor>();
         builder.Services.AddHostedService<SyncBackgroundService>();
+        builder.Services.AddHostedService<ConnectivityToastNotifier>();
 
         // ViewModels
         builder.Services.AddTransient<DashboardViewModel>();

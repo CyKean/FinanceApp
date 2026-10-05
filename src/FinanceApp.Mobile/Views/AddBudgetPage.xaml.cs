@@ -1,6 +1,7 @@
 namespace FinanceApp.Mobile.Views;
 
 using FinanceApp.Mobile.Helpers;
+using FinanceApp.Mobile.Services;
 using FinanceApp.Mobile.ViewModels;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Graphics;
@@ -43,6 +44,7 @@ public partial class AddBudgetPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        _ = AddSheetReminder.WarnIfNeededAsync();
         await EnsureInitializedAsync();
     }
 
