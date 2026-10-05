@@ -12,6 +12,19 @@ public interface IAuthenticationService
     Task<string?> GetCurrentUserEmailAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// True when the Supabase account for this device exists but has not confirmed
+    /// its email. Those accounts cannot receive a session, so sync is paused until
+    /// the verification email is opened; no token to load.
+    /// </summary>
+    Task<bool> IsEmailVerificationRequiredAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Asks Supabase to email the verification link again. There is nothing local
+    /// to do until the email is opened and the user signs in.
+    /// </summary>
+    Task<bool> ResendEmailVerificationAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// When true (default), successful login/register persists the session
     /// so the user is automatically signed in on next launch.
     /// </summary>

@@ -29,6 +29,10 @@ public class SupabaseClientProvider
         !string.IsNullOrWhiteSpace(_options.SupabaseUrl) &&
         !string.IsNullOrWhiteSpace(_options.SupabaseAnonKey);
 
+    /// <summary>Base URL + anon key for direct REST calls the typed SDK does not surface.</summary>
+    public string SupabaseUrl => _options.SupabaseUrl;
+    public string SupabaseAnonKey => _options.SupabaseAnonKey;
+
     /// <summary>
     /// Returns the shared client, or null when Supabase is not configured or
     /// cannot be reached. Never throws and never blocks for long: offline-first

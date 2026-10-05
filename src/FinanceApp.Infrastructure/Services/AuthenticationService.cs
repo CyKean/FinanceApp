@@ -23,6 +23,7 @@ public class AuthenticationService : IAuthenticationService
 {
     private const string UserIdKey = "financeapp.auth.userid";
     private const string EmailKey = "financeapp.auth.email";
+    private const string CloudVerifyPendingKey = "financeapp.auth.cloudverifypending";
 
     private const int MinimumPasswordLength = 6;
     private const int MaxFailedAttempts = 5;
@@ -263,6 +264,54 @@ public class AuthenticationService : IAuthenticationService
         return _currentUserEmail;
     }
 
+    public async Task<bool> IsEmailVerificationRequiredAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var v = await _sessionStore.LoadAsync(CloudVerifyPendingKey, cancellationToken);
+            return string.Equals(v, "true", StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> ResendEmailVerificationAsync(CancellationToken cancellationToken = default)
+    {
+        var email = _currentUserEmail;
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
+
+        if (!_clientProvider.IsConfigured)
+            return false;
+
+        try
+        {
+            using var http = new HttpClient();
+            var body = System.Text.Json.JsonSerializer.Serialize(new { type = "signup", email });
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"{_clientProvider.SupabaseUrl.TrimEnd('/')}/auth/v1/resend");
+            request.Headers.Add("apikey", _clientProvider.SupabaseAnonKey);
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _clientProvider.SupabaseAnonKey);
+            request.Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
+
+            using var response = await http.SendAsync(request, cancellationToken);
+            if (response.IsSuccessStatusCode)
+            {
+                await _sessionStore.SaveAsync(CloudVerifyPendingKey, "true", cancellationToken);
+                return true;
+            }
+
+            _logger.LogWarning("Resend verification email rejected: {Status}", (int)response.StatusCode);
+            return false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not resend verification email for {Email}", email);
+            return false;
+        }
+    }
+
     private async Task EnsureInitializedAsync(CancellationToken cancellationToken)
     {
         if (!_initialized)
@@ -373,6 +422,7 @@ public class AuthenticationService : IAuthenticationService
         await _sessionStore.RemoveAsync(UserIdKey, cancellationToken);
         await _sessionStore.RemoveAsync(EmailKey, cancellationToken);
         await _sessionStore.RemoveAsync(StoreSessionPersistence.SessionKey, cancellationToken);
+        try { await _sessionStore.RemoveAsync(CloudVerifyPendingKey, cancellationToken); } catch { }
     }
 
     /// <summary>
@@ -481,6 +531,7 @@ public class AuthenticationService : IAuthenticationService
             if (TryGetCloudId(session, out var cloudId) && !string.IsNullOrEmpty(session!.AccessToken))
             {
                 await AdoptCloudIdentityAsync(localUserId, cloudId, normalizedEmail, timeout.Token);
+                try { await _sessionStore.RemoveAsync(CloudVerifyPendingKey, timeout.Token); } catch { }
                 _logger.LogInformation("Mirrored {Email} to the cloud as {CloudId}; sync is live", normalizedEmail, cloudId);
                 return;
             }
@@ -491,6 +542,10 @@ public class AuthenticationService : IAuthenticationService
             _logger.LogInformation(
                 "Cloud mirror for {Email} needs email confirmation before it can sync. Local data is unaffected.",
                 normalizedEmail);
+
+            // The app must not keep silently resync-attempting while it knows
+            // there is a cloud account that cannot be used.
+            try { await _sessionStore.SaveAsync(CloudVerifyPendingKey, "true", timeout.Token); } catch { }
         }
         catch (Exception ex)
         {
@@ -525,6 +580,7 @@ public class AuthenticationService : IAuthenticationService
                 return;
 
             await AdoptCloudIdentityAsync(localUserId, cloudId, session!.User?.Email ?? normalizedEmail, timeout.Token);
+            try { await _sessionStore.RemoveAsync(CloudVerifyPendingKey, timeout.Token); } catch { }
             _logger.LogInformation("Attached cloud session for {Email} as {CloudId}", normalizedEmail, cloudId);
         }
         catch (Exception ex)

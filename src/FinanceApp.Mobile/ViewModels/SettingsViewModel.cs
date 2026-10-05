@@ -115,9 +115,7 @@ public partial class SettingsViewModel : BaseViewModel
             }
             else if (result.DeferredCount > 0)
             {
-                // Nothing failed and nothing was lost: the cloud could not take the
-                // changes yet, so they are still queued.
-                await _dialogService.ShowErrorAsync("Sync Paused", result.ErrorMessage ?? "Sync will resume automatically.");
+                await ShowSyncPausedAsync(result.ErrorMessage);
             }
             else
             {
@@ -156,6 +154,29 @@ public partial class SettingsViewModel : BaseViewModel
         }
     }
 
+    private async Task ShowSyncPausedAsync(string? errorMessage)
+    {
+        if (await _authService.IsEmailVerificationRequiredAsync() &&
+            (errorMessage ?? string.Empty).Contains("Not signed in", StringComparison.OrdinalIgnoreCase))
+        {
+            var send = await _dialogService.ShowConfirmationAsync(
+                "Verify your email",
+                "Your cloud account exists, but its email hasn't been confirmed yet. Check your inbox - want us to send the link again?",
+                "Send email",
+                "Not now");
+
+            if (send)
+            {
+                var ok = await _authService.ResendEmailVerificationAsync();
+                await _dialogService.ShowToastAsync(ok ? "Verification email sent." : "Couldn't send the email. Try again later.");
+            }
+
+            return;
+        }
+
+        await _dialogService.ShowErrorAsync("Sync Paused", errorMessage ?? "Sync will resume automatically.");
+    }
+
     [RelayCommand]
     private async Task ForceSyncAsync()
     {
@@ -178,7 +199,7 @@ public partial class SettingsViewModel : BaseViewModel
             }
             else if (result.DeferredCount > 0)
             {
-                await _dialogService.ShowErrorAsync("Sync Paused", result.ErrorMessage ?? "Sync will resume automatically.");
+                await ShowSyncPausedAsync(result.ErrorMessage);
             }
             else
             {
