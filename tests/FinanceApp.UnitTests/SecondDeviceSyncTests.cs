@@ -1,4 +1,4 @@
-﻿namespace FinanceApp.UnitTests;
+namespace FinanceApp.UnitTests;
 
 using System;
 using System.Linq;
@@ -35,8 +35,8 @@ public class SecondDeviceSyncTests : IDisposable
 
     public SecondDeviceSyncTests()
     {
-        _phone = new TestDevice(_cloud);
-        _secondDevice = new TestDevice(_cloud);
+        _phone = new TestDevice(_cloud, UserId);
+        _secondDevice = new TestDevice(_cloud, UserId);
     }
 
     [Fact]

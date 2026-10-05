@@ -33,6 +33,68 @@ public sealed class PostgrestStub : IDisposable
 
     public int Port { get; }
 
+    /// <summary>The anon key handed to the Supabase client, which is also what the
+    /// SDK presents as <c>Authorization: Bearer</c> when nobody is signed in.</summary>
+    public string AnonKey { get; } = "stub-anon-key";
+
+    /// <summary>
+    /// Applies the schema's row level security: the policies are
+    /// <c>to authenticated</c> and keyed on <c>auth.uid() = user_id</c>, so a
+    /// request that is not a signed-in user is refused writes and answered zero
+    /// rows, exactly as Postgres would. Off by default - most tests are about what
+    /// the client does with the rows, not about who is allowed to send them.
+    /// </summary>
+    public bool EnforceRowLevelSecurity { get; set; }
+
+    /// <summary>Which user a request is authenticated as, read from the bearer
+    /// token. Null when the bearer is the anon key, i.e. nobody is signed in.</summary>
+    private string? SignedInUserId
+    {
+        get
+        {
+            var bearer = Headers.TryGetValue("Authorization", out var value) &&
+                value.StartsWith("Bearer ", StringComparison.Ordinal)
+                    ? value["Bearer ".Length..]
+                    : null;
+
+            return bearer is null || bearer == AnonKey ? null : SubjectOf(bearer);
+        }
+    }
+
+    /// <summary>
+    /// The <c>sub</c> claim of an unsigned JWT. The SDK checks that a session's
+    /// token is well formed but does not verify its signature, so a token built
+    /// this way is as good as a real one for testing who a request is sent as.
+    /// </summary>
+    public static string SessionTokenFor(string userId)
+    {
+        static string Base64Url(string value) =>
+            Convert.ToBase64String(Encoding.UTF8.GetBytes(value))
+                .TrimEnd('=').Replace('+', '-').Replace('/', '_');
+
+        var claims = $$"""{"sub":"{{userId}}","role":"authenticated","exp":4102444800}""";
+        return $"{Base64Url("""{"alg":"none","typ":"JWT"}""")}.{Base64Url(claims)}.signature";
+    }
+
+    private static string? SubjectOf(string jwt)
+    {
+        var parts = jwt.Split('.');
+        if (parts.Length < 2)
+            return null;
+
+        try
+        {
+            var payload = parts[1].Replace('-', '+').Replace('_', '/');
+            payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+            using var document = JsonDocument.Parse(Convert.FromBase64String(payload));
+            return document.RootElement.TryGetProperty("sub", out var sub) ? sub.GetString() : null;
+        }
+        catch (Exception e) when (e is FormatException or JsonException)
+        {
+            return null;
+        }
+    }
+
     public PostgrestStub()
     {
         for (var attempt = 0; ; attempt++)
@@ -61,6 +123,10 @@ public sealed class PostgrestStub : IDisposable
     public IReadOnlyList<string> Requests => _requests.ToList();
 
     private readonly ConcurrentQueue<string> _requests = new();
+
+    /// <summary>The last <c>Authorization</c> and <c>apikey</c> headers received,
+    /// so a test can assert who the client actually presented.</summary>
+    public ConcurrentDictionary<string, string> Headers { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     public int Count(string table) => _tables.TryGetValue(table, out var rows) ? rows.Count : 0;
 
@@ -175,11 +241,27 @@ public sealed class PostgrestStub : IDisposable
         var table = TableName(request.Url?.AbsolutePath);
         var method = request.HttpMethod;
         _requests.Enqueue($"{method} {request.Url?.PathAndQuery}");
+        foreach (var key in new[] { "Authorization", "apikey" })
+            if (request.Headers[key] is { } value)
+                Headers[key] = value;
 
         var body = "[]";
         context.Response.StatusCode = 200;
 
-        if (method == "GET")
+        var path = request.Url?.AbsolutePath ?? "";
+
+        if (path.TrimEnd('/').EndsWith("/auth/v1/user", StringComparison.OrdinalIgnoreCase))
+        {
+            // GoTrue answers this from the bearer token, so the signed-in user is
+            // whoever the client presented.
+            body = $$"""{"id":"{{SignedInUserId ?? string.Empty}}","email":"signed-in@example.com","aud":"authenticated","role":"authenticated"}""";
+        }
+        else if (EnforceRowLevelSecurity && !Permits(method, body: null))
+        {
+            Refuse(context, table);
+            return;
+        }
+        else if (method == "GET")
         {
             body = Select(table, request.Url?.Query);
         }
@@ -187,6 +269,13 @@ public sealed class PostgrestStub : IDisposable
         {
             using var reader = new StreamReader(request.InputStream, Encoding.UTF8);
             var payload = await reader.ReadToEndAsync();
+
+            if (EnforceRowLevelSecurity && !Permits(method, payload))
+            {
+                Refuse(context, table);
+                return;
+            }
+
             var rows = _tables.GetOrAdd(table, _ => new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase));
 
             foreach (var element in ParseElements(payload))
@@ -201,6 +290,12 @@ public sealed class PostgrestStub : IDisposable
         }
         else if (method == "DELETE")
         {
+            if (EnforceRowLevelSecurity && !Permits(method, body: null))
+            {
+                Refuse(context, table);
+                return;
+            }
+
             if (FilterValue(request.Url?.Query, "id") is { } id)
                 _tables.GetValueOrDefault(table)?.TryRemove(id, out _);
         }
@@ -209,6 +304,42 @@ public sealed class PostgrestStub : IDisposable
         context.Response.ContentType = "application/json";
         context.Response.ContentLength64 = bytes.Length;
         await context.Response.OutputStream.WriteAsync(bytes);
+        context.Response.Close();
+    }
+
+    /// <summary>
+    /// Whether this request would pass the schema's policies: a signed-in user, and
+    /// a row stamped with their id. An anonymous request is refused every table,
+    /// and a row belonging to someone else is refused on its own.
+    /// </summary>
+    private bool Permits(string method, string? body)
+    {
+        if (SignedInUserId is not { } caller)
+            return false;
+
+        // A read is scoped by the user_id filter the client already sends.
+        if (method == "GET" || body is null)
+            return true;
+
+        foreach (var element in ParseElements(body))
+        {
+            if (ReadString(element, "user_id") is { } owner && owner != caller)
+                return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>Postgres's answer for a row the policies do not admit, verbatim -
+    /// 42501 with the message the sync engine has to cope with.</summary>
+    private void Refuse(HttpListenerContext context, string table)
+    {
+        var error = Encoding.UTF8.GetBytes(
+            $$"""{"code":"42501","details":null,"hint":null,"message":"new row violates row-level security policy for table \"{{table}}\""}""");
+        context.Response.StatusCode = 401;
+        context.Response.ContentType = "application/json";
+        context.Response.ContentLength64 = error.Length;
+        context.Response.OutputStream.Write(error, 0, error.Length);
         context.Response.Close();
     }
 

@@ -138,5 +138,6 @@
 
         <controls:ToastHost />
         <controls:ConfirmModalHost />
+        <controls:ErrorModalHost />
     </Grid>
 </ContentPage>

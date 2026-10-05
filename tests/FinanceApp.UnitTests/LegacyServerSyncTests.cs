@@ -29,8 +29,8 @@ public class LegacyServerSyncTests : IDisposable
 
     public LegacyServerSyncTests()
     {
-        _phone = new TestDevice(_cloud);
-        _device = new TestDevice(_cloud);
+        _phone = new TestDevice(_cloud, UserId);
+        _device = new TestDevice(_cloud, UserId);
     }
 
     [Fact]

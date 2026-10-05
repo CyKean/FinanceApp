@@ -124,12 +124,26 @@ create table if not exists financial_goals (
 );
 
 -- Row Level Security: users can only touch their own rows.
+--
+-- Every statement here is drop-then-create. A pasted script stops at its first
+-- error, and a bare `create policy` errors the moment the policy already exists -
+-- so a second run used to stop here, leaving the tables below it unprotected while
+-- the `create table if not exists` statements above reported success. That is how
+-- `accounts` came to be readable by an anonymous request. Dropping first makes the
+-- whole file safe to run again, which is the only way it can be trusted.
 alter table accounts enable row level security;
 alter table categories enable row level security;
 alter table transactions enable row level security;
 alter table budgets enable row level security;
 alter table recurring_transactions enable row level security;
 alter table financial_goals enable row level security;
+
+drop policy if exists "Users manage own accounts" on accounts;
+drop policy if exists "Users manage own categories" on categories;
+drop policy if exists "Users manage own transactions" on transactions;
+drop policy if exists "Users manage own budgets" on budgets;
+drop policy if exists "Users manage own recurring transactions" on recurring_transactions;
+drop policy if exists "Users manage own financial goals" on financial_goals;
 
 create policy "Users manage own accounts"
     on accounts for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
@@ -149,3 +163,19 @@ create policy "Users manage own financial goals"
 alter table budgets add column if not exists icon text;
 alter table budgets add column if not exists color text;
 alter table budgets add column if not exists linked_account_id uuid;
+
+-- Verify rather than assume: every table must report relrowsecurity true and
+-- exactly one policy, for the authenticated role only.
+select c.relname                               as table,
+       c.relrowsecurity                        as rls_enabled,
+       count(distinct p.polname)               as policies,
+       coalesce(string_agg(distinct r.rolname, ', '), '(none)') as applies_to
+from pg_class c
+join pg_namespace n on n.oid = c.relnamespace
+left join pg_policy p on p.polrelid = c.oid
+left join pg_roles r on r.oid = any (p.polroles)
+where n.nspname = 'public'
+  and c.relname in ('accounts', 'categories', 'transactions', 'budgets',
+                    'recurring_transactions', 'financial_goals')
+group by c.relname, c.relrowsecurity
+order by c.relname;

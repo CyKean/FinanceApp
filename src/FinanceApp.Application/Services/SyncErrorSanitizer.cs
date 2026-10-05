@@ -35,6 +35,15 @@ public static class SyncErrorSanitizer
              message.Contains("does not exist", StringComparison.OrdinalIgnoreCase)))
             return "Supabase schema is out of date - run the upgrade SQL at the end of src/FinanceApp.Infrastructure/Supabase/schema.sql";
 
+        // Postgres reports the refusal, not the cause. Every policy in the schema is
+        // scoped to the signed-in role and keyed on auth.uid() = user_id, so this
+        // almost always means the request went out as the anon key because no
+        // session was attached - which the sync engine now catches before sending,
+        // and this covers the paths that do reach the server anyway.
+        if (message.Contains("row-level security", StringComparison.OrdinalIgnoreCase) ||
+            message.Contains("42501", StringComparison.Ordinal))
+            return "Supabase rejected the sync because this device was not signed in to the cloud. Sign out and sign in again to reconnect it.";
+
         return message;
     }
 }

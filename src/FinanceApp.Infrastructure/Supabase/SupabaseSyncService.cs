@@ -12,8 +12,8 @@ using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Pushes local changes to Supabase via upsert (create/update) or delete.
-/// When Supabase is not configured the calls are skipped so the app
-/// keeps working offline on local SQLite.
+/// When Supabase is not configured, or no one is signed in to it, the calls are
+/// deferred rather than sent: see <see cref="RequireSignedInClientAsync"/>.
 /// </summary>
 public class SupabaseSyncService : ISupabaseSyncService
 {
@@ -65,14 +65,57 @@ public class SupabaseSyncService : ISupabaseSyncService
             _logger.LogInformation("Supabase sync service initialized");
     }
 
-    public async Task SyncAccountAsync(Account entity, SyncOperationType operationType, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// The client every write and read must go through.
+    /// <para>
+    /// A client with no signed-in session still sends requests: the SDK falls back
+    /// to presenting the anon key as <c>Authorization: Bearer</c>, so Postgres runs
+    /// the statement as the <c>anon</c> role with <c>auth.uid()</c> null. Every
+    /// policy in the schema is <c>to authenticated</c> and keyed on
+    /// <c>auth.uid() = user_id</c>, so such a request is refused on every table -
+    /// inserts loudly with "new row violates row-level security policy", and
+    /// selects and deletes silently as zero rows affected. Sending one buys
+    /// nothing: it cannot succeed, and on the way it would spend a retry and
+    /// record a failure the user cannot act on. So the absence of a session is
+    /// reported as a deferral and the operation stays owed.
+    /// </para>
+    /// <para>
+    /// <paramref name="localUserId"/> is the id the row carries. A signed-in
+    /// session whose user is somebody else is refused the same way, and the fix
+    /// differs - that one is cleared by signing in again rather than by waiting -
+    /// so the two are named apart here, where the answer is available. Postgres
+    /// cannot tell them apart: it reports the refusal, not the cause.
+    /// </para>
+    /// </summary>
+    private async Task<global::Supabase.Client> RequireSignedInClientAsync(
+        Guid localUserId,
+        CancellationToken cancellationToken)
     {
         var client = await _clientProvider.TryGetClientAsync(cancellationToken);
         if (client == null)
         {
-            _logger.LogDebug("Skipping account sync {AccountId} - Supabase not configured", entity.Id);
-            return;
+            throw new SyncDeferredException(
+                "Finora's cloud is not reachable - your changes are saved on this device and will sync when it is");
         }
+
+        if (client.Auth.CurrentSession?.AccessToken is not { Length: > 0 })
+        {
+            throw new SyncDeferredException(
+                "Not signed in to Finora's cloud yet - your changes are saved on this device and will sync once it is");
+        }
+
+        if (Guid.TryParse(client.Auth.CurrentUser?.Id, out var cloudUserId) && cloudUserId != localUserId)
+        {
+            throw new SyncDeferredException(
+                "The cloud is signed in as a different account than this data belongs to. Sign out and sign in again to reconnect it.");
+        }
+
+        return client;
+    }
+
+    public async Task SyncAccountAsync(Account entity, SyncOperationType operationType, CancellationToken cancellationToken = default)
+    {
+        var client = await RequireSignedInClientAsync(entity.UserId, cancellationToken);
 
         if (operationType == SyncOperationType.Delete)
         {
@@ -164,12 +207,7 @@ public class SupabaseSyncService : ISupabaseSyncService
 
     public async Task SyncCategoryAsync(Category entity, SyncOperationType operationType, CancellationToken cancellationToken = default)
     {
-        var client = await _clientProvider.TryGetClientAsync(cancellationToken);
-        if (client == null)
-        {
-            _logger.LogDebug("Skipping category sync {CategoryId} - Supabase not configured", entity.Id);
-            return;
-        }
+        var client = await RequireSignedInClientAsync(entity.UserId, cancellationToken);
 
         if (operationType == SyncOperationType.Delete)
         {
@@ -201,12 +239,7 @@ public class SupabaseSyncService : ISupabaseSyncService
 
     public async Task SyncTransactionAsync(Transaction entity, SyncOperationType operationType, CancellationToken cancellationToken = default)
     {
-        var client = await _clientProvider.TryGetClientAsync(cancellationToken);
-        if (client == null)
-        {
-            _logger.LogDebug("Skipping transaction sync {TransactionId} - Supabase not configured", entity.Id);
-            return;
-        }
+        var client = await RequireSignedInClientAsync(entity.UserId, cancellationToken);
 
         if (operationType == SyncOperationType.Delete)
         {
@@ -238,12 +271,7 @@ public class SupabaseSyncService : ISupabaseSyncService
 
     public async Task SyncBudgetAsync(Budget entity, SyncOperationType operationType, CancellationToken cancellationToken = default)
     {
-        var client = await _clientProvider.TryGetClientAsync(cancellationToken);
-        if (client == null)
-        {
-            _logger.LogDebug("Skipping budget sync {BudgetId} - Supabase not configured", entity.Id);
-            return;
-        }
+        var client = await RequireSignedInClientAsync(entity.UserId, cancellationToken);
 
         if (operationType == SyncOperationType.Delete)
         {
@@ -331,12 +359,7 @@ public class SupabaseSyncService : ISupabaseSyncService
 
     public async Task SyncRecurringTransactionAsync(RecurringTransaction entity, SyncOperationType operationType, CancellationToken cancellationToken = default)
     {
-        var client = await _clientProvider.TryGetClientAsync(cancellationToken);
-        if (client == null)
-        {
-            _logger.LogDebug("Skipping recurring transaction sync {RecurringTransactionId} - Supabase not configured", entity.Id);
-            return;
-        }
+        var client = await RequireSignedInClientAsync(entity.UserId, cancellationToken);
 
         if (operationType == SyncOperationType.Delete)
         {
@@ -373,12 +396,7 @@ public class SupabaseSyncService : ISupabaseSyncService
 
     public async Task SyncFinancialGoalAsync(FinancialGoal entity, SyncOperationType operationType, CancellationToken cancellationToken = default)
     {
-        var client = await _clientProvider.TryGetClientAsync(cancellationToken);
-        if (client == null)
-        {
-            _logger.LogDebug("Skipping financial goal sync {FinancialGoalId} - Supabase not configured", entity.Id);
-            return;
-        }
+        var client = await RequireSignedInClientAsync(entity.UserId, cancellationToken);
 
         if (operationType == SyncOperationType.Delete)
         {
@@ -421,12 +439,13 @@ public class SupabaseSyncService : ISupabaseSyncService
 
     public async Task<int> PullAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var client = await _clientProvider.TryGetClientAsync(cancellationToken);
-        if (client == null)
-        {
-            _logger.LogDebug("Skipping pull - Supabase not configured");
-            return 0;
-        }
+        // Gated for the same reason the pushes are. A read sent as the anon key is
+        // not refused - it is answered with zero rows, because the policies that
+        // would show this user's rows are scoped to the signed-in role. That reads
+        // as "the server has nothing for you" rather than as a refusal, which is
+        // how a second device ends up showing an empty app with sync reporting
+        // success.
+        var client = await RequireSignedInClientAsync(userId, cancellationToken);
 
         // Each table pulls independently: one missing/blocked table must not
         // abort the other five.

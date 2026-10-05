@@ -113,15 +113,22 @@ public partial class SettingsViewModel : BaseViewModel
             {
                 await _dialogService.ShowToastAsync($"Sent {result.SyncedCount}, received {result.PulledCount}");
             }
+            else if (result.DeferredCount > 0)
+            {
+                // Nothing failed and nothing was lost: the cloud could not take the
+                // changes yet, so they are still queued.
+                await _dialogService.ShowErrorAsync("Sync Paused", result.ErrorMessage ?? "Sync will resume automatically.");
+            }
             else
             {
-                await _dialogService.ShowAlertAsync("Sync Failed", result.ErrorMessage ?? "Unknown error");
+                var offline = (result.ErrorMessage ?? string.Empty).StartsWith("No internet", StringComparison.OrdinalIgnoreCase);
+                await _dialogService.ShowErrorAsync(offline ? "No internet" : "Sync Failed", result.ErrorMessage ?? "Unknown error");
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during sync");
-            await _dialogService.ShowAlertAsync("Sync Error", ex.Message);
+            await _dialogService.ShowErrorAsync("Sync Error", ex.Message);
         }
         finally
         {
@@ -169,15 +176,20 @@ public partial class SettingsViewModel : BaseViewModel
             {
                 await _dialogService.ShowToastAsync($"Force sent {result.SyncedCount}, received {result.PulledCount}");
             }
+            else if (result.DeferredCount > 0)
+            {
+                await _dialogService.ShowErrorAsync("Sync Paused", result.ErrorMessage ?? "Sync will resume automatically.");
+            }
             else
             {
-                await _dialogService.ShowAlertAsync("Force Sync Failed", result.ErrorMessage ?? "Unknown error");
+                var offline = (result.ErrorMessage ?? string.Empty).StartsWith("No internet", StringComparison.OrdinalIgnoreCase);
+                await _dialogService.ShowErrorAsync(offline ? "No internet" : "Force Sync Failed", result.ErrorMessage ?? "Unknown error");
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during force sync");
-            await _dialogService.ShowAlertAsync("Force Sync Error", ex.Message);
+            await _dialogService.ShowErrorAsync("Force Sync Error", ex.Message);
         }
         finally
         {

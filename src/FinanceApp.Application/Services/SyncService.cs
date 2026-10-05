@@ -127,6 +127,7 @@ public class SyncService : BaseService, ISyncService, IDisposable
             var pushedCount = 0;
             var pulledCount = 0;
             var failedCount = 0;
+            var deferredCount = 0;
             string? lastError = null;
 
             if (pendingOperations.Any())
@@ -147,6 +148,7 @@ public class SyncService : BaseService, ISyncService, IDisposable
             syncedCount += pushed.Synced;
             pushedCount += pushed.Synced;
             failedCount += pushed.Failed;
+            deferredCount += pushed.Deferred;
             lastError = pushed.LastError;
 
             await UnitOfWork.SaveChangesAsync(_syncCts.Token);
@@ -159,6 +161,16 @@ public class SyncService : BaseService, ISyncService, IDisposable
                 var pulled = await _supabaseSyncService.PullAsync(userId, _syncCts.Token);
                 pulledCount = pulled;
                 syncedCount += pulled;
+            }
+            catch (SyncDeferredException ex)
+            {
+                // Nothing came back, and nothing was broken: the rows this user is
+                // entitled to read are not visible without a session. Reporting it
+                // as a failure would also stop the batch below, which is the right
+                // call - it would only repeat the same refusal.
+                deferredCount++;
+                lastError = ex.Message;
+                _logger.LogInformation("Pull deferred for user {UserId}: {Reason}", userId, ex.Message);
             }
             catch (Exception ex)
             {
@@ -177,20 +189,27 @@ public class SyncService : BaseService, ISyncService, IDisposable
                 .Where(o => !pushed.Attempted.Contains(o.Id))
                 .ToList();
 
-            if (queuedByThePull.Count > 0)
+            if (queuedByThePull.Count > 0 && deferredCount == 0)
             {
                 _logger.LogInformation("Pushing {Count} operations the pull queued for user {UserId}", queuedByThePull.Count, userId);
                 var afterPull = await PushAsync(queuedByThePull, userId, _syncCts.Token);
                 syncedCount += afterPull.Synced;
                 pushedCount += afterPull.Synced;
                 failedCount += afterPull.Failed;
+                deferredCount += afterPull.Deferred;
                 lastError = afterPull.LastError ?? lastError;
                 await UnitOfWork.SaveChangesAsync(_syncCts.Token);
             }
 
-            _logger.LogInformation("Sync completed for user {UserId}: {Synced} synced ({Pushed} pushed, {Pulled} pulled), {Failed} failed", userId, syncedCount, pushedCount, pulledCount, failedCount);
+            _logger.LogInformation("Sync completed for user {UserId}: {Synced} synced ({Pushed} pushed, {Pulled} pulled), {Failed} failed, {Deferred} deferred", userId, syncedCount, pushedCount, pulledCount, failedCount, deferredCount);
 
-            return new SyncResultDto(failedCount == 0, pushedCount, failedCount, lastError, pulledCount);
+            return new SyncResultDto(
+                failedCount == 0 && deferredCount == 0,
+                pushedCount,
+                failedCount,
+                lastError,
+                pulledCount,
+                deferredCount);
         }
         catch (OperationCanceledException)
         {
@@ -364,14 +383,20 @@ public class SyncService : BaseService, ISyncService, IDisposable
     /// Pushes a batch of operations, in the order <see cref="OrderForPush"/> puts
     /// them, and reports which ones it touched so a later pass can tell the work
     /// still owed from the work already tried.
+    /// <para>
+    /// <paramref name="Deferred"/> counts the operations that were not attempted
+    /// because the cloud could not accept them yet. Those are still pending and are
+    /// not failures, so they are kept out of both the synced and the failed tally.
+    /// </para>
     /// </summary>
-    private async Task<(int Synced, int Failed, string? LastError, HashSet<Guid> Attempted)> PushAsync(
+    private async Task<(int Synced, int Failed, string? LastError, HashSet<Guid> Attempted, int Deferred)> PushAsync(
         IReadOnlyList<SyncOperation> operations,
         Guid userId,
         CancellationToken cancellationToken)
     {
         var synced = 0;
         var failed = 0;
+        var deferred = 0;
         string? lastError = null;
         var attempted = new HashSet<Guid>();
 
@@ -389,6 +414,22 @@ public class SyncService : BaseService, ISyncService, IDisposable
                 await _syncRepository.UpdateAsync(operation, cancellationToken);
                 synced++;
             }
+            catch (SyncDeferredException ex)
+            {
+                // Nothing was sent, so this operation is still owed. It must keep
+                // its pending status and its retry budget: marking it synced would
+                // retire a change that never left the device, and counting a retry
+                // would spend the budget on a server that was never asked. The rest
+                // of the batch is left alone too - the reason applies to every row,
+                // so attempting them would only repeat the same refusal. The next
+                // tick picks the whole batch up again.
+                deferred++;
+                lastError = ex.Message;
+                _logger.LogInformation(
+                    "Deferred the push of {Skipped} operation(s) for user {UserId}: {Reason}",
+                    operations.Count - attempted.Count + 1, userId, ex.Message);
+                break;
+            }
             catch (Exception ex)
             {
                 operation.IncrementRetry(SyncErrorSanitizer.Sanitize(ex.Message));
@@ -399,7 +440,7 @@ public class SyncService : BaseService, ISyncService, IDisposable
             }
         }
 
-        return (synced, failed, lastError, attempted);
+        return (synced, failed, lastError, attempted, deferred);
     }
 
     /// <summary>

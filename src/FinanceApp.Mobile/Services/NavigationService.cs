@@ -57,6 +57,7 @@ public class DialogService : IDialogService
     private readonly ToastService _toastService;
     private readonly ChoiceSheetService _choiceSheetService;
     private readonly ConfirmModalService _confirmModalService;
+    private readonly ErrorModalService _errorModalService;
     private readonly SuccessAnimationService _successAnimationService;
 
     public DialogService(
@@ -64,12 +65,14 @@ public class DialogService : IDialogService
         ToastService toastService,
         ChoiceSheetService choiceSheetService,
         ConfirmModalService confirmModalService,
+        ErrorModalService errorModalService,
         SuccessAnimationService successAnimationService)
     {
         _logger = logger;
         _toastService = toastService;
         _choiceSheetService = choiceSheetService;
         _confirmModalService = confirmModalService;
+        _errorModalService = errorModalService;
         _successAnimationService = successAnimationService;
     }
 
@@ -97,6 +100,18 @@ public class DialogService : IDialogService
         var page = GetMainPage();
         if (page == null) return;
         await page.DisplayAlertAsync(title, message, cancelText);
+    }
+
+    public async Task ShowErrorAsync(string title, string message)
+    {
+        if (_errorModalService.HasHost)
+            await _errorModalService.ShowAsync(title, message);
+        else
+        {
+            var page = GetMainPage();
+            if (page == null) return;
+            await page.DisplayAlertAsync(title, message, "OK");
+        }
     }
 
     public async Task<string?> ShowActionSheetAsync(string title, string cancel, string? destruction, params string[] buttons)

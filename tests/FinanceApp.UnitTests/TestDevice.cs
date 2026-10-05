@@ -32,10 +32,22 @@ internal sealed class TestDevice : IDisposable
 {
     private readonly SqliteConnection _connection;
     private readonly FinanceAppDbContext _context;
+    private readonly SupabaseClientProvider _cloud;
 
-    public TestDevice(PostgrestStub cloud)
+    public TestDevice(PostgrestStub cloud, Guid? userId = null)
     {
         Cloud = cloud;
+        _cloud = new SupabaseClientProvider(
+            Options.Create(new DatabaseOptions
+            {
+                SupabaseUrl = cloud.Url,
+                SupabaseAnonKey = cloud.AnonKey
+            }),
+            NullLogger<SupabaseClientProvider>.Instance);
+
+        if (userId is { } id)
+            SignIn(id);
+
         _connection = new SqliteConnection("Data Source=:memory:");
         _connection.Open();
         _context = new FinanceAppDbContext(
@@ -70,16 +82,19 @@ internal sealed class TestDevice : IDisposable
 
     public ISupabaseSyncService Transport() =>
         new SupabaseSyncService(
-            new SupabaseClientProvider(
-                Options.Create(new DatabaseOptions
-                {
-                    SupabaseUrl = Cloud.Url,
-                    SupabaseAnonKey = "stub-anon-key"
-                }),
-                NullLogger<SupabaseClientProvider>.Instance),
+            _cloud,
             Work,
             Balances,
             NullLogger<SupabaseSyncService>.Instance);
+
+    private void SignIn(Guid userId)
+    {
+        var client = _cloud.TryGetClientAsync().GetAwaiter().GetResult()
+            ?? throw new InvalidOperationException("The cloud stub did not come up.");
+
+        client.Auth.SetSession(PostgrestStub.SessionTokenFor(userId.ToString()), "stub-refresh-token")
+            .GetAwaiter().GetResult();
+    }
 
     public SyncService Sync() =>
         new SyncService(
