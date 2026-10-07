@@ -244,6 +244,23 @@ public class TransactionRepository : BaseRepository<Transaction>, ITransactionRe
             .ToList();
     }
 
+    public async Task<IReadOnlyList<DailyTotal>> GetDailyTotalsAsync(
+        Guid userId,
+        DateTime startDate,
+        DateTime endDate,
+        CancellationToken cancellationToken = default)
+    {
+        var rows = await DbSet.AsNoTracking()
+            .Where(t => t.UserId == userId && t.Date >= startDate.Date && t.Date <= endDate.Date)
+            .Select(t => new { t.Date, t.Type, Amount = t.Amount.Amount })
+            .ToListAsync(cancellationToken);
+
+        return rows
+            .GroupBy(r => new { r.Date.Year, r.Date.Month, r.Date.Day, r.Type })
+            .Select(g => new DailyTotal(g.Key.Year, g.Key.Month, g.Key.Day, g.Key.Type, g.Sum(r => r.Amount)))
+            .ToList();
+    }
+
     public async Task<int> CountByDateRangeAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default) =>
         await DbSet.AsNoTracking()
             .CountAsync(t => t.UserId == userId && t.Date >= startDate.Date && t.Date <= endDate.Date, cancellationToken);

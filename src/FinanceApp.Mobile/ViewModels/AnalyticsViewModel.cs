@@ -2,6 +2,7 @@ namespace FinanceApp.Mobile.ViewModels;
 
 using FinanceApp.Application.DTOs;
 using FinanceApp.Application.Interfaces;
+using FinanceApp.Domain.Enums;
 using FinanceApp.Domain.ValueObjects;
 using FinanceApp.Mobile.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -18,19 +19,22 @@ public partial class AnalyticsViewModel : BaseViewModel
     private readonly ILogger<AnalyticsViewModel> _logger;
 
     [ObservableProperty]
-    private AnalyticsDto? _analytics;
+    private StatisticsDto? _statistics;
 
     [ObservableProperty]
-    private int _selectedMonths = 6;
+    private StatisticsPeriod _selectedPeriod = StatisticsPeriod.Month;
 
     [ObservableProperty]
-    private bool _showIncomeChart;
+    private string _earningChangeText = string.Empty;
 
     [ObservableProperty]
-    private bool _showExpenseChart;
+    private string _spendingChangeText = string.Empty;
 
     [ObservableProperty]
-    private bool _showSavingsChart;
+    private string _goalText = string.Empty;
+
+    [ObservableProperty]
+    private bool _hasGoal;
 
     public AnalyticsViewModel(
         IDashboardService dashboardService,
@@ -46,7 +50,7 @@ public partial class AnalyticsViewModel : BaseViewModel
         _navigationService = navigationService;
         _dialogService = dialogService;
         _logger = logger;
-        Title = "Analytics";
+        Title = "Statistics";
     }
 
     [RelayCommand]
@@ -64,17 +68,19 @@ public partial class AnalyticsViewModel : BaseViewModel
             var userId = await _authService.GetCurrentUserIdAsync();
             if (!userId.HasValue) return;
 
-            var months = SelectedMonths;
+            var period = SelectedPeriod;
 
-            Analytics = await QueryOffUiThreadAsync(services =>
-                services.GetRequiredService<IDashboardService>().GetAnalyticsAsync(userId.Value, months, CancellationToken.None));
+            Statistics = await QueryOffUiThreadAsync(services =>
+                services.GetRequiredService<IDashboardService>().GetStatisticsAsync(userId.Value, period, CancellationToken.None));
+
+            UpdateChangeTexts();
 
             MarkLoaded();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error loading analytics");
-            SetError("Failed to load analytics");
+            _logger.LogError(ex, "Error loading statistics");
+            SetError("Failed to load statistics");
         }
         finally
         {
@@ -90,10 +96,36 @@ public partial class AnalyticsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task ChangePeriodAsync(string months)
+    private async Task ChangePeriodAsync(string period)
     {
-        if (!int.TryParse(months, out var value)) return;
-        SelectedMonths = value;
+        if (!Enum.TryParse<StatisticsPeriod>(period, true, out var value)) return;
+        SelectedPeriod = value;
+        InvalidateLoad();
         await LoadAsync();
+    }
+
+    private void UpdateChangeTexts()
+    {
+        EarningChangeText = DescribeChange(Statistics?.EarningChangePercent, Statistics?.TotalEarning);
+        SpendingChangeText = DescribeChange(Statistics?.SpendingChangePercent, Statistics?.TotalSpending);
+        HasGoal = Statistics?.PrimaryGoal is not null;
+        GoalText = Statistics?.PrimaryGoal is { } goal
+            ? $"{goal.CurrentAmount}/{goal.TargetAmount}"
+            : string.Empty;
+    }
+
+    private static string DescribeChange(decimal? percent, Money? current)
+    {
+        if (percent is null)
+            return current is not null && current.Amount > 0 ? "New" : "No change";
+
+        var direction = percent >= 0 ? "increased" : "decreased";
+        return $"{direction} by {Math.Abs(percent.Value):0.#}%";
+    }
+
+    partial void OnSelectedPeriodChanged(StatisticsPeriod value)
+    {
+        // DataTriggers on the period pills bind to SelectedPeriod, so a fresh
+        // load refreshes the highlight automatically.
     }
 }

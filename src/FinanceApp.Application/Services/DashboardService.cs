@@ -131,6 +131,173 @@ public class DashboardService : BaseService, IDashboardService
             monthsInPeriod);
     }
 
+    public async Task<StatisticsDto> GetStatisticsAsync(Guid userId, StatisticsPeriod period, CancellationToken cancellationToken = default)
+    {
+        var today = DateTime.Today;
+        var (start, end) = GetPeriodRange(period, today);
+        var (prevStart, prevEnd) = GetPreviousPeriodRange(start, end);
+
+        var totalBalance = await _accountRepository.GetTotalBalanceAsync(userId, cancellationToken);
+
+        var income = await _transactionRepository.GetTotalByTypeAsync(userId, TransactionType.Income, start, end, cancellationToken);
+        var expense = await _transactionRepository.GetTotalByTypeAsync(userId, TransactionType.Expense, start, end, cancellationToken);
+        var prevIncome = await _transactionRepository.GetTotalByTypeAsync(userId, TransactionType.Income, prevStart, prevEnd, cancellationToken);
+        var prevExpense = await _transactionRepository.GetTotalByTypeAsync(userId, TransactionType.Expense, prevStart, prevEnd, cancellationToken);
+
+        var spendingChange = PercentageChange(expense.Amount, prevExpense.Amount);
+        var earningChange = PercentageChange(income.Amount, prevIncome.Amount);
+
+        var savingsRate = income.Amount > 0
+            ? Math.Round(((income.Amount - expense.Amount) / income.Amount) * 100, 2)
+            : 0;
+
+        var overview = await BuildOverviewAsync(userId, period, start, end, cancellationToken);
+        var byAccountType = await BuildSpendingByAccountTypeAsync(userId, start, end, cancellationToken);
+
+        var activeGoals = await _goalRepository.GetActiveByUserIdAsync(userId, cancellationToken);
+        var primaryGoal = activeGoals.Count > 0 ? activeGoals[0].ToDto() : null;
+
+        return new StatisticsDto(
+            totalBalance,
+            expense,
+            income,
+            income.Subtract(expense),
+            savingsRate,
+            spendingChange,
+            earningChange,
+            overview,
+            byAccountType,
+            primaryGoal);
+    }
+
+    /// <summary>
+    /// Monday-first week, matching the convention used across the rest of the
+    /// app's week-based views. Ranges are inclusive day bounds, the same
+    /// convention the transaction repository uses.
+    /// </summary>
+    private static (DateTime Start, DateTime End) GetPeriodRange(StatisticsPeriod period, DateTime today)
+    {
+        return period switch
+        {
+            StatisticsPeriod.Today => (today, today),
+            StatisticsPeriod.Week => (today.AddDays(-((int)today.DayOfWeek + 6) % 7), today.AddDays(-((int)today.DayOfWeek + 6) % 7).AddDays(6)),
+            StatisticsPeriod.Month => (new DateTime(today.Year, today.Month, 1), new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month))),
+            StatisticsPeriod.Year => (new DateTime(today.Year, 1, 1), new DateTime(today.Year, 12, 31)),
+            _ => (today, today)
+        };
+    }
+
+    private static (DateTime Start, DateTime End) GetPreviousPeriodRange(DateTime start, DateTime end)
+    {
+        var length = (end - start).Days;
+        var prevEnd = start.AddDays(-1);
+        return (prevEnd.AddDays(-length), prevEnd);
+    }
+
+    /// <summary>
+    /// (current - previous) / previous * 100. Null when the previous period was
+    /// zero: the caller decides how to render "no baseline" instead of this
+    /// leaking an invalid percentage into the UI.
+    /// </summary>
+    private static decimal? PercentageChange(decimal current, decimal previous)
+    {
+        if (previous == 0)
+            return null;
+
+        return Math.Round((current - previous) / previous * 100, 1);
+    }
+
+    private async Task<IReadOnlyList<StatisticsChartPointDto>> BuildOverviewAsync(
+        Guid userId,
+        StatisticsPeriod period,
+        DateTime start,
+        DateTime end,
+        CancellationToken cancellationToken)
+    {
+        var buckets = GetBuckets(period, start, end);
+
+        if (period == StatisticsPeriod.Year)
+        {
+            // One round-trip for the whole chart window.
+            var monthly = await _transactionRepository.GetMonthlyTotalsAsync(userId, start, end, cancellationToken);
+            var byMonth = monthly
+                .GroupBy(t => (t.Year, t.Month))
+                .ToDictionary(g => g.Key, g => g.ToDictionary(t => t.Type, t => t.Total));
+
+            var results = new List<StatisticsChartPointDto>(buckets.Count);
+            foreach (var bucket in buckets)
+            {
+                byMonth.TryGetValue((bucket.Start.Year, bucket.Start.Month), out var forMonth);
+                results.Add(new StatisticsChartPointDto(
+                    bucket.Label,
+                    bucket.Start,
+                    bucket.End,
+                    forMonth is not null && forMonth.TryGetValue(TransactionType.Expense, out var e) ? new Money(e, "PHP") : Money.Zero("PHP"),
+                    forMonth is not null && forMonth.TryGetValue(TransactionType.Income, out var i) ? new Money(i, "PHP") : Money.Zero("PHP")));
+            }
+            return results;
+        }
+
+        // Today/Week/Month bucket per day, so one daily projection covers all three.
+        var daily = await _transactionRepository.GetDailyTotalsAsync(userId, start, end, cancellationToken);
+        var byDay = daily
+            .GroupBy(t => new { t.Year, t.Month, t.Day })
+            .ToDictionary(g => g.Key, g => g.ToDictionary(t => t.Type, t => t.Total));
+
+        var points = new List<StatisticsChartPointDto>(buckets.Count);
+        foreach (var bucket in buckets)
+        {
+            // Today's bucket spans the whole day; week/month buckets are single days.
+            var key = new { bucket.Start.Year, bucket.Start.Month, bucket.Start.Day };
+            byDay.TryGetValue(key, out var forDay);
+            points.Add(new StatisticsChartPointDto(
+                bucket.Label,
+                bucket.Start,
+                bucket.End,
+                forDay is not null && forDay.TryGetValue(TransactionType.Expense, out var e) ? new Money(e, "PHP") : Money.Zero("PHP"),
+                forDay is not null && forDay.TryGetValue(TransactionType.Income, out var i) ? new Money(i, "PHP") : Money.Zero("PHP")));
+        }
+        return points;
+    }
+
+    private static IReadOnlyList<(string Label, DateTime Start, DateTime End)> GetBuckets(StatisticsPeriod period, DateTime start, DateTime end)
+    {
+        return period switch
+        {
+            StatisticsPeriod.Today => new[] { ("Today", start, end) },
+            StatisticsPeriod.Week => Enumerable.Range(0, 7).Select(i => (start.AddDays(i).ToString("ddd"), start.AddDays(i), start.AddDays(i))).ToList(),
+            StatisticsPeriod.Month => Enumerable.Range(0, (end - start).Days + 1).Select(i => (start.AddDays(i).Day.ToString(), start.AddDays(i), start.AddDays(i))).ToList(),
+            StatisticsPeriod.Year => Enumerable.Range(0, 12).Select(i => (start.AddMonths(i).ToString("MMM"), start.AddMonths(i), start.AddMonths(i).AddMonths(1).AddDays(-1))).ToList(),
+            _ => new[] { ("Today", start, end) }
+        };
+    }
+
+    private async Task<IReadOnlyList<SpendingSliceDto>> BuildSpendingByAccountTypeAsync(Guid userId, DateTime start, DateTime end, CancellationToken cancellationToken)
+    {
+        var transactions = await _transactionRepository.GetByDateRangeAsync(userId, start, end, cancellationToken);
+        var expenses = transactions.Where(t => t.Type == TransactionType.Expense && !t.IsDeleted).ToList();
+        if (expenses.Count == 0)
+            return Array.Empty<SpendingSliceDto>();
+
+        var accounts = await _accountRepository.GetByIdsAsync(
+            expenses.Select(t => t.AccountId.Value).Distinct().ToList(), cancellationToken);
+
+        var grouped = expenses
+            .GroupBy(t => accounts.TryGetValue(t.AccountId.Value, out var acc) ? acc.Type : AccountType.Other)
+            .Select(g => new { Type = g.Key, Total = g.Sum(t => t.Amount.Amount) })
+            .OrderByDescending(g => g.Total)
+            .ToList();
+
+        var total = grouped.Sum(g => g.Total);
+
+        return grouped
+            .Select(g => new SpendingSliceDto(
+                g.Type == AccountType.CreditCard ? "Credit Card" : g.Type.ToString(),
+                new Money(g.Total, "PHP"),
+                total > 0 ? Math.Round(g.Total / total * 100, 2) : 0))
+            .ToList();
+    }
+
     public async Task<IReadOnlyList<CalendarEventDto>> GetCalendarEventsAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
     {
         var transactions = await _transactionRepository.GetByDateRangeAsync(userId, startDate, endDate, cancellationToken);

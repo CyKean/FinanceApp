@@ -36,6 +36,9 @@ public interface ITransactionRepository : IRepository<Transaction>
     /// <summary>Income and expense per calendar month over a window, in one round-trip.</summary>
     Task<IReadOnlyList<MonthlyTotal>> GetMonthlyTotalsAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
 
+    /// <summary>Income and expense per calendar day over a window, in one round-trip.</summary>
+    Task<IReadOnlyList<DailyTotal>> GetDailyTotalsAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+
     /// <summary>Row count over a window, for a COUNT in SQL rather than in memory.</summary>
     Task<int> CountByDateRangeAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
 
