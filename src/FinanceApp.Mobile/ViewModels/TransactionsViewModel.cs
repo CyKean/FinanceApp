@@ -34,6 +34,9 @@ public partial class TransactionsViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isLoadingMore;
 
+    [ObservableProperty]
+    private bool _hasMore = true;
+
     /// <summary>False keeps the filter panel collapsed to a single summary row.</summary>
     [ObservableProperty]
     private bool _isFilterExpanded;
@@ -103,6 +106,7 @@ public partial class TransactionsViewModel : BaseViewModel
 
             Transactions = loaded.Item1;
             Summary = loaded.Item2;
+            HasMore = loaded.Item1.Count == PageSize;
 
             MarkLoaded();
         }
@@ -120,7 +124,7 @@ public partial class TransactionsViewModel : BaseViewModel
     [RelayCommand]
     private async Task LoadMoreAsync()
     {
-        if (IsBusy || IsLoadingMore) return;
+        if (IsBusy || IsLoadingMore || !HasMore) return;
 
         IsLoadingMore = true;
 
@@ -138,9 +142,15 @@ public partial class TransactionsViewModel : BaseViewModel
                 services.GetRequiredService<ITransactionService>().GetAllAsync(userId.Value, filter));
 
             Transactions = Transactions.Concat(moreTransactions).ToList();
+            HasMore = moreTransactions.Count == PageSize;
         }
         catch (Exception ex)
         {
+            // A failed page request is not the end of the list: roll the page
+            // back so a later threshold event retries the same page, and keep
+            // HasMore true so retry stays allowed.
+            _currentPage--;
+            Filter = Filter with { Page = _currentPage };
             _logger.LogError(ex, "Error loading more transactions");
         }
         finally
