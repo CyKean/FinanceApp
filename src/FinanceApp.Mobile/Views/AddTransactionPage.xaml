@@ -113,7 +113,7 @@
             <!-- Save Button -->
             <Button Text="{Binding IsEditing, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Update|Save'}" 
                     Command="{Binding SaveCommand}"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                    IsEnabled="{Binding IsSaveAvailable}"
                     Style="{StaticResource PrimaryButtonStyle}"
                     Margin="16,24,16,16" />
         </VerticalStackLayout>

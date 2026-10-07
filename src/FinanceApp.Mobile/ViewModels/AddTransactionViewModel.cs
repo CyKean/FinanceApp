@@ -76,6 +76,19 @@ public partial class AddTransactionViewModel : BaseViewModel
     public IReadOnlyList<AccountType> AccountTypes { get; } =
         Enum.GetValues<AccountType>();
 
+    [ObservableProperty]
+    private bool _hasChanges;
+
+    [ObservableProperty]
+    private bool _isSaveAvailable = true;
+
+    private TransactionType _originalType;
+    private decimal _originalAmount;
+    private DateTime _originalDate;
+    private string _originalNotes = string.Empty;
+    private Guid? _originalAccountId;
+    private Guid? _originalCategoryId;
+
     /// <summary>
     /// Optional override invoked after a successful save instead of navigating back.
     /// Used by bottom-sheet hosts, which close themselves.
@@ -105,6 +118,12 @@ public partial class AddTransactionViewModel : BaseViewModel
         _dialogService = dialogService;
         _sheetRequest = sheetRequest;
         _logger = logger;
+
+        PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(IsBusy))
+                RecomputeHasChanges();
+        };
     }
 
     public async Task InitializeAsync(TransactionType type, Guid? transactionId = null)
@@ -126,10 +145,17 @@ public partial class AddTransactionViewModel : BaseViewModel
         if (IsEditing && transactionId.HasValue)
         {
             Title = type == TransactionType.Expense ? "Edit Expense" : "Edit Income";
-            await LoadTransactionAsync(transactionId.Value);
         }
 
+        // The selection lists must exist before the transaction's ids can be
+        // resolved into AccountDto/CategoryDto rows.
         await LoadAccountsAndCategoriesAsync();
+
+        if (IsEditing && transactionId.HasValue)
+            await LoadTransactionAsync(transactionId.Value);
+
+        SaveOriginalSnapshot();
+        RecomputeHasChanges();
     }
 
     private async Task LoadAccountsAndCategoriesAsync()
@@ -158,8 +184,15 @@ public partial class AddTransactionViewModel : BaseViewModel
         if (transaction == null) return;
 
         Amount = transaction.Amount;
+        AmountText = transaction.Amount.Amount.ToString(CultureInfo.InvariantCulture);
         Date = transaction.Date;
         Notes = transaction.Notes ?? string.Empty;
+        TransactionType = transaction.Type;
+
+        // The type change above kicks off an async category reload; fetch the
+        // matching list synchronously so the selection resolves against it.
+        var categoryType = transaction.Type == TransactionType.Expense ? CategoryType.Expense : CategoryType.Income;
+        Categories = await _categoryService.GetActiveByTypeAsync(userId.Value, categoryType);
 
         SelectedAccount = Accounts.FirstOrDefault(a => a.Id == transaction.AccountId.Value);
         SelectedCategory = Categories.FirstOrDefault(c => c.Id == transaction.CategoryId.Value);
@@ -183,12 +216,19 @@ public partial class AddTransactionViewModel : BaseViewModel
 
             if (IsEditing && EditingTransactionId.HasValue)
             {
+                if (!HasChanges)
+                {
+                    await _dialogService.ShowToastAsync("No changes to save");
+                    return;
+                }
+
                 var updateDto = new UpdateTransactionDto(
                     Amount,
                     Date,
-                    string.IsNullOrWhiteSpace(Notes) ? null : Notes,
+                    string.IsNullOrWhiteSpace(Notes) ? string.Empty : Notes.Trim(),
                     SelectedAccount != null ? new AccountId(SelectedAccount.Id) : null,
-                    SelectedCategory != null ? new CategoryId(SelectedCategory.Id) : null);
+                    SelectedCategory != null ? new CategoryId(SelectedCategory.Id) : null,
+                    TransactionType);
 
                 await _transactionService.UpdateAsync(EditingTransactionId.Value, updateDto, userId.Value);
                 await _dialogService.ShowSuccessAsync("Transaction updated");
@@ -226,6 +266,16 @@ public partial class AddTransactionViewModel : BaseViewModel
     [RelayCommand]
     private async Task CancelAsync()
     {
+        if (IsEditing && HasChanges)
+        {
+            var discard = await _dialogService.ShowConfirmationAsync(
+                "Unsaved changes",
+                "You have unsaved changes. Are you sure you want to leave?",
+                "Discard",
+                "Stay");
+            if (!discard) return;
+        }
+
         if (OnCancelledCallback != null)
             await OnCancelledCallback();
         else
@@ -346,7 +396,45 @@ public partial class AddTransactionViewModel : BaseViewModel
     partial void OnTransactionTypeChanged(TransactionType value)
     {
         Title = value == TransactionType.Expense ? (IsEditing ? "Edit Expense" : "Add Expense") : (IsEditing ? "Edit Income" : "Add Income");
+        RecomputeHasChanges();
         _ = LoadCategoriesAsync();
+    }
+
+    partial void OnAmountTextChanged(string value) => RecomputeHasChanges();
+    partial void OnNotesChanged(string value) => RecomputeHasChanges();
+    partial void OnDateChanged(DateTime value) => RecomputeHasChanges();
+    partial void OnSelectedAccountChanged(AccountDto? value) => RecomputeHasChanges();
+    partial void OnSelectedCategoryChanged(CategoryDto? value) => RecomputeHasChanges();
+
+    private void SaveOriginalSnapshot()
+    {
+        _originalType = TransactionType;
+        _originalAmount = decimal.TryParse(AmountText, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed) ? parsed : 0m;
+        _originalDate = Date;
+        _originalNotes = Notes?.Trim() ?? string.Empty;
+        _originalAccountId = SelectedAccount?.Id;
+        _originalCategoryId = SelectedCategory?.Id;
+    }
+
+    private void RecomputeHasChanges()
+    {
+        if (!IsEditing)
+        {
+            HasChanges = true;
+            IsSaveAvailable = !IsBusy;
+            return;
+        }
+
+        var parsedAmount = decimal.TryParse(AmountText, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed) ? parsed : (decimal?)null;
+        HasChanges =
+            parsedAmount != _originalAmount ||
+            TransactionType != _originalType ||
+            Date.Date != _originalDate.Date ||
+            !string.Equals(Notes?.Trim() ?? string.Empty, _originalNotes, StringComparison.Ordinal) ||
+            SelectedAccount?.Id != _originalAccountId ||
+            SelectedCategory?.Id != _originalCategoryId;
+
+        IsSaveAvailable = !IsBusy && HasChanges;
     }
 
     private async Task LoadCategoriesAsync()
@@ -363,6 +451,18 @@ public partial class AddTransactionViewModel : BaseViewModel
         if (!decimal.TryParse(AmountText, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsedAmount) || parsedAmount <= 0)
         {
             SetError("Amount must be greater than zero");
+            return false;
+        }
+
+        if (parsedAmount != decimal.Round(parsedAmount, 2))
+        {
+            SetError("Amount can have at most two decimal places");
+            return false;
+        }
+
+        if (parsedAmount > 99_999_999m)
+        {
+            SetError("Amount is too large");
             return false;
         }
 

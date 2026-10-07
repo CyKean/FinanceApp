@@ -46,6 +46,13 @@ public class Transaction : Entity
         RecurringTransactionId = recurringTransactionId;
     }
 
+    public void UpdateType(TransactionType type)
+    {
+        Type = type;
+        UpdateTimestamp();
+        MarkAsPendingUpdate();
+    }
+
     public void UpdateAmount(Money amount)
     {
         if (amount.Amount <= 0)

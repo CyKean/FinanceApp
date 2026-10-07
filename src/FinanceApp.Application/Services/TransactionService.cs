@@ -120,6 +120,21 @@ public class TransactionService : BaseService, ITransactionService
             var oldAccountId = transaction.AccountId;
             var oldCategoryId = transaction.CategoryId;
 
+            if (dto.Type.HasValue && dto.Type.Value != transaction.Type)
+            {
+                // The category the transaction will end up in must match the new
+                // type, whether the caller also swapped the category or not.
+                var effectiveCategoryId = dto.CategoryId.HasValue ? dto.CategoryId.Value.Value : oldCategoryId.Value;
+                var effectiveCategory = await _categoryRepository.GetByIdAsync(effectiveCategoryId, cancellationToken)
+                    ?? throw new DomainExceptions.NotFoundException("Category", effectiveCategoryId);
+
+                var expectedType = dto.Type.Value == TransactionType.Expense ? CategoryType.Expense : CategoryType.Income;
+                if (effectiveCategory.Type != expectedType)
+                    throw new DomainExceptions.ValidationException("Category type does not match transaction type", "CATEGORY_TYPE_MISMATCH");
+
+                transaction.UpdateType(dto.Type.Value);
+            }
+
             if (dto.Amount != null)
                 transaction.UpdateAmount(dto.Amount);
 
@@ -127,7 +142,7 @@ public class TransactionService : BaseService, ITransactionService
                 transaction.UpdateDate(dto.Date.Value);
 
             if (dto.Notes != null)
-                transaction.UpdateNotes(dto.Notes);
+                transaction.UpdateNotes(string.IsNullOrWhiteSpace(dto.Notes) ? null : dto.Notes);
 
             if (dto.AccountId.HasValue)
             {
@@ -170,7 +185,7 @@ public class TransactionService : BaseService, ITransactionService
             if (oldType == TransactionType.Expense)
                 await RefreshBudgetSpendingAsync(userId, oldCategoryId, oldDate, cancellationToken);
             if (transaction.Type == TransactionType.Expense &&
-                (transaction.CategoryId != oldCategoryId || transaction.Date != oldDate))
+                (transaction.Type != oldType || transaction.CategoryId != oldCategoryId || transaction.Date != oldDate))
                 await RefreshBudgetSpendingAsync(userId, transaction.CategoryId, transaction.Date, cancellationToken);
 
             var account = await _accountRepository.GetByIdAsync(transaction.AccountId.Value, cancellationToken);

@@ -13,7 +13,9 @@ public class CreateTransactionDtoValidator : AbstractValidator<CreateTransaction
 
         RuleFor(x => x.Amount)
             .NotNull().WithMessage("Amount is required")
-            .Must(a => a.Amount > 0).WithMessage("Amount must be positive");
+            .Must(a => a.Amount > 0).WithMessage("Amount must be positive")
+            .Must(a => a.Amount == decimal.Round(a.Amount, 2)).WithMessage("Amount cannot have more than two decimal places")
+            .Must(a => a.Amount <= 99_999_999m).WithMessage("Amount is too large");
 
         RuleFor(x => x.Date)
             .NotEmpty().WithMessage("Date is required")
@@ -37,7 +39,13 @@ public class UpdateTransactionDtoValidator : AbstractValidator<UpdateTransaction
     {
         RuleFor(x => x.Amount)
             .Must(a => a != null && a.Amount > 0).WithMessage("Amount must be positive")
+            .Must(a => a == null || a.Amount == decimal.Round(a.Amount, 2)).WithMessage("Amount cannot have more than two decimal places")
+            .Must(a => a == null || a.Amount <= 99_999_999m).WithMessage("Amount is too large")
             .When(x => x.Amount != null);
+
+        RuleFor(x => x.Type)
+            .IsInEnum().WithMessage("Invalid transaction type")
+            .When(x => x.Type.HasValue);
 
         RuleFor(x => x.Date)
             .NotEmpty().WithMessage("Date is required")

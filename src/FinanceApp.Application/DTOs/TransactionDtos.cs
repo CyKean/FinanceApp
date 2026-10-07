@@ -38,7 +38,8 @@ public record UpdateTransactionDto(
     DateTime? Date = null,
     string? Notes = null,
     AccountId? AccountId = null,
-    CategoryId? CategoryId = null
+    CategoryId? CategoryId = null,
+    TransactionType? Type = null
 );
 
 public record TransactionFilterDto(
