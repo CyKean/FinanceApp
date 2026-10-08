@@ -14,8 +14,8 @@
         </Grid>
 
         <Border x:Name="Card"
-                Background="{StaticResource FinoraCard}"
-                Stroke="{StaticResource FinoraInk}"
+                Background="{DynamicResource FinoraCard}"
+                Stroke="{DynamicResource FinoraInk}"
                 StrokeThickness="1.5"
                 Padding="24,24,24,20"
                 WidthRequest="316"
@@ -26,7 +26,7 @@
                 <RoundRectangle CornerRadius="28" />
             </Border.StrokeShape>
             <Border.Shadow>
-                <Shadow Brush="#161B16" Opacity="0.30" Radius="28" Offset="0,12" />
+                <Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.30" Radius="28" Offset="0,12" />
             </Border.Shadow>
             <VerticalStackLayout Spacing="0">
                 <Border x:Name="IconBadge"
@@ -51,18 +51,18 @@
                        FontSize="19"
                        FontAttributes="Bold"
                        HorizontalTextAlignment="Center"
-                       TextColor="{StaticResource FinoraInk}" />
+                       TextColor="{DynamicResource FinoraInk}" />
 
                 <Label x:Name="MessageLabel"
                        FontSize="14"
                        HorizontalTextAlignment="Center"
                        LineBreakMode="WordWrap"
                        Margin="0,8,0,0"
-                       TextColor="{StaticResource FinoraMuted}" />
+                       TextColor="{DynamicResource FinoraMuted}" />
 
                 <Button x:Name="OkButton"
                         Style="{StaticResource PrimaryButtonStyle}"
-                        TextColor="{StaticResource FinoraLime}"
+                        TextColor="{DynamicResource FinoraLime}"
                         HeightRequest="48"
                         Margin="0,22,0,0"
                         Text="OK"

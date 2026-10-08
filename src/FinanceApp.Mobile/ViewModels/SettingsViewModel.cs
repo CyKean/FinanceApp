@@ -3,6 +3,7 @@ namespace FinanceApp.Mobile.ViewModels;
 using FinanceApp.Application.DTOs;
 using FinanceApp.Application.Interfaces;
 using FinanceApp.Mobile.Services;
+using FinanceApp.Mobile.Services.Theming;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,7 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly INavigationService _navigationService;
     private readonly IDialogService _dialogService;
     private readonly AppUpdatePromptService _updatePrompt;
+    private readonly ThemeService _themeService;
     private readonly ILogger<SettingsViewModel> _logger;
 
     [ObservableProperty]
@@ -38,6 +40,9 @@ public partial class SettingsViewModel : BaseViewModel
     [ObservableProperty]
     private string _appVersion = string.Empty;
 
+    [ObservableProperty]
+    private string _activeThemeName = string.Empty;
+
     public SettingsViewModel(
         IAuthenticationService authService,
         ISyncService syncService,
@@ -45,6 +50,7 @@ public partial class SettingsViewModel : BaseViewModel
         INavigationService navigationService,
         IDialogService dialogService,
         AppUpdatePromptService updatePrompt,
+        ThemeService themeService,
         ILogger<SettingsViewModel> logger)
     {
         _authService = authService;
@@ -53,7 +59,10 @@ public partial class SettingsViewModel : BaseViewModel
         _navigationService = navigationService;
         _dialogService = dialogService;
         _updatePrompt = updatePrompt;
+        _themeService = themeService;
         _logger = logger;
+        ActiveThemeName = _themeService.DisplayName;
+        _themeService.ThemeChanged += (_, _) => ActiveThemeName = _themeService.DisplayName;
         Title = "Settings";
     }
 

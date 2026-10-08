@@ -32,7 +32,7 @@
                              <SwipeView.RightItems>
                                  <SwipeItems>
                                      <SwipeItem Text="Edit"
-                                                BackgroundColor="#512BD4"
+                                                BackgroundColor="{DynamicResource Primary}"
                                                 Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.EditGoalCommand}"
                                                 CommandParameter="{Binding .}" />
                                      <SwipeItem Text="Add Progress" 

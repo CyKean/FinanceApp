@@ -9,7 +9,7 @@
              x:DataType="viewmodels:ChatViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}"
+             BackgroundColor="{DynamicResource FinoraCream}"
              x:Name="ChatPageView">
 
     <ContentPage.Resources>
@@ -24,8 +24,8 @@
             <!-- Header -->
             <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Padding="18,14,18,8">
                 <Border WidthRequest="46" HeightRequest="46"
-                        Background="{StaticResource FinoraCard}"
-                        Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                        Background="{DynamicResource FinoraCard}"
+                        Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                         VerticalOptions="Center">
                     <Border.StrokeShape>
                         <Ellipse />
@@ -36,19 +36,19 @@
                     <Label Text="←"
                            FontSize="20"
                            FontAttributes="Bold"
-                           TextColor="{StaticResource FinoraInk}"
+                           TextColor="{DynamicResource FinoraInk}"
                            VerticalOptions="Center"
                            HorizontalOptions="Center" />
                 </Border>
 
                 <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                    <Label Text="AI Assistant" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
+                    <Label Text="AI Assistant" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
                     <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                        <Label Text="●" FontSize="12" TextColor="{StaticResource FinoraLimeDark}" VerticalOptions="Center"
+                        <Label Text="●" FontSize="12" TextColor="{DynamicResource FinoraLimeDark}" VerticalOptions="Center"
                                IsVisible="{Binding IsConfigured}" />
-                        <Label Text="●" FontSize="12" TextColor="{StaticResource Error}" VerticalOptions="Center"
+                        <Label Text="●" FontSize="12" TextColor="{DynamicResource Error}" VerticalOptions="Center"
                                IsVisible="{Binding IsConfigured, Converter={StaticResource InverseBoolConverter}}" />
-                        <Label Text="{Binding StatusLine}" FontSize="12" TextColor="#6F7668" VerticalOptions="Center" />
+                        <Label Text="{Binding StatusLine}" FontSize="12" TextColor="{DynamicResource FinoraMuted}" VerticalOptions="Center" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
 
@@ -72,8 +72,8 @@
                                     IsVisible="{Binding IsUser}"
                                     HorizontalOptions="End"
                                     MaximumWidthRequest="280"
-                                    Background="{StaticResource FinoraInk}"
-                                    Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                                    Background="{DynamicResource FinoraInk}"
+                                    Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                                     Padding="14,10">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="22,22,6,22" />
@@ -84,7 +84,7 @@
                                            FontSize="15"
                                            LineBreakMode="WordWrap" />
                                     <Label Text="{Binding TimeLabel}"
-                                           TextColor="{StaticResource FinoraLime}"
+                                           TextColor="{DynamicResource FinoraLime}"
                                            Opacity="0.8"
                                            FontSize="11"
                                            HorizontalTextAlignment="End" />
@@ -95,24 +95,24 @@
                                     IsVisible="{Binding IsUser, Converter={StaticResource InverseBoolConverter}}"
                                     HorizontalOptions="Start"
                                     MaximumWidthRequest="300"
-                                    Background="{StaticResource FinoraCard}"
-                                    Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                                    Background="{DynamicResource FinoraCard}"
+                                    Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                                     Padding="14,10">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="22,22,22,6" />
                                 </Border.StrokeShape>
                                 <VerticalStackLayout Spacing="3">
                                     <Label Text="{Binding Content}"
-                                           TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                           TextColor="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}"
                                            FontSize="15"
                                            LineBreakMode="WordWrap" />
                                     <Label Text="answered by cloud AI"
                                            IsVisible="{Binding UsedCloud}"
-                                           TextColor="{StaticResource Warning}"
+                                           TextColor="{DynamicResource Warning}"
                                            FontSize="10"
                                            FontAttributes="Italic" />
                                     <Label Text="{Binding TimeLabel}"
-                                           TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}"
+                                           TextColor="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}"
                                            FontSize="11"
                                            HorizontalTextAlignment="End" />
                                 </VerticalStackLayout>
@@ -135,7 +135,7 @@
                   HorizontalOptions="Start"
                   IsVisible="{Binding IsTyping}">
                 <ActivityIndicator IsRunning="{Binding IsTyping}"
-                                   Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                   Color="{AppThemeBinding Light={DynamicResource Primary}, Dark={DynamicResource PrimaryLight}}"
                                    HeightRequest="18"
                                    WidthRequest="18"
                                    VerticalOptions="Center" />
@@ -157,8 +157,8 @@
                     <DataTemplate x:DataType="x:String">
                         <Border Padding="14,8"
                                 Margin="0,0,8,0"
-                                Background="{StaticResource FinoraLime}"
-                                Stroke="{StaticResource FinoraInk}"
+                                Background="{DynamicResource FinoraLime}"
+                                Stroke="{DynamicResource FinoraInk}"
                                 StrokeThickness="1.5">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="100" />
@@ -170,7 +170,7 @@
                             <Label Text="{Binding .}"
                                    FontSize="13"
                                    FontAttributes="Bold"
-                                   TextColor="{StaticResource FinoraInk}" />
+                                   TextColor="{DynamicResource FinoraInk}" />
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
@@ -180,8 +180,8 @@
             <Border Grid.Row="4"
                     Margin="18,0,18,8"
                     Padding="12,8"
-                    Background="{StaticResource ErrorContainer}"
-                    Stroke="{StaticResource Error}"
+                    Background="{DynamicResource ErrorContainer}"
+                    Stroke="{DynamicResource Error}"
                     StrokeThickness="1.2"
                     IsVisible="{Binding HasError}">
                 <Border.StrokeShape>
@@ -189,15 +189,15 @@
                 </Border.StrokeShape>
                 <Label Text="{Binding ErrorMessage}"
                        FontSize="12"
-                       TextColor="{StaticResource OnErrorContainer}" />
+                       TextColor="{DynamicResource OnErrorContainer}" />
             </Border>
 
             <!-- Composer -->
             <Border Grid.Row="5"
                     Margin="18,6,18,18"
                     Padding="14,8,8,8"
-                    Background="{StaticResource FinoraCard}"
-                    Stroke="{StaticResource FinoraInk}"
+                    Background="{DynamicResource FinoraCard}"
+                    Stroke="{DynamicResource FinoraInk}"
                     StrokeThickness="1.5">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="28" />

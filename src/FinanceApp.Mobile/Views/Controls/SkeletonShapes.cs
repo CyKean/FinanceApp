@@ -149,7 +149,7 @@ public static class SkeletonShapes
     {
         var card = new Border
         {
-            BackgroundColor = Color.FromArgb("#232923"),
+            BackgroundColor = FinanceApp.Mobile.Helpers.FinoraOverlay.Resolve("FinoraInkSoft", "#232923"),
             StrokeThickness = 0,
             Padding = new Thickness(18),
             HeightRequest = height,

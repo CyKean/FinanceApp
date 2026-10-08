@@ -27,6 +27,10 @@ public partial class App : Microsoft.Maui.Controls.Application
         };
 
         _authService.AuthStateChanged += e => OnAuthStateChanged(e);
+
+        // Restore the saved theme before any page renders so the UI boots in
+        // the right palette; corrupt or missing values fall back to default.
+        _services.GetRequiredService<FinanceApp.Mobile.Services.Theming.ThemeService>().InitializeAsync().GetAwaiter().GetResult();
     }
 
     protected override Window CreateWindow(IActivationState? activationState)

@@ -8,7 +8,7 @@
              x:Class="FinanceApp.Mobile.Views.BudgetsPage"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}"
+             BackgroundColor="{DynamicResource FinoraCream}"
              x:Name="BudgetsPageView">
 
     <ContentPage.Resources>
@@ -30,46 +30,46 @@
         <ScrollView>
         <VerticalStackLayout Spacing="14" Padding="18,14,18,100">
             <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
-                <Border WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
+                <Border WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeTapped" /></Border.GestureRecognizers>
-                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
                 <VerticalStackLayout Grid.Column="1" Margin="10,0" VerticalOptions="Center">
-                    <Label Text="Budgets" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                    <Label Text="Keep spending inside the lines" FontSize="12" TextColor="#6F7668" />
+                    <Label Text="Budgets" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                    <Label Text="Keep spending inside the lines" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                 </VerticalStackLayout>
-                <Border Grid.Column="2" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="12,8">
+                <Border Grid.Column="2" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="12,8">
                     <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding AddBudgetCommand}" /></Border.GestureRecognizers>
-                    <Label Text="+ Set Budget" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                    <Label Text="+ Set Budget" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                 </Border>
             </Grid>
 
             <!-- Month navigator pill -->
-            <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="8">
+            <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="8">
                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                 <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8" VerticalOptions="Center">
-                    <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" Background="{StaticResource FinoraCream}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2">
+                    <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding PreviousMonthCommand}" /></Border.GestureRecognizers>
-                        <Label Text="←" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="←" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
-                    <Label Grid.Column="1" Text="{Binding CurrentMonth, StringFormat='{0:MMMM yyyy}'}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" HorizontalOptions="Center" />
-                    <Border Grid.Column="2" Background="{StaticResource FinoraCream}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" Padding="12,8">
+                    <Label Grid.Column="1" Text="{Binding CurrentMonth, StringFormat='{0:MMMM yyyy}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" HorizontalOptions="Center" />
+                    <Border Grid.Column="2" Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" Padding="12,8">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding CurrentMonthCommand}" /></Border.GestureRecognizers>
-                        <Label Text="Today" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                        <Label Text="Today" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                     </Border>
-                    <Border Grid.Column="3" WidthRequest="42" HeightRequest="42" Background="{StaticResource FinoraInk}" StrokeThickness="0">
+                    <Border Grid.Column="3" WidthRequest="42" HeightRequest="42" Background="{DynamicResource FinoraInk}" StrokeThickness="0">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NextMonthCommand}" /></Border.GestureRecognizers>
-                        <Label Text="→" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="→" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </Grid>
             </Border>
 
-            <Border Background="{StaticResource FinoraInk}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="16,12">
+            <Border Background="{DynamicResource FinoraInk}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="16,12">
                 <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenSuggestionsCommand}" /></Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
@@ -78,7 +78,7 @@
                         <Label Text="AI budget suggestions" FontSize="14" FontAttributes="Bold" TextColor="White" />
                         <Label Text="Smarter limits from your spending" FontSize="11" TextColor="White" Opacity="0.7" />
                     </VerticalStackLayout>
-                    <Label Grid.Column="2" Text="›" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" VerticalOptions="Center" />
+                    <Label Grid.Column="2" Text="›" FontSize="22" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" VerticalOptions="Center" />
                 </Grid>
             </Border>
 
@@ -88,44 +88,44 @@
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>
-                                    <SwipeItem Text="Edit" BackgroundColor="#161B16"
+                                    <SwipeItem Text="Edit" BackgroundColor="{DynamicResource FinoraInk}"
                                                Command="{Binding Source={x:Reference BudgetsPageView}, Path=BindingContext.EditBudgetCommand}"
                                                CommandParameter="{Binding .}" />
-                                    <SwipeItem Text="Delete" BackgroundColor="#DC2626"
+                                    <SwipeItem Text="Delete" BackgroundColor="{DynamicResource Error}"
                                                Command="{Binding Source={x:Reference BudgetsPageView}, Path=BindingContext.DeleteBudgetCommand}"
                                                CommandParameter="{Binding .}" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="16" Margin="0,5">
+                            <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="16" Margin="0,5">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
                                 <VerticalStackLayout Spacing="10">
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
                                         <controls:FinoraIconView Grid.Column="0" Icon="{Binding Icon}" Name="{Binding Name}" Size="48" VerticalOptions="Center" />
                                         <VerticalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
-                                            <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                            <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                                             <ProgressBar Progress="{Binding PercentageUsed, Converter={StaticResource PercentageConverter}}"
-                                                         ProgressColor="{StaticResource FinoraInk}" HeightRequest="8" BackgroundColor="#E4EACB" />
+                                                         ProgressColor="{DynamicResource FinoraInk}" HeightRequest="8" BackgroundColor="{DynamicResource FinoraCreamDeep}" />
                                         </VerticalStackLayout>
-                                        <Border Grid.Column="2" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" Padding="10,6" VerticalOptions="Center">
+                                        <Border Grid.Column="2" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" Padding="10,6" VerticalOptions="Center">
                                             <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                                            <Label Text="{Binding PercentageUsed, StringFormat='{0:F0}%'}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                            <Label Text="{Binding PercentageUsed, StringFormat='{0:F0}%'}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                                         </Border>
                                     </Grid>
                                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
                                         <VerticalStackLayout Spacing="2">
-                                            <Label Text="Spent" FontSize="11" TextColor="#6F7668" />
-                                            <Label Text="{Binding SpentAmount, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="#DC2626" />
+                                            <Label Text="Spent" FontSize="11" TextColor="{DynamicResource FinoraMuted}" />
+                                            <Label Text="{Binding SpentAmount, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Error}" />
                                         </VerticalStackLayout>
                                         <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                            <Label Text="Remaining" FontSize="11" TextColor="#6F7668" />
-                                            <Label Text="{Binding RemainingAmount, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="#3E7C2B" />
+                                            <Label Text="Remaining" FontSize="11" TextColor="{DynamicResource FinoraMuted}" />
+                                            <Label Text="{Binding RemainingAmount, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource Success}" />
                                         </VerticalStackLayout>
                                         <VerticalStackLayout Grid.Column="2" Spacing="2">
-                                            <Label Text="Budget" FontSize="11" TextColor="#6F7668" />
-                                            <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                            <Label Text="Budget" FontSize="11" TextColor="{DynamicResource FinoraMuted}" />
+                                            <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                                         </VerticalStackLayout>
                                     </Grid>
-                                    <Label Text="⚠ Over Budget" FontSize="12" FontAttributes="Bold" IsVisible="{Binding IsOverBudget}" TextColor="#DC2626" />
+                                    <Label Text="⚠ Over Budget" FontSize="12" FontAttributes="Bold" IsVisible="{Binding IsOverBudget}" TextColor="{DynamicResource Error}" />
                                 </VerticalStackLayout>
                             </Border>
                         </SwipeView>

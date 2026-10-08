@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 /// <summary>
 /// Builds the icon-choice grid used by the Add/Edit forms: mockup-style
 /// black-circle line-icon tiles instead of raw emoji. The selected tile
@@ -7,7 +8,7 @@ namespace FinanceApp.Mobile.Views.Controls;
 /// </summary>
 public static class FinoraIconPicker
 {
-    private static readonly Color Ink = Color.FromArgb("#161B16");
+    private static Color Ink => FinoraOverlay.Resolve("FinoraInk", "#161B16");
 
     public static void Build(FlexLayout container, IEnumerable<string> emojis, string? selectedIcon, Action<string> onSelect)
     {

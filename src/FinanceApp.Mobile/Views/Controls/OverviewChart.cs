@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Application.DTOs;
 
 /// <summary>
@@ -65,8 +66,8 @@ public class OverviewChart : GraphicsView
 
 internal sealed class OverviewChartDrawable : IDrawable
 {
-    private static readonly Color SpendingColor = Color.FromArgb("#161B16");
-    private static readonly Color EarningColor = Color.FromArgb("#CDF463");
+    private static Color SpendingColor => FinoraOverlay.Resolve("FinoraInk", "#161B16");
+    private static Color EarningColor => FinoraOverlay.Resolve("FinoraLime", "#CDF463");
 
     public IReadOnlyList<StatisticsChartPointDto>? Items { get; set; }
     public int SelectedIndex { get; set; } = -1;
@@ -99,7 +100,7 @@ internal sealed class OverviewChartDrawable : IDrawable
         if (axisMax <= 0) axisMax = 1;
 
         canvas.FontSize = 8;
-        var gridColor = Color.FromArgb("#E3E8D5");
+        var gridColor = FinoraOverlay.Resolve("FinoraCreamDeep", "#E3E8D5");
         for (var step = 0; step <= 4; step++)
         {
             var value = axisMax * step / 4;
@@ -107,7 +108,7 @@ internal sealed class OverviewChartDrawable : IDrawable
             canvas.StrokeColor = gridColor;
             canvas.StrokeSize = 1;
             canvas.DrawLine(plotLeft, y, plotRight, y);
-            canvas.FillColor = Color.FromArgb("#6F7668");
+            canvas.FillColor = FinoraOverlay.Resolve("FinoraMuted", "#6F7668");
             canvas.DrawString(Compact(value), dirtyRect.Left, y - 6, axisWidth - 4, 14, HorizontalAlignment.Right, VerticalAlignment.Center);
         }
 
@@ -132,7 +133,7 @@ internal sealed class OverviewChartDrawable : IDrawable
 
             if (groupWidth >= 26f || i % Math.Max(1, (int)(26 / MathF.Max(1f, groupWidth))) == 0)
             {
-                canvas.FillColor = i == SelectedIndex ? Color.FromArgb("#161B16") : Color.FromArgb("#6F7668");
+                canvas.FillColor = i == SelectedIndex ? FinoraOverlay.Resolve("FinoraInk", "#161B16") : FinoraOverlay.Resolve("FinoraMuted", "#6F7668");
                 canvas.DrawString(p.Label, groupX, plotBottom + 4f, groupWidth, labelHeight - 4f,
                     HorizontalAlignment.Center, VerticalAlignment.Top);
             }

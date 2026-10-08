@@ -5,29 +5,29 @@
              x:Class="FinanceApp.Mobile.Views.MorePage"
              Title="More"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}">
+             BackgroundColor="{DynamicResource FinoraCream}">
 
     <Grid>
         <ScrollView>
             <VerticalStackLayout Spacing="14" Padding="18,14,18,100">
                 <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
-                    <Border WidthRequest="48" HeightRequest="48" Background="#D9C6A5" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
+                    <Border WidthRequest="48" HeightRequest="48" Background="{DynamicResource Sand}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                        <Label x:Name="AvatarInitial" Text="G" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label x:Name="AvatarInitial" Text="G" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <VerticalStackLayout Grid.Column="1" Margin="10,0" VerticalOptions="Center">
-                        <Label x:Name="ProfileName" Text="Guest" FontSize="12" TextColor="#6F7668" LineBreakMode="TailTruncation" />
-                        <Label Text="More" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                        <Label x:Name="ProfileName" Text="Guest" FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="TailTruncation" />
+                        <Label Text="More" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                     </VerticalStackLayout>
-                    <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
+                    <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnNotificationsTapped" /></Border.GestureRecognizers>
                         <Grid>
                             <controls:FinoraIconView IconKey="bell" ShowBadge="False" Light="True" Size="22" HorizontalOptions="Center" VerticalOptions="Center" />
-                            <Border x:Name="NotificationBadge" WidthRequest="20" HeightRequest="20" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2"
+                            <Border x:Name="NotificationBadge" WidthRequest="20" HeightRequest="20" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2"
                                     HorizontalOptions="End" VerticalOptions="Start" Margin="0,4,4,0" IsVisible="False">
                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                <Label x:Name="NotificationBadgeCount" Text="0" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
+                                <Label x:Name="NotificationBadgeCount" Text="0" FontSize="10" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}"
                                        HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
                         </Grid>
@@ -43,93 +43,93 @@
                             <Label Text="Inside Finora" FontSize="16" FontAttributes="Bold" TextColor="White" />
                             <Label Text="What the app does and how it works" FontSize="12" TextColor="White" Opacity="0.7" />
                         </VerticalStackLayout>
-                        <Border Grid.Column="1" Background="{StaticResource FinoraLime}" StrokeThickness="0" Padding="14,10" VerticalOptions="Center">
+                        <Border Grid.Column="1" Background="{DynamicResource FinoraLime}" StrokeThickness="0" Padding="14,10" VerticalOptions="Center">
                             <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                            <Label Text="Overview →" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                            <Label Text="Overview ?" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                         </Border>
                     </Grid>
                 </Border>
 
-                <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="8">
+                <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="8">
                     <Border.StrokeShape><RoundRectangle CornerRadius="28" /></Border.StrokeShape>
                     <VerticalStackLayout Spacing="0">
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
                             <controls:FinoraIconView Grid.Column="0" IconKey="target" Size="46" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                <Label Text="Goals" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Track your savings targets" FontSize="12" TextColor="#6F7668" />
+                                <Label Text="Goals" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Track your savings targets" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
                             <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnGoalsTapped" /></Grid.GestureRecognizers>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
                             <controls:FinoraIconView Grid.Column="0" IconKey="grid" Size="46" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                <Label Text="Categories" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Organize expenses and income" FontSize="12" TextColor="#6F7668" />
+                                <Label Text="Categories" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Organize expenses and income" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
                             <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnCategoriesTapped" /></Grid.GestureRecognizers>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
-                            <controls:FinoraIconView Grid.Column="0" IconKey="chart" Size="46" VerticalOptions="Center" />
+                            <controls:FinoraIconView Grid.Column="0" IconKey="chart" Size="46" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                <Label Text="Analytics" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Charts and spending insights" FontSize="12" TextColor="#6F7668" />
+                                <Label Text="Analytics" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Charts and spending insights" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
                             <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnAnalyticsTapped" /></Grid.GestureRecognizers>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
                             <controls:FinoraIconView Grid.Column="0" IconKey="bot" Size="46" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                <Label Text="AI Assistant" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Chat about your money" FontSize="12" TextColor="#6F7668" />
+                                <Label Text="AI Assistant" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Chat about your money" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
                             <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnChatTapped" /></Grid.GestureRecognizers>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
                             <controls:FinoraIconView Grid.Column="0" IconKey="bulb" Size="46" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                <Label Text="Budget Ideas" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="AI suggestions for smarter budgets" FontSize="12" TextColor="#6F7668" />
+                                <Label Text="Budget Ideas" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="AI suggestions for smarter budgets" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
                             <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnBudgetSuggestionsTapped" /></Grid.GestureRecognizers>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
                             <controls:FinoraIconView Grid.Column="0" IconKey="calendar" Size="46" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                <Label Text="Calendar" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Money day by day" FontSize="12" TextColor="#6F7668" />
+                                <Label Text="Calendar" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Money day by day" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
                             <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnCalendarTapped" /></Grid.GestureRecognizers>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
-                            <controls:FinoraIconView Grid.Column="0" IconKey="forecast" Size="46" VerticalOptions="Center" />
+                            <controls:FinoraIconView Grid.Column="0" IconKey="forecast" Size="46" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                <Label Text="Forecasts" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Predictions and smart insights" FontSize="12" TextColor="#6F7668" />
+                                <Label Text="Forecasts" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Predictions and smart insights" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
                             <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnPredictionsTapped" /></Grid.GestureRecognizers>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="12,5">
                             <controls:FinoraIconView Grid.Column="0" IconKey="settings" Size="46" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                <Label Text="Profile &amp; Settings" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Account, sync and preferences" FontSize="12" TextColor="#6F7668" />
+                                <Label Text="Profile &amp; Settings" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Account, sync and preferences" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="›" FontSize="24" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
                             <Grid.GestureRecognizers><TapGestureRecognizer Tapped="OnProfileTapped" /></Grid.GestureRecognizers>
                         </Grid>
                     </VerticalStackLayout>

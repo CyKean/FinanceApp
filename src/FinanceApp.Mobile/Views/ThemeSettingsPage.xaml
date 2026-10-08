@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
+             xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
+             x:Class="FinanceApp.Mobile.Views.ThemeSettingsPage"
+             x:DataType="viewmodels:ThemeSettingsViewModel"
+             Title="Theme"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{DynamicResource FinoraCream}">
+
+    <Grid>
+    <ScrollView>
+        <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
+            <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                <Border WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
+                    <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                    <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
+                    <Label Text="&#8592;" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <Label Grid.Column="1" Text="Theme" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
+                    <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                    <Label Text="&#9679;" FontSize="14" TextColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+
+            <Border Style="{StaticResource CardFrameStyle}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Live preview" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                    <Border Background="{DynamicResource Background}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="14">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="18" /></Border.StrokeShape>
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Sample card" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                            <Label Text="Secondary text uses the muted token." FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
+                            <HorizontalStackLayout Spacing="8">
+                                <Border Background="{DynamicResource Primary}" StrokeThickness="0" Padding="14,8">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                                    <Label Text="Button" TextColor="{DynamicResource OnPrimary}" FontAttributes="Bold" />
+                                </Border>
+                                <Border Background="{DynamicResource FinoraLime}" StrokeThickness="0" Padding="14,8">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
+                                    <Label Text="Accent" TextColor="{DynamicResource FinoraInk}" FontAttributes="Bold" />
+                                </Border>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="16">
+                                <Label Text="+ Income" TextColor="{DynamicResource Success}" FontAttributes="Bold" />
+                                <Label Text="- Expense" TextColor="{DynamicResource Error}" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardFrameStyle}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Presets" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                    <CollectionView ItemsSource="{Binding Presets}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="viewmodels:ThemePresetItem">
+                                <Border Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1" Padding="12" Margin="0,0,0,8">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectPresetCommand}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                            <Border WidthRequest="18" HeightRequest="18" Background="{Binding PreviewBackground}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1">
+                                                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                            </Border>
+                                            <Border WidthRequest="18" HeightRequest="18" Background="{Binding PreviewAccent}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1">
+                                                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                            </Border>
+                                            <Border WidthRequest="18" HeightRequest="18" Background="{Binding PreviewCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1">
+                                                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                            </Border>
+                                        </HorizontalStackLayout>
+                                        <Label Grid.Column="1" Text="{Binding Name}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
+                                        <Label Grid.Column="2" Text="&#10003;" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" IsVisible="{Binding IsSelected}" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Border Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1" Padding="12">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding UseSystemCommand}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Follow system light/dark" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="&#10003;" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" IsVisible="{Binding IsSystemSelected}" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardFrameStyle}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Custom accent" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Entry Text="{Binding CustomAccentHex}" Placeholder="#CDF463" WidthRequest="140" Keyboard="Text" />
+                        <Label Text="Dark base" VerticalOptions="Center" TextColor="{DynamicResource FinoraInk}" />
+                        <Switch IsToggled="{Binding CustomDarkBase}" HorizontalOptions="Start" />
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding CustomError}" TextColor="{DynamicResource Error}" FontSize="12" IsVisible="{Binding HasCustomError}" />
+                    <Button Text="Apply custom theme" Command="{Binding ApplyCustomCommand}" Style="{StaticResource PrimaryButtonStyle}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Reset to default" Command="{Binding ResetCommand}" Style="{StaticResource DangerButtonStyle}" />
+        </VerticalStackLayout>
+    </ScrollView>
+
+        <controls:ToastHost />
+        <controls:ConfirmModalHost />
+        <controls:ErrorModalHost />
+    </Grid>
+</ContentPage>

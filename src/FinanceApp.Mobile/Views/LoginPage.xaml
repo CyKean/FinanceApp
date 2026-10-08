@@ -8,7 +8,7 @@
              x:DataType="viewmodels:LoginViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraLime}">
+             BackgroundColor="{DynamicResource FinoraLime}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -19,13 +19,13 @@
     <Grid RowDefinitions="Auto,*">
         <!-- Top bar: logo -->
         <HorizontalStackLayout Grid.Row="0" Padding="22,18,22,0" Spacing="8" VerticalOptions="Center">
-            <Border WidthRequest="34" HeightRequest="34" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Background="Transparent" VerticalOptions="Center">
+            <Border WidthRequest="34" HeightRequest="34" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Background="Transparent" VerticalOptions="Center">
                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                <Label Text="◈" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                <Label Text="◈" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
             </Border>
-            <Label Text="Finora" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
-            <Label Text="Finance Mobile App" FontSize="12" TextColor="{StaticResource FinoraInk}" Opacity="0.7" VerticalOptions="Center" />
-            <Label Text="● ● ●" FontSize="10" TextColor="{StaticResource FinoraInk}" Opacity="0.5" VerticalOptions="Center" />
+            <Label Text="Finora" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
+            <Label Text="Finance Mobile App" FontSize="12" TextColor="{DynamicResource FinoraInk}" Opacity="0.7" VerticalOptions="Center" />
+            <Label Text="● ● ●" FontSize="10" TextColor="{DynamicResource FinoraInk}" Opacity="0.5" VerticalOptions="Center" />
         </HorizontalStackLayout>
 
         <ScrollView Grid.Row="1">
@@ -35,8 +35,8 @@
                      the check finishes so the form never flashes before the app
                      redirects to the dashboard. -->
                 <VerticalStackLayout Spacing="16" IsVisible="{Binding IsRestoringSession}" VerticalOptions="Center" Margin="0,60,0,0">
-                    <ActivityIndicator IsRunning="{Binding IsRestoringSession}" Color="{StaticResource FinoraInk}" HeightRequest="34" />
-                    <Label Text="Restoring your session…" FontSize="14" TextColor="{StaticResource FinoraMuted}" HorizontalTextAlignment="Center" />
+                    <ActivityIndicator IsRunning="{Binding IsRestoringSession}" Color="{DynamicResource FinoraInk}" HeightRequest="34" />
+                    <Label Text="Restoring your session…" FontSize="14" TextColor="{DynamicResource FinoraMuted}" HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="0" IsVisible="{Binding IsRestoringSession, Converter={StaticResource InverseBoolConverter}}">
@@ -44,35 +44,35 @@
                      version absolutely positioned everything inside a fixed-height
                      Grid and the children were clipped out of existence. -->
                 <Grid Margin="0,10,0,0" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto" RowSpacing="14">
-                    <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="12" HeightRequest="44" WidthRequest="44">
+                    <Border Grid.Row="0" Grid.Column="0" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="12" HeightRequest="44" WidthRequest="44">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <controls:FinoraIconView IconKey="trendup" Size="20" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
 
-                    <Border Grid.Row="0" Grid.Column="1" Margin="12,0" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="16,10" HorizontalOptions="Center">
+                    <Border Grid.Row="0" Grid.Column="1" Margin="12,0" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="16,10" HorizontalOptions="Center">
                         <Border.StrokeShape><RoundRectangle CornerRadius="12" /></Border.StrokeShape>
                         <controls:FinoraIconView IconKey="card" Size="18" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
 
-                    <Border Grid.Row="0" Grid.Column="2" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="14,10" HorizontalOptions="End">
+                    <Border Grid.Row="0" Grid.Column="2" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="14,10" HorizontalOptions="End">
                         <Border.StrokeShape><RoundRectangle CornerRadius="10" /></Border.StrokeShape>
                         <VerticalStackLayout Spacing="5">
-                            <BoxView HeightRequest="2" WidthRequest="22" Color="{StaticResource FinoraInk}" HorizontalOptions="End" />
-                            <BoxView HeightRequest="2" WidthRequest="14" Color="{StaticResource FinoraInk}" HorizontalOptions="End" />
+                            <BoxView HeightRequest="2" WidthRequest="22" Color="{DynamicResource FinoraInk}" HorizontalOptions="End" />
+                            <BoxView HeightRequest="2" WidthRequest="14" Color="{DynamicResource FinoraInk}" HorizontalOptions="End" />
                         </VerticalStackLayout>
                     </Border>
 
                     <!-- wallet card, drawn with Lucide geometry rather than emoji
                          so it renders identically on every device -->
-                    <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Background="#E7F49A" Stroke="{StaticResource FinoraInk}" StrokeThickness="2" Padding="20,16" HorizontalOptions="Center">
+                    <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Background="{DynamicResource AccentGlow}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="2" Padding="20,16" HorizontalOptions="Center">
                         <Border.StrokeShape><RoundRectangle CornerRadius="20" /></Border.StrokeShape>
                         <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="16">
                             <VerticalStackLayout Spacing="10" VerticalOptions="Center">
-                                <Border WidthRequest="24" HeightRequest="24" Background="{StaticResource FinoraInk}" StrokeThickness="0">
+                                <Border WidthRequest="24" HeightRequest="24" Background="{DynamicResource FinoraInk}" StrokeThickness="0">
                                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                    <Label Text="○" TextColor="{StaticResource FinoraLime}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Label Text="○" TextColor="{DynamicResource FinoraLime}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Border>
-                                <BoxView HeightRequest="2" WidthRequest="44" Color="{StaticResource FinoraInk}" />
+                                <BoxView HeightRequest="2" WidthRequest="44" Color="{DynamicResource FinoraInk}" />
                             </VerticalStackLayout>
                             <controls:FinoraIconView Grid.Column="1" IconKey="wallet" Size="58" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                         </Grid>
@@ -80,40 +80,40 @@
                 </Grid>
 
                 <!-- Headline -->
-                <Label Text="Digital Banking" FontSize="38" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" LineHeight="1.05" />
+                <Label Text="Digital Banking" FontSize="38" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" LineHeight="1.05" />
                 <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                    <Label Text="Made for" FontSize="38" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
-                    <Border Background="{StaticResource FinoraInk}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1" Padding="16,8" VerticalOptions="Center">
+                    <Label Text="Made for" FontSize="38" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
+                    <Border Background="{DynamicResource FinoraInk}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1" Padding="16,8" VerticalOptions="Center">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                        <Label Text="→" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="→" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </HorizontalStackLayout>
-                <Label Text="Digital Users" FontSize="38" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
-                <Label Text="Spend, earn and track financial activity" FontSize="13" TextColor="{StaticResource FinoraInk}" Opacity="0.75" Margin="0,8,0,14" />
+                <Label Text="Digital Users" FontSize="38" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
+                <Label Text="Spend, earn and track financial activity" FontSize="13" TextColor="{DynamicResource FinoraInk}" Opacity="0.75" Margin="0,8,0,14" />
 
                 <!-- Auth card -->
-                <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="20" Margin="0,0,0,6">
+                <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="20" Margin="0,0,0,6">
                     <Border.StrokeShape><RoundRectangle CornerRadius="28" /></Border.StrokeShape>
-                    <Border.Shadow><Shadow Brush="#161B16" Opacity="0.15" Radius="20" Offset="0,10" /></Border.Shadow>
+                    <Border.Shadow><Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.15" Radius="20" Offset="0,10" /></Border.Shadow>
                     <VerticalStackLayout Spacing="12">
                         <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                            <Label Text="Welcome back" IsVisible="{Binding IsRegisterMode, Converter={StaticResource InverseBoolConverter}}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Fill" VerticalOptions="Center" />
-                            <Label Text="Create account" IsVisible="{Binding IsRegisterMode}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Fill" VerticalOptions="Center" />
-                            <Border Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" Padding="10,5" VerticalOptions="Center">
+                            <Label Text="Welcome back" IsVisible="{Binding IsRegisterMode, Converter={StaticResource InverseBoolConverter}}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Fill" VerticalOptions="Center" />
+                            <Label Text="Create account" IsVisible="{Binding IsRegisterMode}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Fill" VerticalOptions="Center" />
+                            <Border Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" Padding="10,5" VerticalOptions="Center">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                                <Label Text="● Secure" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                <Label Text="● Secure" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                             </Border>
                         </HorizontalStackLayout>
-                        <Label Text="Login to continue" IsVisible="{Binding IsRegisterMode, Converter={StaticResource InverseBoolConverter}}" FontSize="13" TextColor="{StaticResource FinoraMuted}" />
-                        <Label Text="Start tracking in seconds" IsVisible="{Binding IsRegisterMode}" FontSize="13" TextColor="{StaticResource FinoraMuted}" />
-                        <Label Text="Accounts are kept on this device — register and sign in work with or without a connection." FontSize="12" TextColor="{StaticResource FinoraMuted}" Opacity="0.85" />
+                        <Label Text="Login to continue" IsVisible="{Binding IsRegisterMode, Converter={StaticResource InverseBoolConverter}}" FontSize="13" TextColor="{DynamicResource FinoraMuted}" />
+                        <Label Text="Start tracking in seconds" IsVisible="{Binding IsRegisterMode}" FontSize="13" TextColor="{DynamicResource FinoraMuted}" />
+                        <Label Text="Accounts are kept on this device — register and sign in work with or without a connection." FontSize="12" TextColor="{DynamicResource FinoraMuted}" Opacity="0.85" />
 
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Email" Style="{StaticResource FormLabelStyle}" />
                             <Border Style="{StaticResource FieldBorderStyle}">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalOptions="Center">
                                     <controls:FinoraIconView IconKey="mail" Size="20" ShowBadge="False" Light="True" VerticalOptions="Center" />
-                                    <Entry Grid.Column="1" Text="{Binding Email}" Keyboard="Email" Placeholder="you@example.com" BackgroundColor="Transparent" TextColor="{StaticResource FinoraInk}" HeightRequest="48" VerticalOptions="Center" ReturnType="Next" />
+                                    <Entry Grid.Column="1" Text="{Binding Email}" Keyboard="Email" Placeholder="you@example.com" BackgroundColor="Transparent" TextColor="{DynamicResource FinoraInk}" HeightRequest="48" VerticalOptions="Center" ReturnType="Next" />
                                 </Grid>
                             </Border>
                         </VerticalStackLayout>
@@ -123,13 +123,13 @@
                             <Border Style="{StaticResource FieldBorderStyle}">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalOptions="Center">
                                     <controls:FinoraIconView IconKey="lock" Size="20" ShowBadge="False" Light="True" VerticalOptions="Center" />
-                                    <Entry Grid.Column="1" Text="{Binding Password}" IsPassword="True" Placeholder="Enter your password" BackgroundColor="Transparent" TextColor="{StaticResource FinoraInk}" HeightRequest="48" VerticalOptions="Center" ReturnType="Done" />
+                                    <Entry Grid.Column="1" Text="{Binding Password}" IsPassword="True" Placeholder="Enter your password" BackgroundColor="Transparent" TextColor="{DynamicResource FinoraInk}" HeightRequest="48" VerticalOptions="Center" ReturnType="Done" />
                                 </Grid>
                             </Border>
                             <HorizontalStackLayout Spacing="8" VerticalOptions="Center" Margin="0,2,0,0">
-                                <CheckBox IsChecked="{Binding IsRememberMe}" Color="{StaticResource FinoraInk}" VerticalOptions="Center" />
-                                <Label Text="Remember me" FontSize="13" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" HorizontalOptions="Fill" />
-                                <Label Text="Forgot Password?" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center">
+                                <CheckBox IsChecked="{Binding IsRememberMe}" Color="{DynamicResource FinoraInk}" VerticalOptions="Center" />
+                                <Label Text="Remember me" FontSize="13" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" HorizontalOptions="Fill" />
+                                <Label Text="Forgot Password?" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
                                     </Label.GestureRecognizers>
@@ -142,7 +142,7 @@
                             <Border Style="{StaticResource FieldBorderStyle}">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalOptions="Center">
                                     <controls:FinoraIconView IconKey="lock" Size="20" ShowBadge="False" Light="True" VerticalOptions="Center" />
-                                    <Entry Grid.Column="1" Text="{Binding ConfirmPassword}" IsPassword="True" Placeholder="Repeat your password" BackgroundColor="Transparent" TextColor="{StaticResource FinoraInk}" HeightRequest="48" VerticalOptions="Center" ReturnType="Done" />
+                                    <Entry Grid.Column="1" Text="{Binding ConfirmPassword}" IsPassword="True" Placeholder="Repeat your password" BackgroundColor="Transparent" TextColor="{DynamicResource FinoraInk}" HeightRequest="48" VerticalOptions="Center" ReturnType="Done" />
                                 </Grid>
                             </Border>
                         </VerticalStackLayout>

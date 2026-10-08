@@ -14,7 +14,7 @@
                 HorizontalOptions="Center">
             <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
                 <ActivityIndicator IsRunning="{Binding Source={x:Reference Root}, Path=IsLoading}"
-                                   Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}"
+                                   Color="{AppThemeBinding Light={DynamicResource Primary}, Dark={DynamicResource PrimaryLight}}"
                                    HeightRequest="48"
                                    WidthRequest="48"
                                    HorizontalOptions="Center" />

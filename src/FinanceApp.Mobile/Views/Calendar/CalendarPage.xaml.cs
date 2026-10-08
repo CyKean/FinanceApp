@@ -1,13 +1,14 @@
 namespace FinanceApp.Mobile.Views.Calendar;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Mobile.ViewModels;
 
 public partial class CalendarPage : ContentPage
 {
-    private static readonly Color Ink = Color.FromArgb("#161B16");
-    private static readonly Color Lime = Color.FromArgb("#CDF463");
-    private static readonly Color Cream = Color.FromArgb("#EFF3DF");
-    private static readonly Color Muted = Color.FromArgb("#9AA393");
+    private static Color Ink => FinoraOverlay.Resolve("FinoraInk", "#161B16");
+    private static Color Lime => FinoraOverlay.Resolve("FinoraLime", "#CDF463");
+    private static Color Cream => FinoraOverlay.Resolve("FinoraCream", "#EFF3DF");
+    private static Color Muted => FinoraOverlay.Resolve("MutedSoft", "#9AA393");
 
     private CalendarViewModel? _vm;
 

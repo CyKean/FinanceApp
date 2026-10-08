@@ -5,8 +5,8 @@ using Microsoft.Maui.Controls.Shapes;
 
 public partial class FinoraIconView : ContentView
 {
-    private static readonly Color Ink = Color.FromArgb("#161B16");
-    private static readonly Color Lime = Color.FromArgb("#CDF463");
+    private static Color Ink => FinoraOverlay.Resolve("FinoraInk", "#161B16");
+    private static Color Lime => FinoraOverlay.Resolve("FinoraLime", "#CDF463");
     private readonly Ellipse _circle = new();
 
     public static readonly BindableProperty IconProperty =

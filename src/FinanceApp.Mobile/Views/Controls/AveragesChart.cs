@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Domain.ValueObjects;
 
 public class AveragesChart : GraphicsView
@@ -42,7 +43,7 @@ public class AveragesChart : GraphicsView
 
 internal sealed class AveragesDrawable : IDrawable
 {
-    private static readonly Color BarColor = Color.FromArgb("#DC2626");
+    private static Color BarColor => FinoraOverlay.Resolve("Error", "#DC2626");
 
     public Money? Daily { get; set; }
     public Money? Monthly { get; set; }

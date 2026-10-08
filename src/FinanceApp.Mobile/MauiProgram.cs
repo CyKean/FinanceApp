@@ -138,6 +138,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppNotificationCenter>();
         builder.Services.AddSingleton<INotificationCenter>(sp => sp.GetRequiredService<AppNotificationCenter>());
         builder.Services.AddSingleton<NotificationWatcher>();
+        builder.Services.AddSingleton<FinanceApp.Mobile.Services.Theming.ThemeService>();
+        builder.Services.AddTransient<ThemeSettingsViewModel>();
 
         // Background Services
         builder.Services.AddHostedService<SupabaseInitializer>();
@@ -193,6 +195,7 @@ public static class MauiProgram
         builder.Services.AddTransient<BudgetSuggestionsPage>();
         builder.Services.AddTransient<AiSettingsPage>();
         builder.Services.AddTransient<NotificationsPage>();
+        builder.Services.AddTransient<ThemeSettingsPage>();
 
         // Routing
         Routing.RegisterRoute("Dashboard", typeof(DashboardPage));
@@ -221,6 +224,7 @@ public static class MauiProgram
         Routing.RegisterRoute("BudgetSuggestions", typeof(BudgetSuggestionsPage));
         Routing.RegisterRoute("AiSettings", typeof(AiSettingsPage));
         Routing.RegisterRoute("Notifications", typeof(NotificationsPage));
+        Routing.RegisterRoute("ThemeSettings", typeof(ThemeSettingsPage));
 
 #if DEBUG
         builder.Logging.AddDebug();

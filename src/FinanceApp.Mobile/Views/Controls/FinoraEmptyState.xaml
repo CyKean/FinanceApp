@@ -14,12 +14,12 @@
         <Label Text="{Binding Title, Source={x:Reference Root}}"
                FontSize="15"
                FontAttributes="Bold"
-               TextColor="{StaticResource FinoraInk}"
+               TextColor="{DynamicResource FinoraInk}"
                HorizontalOptions="Center"
                HorizontalTextAlignment="Center" />
         <Label Text="{Binding Subtitle, Source={x:Reference Root}}"
                FontSize="12"
-               TextColor="#6F7668"
+               TextColor="{DynamicResource FinoraMuted}"
                HorizontalOptions="Center"
                HorizontalTextAlignment="Center" />
     </VerticalStackLayout>

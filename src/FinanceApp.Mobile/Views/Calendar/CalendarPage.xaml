@@ -9,7 +9,7 @@
              x:DataType="viewmodels:CalendarViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}">
+             BackgroundColor="{DynamicResource FinoraCream}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -31,40 +31,40 @@
             <!-- Header -->
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
                 <Border WidthRequest="46" HeightRequest="46"
-                        Background="{StaticResource FinoraCard}"
-                        Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                        Background="{DynamicResource FinoraCard}"
+                        Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                         VerticalOptions="Center">
                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
+                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}"
                            HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
                 <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                    <Label Text="Calendar" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
-                    <Label Text="Money day by day" FontSize="12" TextColor="#6F7668" />
+                    <Label Text="Calendar" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
+                    <Label Text="Money day by day" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                 </VerticalStackLayout>
                 <controls:FinoraIconView Grid.Column="2" IconKey="calendar" Size="46" Light="True" VerticalOptions="Center" />
             </Grid>
 
             <!-- Month Header -->
-            <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="8">
+            <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="8">
                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                 <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
-                    <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" Background="{StaticResource FinoraCream}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Center">
+                    <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding PreviousMonthCommand}" /></Border.GestureRecognizers>
-                        <Label Text="←" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="←" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
-                    <Label Grid.Column="1" Text="{Binding SelectedMonth, StringFormat='{0:MMMM yyyy}'}" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" HorizontalTextAlignment="Center" />
-                    <Border Grid.Column="2" Background="{StaticResource FinoraCream}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" Padding="12,8" VerticalOptions="Center">
+                    <Label Grid.Column="1" Text="{Binding SelectedMonth, StringFormat='{0:MMMM yyyy}'}" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" HorizontalTextAlignment="Center" />
+                    <Border Grid.Column="2" Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" Padding="12,8" VerticalOptions="Center">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding CurrentMonthCommand}" /></Border.GestureRecognizers>
-                        <Label Text="Today" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                        <Label Text="Today" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                     </Border>
-                    <Border Grid.Column="3" WidthRequest="42" HeightRequest="42" Background="{StaticResource FinoraInk}" StrokeThickness="0" VerticalOptions="Center">
+                    <Border Grid.Column="3" WidthRequest="42" HeightRequest="42" Background="{DynamicResource FinoraInk}" StrokeThickness="0" VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NextMonthCommand}" /></Border.GestureRecognizers>
-                        <Label Text="→" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="→" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </Grid>
             </Border>
@@ -95,13 +95,13 @@
                     IsVisible="{Binding SelectedDayEvents.Count, Converter={StaticResource CountToBoolConverter}}">
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
-                        <Label Grid.Column="0" Text="{Binding SelectedDate, StringFormat='{0:MMMM dd, yyyy}'}" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
-                        <Border Grid.Column="1" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="12,7">
+                        <Label Grid.Column="0" Text="{Binding SelectedDate, StringFormat='{0:MMMM dd, yyyy}'}" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
+                        <Border Grid.Column="1" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="12,7">
                             <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                             <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnAddForDayTapped" /></Border.GestureRecognizers>
                             <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                                <Label Text="+" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Add" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                <Label Text="+" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Add" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                             </HorizontalStackLayout>
                         </Border>
                     </Grid>
@@ -109,18 +109,18 @@
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding SelectedDayEvents}" Spacing="0">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="dtos:CalendarEventDto">
-                                <Border Background="{StaticResource FinoraCard}" Stroke="#D3D9BE" StrokeThickness="1" Padding="12" Margin="0,4">
+                                <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource OutlineVariant}" StrokeThickness="1" Padding="12" Margin="0,4">
                                     <Border.StrokeShape><RoundRectangle CornerRadius="20" /></Border.StrokeShape>
                                     <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnEditEventTapped" /></Border.GestureRecognizers>
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                         <controls:FinoraIconView Grid.Column="0" Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="40" VerticalOptions="Center" />
                                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                            <Label Text="{Binding CategoryName}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                            <Label Text="{Binding Notes}" FontSize="12" TextColor="#6F7668" LineBreakMode="WordWrap"
+                                            <Label Text="{Binding CategoryName}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                            <Label Text="{Binding Notes}" FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap"
                                                    IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
                                         </VerticalStackLayout>
                                         <Label Grid.Column="2" Text="{Binding Amount, Converter={StaticResource MoneyConverter}}"
-                                               FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
+                                               FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}"
                                                VerticalOptions="Center" />
                                     </Grid>
                                 </Border>
@@ -128,7 +128,7 @@
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
 
-                    <Label Text="Tap an entry to edit it in Transactions." FontSize="11" TextColor="#9AA393" />
+                    <Label Text="Tap an entry to edit it in Transactions." FontSize="11" TextColor="{DynamicResource MutedSoft}" />
                 </VerticalStackLayout>
             </Border>
 

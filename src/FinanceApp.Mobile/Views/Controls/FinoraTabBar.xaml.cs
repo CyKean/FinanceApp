@@ -14,10 +14,10 @@ public partial class FinoraTabBar : ContentView
         set => SetValue(ActiveTabProperty, value);
     }
 
-    private static readonly Color Lime = Color.FromArgb("#CDF463");
-    private static readonly Color Ink = Color.FromArgb("#161B16");
-    private static readonly Color IdleCircle = Color.FromArgb("#2C332C");
-    private static readonly Color IdleIcon = Color.FromArgb("#9AA393");
+    private static Color Lime => FinoraOverlay.Resolve("FinoraLime", "#CDF463");
+    private static Color Ink => FinoraOverlay.Resolve("FinoraInk", "#161B16");
+    private static Color IdleCircle => FinoraOverlay.Resolve("FinoraInkSoft", "#2C332C");
+    private static Color IdleIcon => FinoraOverlay.Resolve("MutedSoft", "#9AA393");
 
     public FinoraTabBar()
     {

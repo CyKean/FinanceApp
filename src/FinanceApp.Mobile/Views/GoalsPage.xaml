@@ -10,7 +10,7 @@
              x:DataType="viewmodels:GoalsViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}"
+             BackgroundColor="{DynamicResource FinoraCream}"
              x:Name="GoalsPageView">
 
     <ContentPage.Resources>
@@ -36,27 +36,27 @@
             <ScrollView>
             <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-                    <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
+                    <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                        <Label Text="Goals" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
-                        <Label Text="Track your savings targets" FontSize="12" TextColor="#6F7668" HorizontalOptions="Center" />
+                        <Label Text="Goals" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" />
+                        <Label Text="Track your savings targets" FontSize="12" TextColor="{DynamicResource FinoraMuted}" HorizontalOptions="Center" />
                     </VerticalStackLayout>
-                    <Border Grid.Column="2" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="12,8" VerticalOptions="Center">
+                    <Border Grid.Column="2" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="12,8" VerticalOptions="Center">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                        <Label Text="{Binding Goals.Count, StringFormat='{0}'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                        <Label Text="{Binding Goals.Count, StringFormat='{0}'}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                     </Border>
                 </Grid>
 
                 <!-- Goal hero (earning style) -->
                 <Border Style="{StaticResource FinoraLimeCardStyle}">
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="↗ Total saved" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                        <Label Text="{Binding Goals.Count, StringFormat='{0} goals in progress'}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                        <Label Text="Small steps every month get you there." FontSize="11" TextColor="{StaticResource FinoraInk}" Opacity="0.75" />
+                        <Label Text="↗ Total saved" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                        <Label Text="{Binding Goals.Count, StringFormat='{0} goals in progress'}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                        <Label Text="Small steps every month get you there." FontSize="11" TextColor="{DynamicResource FinoraInk}" Opacity="0.75" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -67,57 +67,57 @@
                                 <SwipeView>
                                     <SwipeView.RightItems>
                                         <SwipeItems>
-                                            <SwipeItem Text="Edit" BackgroundColor="#161B16"
+                                            <SwipeItem Text="Edit" BackgroundColor="{DynamicResource FinoraInk}"
                                                        Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.EditGoalCommand}"
                                                        CommandParameter="{Binding .}" />
-                                            <SwipeItem Text="Delete" BackgroundColor="#DC2626"
+                                            <SwipeItem Text="Delete" BackgroundColor="{DynamicResource Error}"
                                                        Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.DeleteGoalCommand}"
                                                        CommandParameter="{Binding .}" />
                                         </SwipeItems>
                                     </SwipeView.RightItems>
-                                    <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="16" Margin="0,5">
+                                    <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="16" Margin="0,5">
                                         <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
                                         <VerticalStackLayout Spacing="10">
                                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                                 <controls:FinoraIconView Grid.Column="0" Icon="{Binding Icon}" Name="{Binding Name}" Size="50" VerticalOptions="Center" />
                                                 <VerticalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
-                                                    <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                                    <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                                                     <ProgressBar Progress="{Binding ProgressPercentage, Converter={StaticResource PercentageConverter}}"
-                                                                 ProgressColor="{StaticResource FinoraInk}" HeightRequest="8" BackgroundColor="#E4EACB" />
+                                                                 ProgressColor="{DynamicResource FinoraInk}" HeightRequest="8" BackgroundColor="{DynamicResource FinoraCreamDeep}" />
                                                 </VerticalStackLayout>
-                                                <Border Grid.Column="2" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" Padding="10,6" VerticalOptions="Center">
+                                                <Border Grid.Column="2" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" Padding="10,6" VerticalOptions="Center">
                                                     <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                                                    <Label Text="{Binding ProgressPercentage, StringFormat='{0:F0}%'}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                                    <Label Text="{Binding ProgressPercentage, StringFormat='{0:F0}%'}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                                                 </Border>
                                             </Grid>
                                             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-                                                <Border Padding="10,8" Background="{StaticResource FinoraCream}" StrokeThickness="0">
+                                                <Border Padding="10,8" Background="{DynamicResource FinoraCream}" StrokeThickness="0">
                                                     <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                                                     <VerticalStackLayout Spacing="2">
-                                                        <Label Text="Current" FontSize="10" TextColor="#6F7668" />
-                                                        <Label Text="{Binding CurrentAmount, Converter={StaticResource MoneyConverter}}" FontSize="12" FontAttributes="Bold" TextColor="#3E7C2B" />
+                                                        <Label Text="Current" FontSize="10" TextColor="{DynamicResource FinoraMuted}" />
+                                                        <Label Text="{Binding CurrentAmount, Converter={StaticResource MoneyConverter}}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Success}" />
                                                     </VerticalStackLayout>
                                                 </Border>
-                                                <Border Grid.Column="1" Padding="10,8" Background="{StaticResource FinoraCream}" StrokeThickness="0">
+                                                <Border Grid.Column="1" Padding="10,8" Background="{DynamicResource FinoraCream}" StrokeThickness="0">
                                                     <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                                                     <VerticalStackLayout Spacing="2">
-                                                        <Label Text="Target" FontSize="10" TextColor="#6F7668" />
-                                                        <Label Text="{Binding TargetAmount, Converter={StaticResource MoneyConverter}}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                                        <Label Text="Target" FontSize="10" TextColor="{DynamicResource FinoraMuted}" />
+                                                        <Label Text="{Binding TargetAmount, Converter={StaticResource MoneyConverter}}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                                                     </VerticalStackLayout>
                                                 </Border>
-                                                <Border Grid.Column="2" Padding="10,8" Background="{StaticResource FinoraInk}" StrokeThickness="0">
+                                                <Border Grid.Column="2" Padding="10,8" Background="{DynamicResource FinoraInk}" StrokeThickness="0">
                                                     <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                                                     <VerticalStackLayout Spacing="2">
-                                                        <Label Text="Left" FontSize="10" TextColor="{StaticResource FinoraLime}" />
+                                                        <Label Text="Left" FontSize="10" TextColor="{DynamicResource FinoraLime}" />
                                                         <Label Text="{Binding DaysRemaining, StringFormat='{0}d'}" FontSize="12" FontAttributes="Bold" TextColor="White" />
                                                     </VerticalStackLayout>
                                                 </Border>
                                             </Grid>
                                             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-                                                <Label Grid.Column="0" Text="{Binding Status, Converter={StaticResource GoalStatusToStringConverter}}" FontSize="12" FontAttributes="Bold" TextColor="#6F7668" VerticalOptions="Center" />
+                                                <Label Grid.Column="0" Text="{Binding Status, Converter={StaticResource GoalStatusToStringConverter}}" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraMuted}" VerticalOptions="Center" />
                                                 <Button Grid.Column="1" Text="Edit" HeightRequest="40" FontSize="13" Padding="20,0" Style="{StaticResource OutlineButtonStyle}"
                                                         Command="{Binding Source={x:Reference GoalsPageView}, Path=BindingContext.EditGoalCommand}" CommandParameter="{Binding .}" />
-                                                <Border Grid.Column="2" WidthRequest="48" HeightRequest="40" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
+                                                <Border Grid.Column="2" WidthRequest="48" HeightRequest="40" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
                                                     <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                                                     <controls:FinoraIconView IconKey="plus" Size="22" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center">
                                                         <controls:FinoraIconView.GestureRecognizers>
@@ -144,18 +144,18 @@
                     <CollectionView ItemsSource="{Binding History}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="services:GoalHistoryEntryDto">
-                                <Border Background="{StaticResource FinoraCard}" Stroke="#D3D9BE" StrokeThickness="1" Padding="12" Margin="0,4">
+                                <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource OutlineVariant}" StrokeThickness="1" Padding="12" Margin="0,4">
                                     <Border.StrokeShape><RoundRectangle CornerRadius="20" /></Border.StrokeShape>
                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                                        <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" BackgroundColor="{Binding ActionColor, Converter={StaticResource ColorConverter}}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1" VerticalOptions="Center">
+                                        <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" BackgroundColor="{Binding ActionColor, Converter={StaticResource ColorConverter}}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1" VerticalOptions="Center">
                                             <Border.StrokeShape><RoundRectangle CornerRadius="14" /></Border.StrokeShape>
                                             <Label Text="{Binding ActionIcon}" FontSize="17" HorizontalOptions="Center" VerticalOptions="Center" />
                                         </Border>
                                         <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                            <Label Text="{Binding GoalName}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                            <Label Text="{Binding Details}" FontSize="12" TextColor="#6F7668" LineBreakMode="WordWrap" />
+                                            <Label Text="{Binding GoalName}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                            <Label Text="{Binding Details}" FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                                         </VerticalStackLayout>
-                                        <Label Grid.Column="2" Text="{Binding TimeLabel}" FontSize="11" TextColor="#6F7668" VerticalOptions="Center" />
+                                        <Label Grid.Column="2" Text="{Binding TimeLabel}" FontSize="11" TextColor="{DynamicResource FinoraMuted}" VerticalOptions="Center" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>

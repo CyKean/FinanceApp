@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Application.DTOs;
 
 /// <summary>
@@ -82,9 +83,9 @@ internal sealed class SpendingRadarDrawable : IDrawable
             path.LineTo(points[i].X, points[i].Y);
         path.Close();
 
-        canvas.FillColor = Color.FromArgb("#CDF463").WithAlpha(0.35f);
+        canvas.FillColor = FinoraOverlay.Resolve("FinoraLime", "#CDF463").WithAlpha(0.35f);
         canvas.FillPath(path);
-        canvas.StrokeColor = Color.FromArgb("#CDF463");
+        canvas.StrokeColor = FinoraOverlay.Resolve("FinoraLime", "#CDF463");
         canvas.StrokeSize = 1.5f;
         canvas.DrawPath(path);
 
@@ -114,7 +115,7 @@ internal sealed class SpendingRadarDrawable : IDrawable
                 if (i == 0) path.MoveTo(x, y); else path.LineTo(x, y);
             }
             path.Close();
-            canvas.StrokeColor = Color.FromArgb("#3A4A3A");
+            canvas.StrokeColor = FinoraOverlay.Resolve("OutlineVariant", "#3A4A3A");
             canvas.StrokeSize = 1f;
             canvas.DrawPath(path);
         }

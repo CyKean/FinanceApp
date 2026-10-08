@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 public class SavingsRateGauge : GraphicsView
 {
     public static readonly BindableProperty ValueProperty =
@@ -52,12 +53,12 @@ internal sealed class SavingsRateGaugeDrawable : IDrawable
         if (sweep > 0.5f)
         {
             canvas.FillColor = rate >= 20
-                ? Color.FromArgb("#16A34A")
+                ? FinoraOverlay.Resolve("Success", "#16A34A")
                 : rate >= 10
-                    ? Color.FromArgb("#F97316")
+                    ? FinoraOverlay.Resolve("Warning", "#F97316")
                     : rate >= 0
-                        ? Color.FromArgb("#EAB308")
-                        : Color.FromArgb("#DC2626");
+                        ? FinoraOverlay.Resolve("Warning", "#EAB308")
+                        : FinoraOverlay.Resolve("Error", "#DC2626");
             canvas.FillPath(RingPath.Build(cx, cy, outer, inner, -90f, -90f + sweep));
         }
 

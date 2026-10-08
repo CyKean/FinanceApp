@@ -8,7 +8,7 @@
              x:DataType="viewmodels:AiSettingsViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}"
+             BackgroundColor="{DynamicResource FinoraCream}"
              x:Name="AiSettingsPageView">
 
     <ContentPage.Resources>
@@ -25,8 +25,8 @@
                 <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                     <Border WidthRequest="46" HeightRequest="46"
-                            Background="{StaticResource FinoraCard}"
-                            Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                            Background="{DynamicResource FinoraCard}"
+                            Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                             VerticalOptions="Center">
                         <Border.StrokeShape>
                             <Ellipse />
@@ -37,14 +37,14 @@
                         <Label Text="←"
                                FontSize="20"
                                FontAttributes="Bold"
-                               TextColor="{StaticResource FinoraInk}"
+                               TextColor="{DynamicResource FinoraInk}"
                                VerticalOptions="Center"
                                HorizontalOptions="Center" />
                     </Border>
 
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                        <Label Text="AI Assistant" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
-                        <Label Text="Connect a model for open answers" FontSize="12" TextColor="#6F7668" />
+                        <Label Text="AI Assistant" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
+                        <Label Text="Connect a model for open answers" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                     </VerticalStackLayout>
 
                     <controls:FinoraIconView Grid.Column="2" IconKey="bot" Size="46" VerticalOptions="Center" />
@@ -55,10 +55,10 @@
                     <VerticalStackLayout Spacing="6">
                         <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
                             <Label Text="Status" FontSize="12" TextColor="White" Opacity="0.7" VerticalOptions="Center" />
-                            <Border Background="{StaticResource FinoraLime}" StrokeThickness="0" Padding="10,4" VerticalOptions="Center">
+                            <Border Background="{DynamicResource FinoraLime}" StrokeThickness="0" Padding="10,4" VerticalOptions="Center">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                                 <Label Text="{Binding IsConfigured, Converter={StaticResource AiStatusConverter}}"
-                                       FontSize="11" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                       FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                             </Border>
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Spacing="4">

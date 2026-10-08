@@ -4,8 +4,8 @@
              x:Class="FinanceApp.Mobile.Views.Controls.FinoraTabBar"
              x:Name="Root">
     <Border Margin="30,0,30,12"
-            Background="#161B16"
-            Stroke="#161B16"
+            Background="{DynamicResource FinoraInk}"
+            Stroke="{DynamicResource FinoraInk}"
             StrokeThickness="1.5"
             Padding="10,8">
         <Border.StrokeShape>

@@ -9,7 +9,7 @@
              x:DataType="viewmodels:BudgetSuggestionsViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}"
+             BackgroundColor="{DynamicResource FinoraCream}"
              x:Name="BudgetSuggestionsPageView">
 
     <ContentPage.Resources>
@@ -36,8 +36,8 @@
                 <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                     <Border WidthRequest="46" HeightRequest="46"
-                            Background="{StaticResource FinoraCard}"
-                            Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                            Background="{DynamicResource FinoraCard}"
+                            Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                             VerticalOptions="Center">
                         <Border.StrokeShape>
                             <Ellipse />
@@ -48,14 +48,14 @@
                         <Label Text="←"
                                FontSize="20"
                                FontAttributes="Bold"
-                               TextColor="{StaticResource FinoraInk}"
+                               TextColor="{DynamicResource FinoraInk}"
                                VerticalOptions="Center"
                                HorizontalOptions="Center" />
                     </Border>
 
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                        <Label Text="AI Suggestions" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
-                        <Label Text="Budget ideas from your last 3 months" FontSize="12" TextColor="#6F7668" />
+                        <Label Text="AI Suggestions" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
+                        <Label Text="Budget ideas from your last 3 months" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                     </VerticalStackLayout>
 
                     <controls:FinoraIconView Grid.Column="2" IconKey="bulb" Size="46" Light="True" VerticalOptions="Center" />
@@ -82,7 +82,7 @@
                                             <Label Text="{Binding KindLabel}"
                                                    FontSize="12"
                                                    FontAttributes="Bold"
-                                                   TextColor="{StaticResource FinoraInk}" />
+                                                   TextColor="{DynamicResource FinoraInk}" />
                                         </VerticalStackLayout>
 
                                         <Label Grid.Column="2"
@@ -98,7 +98,7 @@
                                                    FontSize="20"
                                                    FontAttributes="Bold"
                                                    FontFamily="SpaceGroteskBold"
-                                                   TextColor="{StaticResource FinoraInk}" />
+                                                   TextColor="{DynamicResource FinoraInk}" />
                                         </VerticalStackLayout>
                                         <Label Grid.Column="1"
                                                Text="{Binding CurrentText}"
@@ -147,7 +147,7 @@
                             HorizontalOptions="Center" />
                     <ActivityIndicator IsRunning="{Binding IsPreparingSampleData}"
                                        IsVisible="{Binding IsPreparingSampleData}"
-                                       Color="{StaticResource FinoraLimeDark}" />
+                                       Color="{DynamicResource FinoraLimeDark}" />
                 </VerticalStackLayout>
             </VerticalStackLayout>
             </ScrollView>

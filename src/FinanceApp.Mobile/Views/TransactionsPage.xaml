@@ -8,7 +8,7 @@
              x:Class="FinanceApp.Mobile.Views.TransactionsPage"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}"
+             BackgroundColor="{DynamicResource FinoraCream}"
              x:Name="TransactionsPageView">
 
     <ContentPage.Resources>
@@ -35,18 +35,18 @@
                 <CollectionView.Header>
                     <VerticalStackLayout Spacing="12" Padding="18,14,18,0">
                         <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
-                            <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
+                            <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                                 <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeTapped" /></Border.GestureRecognizers>
-                                <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
                             <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center" Margin="10,0">
-                                <Label Text="Transactions" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="History of money in and out" FontSize="12" TextColor="#6F7668" />
+                                <Label Text="Transactions" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="History of money in and out" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                             </VerticalStackLayout>
-                            <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraInk}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
+                            <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraInk}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                <Label Text="+" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="+" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center">
                                     <Label.GestureRecognizers><TapGestureRecognizer Command="{Binding AddTransactionCommand}" /></Label.GestureRecognizers>
                                 </Label>
                             </Border>
@@ -62,24 +62,24 @@
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding Summary, Converter={StaticResource NullToBoolConverter}}">
                             <Border Grid.Column="0" Style="{StaticResource FinoraLimeCardStyle}" Padding="14">
                                 <VerticalStackLayout Spacing="2">
-                                    <Label Text="↗ Income" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                    <Label Text="{Binding Summary.TotalIncome.Amount, StringFormat='{0:N2}'}" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                    <Label Text="↗ Income" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                    <Label Text="{Binding Summary.TotalIncome.Amount, StringFormat='{0:N2}'}" FontSize="17" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                                 </VerticalStackLayout>
                             </Border>
                             <Border Grid.Column="1" Style="{StaticResource FinoraDarkCardStyle}" Padding="14">
                                 <VerticalStackLayout Spacing="2">
-                                    <Label Text="↘ Expenses" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" />
+                                    <Label Text="↘ Expenses" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" />
                                     <Label Text="{Binding Summary.TotalExpense.Amount, StringFormat='{0:N2}'}" FontSize="17" FontAttributes="Bold" TextColor="White" />
                                 </VerticalStackLayout>
                             </Border>
                         </Grid>
-                        <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="14,10" IsVisible="{Binding Summary, Converter={StaticResource NullToBoolConverter}}">
+                        <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="14,10" IsVisible="{Binding Summary, Converter={StaticResource NullToBoolConverter}}">
                             <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                             <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
-                                <Label Text="Net" FontSize="12" FontAttributes="Bold" TextColor="#6F7668" VerticalOptions="Center" />
-                                <Label Text="{Binding Summary.NetAmount.Amount, StringFormat='{0:N2}'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
-                                <Label Text="•" TextColor="#6F7668" VerticalOptions="Center" />
-                                <Label Text="{Binding Summary.TransactionCount, StringFormat='{0} txns'}" FontSize="12" TextColor="#6F7668" VerticalOptions="Center" />
+                                <Label Text="Net" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraMuted}" VerticalOptions="Center" />
+                                <Label Text="{Binding Summary.NetAmount.Amount, StringFormat='{0:N2}'}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
+                                <Label Text="•" TextColor="{DynamicResource FinoraMuted}" VerticalOptions="Center" />
+                                <Label Text="{Binding Summary.TransactionCount, StringFormat='{0} txns'}" FontSize="12" TextColor="{DynamicResource FinoraMuted}" VerticalOptions="Center" />
                             </HorizontalStackLayout>
                         </Border>
                     </VerticalStackLayout>
@@ -90,15 +90,15 @@
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>
-                                    <SwipeItem Text="Edit" BackgroundColor="#161B16"
+                                    <SwipeItem Text="Edit" BackgroundColor="{DynamicResource FinoraInk}"
                                                Command="{Binding Source={x:Reference TransactionsPageView}, Path=BindingContext.EditTransactionCommand}"
                                                CommandParameter="{Binding .}" />
-                                    <SwipeItem Text="Delete" BackgroundColor="#DC2626"
+                                    <SwipeItem Text="Delete" BackgroundColor="{DynamicResource Error}"
                                                Command="{Binding Source={x:Reference TransactionsPageView}, Path=BindingContext.DeleteTransactionCommand}"
                                                CommandParameter="{Binding .}" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            <Border Background="{StaticResource FinoraCard}" Stroke="#D3D9BE" StrokeThickness="1" Padding="12" Margin="18,4">
+                            <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource OutlineVariant}" StrokeThickness="1" Padding="12" Margin="18,4">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="22" /></Border.StrokeShape>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer
@@ -108,18 +108,18 @@
                                 <HorizontalStackLayout Spacing="12">
                                     <controls:FinoraIconView Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="48" VerticalOptions="Center" />
                                     <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
-                                        <Label Text="{Binding CategoryName}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                        <Label Text="{Binding Notes}" FontSize="12" TextColor="#6F7668"
+                                        <Label Text="{Binding CategoryName}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                        <Label Text="{Binding Notes}" FontSize="12" TextColor="{DynamicResource FinoraMuted}"
                                                IsVisible="{Binding Notes, Converter={StaticResource NullToBoolConverter}}" />
                                         <HorizontalStackLayout Spacing="6">
-                                            <Label Text="{Binding AccountName}" FontSize="11" TextColor="#6F7668" />
-                                            <Label Text="•" FontSize="11" TextColor="#D3D9BE" />
-                                            <Label Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" FontSize="11" TextColor="#6F7668" />
+                                            <Label Text="{Binding AccountName}" FontSize="11" TextColor="{DynamicResource FinoraMuted}" />
+                                            <Label Text="•" FontSize="11" TextColor="{DynamicResource OutlineVariant}" />
+                                            <Label Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" FontSize="11" TextColor="{DynamicResource FinoraMuted}" />
                                         </HorizontalStackLayout>
                                     </VerticalStackLayout>
                                     <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
                                         <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}"
-                                               FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalTextAlignment="End" />
+                                               FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalTextAlignment="End" />
                                         <Label Text="{Binding SyncStatus, Converter={StaticResource SyncStatusIconConverter}}"
                                                FontSize="11" FontAttributes="Bold"
                                                TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusColorConverter}}" HorizontalTextAlignment="End" />

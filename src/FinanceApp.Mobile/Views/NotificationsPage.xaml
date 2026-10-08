@@ -10,7 +10,7 @@
              x:Name="NotificationsPageView"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}">
+             BackgroundColor="{DynamicResource FinoraCream}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -24,24 +24,24 @@
             <!-- Header -->
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
                 <Border Grid.Column="0" WidthRequest="46" HeightRequest="46"
-                        Background="{StaticResource FinoraCard}"
-                        Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                        Background="{DynamicResource FinoraCard}"
+                        Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                         VerticalOptions="Center">
                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
+                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}"
                            HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
                 <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                    <Label Text="Notifications" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
-                    <Label Text="{Binding UnreadCount, StringFormat='{0} unread'}" FontSize="12" TextColor="#6F7668" />
+                    <Label Text="Notifications" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
+                    <Label Text="{Binding UnreadCount, StringFormat='{0} unread'}" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                 </VerticalStackLayout>
-                <Border Grid.Column="2" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                <Border Grid.Column="2" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                         Padding="12,8" VerticalOptions="Center"
                         IsVisible="{Binding UnreadCount, Converter={StaticResource CountToBoolConverter}}">
                     <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding MarkAllReadCommand}" /></Border.GestureRecognizers>
-                    <Label Text="Mark read" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                    <Label Text="Mark read" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                 </Border>
             </Grid>
 
@@ -72,7 +72,7 @@
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Today}" Spacing="0">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="notifications:AppNotification">
-                                    <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="14" Margin="0,4">
+                                    <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="14" Margin="0,4">
                                         <Border.StrokeShape><RoundRectangle CornerRadius="22" /></Border.StrokeShape>
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={x:Reference NotificationsPageView}, Path=BindingContext.OpenCommand}"
@@ -84,21 +84,21 @@
                                                                     VerticalOptions="Center" />
                                             <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center" HorizontalOptions="Fill">
                                                 <HorizontalStackLayout Spacing="6">
-                                                    <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                                    <Label Text="●" FontSize="9" TextColor="{StaticResource FinoraLimeDark}" VerticalOptions="Center"
+                                                    <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                                    <Label Text="●" FontSize="9" TextColor="{DynamicResource FinoraLimeDark}" VerticalOptions="Center"
                                                            IsVisible="{Binding IsUnread}" />
                                                 </HorizontalStackLayout>
-                                                <Label Text="{Binding Body}" FontSize="12" TextColor="#6F7668" LineBreakMode="WordWrap" />
-                                                <Label Text="{Binding TimeLabel}" FontSize="11" TextColor="#9AA393" />
+                                                <Label Text="{Binding Body}" FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                                <Label Text="{Binding TimeLabel}" FontSize="11" TextColor="{DynamicResource MutedSoft}" />
                                             </VerticalStackLayout>
-                                            <Border Grid.Column="2" WidthRequest="32" HeightRequest="32" Background="{StaticResource FinoraCream}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2"
+                                            <Border Grid.Column="2" WidthRequest="32" HeightRequest="32" Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2"
                                                     VerticalOptions="Center">
                                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                                                 <Border.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding Source={x:Reference NotificationsPageView}, Path=BindingContext.DismissCommand}"
                                                                           CommandParameter="{Binding .}" />
                                                 </Border.GestureRecognizers>
-                                                <Label Text="×" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
+                                                <Label Text="×" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}"
                                                        HorizontalOptions="Center" VerticalOptions="Center" />
                                             </Border>
                                         </Grid>
@@ -113,7 +113,7 @@
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Earlier}" Spacing="0">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="notifications:AppNotification">
-                                    <Border Background="{StaticResource FinoraCard}" Stroke="#D3D9BE" StrokeThickness="1" Padding="14" Margin="0,4">
+                                    <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource OutlineVariant}" StrokeThickness="1" Padding="14" Margin="0,4">
                                         <Border.StrokeShape><RoundRectangle CornerRadius="22" /></Border.StrokeShape>
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={x:Reference NotificationsPageView}, Path=BindingContext.OpenCommand}"
@@ -124,18 +124,18 @@
                                                                     Accent="{Binding Severity, Converter={StaticResource SeverityToAccentConverter}}"
                                                                     VerticalOptions="Center" />
                                             <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center" HorizontalOptions="Fill">
-                                                <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                                <Label Text="{Binding Body}" FontSize="12" TextColor="#6F7668" LineBreakMode="WordWrap" />
-                                                <Label Text="{Binding TimeLabel}" FontSize="11" TextColor="#9AA393" />
+                                                <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                                <Label Text="{Binding Body}" FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                                <Label Text="{Binding TimeLabel}" FontSize="11" TextColor="{DynamicResource MutedSoft}" />
                                             </VerticalStackLayout>
-                                            <Border Grid.Column="2" WidthRequest="32" HeightRequest="32" Background="{StaticResource FinoraCream}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2"
+                                            <Border Grid.Column="2" WidthRequest="32" HeightRequest="32" Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2"
                                                     VerticalOptions="Center">
                                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                                                 <Border.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding Source={x:Reference NotificationsPageView}, Path=BindingContext.DismissCommand}"
                                                                           CommandParameter="{Binding .}" />
                                                 </Border.GestureRecognizers>
-                                                <Label Text="×" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
+                                                <Label Text="×" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}"
                                                        HorizontalOptions="Center" VerticalOptions="Center" />
                                             </Border>
                                         </Grid>
@@ -155,11 +155,11 @@
 
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Padding="18,0,18,20" ColumnSpacing="10"
               IsVisible="{Binding IsEmpty, Converter={StaticResource InverseBoolConverter}}">
-            <Border Grid.Column="0" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="14,10"
+            <Border Grid.Column="0" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="14,10"
                     IsVisible="{Binding UnreadCount, Converter={StaticResource CountToBoolConverter}}">
                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding ClearAllCommand}" /></Border.GestureRecognizers>
-                <Label Text="Clear all" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
+                <Label Text="Clear all" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" />
             </Border>
             <Button Grid.Column="1" Text="Refresh" Command="{Binding RefreshCommand}" Style="{StaticResource PrimaryButtonStyle}" />
         </Grid>

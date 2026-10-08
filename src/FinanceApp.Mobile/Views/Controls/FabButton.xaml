@@ -6,9 +6,9 @@
     <Border x:Name="FabBorder"
             HeightRequest="64"
             WidthRequest="64"
-            Stroke="{StaticResource FinoraInk}"
+            Stroke="{DynamicResource FinoraInk}"
             StrokeThickness="1.5"
-            Background="{StaticResource FinoraInk}"
+            Background="{DynamicResource FinoraInk}"
             VerticalOptions="End"
             HorizontalOptions="End">
         <Border.StrokeShape>
@@ -25,7 +25,7 @@
         <Label Text="{Binding Text, Source={x:Reference Root}}"
                FontSize="32"
                FontFamily="SpaceGroteskBold"
-               TextColor="{StaticResource FinoraLime}"
+               TextColor="{DynamicResource FinoraLime}"
                HorizontalOptions="Center"
                VerticalOptions="Center"
                Margin="0,-3,0,0" />

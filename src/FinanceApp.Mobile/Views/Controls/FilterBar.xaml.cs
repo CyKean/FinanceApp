@@ -9,9 +9,9 @@ public partial class FilterBar : ContentView
 {
     private const string NoFilterSummary = "All transactions";
 
-    private static readonly Color Lime = Color.FromArgb("#CDF463");
-    private static readonly Color Ink = Color.FromArgb("#161B16");
-    private static readonly Color Muted = Color.FromArgb("#6F7668");
+    private static Color Lime => FinoraOverlay.Resolve("FinoraLime", "#CDF463");
+    private static Color Ink => FinoraOverlay.Resolve("FinoraInk", "#161B16");
+    private static Color Muted => FinoraOverlay.Resolve("FinoraMuted", "#6F7668");
 
     public static readonly BindableProperty StartDateProperty =
         BindableProperty.Create(nameof(StartDate), typeof(DateTime?), typeof(FilterBar), null,

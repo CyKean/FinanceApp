@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
@@ -9,7 +9,7 @@
              x:DataType="viewmodels:SettingsViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}">
+             BackgroundColor="{DynamicResource FinoraCream}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -23,30 +23,30 @@
         <ScrollView>
             <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
                 <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
-                    <Border WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
+                    <Border WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
-                    <Label Grid.Column="1" Text="Profile &amp; Settings" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
-                    <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
+                    <Label Grid.Column="1" Text="Profile &amp; Settings" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                        <Label Text="•••" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="•••" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </Grid>
 
                 <Border Style="{StaticResource HeroCardStyle}">
                     <HorizontalStackLayout Spacing="14">
-                        <Border WidthRequest="60" HeightRequest="60" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraLime}" StrokeThickness="0">
+                        <Border WidthRequest="60" HeightRequest="60" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraLime}" StrokeThickness="0">
                             <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                            <Label Text="W" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Label Text="W" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                             <Label Text="Signed in as" FontSize="11" TextColor="White" Opacity="0.7" />
                             <Label Text="{Binding UserEmail}" FontSize="16" FontAttributes="Bold" TextColor="White" />
-                            <Border Background="{StaticResource FinoraLime}" StrokeThickness="0" Padding="10,3" HorizontalOptions="Start" Margin="0,4,0,0">
+                            <Border Background="{DynamicResource FinoraLime}" StrokeThickness="0" Padding="10,3" HorizontalOptions="Start" Margin="0,4,0,0">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                                <Label Text="● Finora member" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                <Label Text="● Finora member" FontSize="10" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                             </Border>
                         </VerticalStackLayout>
                     </HorizontalStackLayout>
@@ -54,31 +54,31 @@
 
                 <Border Style="{StaticResource CardFrameStyle}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Synchronization" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                        <Label Text="Synchronization" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-                            <Border Padding="10" Background="{StaticResource FinoraCream}" StrokeThickness="0">
+                            <Border Padding="10" Background="{DynamicResource FinoraCream}" StrokeThickness="0">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
-                                    <Label Text="{Binding SyncStatus.PendingCount}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
-                                    <Label Text="Pending" FontSize="11" TextColor="#6F7668" HorizontalOptions="Center" />
+                                    <Label Text="{Binding SyncStatus.PendingCount}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" />
+                                    <Label Text="Pending" FontSize="11" TextColor="{DynamicResource FinoraMuted}" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Border>
-                            <Border Grid.Column="1" Padding="10" Background="{StaticResource FinoraCream}" StrokeThickness="0">
+                            <Border Grid.Column="1" Padding="10" Background="{DynamicResource FinoraCream}" StrokeThickness="0">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
-                                    <Label Text="{Binding SyncStatus.FailedCount}" FontSize="18" FontAttributes="Bold" TextColor="#DC2626" HorizontalOptions="Center" />
-                                    <Label Text="Failed" FontSize="11" TextColor="#6F7668" HorizontalOptions="Center" />
+                                    <Label Text="{Binding SyncStatus.FailedCount}" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource Error}" HorizontalOptions="Center" />
+                                    <Label Text="Failed" FontSize="11" TextColor="{DynamicResource FinoraMuted}" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Border>
-                            <Border Grid.Column="2" Padding="10" Background="{StaticResource FinoraInk}" StrokeThickness="0">
+                            <Border Grid.Column="2" Padding="10" Background="{DynamicResource FinoraInk}" StrokeThickness="0">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="16" /></Border.StrokeShape>
                                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
-                                    <Label Text="✓" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" HorizontalOptions="Center" />
+                                    <Label Text="✓" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" />
                                     <Label Text="Synced" FontSize="11" TextColor="White" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Border>
                         </Grid>
-                        <Label Text="{Binding SyncStatus.LastSyncAt, Converter={StaticResource ManilaTimeConverter}, StringFormat='Last sync {0:MMM dd, HH:mm}'}" FontSize="12" TextColor="#6F7668" HorizontalOptions="Center" />
+                        <Label Text="{Binding SyncStatus.LastSyncAt, Converter={StaticResource ManilaTimeConverter}, StringFormat='Last sync {0:MMM dd, HH:mm}'}" FontSize="12" TextColor="{DynamicResource FinoraMuted}" HorizontalOptions="Center" />
                         <Button Text="Sync Now →" Command="{Binding SyncNowCommand}" IsEnabled="{Binding IsSyncing, Converter={StaticResource InverseBoolConverter}}" Style="{StaticResource PrimaryButtonStyle}">
                             <Button.Triggers>
                                 <DataTrigger TargetType="{x:Type Button}" Binding="{Binding IsSyncing}" Value="True">
@@ -86,12 +86,28 @@
                                 </DataTrigger>
                             </Button.Triggers>
                         </Button>
-                        <Label Text="{Binding SyncStatus.LastError}" FontSize="13" TextColor="#DC2626"
+                        <Label Text="{Binding SyncStatus.LastError}" FontSize="13" TextColor="{DynamicResource Error}"
                                IsVisible="{Binding SyncStatus.LastError, Converter={StaticResource NullToBoolConverter}}" />
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Background="{StaticResource FinoraInk}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="16">
+                <Border Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="16">
+                    <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
+                    <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnThemeTapped" /></Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <controls:FinoraIconView Grid.Column="0" IconKey="palette" Size="46" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
+                            <Label Text="Theme" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                            <Label Text="{Binding ActiveThemeName, StringFormat='Current: {0}'}" FontSize="12" TextColor="{DynamicResource FinoraInk}" Opacity="0.7" />
+                        </VerticalStackLayout>
+                        <Border Grid.Column="2" Background="{DynamicResource FinoraInk}" StrokeThickness="0" Padding="12,6" VerticalOptions="Center">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                            <Label Text="Change" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" />
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Background="{DynamicResource FinoraInk}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="16">
                     <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnAiAssistantTapped" /></Border.GestureRecognizers>
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
@@ -100,20 +116,21 @@
                             <Label Text="AI Assistant" FontSize="15" FontAttributes="Bold" TextColor="White" />
                             <Label Text="Chat &amp; budget ideas · API key" FontSize="12" TextColor="White" Opacity="0.7" />
                         </VerticalStackLayout>
-                        <Label Grid.Column="2" Text="›" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" VerticalOptions="Center" />
+                        <Label Grid.Column="2" Text="›" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" VerticalOptions="Center" />
                     </Grid>
                 </Border>
 
                 <Border Style="{StaticResource CardFrameStyle}">
                     <VerticalStackLayout Spacing="8">
-                        <Label Text="App Information" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                        <Label Text="App Information" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                         <HorizontalStackLayout Spacing="12">
-                            <Label Text="Version" FontSize="14" TextColor="#6F7668" />
-                            <Label Text="{Binding AppVersion}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="EndAndExpand" />
+                            <Label Text="Version" FontSize="14" TextColor="{DynamicResource FinoraMuted}" />
+                            <Label Text="{Binding AppVersion}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="EndAndExpand" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Spacing="12">
-                            <Label Text="Theme" FontSize="14" TextColor="#6F7668" />
-                            <Label Text="Finora Cream + Lime" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="EndAndExpand" />
+                            <HorizontalStackLayout.GestureRecognizers><TapGestureRecognizer Tapped="OnThemeTapped" /></HorizontalStackLayout.GestureRecognizers>
+                            <Label Text="Theme" FontSize="14" TextColor="{DynamicResource FinoraMuted}" />
+                            <Label Text="{Binding ActiveThemeName}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="EndAndExpand" />
                         </HorizontalStackLayout>
                         <Button Text="Check for updates" Command="{Binding CheckForUpdatesCommand}" IsEnabled="{Binding IsCheckingForUpdates, Converter={StaticResource InverseBoolConverter}}" Style="{StaticResource PrimaryButtonStyle}">
                             <Button.Triggers>
@@ -125,10 +142,10 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Background="#FFE9E9" Stroke="#DC2626" StrokeThickness="1.5" Padding="18">
+                <Border Background="{DynamicResource DangerContainer}" Stroke="{DynamicResource Error}" StrokeThickness="1.5" Padding="18">
                     <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="Danger Zone" FontSize="16" FontAttributes="Bold" TextColor="#DC2626" />
+                        <Label Text="Danger Zone" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource Error}" />
                         <Button Text="Logout" Command="{Binding LogoutCommand}" Style="{StaticResource DangerButtonStyle}" />
                     </VerticalStackLayout>
                 </Border>

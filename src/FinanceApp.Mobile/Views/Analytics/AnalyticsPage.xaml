@@ -9,7 +9,7 @@
              x:DataType="viewmodels:AnalyticsViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}">
+             BackgroundColor="{DynamicResource FinoraCream}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -27,59 +27,59 @@
 
                 <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
-                    <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
+                    <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
-                    <Label Grid.Column="1" Text="Statistics" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
-                    <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
+                    <Label Grid.Column="1" Text="Statistics" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                        <Label Text="•••" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="•••" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </Grid>
 
                 <!-- Period pills -->
                 <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
-                    <Border Grid.Column="0" Padding="0,12" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
+                    <Border Grid.Column="0" Padding="0,12" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding ChangePeriodCommand}" CommandParameter="Today" /></Border.GestureRecognizers>
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding SelectedPeriod}" Value="Today">
-                                <Setter Property="Background" Value="{StaticResource FinoraLime}" />
+                                <Setter Property="Background" Value="{DynamicResource FinoraLime}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label Text="Today" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
+                        <Label Text="Today" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" />
                     </Border>
-                    <Border Grid.Column="1" Padding="0,12" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
+                    <Border Grid.Column="1" Padding="0,12" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding ChangePeriodCommand}" CommandParameter="Week" /></Border.GestureRecognizers>
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding SelectedPeriod}" Value="Week">
-                                <Setter Property="Background" Value="{StaticResource FinoraLime}" />
+                                <Setter Property="Background" Value="{DynamicResource FinoraLime}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label Text="Weekly" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
+                        <Label Text="Weekly" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" />
                     </Border>
-                    <Border Grid.Column="2" Padding="0,12" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
+                    <Border Grid.Column="2" Padding="0,12" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding ChangePeriodCommand}" CommandParameter="Month" /></Border.GestureRecognizers>
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding SelectedPeriod}" Value="Month">
-                                <Setter Property="Background" Value="{StaticResource FinoraLime}" />
+                                <Setter Property="Background" Value="{DynamicResource FinoraLime}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label Text="Monthly" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
+                        <Label Text="Monthly" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" />
                     </Border>
-                    <Border Grid.Column="3" Padding="0,12" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5">
+                    <Border Grid.Column="3" Padding="0,12" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding ChangePeriodCommand}" CommandParameter="Year" /></Border.GestureRecognizers>
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding SelectedPeriod}" Value="Year">
-                                <Setter Property="Background" Value="{StaticResource FinoraLime}" />
+                                <Setter Property="Background" Value="{DynamicResource FinoraLime}" />
                             </DataTrigger>
                         </Border.Triggers>
-                        <Label Text="Yearly" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" />
+                        <Label Text="Yearly" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" />
                     </Border>
                 </Grid>
 
@@ -88,14 +88,14 @@
                     <Border Grid.Column="0" Style="{StaticResource FinoraLimeCardStyle}">
                         <VerticalStackLayout Spacing="4">
                             <Grid ColumnDefinitions="*,Auto">
-                                <Label Grid.Column="0" Text="Earning" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Border Grid.Column="1" WidthRequest="26" HeightRequest="26" Background="{StaticResource FinoraInk}" StrokeThickness="0">
+                                <Label Grid.Column="0" Text="Earning" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Border Grid.Column="1" WidthRequest="26" HeightRequest="26" Background="{DynamicResource FinoraInk}" StrokeThickness="0">
                                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                    <Label Text="•••" FontSize="10" TextColor="{StaticResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Label Text="•••" FontSize="10" TextColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Border>
                             </Grid>
-                            <Label Text="{Binding Statistics.TotalEarning}" FontSize="30" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                            <Label FontSize="10" TextColor="{StaticResource FinoraInk}" Opacity="0.75">
+                            <Label Text="{Binding Statistics.TotalEarning}" FontSize="30" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                            <Label FontSize="10" TextColor="{DynamicResource FinoraInk}" Opacity="0.75">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="Earning " />
@@ -104,20 +104,20 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <BoxView HeightRequest="1" Color="{StaticResource FinoraInk}" Opacity="0.2" Margin="0,6" />
+                            <BoxView HeightRequest="1" Color="{DynamicResource FinoraInk}" Opacity="0.2" Margin="0,6" />
                             <HorizontalStackLayout Spacing="6" IsVisible="{Binding HasGoal}">
-                                <Label Text="Goal" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
-                                <Label Text="{Binding GoalText}" FontSize="11" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" HorizontalOptions="Fill" />
+                                <Label Text="Goal" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
+                                <Label Text="{Binding GoalText}" FontSize="11" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" HorizontalOptions="Fill" />
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
                     </Border>
                     <Border Grid.Column="1" Style="{StaticResource FinoraDarkCardStyle}">
                         <VerticalStackLayout Spacing="4">
                             <Grid ColumnDefinitions="*,Auto">
-                                <Label Grid.Column="0" Text="Spending" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" />
-                                <Border Grid.Column="1" WidthRequest="26" HeightRequest="26" Background="{StaticResource FinoraLime}" StrokeThickness="0">
+                                <Label Grid.Column="0" Text="Spending" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" />
+                                <Border Grid.Column="1" WidthRequest="26" HeightRequest="26" Background="{DynamicResource FinoraLime}" StrokeThickness="0">
                                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                    <Label Text="•••" FontSize="10" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Label Text="•••" FontSize="10" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                                 </Border>
                             </Grid>
                             <Label Text="{Binding Statistics.TotalSpending}" FontSize="22" FontAttributes="Bold" TextColor="White" VerticalOptions="End" />
@@ -135,22 +135,22 @@
                 <Border Style="{StaticResource CardFrameStyle}">
                     <VerticalStackLayout Spacing="10">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Grid.Column="0" Text="Overview" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                            <Label Grid.Column="0" Text="Overview" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                         </Grid>
                         <Grid ColumnDefinitions="*,Auto">
                             <VerticalStackLayout Spacing="0">
-                                <Label Text="Total Balance" FontSize="11" TextColor="#6F7668" />
-                                <Label Text="{Binding Statistics.TotalBalance}" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                <Label Text="Total Balance" FontSize="11" TextColor="{DynamicResource FinoraMuted}" />
+                                <Label Text="{Binding Statistics.TotalBalance}" FontSize="22" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                             </VerticalStackLayout>
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <HorizontalStackLayout Spacing="5"><BoxView WidthRequest="8" HeightRequest="8" Color="#CDF463" CornerRadius="2" VerticalOptions="Center" /><Label Text="Earning" FontSize="10" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" /></HorizontalStackLayout>
-                                <HorizontalStackLayout Spacing="5"><BoxView WidthRequest="8" HeightRequest="8" Color="#161B16" CornerRadius="2" VerticalOptions="Center" /><Label Text="Spending" FontSize="10" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" /></HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="5"><BoxView WidthRequest="8" HeightRequest="8" Color="{DynamicResource FinoraLime}" CornerRadius="2" VerticalOptions="Center" /><Label Text="Earning" FontSize="10" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" /></HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="5"><BoxView WidthRequest="8" HeightRequest="8" Color="{DynamicResource FinoraInk}" CornerRadius="2" VerticalOptions="Center" /><Label Text="Spending" FontSize="10" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" /></HorizontalStackLayout>
                             </VerticalStackLayout>
                         </Grid>
 
                         <controls:OverviewChart x:Name="overviewChart" HeightRequest="190"
                                                 Items="{Binding Statistics.Overview}" />
-                        <Label FontSize="10" TextColor="#6F7668"
+                        <Label FontSize="10" TextColor="{DynamicResource FinoraMuted}"
                                Text="{Binding Source={x:Reference overviewChart}, Path=TooltipText}" />
                     </VerticalStackLayout>
                 </Border>
@@ -158,24 +158,24 @@
                 <!-- Income vs Expenses (same Statistics result) -->
                 <Border Style="{StaticResource CardFrameStyle}">
                     <VerticalStackLayout Spacing="8">
-                        <Label Text="Income vs Expenses" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                        <Label Text="Income vs Expenses" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                             <Border Style="{StaticResource FinoraLimeCardStyle}" Padding="12">
                                 <VerticalStackLayout Spacing="2">
-                                    <Label Text="Income" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                    <Label Text="{Binding Statistics.TotalEarning}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
+                                    <Label Text="Income" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                    <Label Text="{Binding Statistics.TotalEarning}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                                 </VerticalStackLayout>
                             </Border>
                             <Border Grid.Column="1" Style="{StaticResource FinoraDarkCardStyle}" Padding="12">
                                 <VerticalStackLayout Spacing="2">
-                                    <Label Text="Expense" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" />
+                                    <Label Text="Expense" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" />
                                     <Label Text="{Binding Statistics.TotalSpending}" FontSize="15" FontAttributes="Bold" TextColor="White" />
                                 </VerticalStackLayout>
                             </Border>
                         </Grid>
                         <HorizontalStackLayout Spacing="8">
-                            <Label Text="Net:" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
-                            <Label Text="{Binding Statistics.NetAmount}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Text="Net:" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
+                            <Label Text="{Binding Statistics.NetAmount}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>

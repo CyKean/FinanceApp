@@ -13,15 +13,15 @@
           Margin="24,0,24,104"
           InputTransparent="True">
         <Border x:Name="Card"
-                Background="{StaticResource FinoraCard}"
-                Stroke="{StaticResource FinoraInk}"
+                Background="{DynamicResource FinoraCard}"
+                Stroke="{DynamicResource FinoraInk}"
                 StrokeThickness="1.5"
                 Padding="14,12">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="20" />
             </Border.StrokeShape>
             <Border.Shadow>
-                <Shadow Brush="#161B16" Opacity="0.22" Radius="18" Offset="0,8" />
+                <Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.22" Radius="18" Offset="0,8" />
             </Border.Shadow>
             <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
                 <Border x:Name="IconBadge"
@@ -43,7 +43,7 @@
                 <Label x:Name="MessageLabel"
                        FontSize="14"
                        FontAttributes="Bold"
-                       TextColor="{StaticResource FinoraInk}"
+                       TextColor="{DynamicResource FinoraInk}"
                        VerticalOptions="Center"
                        LineBreakMode="WordWrap"
                        MaxLines="3" />

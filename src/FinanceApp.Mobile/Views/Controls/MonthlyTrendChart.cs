@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Application.DTOs;
 
 public class MonthlyTrendChart : GraphicsView
@@ -30,8 +31,8 @@ public class MonthlyTrendChart : GraphicsView
 
 internal sealed class MonthlyTrendDrawable : IDrawable
 {
-    private static readonly Color IncomeColor = Color.FromArgb("#15803D");
-    private static readonly Color ExpenseColor = Color.FromArgb("#DC2626");
+    private static Color IncomeColor => FinoraOverlay.Resolve("Success", "#15803D");
+    private static Color ExpenseColor => FinoraOverlay.Resolve("Error", "#DC2626");
 
     public IReadOnlyList<MonthlyTrendDto>? Items { get; set; }
 

@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Domain.ValueObjects;
 
 public class IncomeExpenseChart : GraphicsView
@@ -53,8 +54,8 @@ public class IncomeExpenseChart : GraphicsView
 
 internal sealed class IncomeExpenseDrawable : IDrawable
 {
-    private static readonly Color IncomeColor = Color.FromArgb("#15803D");
-    private static readonly Color ExpenseColor = Color.FromArgb("#DC2626");
+    private static Color IncomeColor => FinoraOverlay.Resolve("Success", "#15803D");
+    private static Color ExpenseColor => FinoraOverlay.Resolve("Error", "#DC2626");
 
     public Money? Income { get; set; }
     public Money? Expense { get; set; }

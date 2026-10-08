@@ -22,17 +22,17 @@
             <!-- Header -->
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
                 <Border WidthRequest="46" HeightRequest="46"
-                        Background="{StaticResource FinoraCard}"
-                        Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                        Background="{DynamicResource FinoraCard}"
+                        Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                         VerticalOptions="Center">
                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding CancelCommand}" /></Border.GestureRecognizers>
-                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
+                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}"
                            HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
                 <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                    <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
-                    <Label Text="Save toward something big" FontSize="12" TextColor="#6F7668" />
+                    <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
+                    <Label Text="Save toward something big" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                 </VerticalStackLayout>
                 <controls:FinoraIconView Grid.Column="2" IconKey="target" Size="46" VerticalOptions="Center" />
             </Grid>
@@ -48,7 +48,7 @@
                         <Entry Text="{Binding Name}"
                                Placeholder="e.g., Emergency Fund"
                                BackgroundColor="Transparent"
-                               TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                               TextColor="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}"
                                HeightRequest="48" />
                     </Border>
                 </VerticalStackLayout>
@@ -61,7 +61,7 @@
                                Keyboard="Numeric"
                                Placeholder="0.00"
                                BackgroundColor="Transparent"
-                               TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                               TextColor="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}"
                                HeightRequest="48"
                                HorizontalTextAlignment="End" />
                     </Border>
@@ -93,7 +93,7 @@
                     <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                         <Editor Text="{Binding Description}"
                                 BackgroundColor="Transparent"
-                                TextColor="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}"
+                                TextColor="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}"
                                 Placeholder="Describe your goal..."
                                 HeightRequest="88" />
                     </Border>

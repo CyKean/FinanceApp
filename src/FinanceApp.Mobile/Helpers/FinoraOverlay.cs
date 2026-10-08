@@ -27,7 +27,7 @@ public static class FinoraOverlay
     /// Error accent. Kept outside the Finora palette so failures read as
     /// failures, and inline here because the Finora palette has no red.
     /// </summary>
-    private static Color ErrorAccent => Resolve("#DC2626", "#DC2626");
+    private static Color ErrorAccent => Resolve("Error", "#DC2626");
 
     // Motion timings, kept together so every overlay moves at the same pace.
     public const uint ScrimFadeMs = 180;

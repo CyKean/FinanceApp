@@ -9,7 +9,7 @@
              x:DataType="viewmodels:PredictionsViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}">
+             BackgroundColor="{DynamicResource FinoraCream}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -29,7 +29,7 @@
                  section explains itself identically instead of dropping away. -->
             <Style x:Key="SectionEmptyLabelStyle" TargetType="Label">
                 <Setter Property="FontSize" Value="13" />
-                <Setter Property="TextColor" Value="#6F7668" />
+                <Setter Property="TextColor" Value="{DynamicResource FinoraMuted}" />
                 <Setter Property="HorizontalTextAlignment" Value="Center" />
             </Style>
         </ResourceDictionary>
@@ -49,17 +49,17 @@
                 <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalOptions="Center">
                     <Border WidthRequest="46" HeightRequest="46"
-                            Background="{StaticResource FinoraCard}"
-                            Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                            Background="{DynamicResource FinoraCard}"
+                            Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                             VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}"
+                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}"
                                HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                        <Label Text="Forecasts" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
-                        <Label Text="What next month looks like" FontSize="12" TextColor="#6F7668" />
+                        <Label Text="Forecasts" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
+                        <Label Text="What next month looks like" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                     </VerticalStackLayout>
                     <controls:FinoraIconView Grid.Column="2" IconKey="forecast" Size="46" VerticalOptions="Center" />
                 </Grid>
@@ -80,7 +80,7 @@
                         </HorizontalStackLayout>
 
                         <VerticalStackLayout Spacing="2">
-                            <Label Text="Predicted Expenses" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" />
+                            <Label Text="Predicted Expenses" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" />
                             <Label Text="{Binding ExpensePrediction.TotalPredicted, Converter={StaticResource MoneyConverter}}"
                                    FontSize="28" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="White" />
                         </VerticalStackLayout>
@@ -266,7 +266,7 @@
                 <!-- Smart Insights -->
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,4,0,0" IsVisible="{Binding HasAnyData}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Smart Insights" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
+                        <Label Text="Smart Insights" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
 
                         <VerticalStackLayout Spacing="0"
                                              BindableLayout.ItemsSource="{Binding Insights}"
@@ -298,7 +298,7 @@
                 <!-- Anomalies -->
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16" Margin="0,4,0,0" IsVisible="{Binding HasAnyData}">
                     <VerticalStackLayout Spacing="12">
-                        <Label Text="Unusual Spending" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
+                        <Label Text="Unusual Spending" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
 
                         <VerticalStackLayout Spacing="0"
                                              BindableLayout.ItemsSource="{Binding Anomalies}"
@@ -352,13 +352,13 @@
                                               Subtitle="Forecasts need expenses recorded across at least two months, with 10 or more transactions. Keep logging and they will appear here."
                                               IconKey="forecast" />
 
-                    <Border Background="{StaticResource FinoraCard}"
-                            Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                    <Border Background="{DynamicResource FinoraCard}"
+                            Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                             Padding="16" IsVisible="{Binding HasError}">
                         <Border.StrokeShape><RoundRectangle CornerRadius="14" /></Border.StrokeShape>
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Something went wrong" FontSize="14" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{StaticResource FinoraInk}" />
-                            <Label Text="{Binding ErrorMessage}" FontSize="13" TextColor="#6F7668" />
+                            <Label Text="Something went wrong" FontSize="14" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
+                            <Label Text="{Binding ErrorMessage}" FontSize="13" TextColor="{DynamicResource FinoraMuted}" />
                             <Button Text="Try again"
                                     Command="{Binding RefreshCommand}"
                                     Style="{StaticResource OutlineButtonStyle}"
@@ -374,7 +374,7 @@
 
                     <ActivityIndicator IsRunning="{Binding IsPreparingSampleData}"
                                        IsVisible="{Binding IsPreparingSampleData}"
-                                       Color="{StaticResource FinoraLimeDark}" />
+                                       Color="{DynamicResource FinoraLimeDark}" />
                 </VerticalStackLayout>
 
             </VerticalStackLayout>

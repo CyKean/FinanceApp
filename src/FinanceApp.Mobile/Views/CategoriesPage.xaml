@@ -34,8 +34,8 @@
                 <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                     <Border Grid.Column="0" WidthRequest="46" HeightRequest="46"
-                            Background="{StaticResource FinoraCard}"
-                            Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                            Background="{DynamicResource FinoraCard}"
+                            Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                             VerticalOptions="Center">
                         <Border.StrokeShape>
                             <Ellipse />
@@ -46,7 +46,7 @@
                         <Label Text="←"
                                FontSize="20"
                                FontAttributes="Bold"
-                               TextColor="{StaticResource FinoraInk}"
+                               TextColor="{DynamicResource FinoraInk}"
                                VerticalOptions="Center"
                                HorizontalOptions="Center" />
                     </Border>
@@ -56,15 +56,15 @@
                                FontSize="18"
                                FontAttributes="Bold"
                                FontFamily="SpaceGroteskBold"
-                               TextColor="{StaticResource FinoraInk}" />
+                               TextColor="{DynamicResource FinoraInk}" />
                         <Label Text="Organize expenses and income"
                                FontSize="12"
-                               TextColor="#6F7668" />
+                               TextColor="{DynamicResource FinoraMuted}" />
                     </VerticalStackLayout>
 
                     <Border Grid.Column="2"
-                            Background="{StaticResource FinoraLime}"
-                            Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5"
+                            Background="{DynamicResource FinoraLime}"
+                            Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5"
                             Padding="12,8"
                             VerticalOptions="Center">
                         <Border.StrokeShape>
@@ -76,7 +76,7 @@
                         <Label Text="+ Add"
                                FontSize="12"
                                FontAttributes="Bold"
-                               TextColor="{StaticResource FinoraInk}"
+                               TextColor="{DynamicResource FinoraInk}"
                                VerticalOptions="Center"
                                HorizontalOptions="Center" />
                     </Border>
@@ -110,16 +110,16 @@
                                 <SwipeView.RightItems>
                                     <SwipeItems>
                                         <SwipeItem Text="Edit"
-                                                   BackgroundColor="#161B16"
+                                                   BackgroundColor="{DynamicResource FinoraInk}"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
                                                    CommandParameter="{Binding .}" />
                                         <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}"
-                                                   BackgroundColor="#D97706"
+                                                   BackgroundColor="{DynamicResource Warning}"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.ToggleActiveCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
                                         <SwipeItem Text="Delete"
-                                                   BackgroundColor="#DC2626"
+                                                   BackgroundColor="{DynamicResource Error}"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.DeleteCategoryCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
@@ -148,7 +148,7 @@
 
                                         <Border Grid.Column="2"
                                                 Padding="11,7"
-                                                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerHigh}, Dark={StaticResource SurfaceContainerHighDark}}"
+                                                BackgroundColor="{AppThemeBinding Light={DynamicResource SurfaceContainerHigh}, Dark={DynamicResource SurfaceContainerHighDark}}"
                                                 StrokeThickness="0"
                                                 VerticalOptions="Center">
                                             <Border.StrokeShape>
@@ -161,7 +161,7 @@
                                             <Label Text="&#x22EE;"
                                                    FontSize="18"
                                                    FontAttributes="Bold"
-                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}"
+                                                   TextColor="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}"
                                                    VerticalOptions="Center"
                                                    HorizontalOptions="Center" />
                                         </Border>
@@ -182,16 +182,16 @@
                                 <SwipeView.RightItems>
                                     <SwipeItems>
                                         <SwipeItem Text="Edit"
-                                                   BackgroundColor="#161B16"
+                                                   BackgroundColor="{DynamicResource FinoraInk}"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.EditCategoryCommand}"
                                                    CommandParameter="{Binding .}" />
                                         <SwipeItem Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Deactivate|Activate'}"
-                                                   BackgroundColor="#D97706"
+                                                   BackgroundColor="{DynamicResource Warning}"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.ToggleActiveCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
                                         <SwipeItem Text="Delete"
-                                                   BackgroundColor="#DC2626"
+                                                   BackgroundColor="{DynamicResource Error}"
                                                    Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.DeleteCategoryCommand}"
                                                    CommandParameter="{Binding .}"
                                                    IsVisible="{Binding IsSystem, Converter={StaticResource InverseBoolConverter}}" />
@@ -220,7 +220,7 @@
 
                                         <Border Grid.Column="2"
                                                 Padding="11,7"
-                                                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceContainerHigh}, Dark={StaticResource SurfaceContainerHighDark}}"
+                                                BackgroundColor="{AppThemeBinding Light={DynamicResource SurfaceContainerHigh}, Dark={DynamicResource SurfaceContainerHighDark}}"
                                                 StrokeThickness="0"
                                                 VerticalOptions="Center">
                                             <Border.StrokeShape>
@@ -233,7 +233,7 @@
                                             <Label Text="&#x22EE;"
                                                    FontSize="18"
                                                    FontAttributes="Bold"
-                                                   TextColor="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}"
+                                                   TextColor="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}"
                                                    VerticalOptions="Center"
                                                    HorizontalOptions="Center" />
                                         </Border>

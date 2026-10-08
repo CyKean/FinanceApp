@@ -10,9 +10,9 @@ using Microsoft.Maui.Controls.Shapes;
 /// </summary>
 public partial class ModernSelect : ContentView
 {
-    private static readonly Color Ink = Color.FromArgb("#161B16");
-    private static readonly Color Muted = Color.FromArgb("#6F7668");
-    private static readonly Color Selection = Color.FromArgb("#E4EACB");
+    private static Color Ink => FinoraOverlay.Resolve("FinoraInk", "#161B16");
+    private static Color Muted => FinoraOverlay.Resolve("FinoraMuted", "#6F7668");
+    private static Color Selection => FinoraOverlay.Resolve("FinoraCreamDeep", "#E4EACB");
 
     /// <summary>Badge fill, matching FinoraIconView's default ink circle.</summary>
     private const string BadgeBackground = "#161B16";

@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Converters;
 
+using FinanceApp.Mobile.Helpers;
 using Microsoft.Maui.Controls;
 
 public class BoolToStringConverter : IValueConverter
@@ -51,9 +52,9 @@ public class TransactionTypeToColorConverter : IValueConverter
     {
         if (value is FinanceApp.Domain.Enums.TransactionType type)
         {
-            return type == FinanceApp.Domain.Enums.TransactionType.Income ? Colors.Green : Colors.Red;
+            return type == FinanceApp.Domain.Enums.TransactionType.Income ? FinoraOverlay.Resolve("Success", "#3E7C2B") : FinoraOverlay.Resolve("Error", "#DC2626");
         }
-        return Colors.Black;
+        return FinoraOverlay.Resolve("FinoraInk", "#161B16");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -100,7 +101,7 @@ public class TransactionTypeToPayColorConverter : IValueConverter
             }
         }
 
-        return key == "FinoraLime" ? Color.FromArgb("#CDF463") : Color.FromArgb("#161B16");
+        return key == "FinoraLime" ? FinoraOverlay.Resolve("FinoraLime", "#CDF463") : FinoraOverlay.Resolve("FinoraInk", "#161B16");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -171,15 +172,15 @@ public class SyncStatusToColorConverter : IValueConverter
         {
             return status switch
             {
-                FinanceApp.Domain.Enums.SyncStatus.Synced => Colors.Green,
-                FinanceApp.Domain.Enums.SyncStatus.PendingCreate => Colors.Orange,
-                FinanceApp.Domain.Enums.SyncStatus.PendingUpdate => Colors.Orange,
-                FinanceApp.Domain.Enums.SyncStatus.PendingDelete => Colors.Orange,
-                FinanceApp.Domain.Enums.SyncStatus.Failed => Colors.Red,
-                _ => Colors.Gray
+                FinanceApp.Domain.Enums.SyncStatus.Synced => FinoraOverlay.Resolve("Success", "#3E7C2B"),
+                FinanceApp.Domain.Enums.SyncStatus.PendingCreate => FinoraOverlay.Resolve("Warning", "#D97706"),
+                FinanceApp.Domain.Enums.SyncStatus.PendingUpdate => FinoraOverlay.Resolve("Warning", "#D97706"),
+                FinanceApp.Domain.Enums.SyncStatus.PendingDelete => FinoraOverlay.Resolve("Warning", "#D97706"),
+                FinanceApp.Domain.Enums.SyncStatus.Failed => FinoraOverlay.Resolve("Error", "#DC2626"),
+                _ => FinoraOverlay.Resolve("FinoraMuted", "#6F7668")
             };
         }
-        return Colors.Gray;
+        return FinoraOverlay.Resolve("FinoraMuted", "#6F7668");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -242,12 +243,12 @@ public class PercentageToColorConverter : IValueConverter
     {
         if (value is decimal percentage)
         {
-            if (percentage >= 100) return Colors.Red;
-            if (percentage >= 80) return Colors.Orange;
-            if (percentage >= 50) return Colors.Yellow;
-            return Colors.Green;
+            if (percentage >= 100) return FinoraOverlay.Resolve("Error", "#DC2626");
+            if (percentage >= 80) return FinoraOverlay.Resolve("Warning", "#D97706");
+            if (percentage >= 50) return FinoraOverlay.Resolve("Warning", "#EAB308");
+            return FinoraOverlay.Resolve("Success", "#3E7C2B");
         }
-        return Colors.Green;
+        return FinoraOverlay.Resolve("Success", "#3E7C2B");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -348,10 +349,10 @@ public class ColorConverter : IValueConverter
             }
             catch
             {
-                return Colors.Gray;
+                return FinoraOverlay.Resolve("FinoraMuted", "#6F7668");
             }
         }
-        return Colors.Gray;
+        return FinoraOverlay.Resolve("FinoraMuted", "#6F7668");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -425,12 +426,12 @@ public class SavingsRateColorConverter : IValueConverter
     {
         if (value is decimal rate)
         {
-            if (rate >= 20) return Colors.Green;
-            if (rate >= 10) return Colors.Orange;
-            if (rate >= 0) return Colors.Yellow;
-            return Colors.Red;
+            if (rate >= 20) return FinoraOverlay.Resolve("Success", "#3E7C2B");
+            if (rate >= 10) return FinoraOverlay.Resolve("Warning", "#D97706");
+            if (rate >= 0) return FinoraOverlay.Resolve("Warning", "#EAB308");
+            return FinoraOverlay.Resolve("Error", "#DC2626");
         }
-        return Colors.Gray;
+        return FinoraOverlay.Resolve("FinoraMuted", "#6F7668");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -501,14 +502,14 @@ public class PredictionConfidenceColorConverter : IValueConverter
         {
             return confidence switch
             {
-                FinanceApp.Domain.Enums.PredictionConfidence.High => Colors.Green,
-                FinanceApp.Domain.Enums.PredictionConfidence.Moderate => Colors.Orange,
-                FinanceApp.Domain.Enums.PredictionConfidence.Low => Colors.Red,
-                FinanceApp.Domain.Enums.PredictionConfidence.InsufficientData => Colors.Gray,
-                _ => Colors.Gray
+                FinanceApp.Domain.Enums.PredictionConfidence.High => FinoraOverlay.Resolve("Success", "#3E7C2B"),
+                FinanceApp.Domain.Enums.PredictionConfidence.Moderate => FinoraOverlay.Resolve("Warning", "#D97706"),
+                FinanceApp.Domain.Enums.PredictionConfidence.Low => FinoraOverlay.Resolve("Error", "#DC2626"),
+                FinanceApp.Domain.Enums.PredictionConfidence.InsufficientData => FinoraOverlay.Resolve("FinoraMuted", "#6F7668"),
+                _ => FinoraOverlay.Resolve("FinoraMuted", "#6F7668")
             };
         }
-        return Colors.Gray;
+        return FinoraOverlay.Resolve("FinoraMuted", "#6F7668");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -566,13 +567,13 @@ public class TrendToColorConverter : IValueConverter
         {
             return trend switch
             {
-                FinanceApp.Domain.Enums.SpendingTrend.Increasing => Colors.Red,
-                FinanceApp.Domain.Enums.SpendingTrend.Decreasing => Colors.Green,
-                FinanceApp.Domain.Enums.SpendingTrend.Stable => Colors.Blue,
-                _ => Colors.Black
+                FinanceApp.Domain.Enums.SpendingTrend.Increasing => FinoraOverlay.Resolve("Error", "#DC2626"),
+                FinanceApp.Domain.Enums.SpendingTrend.Decreasing => FinoraOverlay.Resolve("Success", "#3E7C2B"),
+                FinanceApp.Domain.Enums.SpendingTrend.Stable => FinoraOverlay.Resolve("Info", "#0284C7"),
+                _ => FinoraOverlay.Resolve("FinoraInk", "#161B16")
             };
         }
-        return Colors.Black;
+        return FinoraOverlay.Resolve("FinoraInk", "#161B16");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -593,7 +594,7 @@ public class BoolToColorConverter : IValueConverter
                 return boolValue ? Color.FromArgb(parts[0]) : Color.FromArgb(parts[1]);
             }
         }
-        return Colors.Gray;
+        return FinoraOverlay.Resolve("FinoraMuted", "#6F7668");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -634,13 +635,13 @@ public class InsightSeverityToColorConverter : IValueConverter
         {
             return severity switch
             {
-                FinanceApp.Application.DTOs.InsightSeverity.Info => Colors.Blue,
-                FinanceApp.Application.DTOs.InsightSeverity.Warning => Colors.Orange,
-                FinanceApp.Application.DTOs.InsightSeverity.Critical => Colors.Red,
-                _ => Colors.Gray
+                FinanceApp.Application.DTOs.InsightSeverity.Info => FinoraOverlay.Resolve("Info", "#0284C7"),
+                FinanceApp.Application.DTOs.InsightSeverity.Warning => FinoraOverlay.Resolve("Warning", "#D97706"),
+                FinanceApp.Application.DTOs.InsightSeverity.Critical => FinoraOverlay.Resolve("Error", "#DC2626"),
+                _ => FinoraOverlay.Resolve("FinoraMuted", "#6F7668")
             };
         }
-        return Colors.Gray;
+        return FinoraOverlay.Resolve("FinoraMuted", "#6F7668");
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
@@ -140,65 +140,74 @@
     <Color x:Key="Gray950">#0D0D0D</Color>
 
     <!-- Brushes for Light Theme -->
-    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
-    <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLight}"/>
-    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}"/>
-    <SolidColorBrush x:Key="PrimaryContainerBrush" Color="{StaticResource PrimaryContainer}"/>
-    <SolidColorBrush x:Key="OnPrimaryBrush" Color="{StaticResource OnPrimary}"/>
-    <SolidColorBrush x:Key="OnPrimaryContainerBrush" Color="{StaticResource OnPrimaryContainer}"/>
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{DynamicResource Primary}"/>
+    <SolidColorBrush x:Key="PrimaryLightBrush" Color="{DynamicResource PrimaryLight}"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{DynamicResource PrimaryDark}"/>
+    <SolidColorBrush x:Key="PrimaryContainerBrush" Color="{DynamicResource PrimaryContainer}"/>
+    <SolidColorBrush x:Key="OnPrimaryBrush" Color="{DynamicResource OnPrimary}"/>
+    <SolidColorBrush x:Key="OnPrimaryContainerBrush" Color="{DynamicResource OnPrimaryContainer}"/>
 
-    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
-    <SolidColorBrush x:Key="SecondaryContainerBrush" Color="{StaticResource SecondaryContainer}"/>
-    <SolidColorBrush x:Key="OnSecondaryBrush" Color="{StaticResource OnSecondary}"/>
-    <SolidColorBrush x:Key="OnSecondaryContainerBrush" Color="{StaticResource OnSecondaryContainer}"/>
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{DynamicResource Secondary}"/>
+    <SolidColorBrush x:Key="SecondaryContainerBrush" Color="{DynamicResource SecondaryContainer}"/>
+    <SolidColorBrush x:Key="OnSecondaryBrush" Color="{DynamicResource OnSecondary}"/>
+    <SolidColorBrush x:Key="OnSecondaryContainerBrush" Color="{DynamicResource OnSecondaryContainer}"/>
 
-    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}"/>
-    <SolidColorBrush x:Key="ErrorContainerBrush" Color="{StaticResource ErrorContainer}"/>
-    <SolidColorBrush x:Key="OnErrorBrush" Color="{StaticResource OnError}"/>
-    <SolidColorBrush x:Key="OnErrorContainerBrush" Color="{StaticResource OnErrorContainer}"/>
+    <SolidColorBrush x:Key="ErrorBrush" Color="{DynamicResource Error}"/>
+    <SolidColorBrush x:Key="ErrorContainerBrush" Color="{DynamicResource ErrorContainer}"/>
+    <SolidColorBrush x:Key="OnErrorBrush" Color="{DynamicResource OnError}"/>
+    <SolidColorBrush x:Key="OnErrorContainerBrush" Color="{DynamicResource OnErrorContainer}"/>
 
-    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource Success}"/>
-    <SolidColorBrush x:Key="SuccessContainerBrush" Color="{StaticResource SuccessContainer}"/>
-    <SolidColorBrush x:Key="OnSuccessBrush" Color="{StaticResource OnSuccess}"/>
-    <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="{StaticResource OnSuccessContainer}"/>
+    <SolidColorBrush x:Key="SuccessBrush" Color="{DynamicResource Success}"/>
+    <SolidColorBrush x:Key="SuccessContainerBrush" Color="{DynamicResource SuccessContainer}"/>
+    <SolidColorBrush x:Key="OnSuccessBrush" Color="{DynamicResource OnSuccess}"/>
+    <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="{DynamicResource OnSuccessContainer}"/>
 
-    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}"/>
-    <SolidColorBrush x:Key="WarningContainerBrush" Color="{StaticResource WarningContainer}"/>
-    <SolidColorBrush x:Key="OnWarningBrush" Color="{StaticResource OnWarning}"/>
-    <SolidColorBrush x:Key="OnWarningContainerBrush" Color="{StaticResource OnWarningContainer}"/>
+    <SolidColorBrush x:Key="WarningBrush" Color="{DynamicResource Warning}"/>
+    <SolidColorBrush x:Key="WarningContainerBrush" Color="{DynamicResource WarningContainer}"/>
+    <SolidColorBrush x:Key="OnWarningBrush" Color="{DynamicResource OnWarning}"/>
+    <SolidColorBrush x:Key="OnWarningContainerBrush" Color="{DynamicResource OnWarningContainer}"/>
 
-    <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource Info}"/>
-    <SolidColorBrush x:Key="InfoContainerBrush" Color="{StaticResource InfoContainer}"/>
-    <SolidColorBrush x:Key="OnInfoBrush" Color="{StaticResource OnInfo}"/>
-    <SolidColorBrush x:Key="OnInfoContainerBrush" Color="{StaticResource OnInfoContainer}"/>
+    <SolidColorBrush x:Key="InfoBrush" Color="{DynamicResource Info}"/>
+    <SolidColorBrush x:Key="InfoContainerBrush" Color="{DynamicResource InfoContainer}"/>
+    <SolidColorBrush x:Key="OnInfoBrush" Color="{DynamicResource OnInfo}"/>
+    <SolidColorBrush x:Key="OnInfoContainerBrush" Color="{DynamicResource OnInfoContainer}"/>
 
-    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource Surface}"/>
-    <SolidColorBrush x:Key="SurfaceContainerLowBrush" Color="{StaticResource SurfaceContainerLow}"/>
-    <SolidColorBrush x:Key="SurfaceContainerBrush" Color="{StaticResource SurfaceContainer}"/>
-    <SolidColorBrush x:Key="SurfaceContainerHighBrush" Color="{StaticResource SurfaceContainerHigh}"/>
-    <SolidColorBrush x:Key="SurfaceContainerHighestBrush" Color="{StaticResource SurfaceContainerHighest}"/>
-    <SolidColorBrush x:Key="OnSurfaceBrush" Color="{StaticResource OnSurface}"/>
-    <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="{StaticResource OnSurfaceVariant}"/>
-    <SolidColorBrush x:Key="OutlineBrush" Color="{StaticResource Outline}"/>
-    <SolidColorBrush x:Key="OutlineVariantBrush" Color="{StaticResource OutlineVariant}"/>
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{DynamicResource Surface}"/>
+    <SolidColorBrush x:Key="SurfaceContainerLowBrush" Color="{DynamicResource SurfaceContainerLow}"/>
+    <SolidColorBrush x:Key="SurfaceContainerBrush" Color="{DynamicResource SurfaceContainer}"/>
+    <SolidColorBrush x:Key="SurfaceContainerHighBrush" Color="{DynamicResource SurfaceContainerHigh}"/>
+    <SolidColorBrush x:Key="SurfaceContainerHighestBrush" Color="{DynamicResource SurfaceContainerHighest}"/>
+    <SolidColorBrush x:Key="OnSurfaceBrush" Color="{DynamicResource OnSurface}"/>
+    <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="{DynamicResource OnSurfaceVariant}"/>
+    <SolidColorBrush x:Key="OutlineBrush" Color="{DynamicResource Outline}"/>
+    <SolidColorBrush x:Key="OutlineVariantBrush" Color="{DynamicResource OutlineVariant}"/>
 
-    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource Background}"/>
-    <SolidColorBrush x:Key="OnBackgroundBrush" Color="{StaticResource OnBackground}"/>
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource Background}"/>
+    <SolidColorBrush x:Key="OnBackgroundBrush" Color="{DynamicResource OnBackground}"/>
 
-    <SolidColorBrush x:Key="ShadowBrush" Color="{StaticResource Shadow}"/>
-    <SolidColorBrush x:Key="ScrimBrush" Color="{StaticResource Scrim}"/>
+    <SolidColorBrush x:Key="ShadowBrush" Color="{DynamicResource Shadow}"/>
+    <SolidColorBrush x:Key="ScrimBrush" Color="{DynamicResource Scrim}"/>
 
     <!-- Dark Theme Brushes (AppThemeBinding will handle switching) -->
-    <SolidColorBrush x:Key="SurfaceDarkBrush" Color="{StaticResource SurfaceDark}"/>
-    <SolidColorBrush x:Key="SurfaceContainerLowDarkBrush" Color="{StaticResource SurfaceContainerLowDark}"/>
-    <SolidColorBrush x:Key="SurfaceContainerDarkBrush" Color="{StaticResource SurfaceContainerDark}"/>
-    <SolidColorBrush x:Key="SurfaceContainerHighDarkBrush" Color="{StaticResource SurfaceContainerHighDark}"/>
-    <SolidColorBrush x:Key="SurfaceContainerHighestDarkBrush" Color="{StaticResource SurfaceContainerHighestDark}"/>
-    <SolidColorBrush x:Key="OnSurfaceDarkBrush" Color="{StaticResource OnSurfaceDark}"/>
-    <SolidColorBrush x:Key="OnSurfaceVariantDarkBrush" Color="{StaticResource OnSurfaceVariantDark}"/>
-    <SolidColorBrush x:Key="OutlineDarkBrush" Color="{StaticResource OutlineDark}"/>
-    <SolidColorBrush x:Key="OutlineVariantDarkBrush" Color="{StaticResource OutlineVariantDark}"/>
-    <SolidColorBrush x:Key="BackgroundDarkBrush" Color="{StaticResource BackgroundDark}"/>
-    <SolidColorBrush x:Key="OnBackgroundDarkBrush" Color="{StaticResource OnBackgroundDark}"/>
+    <SolidColorBrush x:Key="SurfaceDarkBrush" Color="{DynamicResource SurfaceDark}"/>
+    <SolidColorBrush x:Key="SurfaceContainerLowDarkBrush" Color="{DynamicResource SurfaceContainerLowDark}"/>
+    <SolidColorBrush x:Key="SurfaceContainerDarkBrush" Color="{DynamicResource SurfaceContainerDark}"/>
+    <SolidColorBrush x:Key="SurfaceContainerHighDarkBrush" Color="{DynamicResource SurfaceContainerHighDark}"/>
+    <SolidColorBrush x:Key="SurfaceContainerHighestDarkBrush" Color="{DynamicResource SurfaceContainerHighestDark}"/>
+    <SolidColorBrush x:Key="OnSurfaceDarkBrush" Color="{DynamicResource OnSurfaceDark}"/>
+    <SolidColorBrush x:Key="OnSurfaceVariantDarkBrush" Color="{DynamicResource OnSurfaceVariantDark}"/>
+    <SolidColorBrush x:Key="OutlineDarkBrush" Color="{DynamicResource OutlineDark}"/>
+    <SolidColorBrush x:Key="OutlineVariantDarkBrush" Color="{DynamicResource OutlineVariantDark}"/>
+    <SolidColorBrush x:Key="BackgroundDarkBrush" Color="{DynamicResource BackgroundDark}"/>
+    <SolidColorBrush x:Key="OnBackgroundDarkBrush" Color="{DynamicResource OnBackgroundDark}"/>
+
+    <!-- Extended tokens (themeable) -->
+    <Color x:Key="MutedSoft">#9AA393</Color>
+    <Color x:Key="DividerDark">#4A5B49</Color>
+    <Color x:Key="AccentGlow">#E7F49A</Color>
+    <Color x:Key="Sand">#D9C6A5</Color>
+    <Color x:Key="LineSoft">#C8CDB4</Color>
+    <Color x:Key="TabBarUnselected">#8A917F</Color>
+    <Color x:Key="DangerContainer">#FFE9E9</Color>
 
 </ResourceDictionary>

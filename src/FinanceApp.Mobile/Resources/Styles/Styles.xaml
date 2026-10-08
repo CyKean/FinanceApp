@@ -8,16 +8,16 @@
     <!-- ============================================ -->
 
     <Style TargetType="ActivityIndicator">
-        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
+        <Setter Property="Color" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource FinoraLime}}" />
     </Style>
 
     <Style TargetType="IndicatorView">
-        <Setter Property="IndicatorColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}"/>
-        <Setter Property="SelectedIndicatorColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}"/>
+        <Setter Property="IndicatorColor" Value="{AppThemeBinding Light={DynamicResource Gray200}, Dark={DynamicResource Gray500}}"/>
+        <Setter Property="SelectedIndicatorColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource FinoraLime}}"/>
     </Style>
 
     <Style TargetType="BoxView">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerHigh}, Dark={StaticResource SurfaceContainerHighDark}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={DynamicResource SurfaceContainerHigh}, Dark={DynamicResource SurfaceContainerHighDark}}" />
     </Style>
 
     <!-- ============================================ -->
@@ -26,7 +26,7 @@
 
     <Style TargetType="Button" x:Key="BaseButtonStyle">
         <Setter Property="TextColor" Value="White" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource FinoraLime}}" />
         <Setter Property="FontFamily" Value="SpaceGrotesk"/>
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="FontAttributes" Value="Bold"/>
@@ -35,7 +35,7 @@
         <Setter Property="MinimumHeightRequest" Value="52"/>
         <Setter Property="MinimumWidthRequest" Value="52"/>
         <Setter Property="BorderWidth" Value="1.5" />
-        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
+        <Setter Property="BorderColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource FinoraLime}}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -53,8 +53,8 @@
                     </VisualState>
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
-                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceContainerHigh}, Dark={StaticResource SurfaceContainerHighDark}}" />
+                            <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
+                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={DynamicResource SurfaceContainerHigh}, Dark={DynamicResource SurfaceContainerHighDark}}" />
                             <Setter Property="BorderColor" Value="Transparent" />
                         </VisualState.Setters>
                     </VisualState>
@@ -71,22 +71,22 @@
     </Style>
 
     <Style TargetType="Button" x:Key="SecondaryButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
-        <Setter Property="TextColor" Value="{StaticResource FinoraInk}" />
-        <Setter Property="BackgroundColor" Value="{StaticResource FinoraLime}" />
-        <Setter Property="BorderColor" Value="{StaticResource FinoraInk}" />
+        <Setter Property="TextColor" Value="{DynamicResource FinoraInk}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource FinoraLime}" />
+        <Setter Property="BorderColor" Value="{DynamicResource FinoraInk}" />
         <Setter Property="HeightRequest" Value="52"/>
     </Style>
 
     <Style TargetType="Button" x:Key="OutlineButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraCream}}" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource FinoraCream}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource SurfaceContainerDark}}" />
+        <Setter Property="BorderColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource OutlineDark}}" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="HeightRequest" Value="52"/>
     </Style>
 
     <Style TargetType="Button" x:Key="TextButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource FinoraLime}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="BorderColor" Value="Transparent" />
         <Setter Property="Padding" Value="8,4"/>
@@ -96,15 +96,15 @@
 
     <Style TargetType="Button" x:Key="DangerButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
         <Setter Property="TextColor" Value="White" />
-        <Setter Property="BackgroundColor" Value="{StaticResource Error}" />
-        <Setter Property="BorderColor" Value="{StaticResource Error}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource Error}" />
+        <Setter Property="BorderColor" Value="{DynamicResource Error}" />
         <Setter Property="HeightRequest" Value="52"/>
     </Style>
 
     <Style TargetType="Button" x:Key="IconButtonStyle" BasedOn="{StaticResource BaseButtonStyle}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraCream}}" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource FinoraCream}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource SurfaceContainerDark}}" />
+        <Setter Property="BorderColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource OutlineDark}}" />
         <Setter Property="Padding" Value="0"/>
         <Setter Property="HeightRequest" Value="48"/>
         <Setter Property="WidthRequest" Value="48"/>
@@ -115,7 +115,7 @@
     <!-- ============================================ -->
 
     <Style TargetType="Label" x:Key="BaseLabelStyle">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="14" />
@@ -125,7 +125,7 @@
 
     <Style TargetType="Label" x:Key="Headline" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGroteskBold" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraCream}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource FinoraCream}}" />
         <Setter Property="FontSize" Value="32" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="HorizontalOptions" Value="Center" />
@@ -134,7 +134,7 @@
 
     <Style TargetType="Label" x:Key="SubHeadline" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGrotesk" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
         <Setter Property="FontSize" Value="24" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="HorizontalOptions" Value="Center" />
@@ -143,14 +143,14 @@
 
     <Style TargetType="Label" x:Key="AppTitleStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGroteskBold" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource FinoraLime}}" />
         <Setter Property="FontSize" Value="36" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
 
     <Style TargetType="Label" x:Key="AppSubtitleStyle" BasedOn="{StaticResource BaseLabelStyle}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
         <Setter Property="FontSize" Value="16" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
@@ -158,13 +158,13 @@
     <Style TargetType="Label" x:Key="CaptionLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="FormLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
         <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
@@ -172,7 +172,7 @@
         <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
         <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
@@ -180,20 +180,20 @@
         <Setter Property="FontFamily" Value="SpaceGroteskBold" />
         <Setter Property="FontSize" Value="28" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="AmountLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="UserEmailLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <!-- ============================================ -->
@@ -201,8 +201,8 @@
     <!-- ============================================ -->
 
     <Style TargetType="Border" x:Key="CardFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource CardStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -211,7 +211,7 @@
         </Setter>
         <Setter Property="Shadow">
             <Setter.Value>
-                <Shadow Brush="#161B16" Opacity="0.08" Radius="18" Offset="0,8" />
+                <Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.08" Radius="18" Offset="0,8" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="20"/>
@@ -222,13 +222,13 @@
         <Setter Property="Background">
             <Setter.Value>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="#232923" Offset="0.0" />
-                    <GradientStop Color="#161B16" Offset="0.6" />
-                    <GradientStop Color="#0E120E" Offset="1.0" />
+                    <GradientStop Color="{DynamicResource FinoraInkSoft}" Offset="0.0" />
+                    <GradientStop Color="{DynamicResource FinoraInk}" Offset="0.6" />
+                    <GradientStop Color="{DynamicResource PrimaryDark}" Offset="1.0" />
                 </LinearGradientBrush>
             </Setter.Value>
         </Setter>
-        <Setter Property="Stroke" Value="#161B16" />
+        <Setter Property="Stroke" Value="{DynamicResource FinoraInk}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -237,7 +237,7 @@
         </Setter>
         <Setter Property="Shadow">
             <Setter.Value>
-                <Shadow Brush="#161B16" Opacity="0.30" Radius="26" Offset="0,12" />
+                <Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.30" Radius="26" Offset="0,12" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="22"/>
@@ -245,8 +245,8 @@
 
     <!-- Lime highlight card (Earning / CTA) -->
     <Style TargetType="Border" x:Key="FinoraLimeCardStyle">
-        <Setter Property="Background" Value="{StaticResource FinoraLime}" />
-        <Setter Property="Stroke" Value="{StaticResource FinoraInk}" />
+        <Setter Property="Background" Value="{DynamicResource FinoraLime}" />
+        <Setter Property="Stroke" Value="{DynamicResource FinoraInk}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -255,7 +255,7 @@
         </Setter>
         <Setter Property="Shadow">
             <Setter.Value>
-                <Shadow Brush="#161B16" Opacity="0.12" Radius="18" Offset="0,8" />
+                <Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.12" Radius="18" Offset="0,8" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="18"/>
@@ -263,8 +263,8 @@
 
     <!-- Dark stat card (Spending) -->
     <Style TargetType="Border" x:Key="FinoraDarkCardStyle">
-        <Setter Property="Background" Value="{StaticResource FinoraInk}" />
-        <Setter Property="Stroke" Value="{StaticResource FinoraInk}" />
+        <Setter Property="Background" Value="{DynamicResource FinoraInk}" />
+        <Setter Property="Stroke" Value="{DynamicResource FinoraInk}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -273,7 +273,7 @@
         </Setter>
         <Setter Property="Shadow">
             <Setter.Value>
-                <Shadow Brush="#161B16" Opacity="0.25" Radius="20" Offset="0,10" />
+                <Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.25" Radius="20" Offset="0,10" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="18"/>
@@ -281,8 +281,8 @@
 
     <!-- Small lime pill (Set Budget / period selected) -->
     <Style TargetType="Border" x:Key="FinoraPillStyle">
-        <Setter Property="Background" Value="{StaticResource FinoraLime}" />
-        <Setter Property="Stroke" Value="{StaticResource FinoraInk}" />
+        <Setter Property="Background" Value="{DynamicResource FinoraLime}" />
+        <Setter Property="Stroke" Value="{DynamicResource FinoraInk}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -294,8 +294,8 @@
 
     <!-- Cream circle action button -->
     <Style TargetType="Border" x:Key="FinoraCircleActionStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource OutlineDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -309,8 +309,8 @@
 
     <!-- Frosted pill used inside hero cards -->
     <Style TargetType="Border" x:Key="GlassPillStyle">
-        <Setter Property="Background" Value="{StaticResource FinoraLime}" />
-        <Setter Property="Stroke" Value="{StaticResource FinoraInk}" />
+        <Setter Property="Background" Value="{DynamicResource FinoraLime}" />
+        <Setter Property="Stroke" Value="{DynamicResource FinoraInk}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -341,8 +341,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="FilterBarStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource SurfaceContainerLowDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -354,8 +354,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="BudgetCardFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource SurfaceContainerLowDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -366,8 +366,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="GoalCardFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerLowDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource SurfaceContainerLowDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -378,8 +378,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="TransactionItemFrameStyle" BasedOn="{StaticResource PressableRowStyle}">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraCreamDeep}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraCreamDeep}, Dark={DynamicResource CardStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -390,8 +390,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="AccountItemFrameStyle" BasedOn="{StaticResource PressableRowStyle}">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource CardStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -402,8 +402,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="CategoryItemFrameStyle" BasedOn="{StaticResource PressableRowStyle}">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource CardSurfaceDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraCreamDeep}, Dark={StaticResource CardStrokeDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource CardSurfaceDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraCreamDeep}, Dark={DynamicResource CardStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -414,8 +414,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="TrendItemFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -426,8 +426,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="InsightCardFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource InfoContainer}, Dark={StaticResource InfoContainer}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource Info}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource InfoContainer}, Dark={DynamicResource InfoContainer}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource Info}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -438,8 +438,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="AnomalyCardFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource ErrorContainer}, Dark={StaticResource ErrorContainer}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Error}, Dark={StaticResource Error}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource ErrorContainer}, Dark={DynamicResource ErrorContainer}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource Error}, Dark={DynamicResource Error}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -450,8 +450,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="BudgetItemFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraCreamDeep}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraCreamDeep}, Dark={DynamicResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -462,8 +462,8 @@
     </Style>
 
     <Style TargetType="Border" x:Key="GoalItemFrameStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraCreamDeep}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource SurfaceContainerDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraCreamDeep}, Dark={DynamicResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -475,8 +475,8 @@
 
     <!-- Modern input container: wrap an Entry in this Border -->
     <Style TargetType="Border" x:Key="FieldBorderStyle">
-        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource FinoraCard}, Dark={StaticResource SurfaceContainerLowestDark}}" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Background" Value="{AppThemeBinding Light={DynamicResource FinoraCard}, Dark={DynamicResource SurfaceContainerLowestDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource OutlineVariantDark}}" />
         <Setter Property="StrokeThickness" Value="1.5" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -488,7 +488,7 @@
 
     <!-- Hairline divider -->
     <Style TargetType="BoxView" x:Key="DividerStyle">
-        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="Color" Value="{AppThemeBinding Light={DynamicResource OutlineVariant}, Dark={DynamicResource OutlineVariantDark}}" />
         <Setter Property="HeightRequest" Value="1"/>
         <Setter Property="HorizontalOptions" Value="Fill" />
     </Style>
@@ -498,24 +498,24 @@
         <Setter Property="FontFamily" Value="SpaceGroteskBold" />
         <Setter Property="FontSize" Value="34" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="TitleLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontFamily" Value="SpaceGrotesk" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="BodyLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="MutedLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
 
     <!-- ============================================ -->
@@ -525,33 +525,33 @@
     <Style TargetType="Label" x:Key="TransactionNameLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="15" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="TransactionNotesLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="TransactionDateLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="TransactionAmountLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="TransactionAccountLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="TransactionSeparatorLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OutlineVariant}, Dark={StaticResource OutlineVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OutlineVariant}, Dark={DynamicResource OutlineVariantDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="SyncStatusLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
@@ -566,23 +566,23 @@
     <Style TargetType="Label" x:Key="CategoryNameLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="15" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="CategoryAmountLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="CategoryPercentLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="InactiveLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="TextColor" Value="{StaticResource Warning}" />
+        <Setter Property="TextColor" Value="{DynamicResource Warning}" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
 
@@ -599,19 +599,19 @@
 
     <Style TargetType="Label" x:Key="BudgetDetailCaptionStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="BudgetDetailValueStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="BudgetSpentLabelStyle" BasedOn="{StaticResource BudgetDetailValueStyle}"/>
     <Style TargetType="Label" x:Key="BudgetOfLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
         <Setter Property="VerticalOptions" Value="Center"/>
     </Style>
     <Style TargetType="Label" x:Key="BudgetTotalLabelStyle" BasedOn="{StaticResource BudgetDetailValueStyle}"/>
@@ -639,18 +639,18 @@
     <Style TargetType="Label" x:Key="GoalCurrentLabelStyle" BasedOn="{StaticResource BudgetDetailValueStyle}"/>
     <Style TargetType="Label" x:Key="GoalOfLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
         <Setter Property="VerticalOptions" Value="Center"/>
     </Style>
     <Style TargetType="Label" x:Key="GoalTargetLabelStyle" BasedOn="{StaticResource BudgetDetailValueStyle}"/>
     <Style TargetType="Label" x:Key="GoalDaysLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{StaticResource Warning}" />
+        <Setter Property="TextColor" Value="{DynamicResource Warning}" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
     <Style TargetType="Label" x:Key="GoalMonthlyLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
     <Style TargetType="Label" x:Key="GoalStatusLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
@@ -664,19 +664,19 @@
     <Style TargetType="Label" x:Key="AccountNameLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="AccountTypeLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource Primary}, Dark={DynamicResource PrimaryLight}}" />
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
 
     <Style TargetType="Label" x:Key="AccountBalanceLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <!-- ============================================ -->
@@ -686,12 +686,12 @@
     <Style TargetType="Label" x:Key="TrendMonthLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="TrendCaptionLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="TrendValueLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
@@ -712,18 +712,18 @@
     <Style TargetType="Label" x:Key="InsightTitleLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="InsightMessageLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="InsightSeverityBadgeStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
         <Setter Property="HorizontalOptions" Value="Center"/>
         <Setter Property="Padding" Value="8,4"/>
     </Style>
@@ -731,12 +731,12 @@
     <Style TargetType="Label" x:Key="AnomalyCategoryLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="15" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="AnomalyMessageLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="AnomalyDeviationLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
@@ -755,23 +755,23 @@
     <Style TargetType="Label" x:Key="SyncDetailValueStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="SyncErrorLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{StaticResource Error}" />
+        <Setter Property="TextColor" Value="{DynamicResource Error}" />
     </Style>
 
     <Style TargetType="Label" x:Key="InfoLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="InfoValueLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <!-- ============================================ -->
@@ -781,14 +781,14 @@
     <Style TargetType="Label" x:Key="EmptyStateLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="18" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="Margin" Value="0,8" />
     </Style>
 
     <Style TargetType="Label" x:Key="EmptyStateSubLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="Margin" Value="0,4" />
     </Style>
@@ -796,13 +796,13 @@
     <Style TargetType="Label" x:Key="MonthLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="18" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
     </Style>
 
     <Style TargetType="Label" x:Key="CalendarDayHeaderStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontAttributes" Value="Bold"/>
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="WidthRequest" Value="40" />
         <Setter Property="Margin" Value="2" />
@@ -810,7 +810,7 @@
 
     <Style TargetType="Label" x:Key="ForgotPasswordLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryLight}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={DynamicResource Primary}, Dark={DynamicResource PrimaryLight}}" />
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="HorizontalOptions" Value="End"/>
         <Setter Property="Margin" Value="0,4,0,0" />
@@ -818,7 +818,7 @@
 
     <Style TargetType="Label" x:Key="ErrorLabelStyle" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{StaticResource Error}" />
+        <Setter Property="TextColor" Value="{DynamicResource Error}" />
         <Setter Property="HorizontalOptions" Value="Fill"/>
         <Setter Property="Margin" Value="0,4,0,0" />
         <Setter Property="FontAttributes" Value="Bold"/>
@@ -885,7 +885,7 @@
     <!-- ============================================ -->
 
     <Style TargetType="SwipeItem">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource SurfaceContainerHighDark}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource SurfaceContainerHighDark}}" />
     </Style>
 
     <!-- ============================================ -->
@@ -903,7 +903,7 @@
 
     <Style TargetType="Page" ApplyToDerivedTypes="True">
         <Setter Property="Padding" Value="0"/>
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource BackgroundDark}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={DynamicResource Background}, Dark={DynamicResource BackgroundDark}}" />
         <Setter Property="Shell.TabBarIsVisible" Value="False" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
     </Style>
@@ -913,29 +913,29 @@
     <!-- ============================================ -->
 
     <Style TargetType="Shell">
-        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource FinoraCream}, Dark={StaticResource SurfaceDark}}" />
-        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
-        <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
-        <Setter Property="Shell.DisabledColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OnSurfaceVariantDark}}" />
-        <Setter Property="Shell.UnselectedColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceVariant}, Dark={StaticResource OutlineDark}}" />
+        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={DynamicResource FinoraCream}, Dark={DynamicResource SurfaceDark}}" />
+        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource FinoraLime}}" />
+        <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
+        <Setter Property="Shell.DisabledColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}" />
+        <Setter Property="Shell.UnselectedColor" Value="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OutlineDark}}" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
-        <Setter Property="Shell.TabBarBackgroundColor" Value="#161B16" />
-        <Setter Property="Shell.TabBarForegroundColor" Value="#CDF463" />
-        <Setter Property="Shell.TabBarTitleColor" Value="#CDF463" />
-        <Setter Property="Shell.TabBarUnselectedColor" Value="#8A917F" />
+        <Setter Property="Shell.TabBarBackgroundColor" Value="{DynamicResource FinoraInk}" />
+        <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource FinoraLime}" />
+        <Setter Property="Shell.TabBarTitleColor" Value="{DynamicResource FinoraLime}" />
+        <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource TabBarUnselected}" />
     </Style>
 
     <Style TargetType="NavigationPage">
-        <Setter Property="BarBackgroundColor" Value="{AppThemeBinding Light={StaticResource Background}, Dark={StaticResource SurfaceDark}}" />
-        <Setter Property="BarTextColor" Value="{AppThemeBinding Light={StaticResource OnSurface}, Dark={StaticResource OnSurfaceDark}}" />
-        <Setter Property="IconColor" Value="{AppThemeBinding Light={StaticResource FinoraInk}, Dark={StaticResource FinoraLime}}" />
+        <Setter Property="BarBackgroundColor" Value="{AppThemeBinding Light={DynamicResource Background}, Dark={DynamicResource SurfaceDark}}" />
+        <Setter Property="BarTextColor" Value="{AppThemeBinding Light={DynamicResource OnSurface}, Dark={DynamicResource OnSurfaceDark}}" />
+        <Setter Property="IconColor" Value="{AppThemeBinding Light={DynamicResource FinoraInk}, Dark={DynamicResource FinoraLime}}" />
     </Style>
 
     <Style TargetType="TabbedPage">
-        <Setter Property="BarBackgroundColor" Value="#161B16" />
-        <Setter Property="BarTextColor" Value="#CDF463" />
-        <Setter Property="UnselectedTabColor" Value="#8A917F" />
-        <Setter Property="SelectedTabColor" Value="#CDF463" />
+        <Setter Property="BarBackgroundColor" Value="{DynamicResource FinoraInk}" />
+        <Setter Property="BarTextColor" Value="{DynamicResource FinoraLime}" />
+        <Setter Property="UnselectedTabColor" Value="{DynamicResource TabBarUnselected}" />
+        <Setter Property="SelectedTabColor" Value="{DynamicResource FinoraLime}" />
     </Style>
 
 </ResourceDictionary>

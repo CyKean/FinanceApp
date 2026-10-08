@@ -5,7 +5,7 @@
              x:Class="FinanceApp.Mobile.Views.AppOverviewPage"
              Title="Overview"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource FinoraCream}">
+             BackgroundColor="{DynamicResource FinoraCream}">
 
     <Grid>
         <ScrollView>
@@ -13,14 +13,14 @@
 
                 <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                    <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
+                    <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
-                        <Label Text="Finora" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                        <Label Text="What the app does and how it works" FontSize="12" TextColor="{StaticResource FinoraMuted}" />
+                        <Label Text="Finora" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                        <Label Text="What the app does and how it works" FontSize="12" TextColor="{DynamicResource FinoraMuted}" />
                     </VerticalStackLayout>
                 </Grid>
 
@@ -28,100 +28,100 @@
                 <Border Style="{StaticResource HeroCardStyle}" Padding="20">
                     <VerticalStackLayout Spacing="12">
                         <Label Text="FINORA" FontSize="28" FontAttributes="Bold" CharacterSpacing="2" TextColor="White" />
-                        <BoxView Style="{StaticResource DividerStyle}" HeightRequest="1" Color="#4A5B49" />
+                        <BoxView Style="{StaticResource DividerStyle}" HeightRequest="1" Color="{DynamicResource DividerDark}" />
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Fin" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" />
+                            <Label Text="Fin" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" />
                             <Label Text="Finance, financial management, financial awareness and financial intelligence."
                                   FontSize="13" TextColor="White" Opacity="0.85" LineBreakMode="WordWrap" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Ora" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraLime}" />
+                            <Label Text="Ora" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" />
                             <Label Text="Time, continuity, progress and the present moment."
                                   FontSize="13" TextColor="White" Opacity="0.85" LineBreakMode="WordWrap" />
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
 
-                <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="18">
+                <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="18">
                     <Border.StrokeShape><RoundRectangle CornerRadius="24" /></Border.StrokeShape>
                     <Label Text="Personal finance is not a static collection of transactions. It is an ongoing journey."
-                          FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" LineBreakMode="WordWrap" />
+                          FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" LineBreakMode="WordWrap" />
                 </Border>
 
                 <!-- The loop -->
                 <Label Text="The loop" Style="{StaticResource SectionHeaderStyle}" Margin="4,6,0,0" />
-                <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="8">
+                <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="8">
                     <Border.StrokeShape><RoundRectangle CornerRadius="28" /></Border.StrokeShape>
                     <VerticalStackLayout Spacing="0">
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
-                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
+                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                <Label Text="1" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Text="1" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                <Label Text="Track" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Record income and expenses against the right account and category." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Track" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Record income and expenses against the right account and category." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
-                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
+                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                <Label Text="2" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Text="2" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                <Label Text="Understand" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="See where the money actually went, by category and over time." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Understand" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="See where the money actually went, by category and over time." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
-                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
+                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                <Label Text="3" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Text="3" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                <Label Text="Manage" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Keep budgets inside their limits and goals on pace." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Manage" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Keep budgets inside their limits and goals on pace." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
-                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
+                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                <Label Text="4" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Text="4" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                <Label Text="Adjust" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="React to forecasts and insights before they turn into problems." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Adjust" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="React to forecasts and insights before they turn into problems." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
-                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
+                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                <Label Text="5" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Text="5" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                <Label Text="Improve" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Turn suggestions into better habits, month after month." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Improve" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Turn suggestions into better habits, month after month." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
 
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
-                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{StaticResource FinoraLime}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
+                            <Border Grid.Column="0" WidthRequest="30" HeightRequest="30" Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Start">
                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                <Label Text="6" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Text="6" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
                             <VerticalStackLayout Grid.Column="1" Spacing="2">
-                                <Label Text="Plan" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Use forecasts and trends to decide what comes next." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Plan" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Use forecasts and trends to decide what comes next." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                     </VerticalStackLayout>
@@ -129,46 +129,46 @@
 
                 <!-- Features: money -->
                 <Label Text="Your money" Style="{StaticResource SectionHeaderStyle}" Margin="4,6,0,0" />
-                <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="8">
+                <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="8">
                     <Border.StrokeShape><RoundRectangle CornerRadius="28" /></Border.StrokeShape>
                     <VerticalStackLayout Spacing="0">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="chart" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Dashboard" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Balance, spending by category, recent activity, savings, budgets and goals at a glance." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Dashboard" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Balance, spending by category, recent activity, savings, budgets and goals at a glance." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="wallet" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Accounts" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Wallets, bank accounts and cash with live balances and a default account." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Accounts" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Wallets, bank accounts and cash with live balances and a default account." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="receipt" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Transactions" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Add, edit and delete income and expenses, then filter the list by date and type." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Transactions" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Add, edit and delete income and expenses, then filter the list by date and type." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="target" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Budgets and goals" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Monthly limits per category and savings targets, each with progress toward its limit." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Budgets and goals" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Monthly limits per category and savings targets, each with progress toward its limit." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="grid" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Categories" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Organise income and expenses so the reporting actually means something." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Categories" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Organise income and expenses so the reporting actually means something." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                     </VerticalStackLayout>
@@ -176,30 +176,30 @@
 
                 <!-- Features: insight -->
                 <Label Text="Making sense of it" Style="{StaticResource SectionHeaderStyle}" Margin="4,6,0,0" />
-                <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="8">
+                <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="8">
                     <Border.StrokeShape><RoundRectangle CornerRadius="28" /></Border.StrokeShape>
                     <VerticalStackLayout Spacing="0">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="pie" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Analytics" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Charts and spending insights across your categories and months." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Analytics" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Charts and spending insights across your categories and months." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="calendar" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Calendar" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Your money day by day, so timing is never a guess." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Calendar" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Your money day by day, so timing is never a guess." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="trendup" Size="42" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Forecasts" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Predictions and smart insights projected from your own history." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Forecasts" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Predictions and smart insights projected from your own history." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                     </VerticalStackLayout>
@@ -207,30 +207,30 @@
 
                 <!-- Features: assistance -->
                 <Label Text="Help while you decide" Style="{StaticResource SectionHeaderStyle}" Margin="4,6,0,0" />
-                <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="8">
+                <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="8">
                     <Border.StrokeShape><RoundRectangle CornerRadius="28" /></Border.StrokeShape>
                     <VerticalStackLayout Spacing="0">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="bot" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="AI Assistant" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Ask questions about your own numbers in plain language." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="AI Assistant" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Ask questions about your own numbers in plain language." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="bulb" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Budget Ideas" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Suggested limits for the coming month, based on how you actually spend." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Budget Ideas" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Suggested limits for the coming month, based on how you actually spend." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="bell" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Notifications" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Alerts when something important happens, so you are never surprised." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Notifications" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Alerts when something important happens, so you are never surprised." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                     </VerticalStackLayout>
@@ -238,45 +238,45 @@
 
                 <!-- How it works -->
                 <Label Text="How it works" Style="{StaticResource SectionHeaderStyle}" Margin="4,6,0,0" />
-                <Border Background="{StaticResource FinoraCard}" Stroke="{StaticResource FinoraInk}" StrokeThickness="1.5" Padding="8">
+                <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="8">
                     <Border.StrokeShape><RoundRectangle CornerRadius="28" /></Border.StrokeShape>
                     <VerticalStackLayout Spacing="0">
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="lock" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Offline first" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Everything is written to a local database on your device first, so the app keeps working with no connection." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Offline first" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Everything is written to a local database on your device first, so the app keeps working with no connection." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="sync" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Syncs to your account" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Changes sync in the background. Settings shows what is pending, what is synced and what failed, with the last error." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Syncs to your account" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Changes sync in the background. Settings shows what is pending, what is synced and what failed, with the last error." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="shield" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="Checked before it saves" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="Amounts, dates and categories are validated up front, so a mistake is caught before it becomes a transaction." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="Checked before it saves" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Amounts, dates and categories are validated up front, so a mistake is caught before it becomes a transaction." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                         <BoxView Style="{StaticResource DividerStyle}" Margin="14,0" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" Margin="12,8">
                             <controls:FinoraIconView Grid.Column="0" IconKey="settings" Size="42" Light="True" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="AI on your terms" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource FinoraInk}" />
-                                <Label Text="The assistant and budget ideas run on an API key you add yourself in Settings." FontSize="12" TextColor="{StaticResource FinoraMuted}" LineBreakMode="WordWrap" />
+                                <Label Text="AI on your terms" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="The assistant and budget ideas run on an API key you add yourself in Settings." FontSize="12" TextColor="{DynamicResource FinoraMuted}" LineBreakMode="WordWrap" />
                             </VerticalStackLayout>
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
 
                 <Label Text="Fin · Ora — an ongoing journey, not a static total."
-                       FontSize="12" FontAttributes="Bold" TextColor="{StaticResource FinoraMuted}"
+                       FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraMuted}"
                        HorizontalTextAlignment="Center" Margin="4,10,4,0" />
 
             </VerticalStackLayout>

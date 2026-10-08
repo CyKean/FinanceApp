@@ -33,4 +33,16 @@ public partial class SettingsPage : ContentPage
             System.Diagnostics.Debug.WriteLine($"Could not open AI settings: {ex.Message}");
         }
     }
+
+    private async void OnThemeTapped(object? sender, EventArgs e)
+    {
+        try
+        {
+            await Shell.Current.GoToAsync("ThemeSettings");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Could not open theme settings: {ex.Message}");
+        }
+    }
 }

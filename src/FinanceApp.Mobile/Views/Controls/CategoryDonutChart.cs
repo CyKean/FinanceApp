@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using FinanceApp.Mobile.Helpers;
 using FinanceApp.Application.DTOs;
 
 public class CategoryDonutChart : GraphicsView
@@ -99,7 +100,7 @@ internal sealed class CategoryDonutDrawable : IDrawable
         }
         catch
         {
-            return Color.FromArgb("#0E6B4F");
+            return FinoraOverlay.Resolve("Success", "#0E6B4F");
         }
     }
 }
