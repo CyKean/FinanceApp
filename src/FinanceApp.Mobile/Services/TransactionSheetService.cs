@@ -7,7 +7,7 @@ using FinanceApp.Domain.Enums;
 /// </summary>
 public interface ITransactionSheetHost
 {
-    void HandleShow(TransactionType type);
+    void HandleShow(TransactionType type, Guid? transactionId = null);
 }
 
 /// <summary>
@@ -40,10 +40,10 @@ public sealed class TransactionSheetService
             _owner = null;
     }
 
-    public void Show(TransactionType type)
+    public void Show(TransactionType type, Guid? transactionId = null)
     {
         if (_owner is not null && _owner.TryGetTarget(out var host))
-            host.HandleShow(type);
+            host.HandleShow(type, transactionId);
     }
 
     public void NotifySaved() => Saved?.Invoke();

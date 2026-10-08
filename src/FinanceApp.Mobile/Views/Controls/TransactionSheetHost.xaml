@@ -220,7 +220,7 @@
 
                     <!-- Save / Cancel -->
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,4,0,0">
-                        <Button Grid.Column="0" Text="Save"
+                        <Button Grid.Column="0" Text="{Binding IsEditing, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Update|Save'}"
                                 Command="{Binding SaveCommand}"
                                 IsEnabled="{Binding IsSaveAvailable}"
                                 Style="{StaticResource PrimaryButtonStyle}"

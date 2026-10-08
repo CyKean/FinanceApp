@@ -58,15 +58,15 @@ public partial class TransactionSheetHost : ContentView, ITransactionSheetHost
 
     private void OnSizeChanged(object? sender, EventArgs e) => ClampSheetHeight();
 
-    public void HandleShow(TransactionType type) =>
-        MainThread.BeginInvokeOnMainThread(() => _ = ShowAsync(type));
+    public void HandleShow(TransactionType type, Guid? transactionId = null) =>
+        MainThread.BeginInvokeOnMainThread(() => _ = ShowAsync(type, transactionId));
 
-    private async Task ShowAsync(TransactionType type)
+    private async Task ShowAsync(TransactionType type, Guid? transactionId = null)
     {
         if (_viewModel is null || _isOpen)
             return;
 
-        await _viewModel.InitializeAsync(type);
+        await _viewModel.InitializeAsync(type, transactionId);
 
         _isOpen = true;
         IsVisible = true;

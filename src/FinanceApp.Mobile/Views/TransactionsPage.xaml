@@ -100,6 +100,11 @@
                             </SwipeView.RightItems>
                             <Border Background="{StaticResource FinoraCard}" Stroke="#D3D9BE" StrokeThickness="1" Padding="12" Margin="18,4">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="22" /></Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={x:Reference TransactionsPageView}, Path=BindingContext.EditTransactionCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
                                 <HorizontalStackLayout Spacing="12">
                                     <controls:FinoraIconView Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="48" VerticalOptions="Center" />
                                     <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">

@@ -188,7 +188,7 @@ public partial class TransactionsViewModel : BaseViewModel
     [RelayCommand]
     private async Task EditTransactionAsync(TransactionDto transaction)
     {
-        await _navigationService.NavigateToAsync($"//EditTransaction?id={transaction.Id}&type={transaction.Type}");
+        _transactionSheetService.Show(transaction.Type, transaction.Id);
     }
 
     [RelayCommand]
