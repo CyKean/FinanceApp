@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FinanceApp.Mobile.Views.Controls.FinoraLogoView"
+             x:Name="Root"
+             WidthRequest="40"
+             HeightRequest="40">
+
+    <!-- Same geometry as Resources/AppIcon/finora_fg.svg: a lime tile with the
+         ink trajectory knockout. Drawn here instead of shipped as an image so
+         the mark picks up the active theme, and so it can be scaled to any
+         size without a second asset. Coordinates are the 456-unit SVG canvas
+         shifted by 77.5 so the tile occupies 0..301. -->
+    <Grid x:Name="Canvas" WidthRequest="301" HeightRequest="301" HorizontalOptions="Center" VerticalOptions="Center">
+        <Border Background="{DynamicResource FinoraLime}"
+                StrokeThickness="0"
+                Padding="0"
+                WidthRequest="301"
+                HeightRequest="301"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+            <Border.StrokeShape><RoundRectangle CornerRadius="73" /></Border.StrokeShape>
+        </Border>
+        <Path Data="M 47.9 209.8 A 118.6 118.6 0 0 1 166.5 91.2 L 253.1 91.2"
+              WidthRequest="301"
+              HeightRequest="301"
+              Aspect="Uniform"
+              Fill="Transparent"
+              Stroke="{DynamicResource FinoraInk}"
+              StrokeThickness="50.2"
+              StrokeLineCap="Round"
+              StrokeLineJoin="Round"
+              HorizontalOptions="Center"
+              VerticalOptions="Center" />
+    </Grid>
+</ContentView>

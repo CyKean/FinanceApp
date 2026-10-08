@@ -17,11 +17,11 @@
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*">
-        <!-- Top bar: logo -->
+        <!-- Top bar: app logo -->
         <HorizontalStackLayout Grid.Row="0" Padding="22,18,22,0" Spacing="8" VerticalOptions="Center">
-            <Border WidthRequest="34" HeightRequest="34" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Background="Transparent" VerticalOptions="Center">
-                <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                <Label Text="◈" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+            <Border WidthRequest="36" HeightRequest="36" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" Padding="0" VerticalOptions="Center">
+                <Border.StrokeShape><RoundRectangle CornerRadius="9" /></Border.StrokeShape>
+                <controls:FinoraLogoView Size="30" VerticalOptions="Center" HorizontalOptions="Center" />
             </Border>
             <Label Text="Finora" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
             <Label Text="Finance Mobile App" FontSize="12" TextColor="{DynamicResource FinoraInk}" Opacity="0.7" VerticalOptions="Center" />
@@ -33,10 +33,35 @@
 
                 <!-- Restoring a remembered session. Holds the whole screen until
                      the check finishes so the form never flashes before the app
-                     redirects to the dashboard. -->
-                <VerticalStackLayout Spacing="16" IsVisible="{Binding IsRestoringSession}" VerticalOptions="Center" Margin="0,60,0,0">
-                    <ActivityIndicator IsRunning="{Binding IsRestoringSession}" Color="{DynamicResource FinoraInk}" HeightRequest="34" />
-                    <Label Text="Restoring your session…" FontSize="14" TextColor="{DynamicResource FinoraMuted}" HorizontalTextAlignment="Center" />
+                     redirects to the dashboard. The logo pulses (see
+                     LoginPage.OnAppearing) so a slow session check still reads
+                     as deliberate rather than frozen. -->
+                <VerticalStackLayout Spacing="0" IsVisible="{Binding IsRestoringSession}" VerticalOptions="Center" Margin="0,30,0,0">
+                    <Grid WidthRequest="168" HeightRequest="168" HorizontalOptions="Center">
+                        <Border x:Name="RestoreHalo" WidthRequest="168" HeightRequest="168" Background="Transparent" Stroke="{DynamicResource FinoraInk}" StrokeThickness="2" Opacity="0.35" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        </Border>
+                        <Border x:Name="RestoreFrame" WidthRequest="132" HeightRequest="132" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="2" Padding="0" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="38" /></Border.StrokeShape>
+                            <controls:FinoraLogoView Size="104" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Label Text="Finora" FontSize="30" FontFamily="SpaceGroteskBold" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalTextAlignment="Center" Margin="0,22,0,0" />
+                    <Label Text="Restoring your session…" FontSize="14" TextColor="{DynamicResource FinoraInk}" Opacity="0.85" HorizontalTextAlignment="Center" Margin="0,6,0,0" />
+
+                    <HorizontalStackLayout Spacing="6" HorizontalOptions="Center" Margin="0,18,0,0">
+                        <ActivityIndicator IsRunning="{Binding IsRestoringSession}" Color="{DynamicResource FinoraInk}" HeightRequest="20" WidthRequest="20" VerticalOptions="Center" />
+                        <Label Text="Checking your saved sign-in" FontSize="12" TextColor="{DynamicResource FinoraInk}" Opacity="0.7" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <Border Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" Padding="14,8" HorizontalOptions="Center" Margin="0,20,0,0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
+                        <HorizontalStackLayout Spacing="6">
+                            <controls:FinoraIconView IconKey="shield" Size="14" ShowBadge="False" Light="True" VerticalOptions="Center" />
+                            <Label Text="Offline-first · your data stays on this device" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="0" IsVisible="{Binding IsRestoringSession, Converter={StaticResource InverseBoolConverter}}">
