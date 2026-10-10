@@ -209,15 +209,17 @@
                 <RoundRectangle CornerRadius="28" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Shadow">
-            <Setter.Value>
-                <Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.08" Radius="18" Offset="0,8" />
-            </Setter.Value>
-        </Setter>
+        <!-- Deliberately no Shadow. At 0.08 opacity this blur was invisible while
+             still costing a CPU-rasterised layer per card, and CardFrameStyle is
+             used on 30+ cards across 18 pages - six of them visible at once on
+             Predictions and Analytics. The 1.5px ink stroke above already
+             carries the separation. -->
         <Setter Property="Padding" Value="20"/>
     </Style>
 
-    <!-- Hero dark card (VISA balance card) -->
+    <!-- Hero dark card (VISA balance card). The one card that keeps a shadow:
+         it is a single genuinely floating element per page, and its elevation is
+         part of the design. Trimmed from 26/0.30 to 18/0.22 to halve the blur. -->
     <Style TargetType="Border" x:Key="HeroCardStyle">
         <Setter Property="Background">
             <Setter.Value>
@@ -237,7 +239,7 @@
         </Setter>
         <Setter Property="Shadow">
             <Setter.Value>
-                <Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.30" Radius="26" Offset="0,12" />
+                <Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.22" Radius="18" Offset="0,8" />
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="22"/>
@@ -253,11 +255,8 @@
                 <RoundRectangle CornerRadius="28" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Shadow">
-            <Setter.Value>
-                <Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.12" Radius="18" Offset="0,8" />
-            </Setter.Value>
-        </Setter>
+        <!-- Shadow dropped for the same reason as CardFrameStyle; two of these
+             render at once on Dashboard and Analytics. -->
         <Setter Property="Padding" Value="18"/>
     </Style>
 
@@ -271,11 +270,8 @@
                 <RoundRectangle CornerRadius="28" />
             </Setter.Value>
         </Setter>
-        <Setter Property="Shadow">
-            <Setter.Value>
-                <Shadow Brush="{DynamicResource FinoraInk}" Opacity="0.25" Radius="20" Offset="0,10" />
-            </Setter.Value>
-        </Setter>
+        <!-- Shadow dropped: this sits beside FinoraLimeCardStyle on the same row,
+             and a dark card on a cream background needs no elevation cue. -->
         <Setter Property="Padding" Value="18"/>
     </Style>
 

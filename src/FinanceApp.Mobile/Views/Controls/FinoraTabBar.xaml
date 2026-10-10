@@ -11,9 +11,10 @@
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="100" />
         </Border.StrokeShape>
-        <Border.Shadow>
-            <Shadow Brush="Black" Opacity="0.35" Radius="20" Offset="0,10" />
-        </Border.Shadow>
+        <!-- No drop shadow. This bar sits on screen permanently across all five
+             tab pages, and MAUI rasterises Border.Shadow on the CPU: a blurred
+             layer that never scrolls away and never leaves the screen. A solid
+             ink bar on a cream background reads as raised on its own. -->
         <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="4">
             <Border x:Name="TabDashboard" Grid.Column="0" WidthRequest="52" HeightRequest="52" StrokeThickness="0" HorizontalOptions="Center" VerticalOptions="Center">
                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>

@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls.Shapes;
 
 /// <summary>
@@ -19,15 +20,14 @@ using Microsoft.Maui.Controls.Shapes;
 /// </summary>
 public abstract class SkeletonPage : ContentView
 {
-    private const string PulseName = "skeleton-pulse";
-
     protected SkeletonPage(VerticalStackLayout host)
     {
         Host = host;
         Content = host;
 
+        // Rebuild() ends in StartPulse, so starting one here as well would only
+        // commit the same animation twice on the UI thread during construction.
         Rebuild();
-        StartPulse();
     }
 
     protected VerticalStackLayout Host { get; }
@@ -40,20 +40,51 @@ public abstract class SkeletonPage : ContentView
     {
     }
 
+    /// <summary>
+    /// Data landing is what hides the placeholder, so that is where the pulse has
+    /// to stop. Left running it would tick for the life of the navigation stack.
+    /// <para>
+    /// Driven off <see cref="OnPropertyChanged"/> rather than an OnIsVisibleChanged
+    /// override: IsVisible is a plain bindable property here, and the pages bind it
+    /// to IsInitialLoading.
+    /// </para>
+    /// </summary>
+    protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        base.OnPropertyChanged(propertyName);
+
+        if (propertyName != IsVisibleProperty.PropertyName)
+            return;
+
+        if (IsVisible)
+            SkeletonPulse.Start(this);
+        else
+            SkeletonPulse.Stop(this);
+    }
+
+    /// <summary>Handler teardown means the page was popped: drop the ticker at once.</summary>
+    protected override void OnHandlerChanged()
+    {
+        base.OnHandlerChanged();
+
+        if (Handler is null)
+            SkeletonPulse.Stop(this);
+    }
+
     protected void Invalidate() => Rebuild();
 
     private void Rebuild()
     {
         // Rebuilding mid-animation would leave the old animation attached to
         // elements that are about to be detached.
-        this.AbortAnimation(PulseName);
+        SkeletonPulse.Stop(this);
         Opacity = 1;
 
         Host.Children.Clear();
         Populate();
         OnPopulated();
 
-        StartPulse();
+        SkeletonPulse.Start(this);
     }
 
     protected static View SectionHeading(double width = 124) => SkeletonShapes.Bar(190, 15, width: width);
@@ -102,11 +133,5 @@ public abstract class SkeletonPage : ContentView
         var card = SkeletonShapes.Card(height, radius: 20);
         card.Content = SkeletonShapes.VStack(14, children.ToArray());
         return card;
-    }
-
-    private void StartPulse()
-    {
-        var animation = new Animation(value => Opacity = value, 0.55, 1.0, Easing.CubicInOut);
-        animation.Commit(this, PulseName, length: 850, easing: Easing.SinInOut, finished: null, repeat: () => true);
     }
 }

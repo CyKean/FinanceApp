@@ -1,5 +1,6 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
+using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls.Shapes;
 
 /// <summary>
@@ -108,8 +109,41 @@ public partial class SkeletonView : ContentView
 
     private static void OnAnimateChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        if (newValue is true && oldValue is false && bindable is SkeletonView view)
-            view.StartPulse();
+        if (bindable is SkeletonView view)
+            view.UpdatePulse();
+    }
+
+    /// <summary>
+    /// The pulse is stopped when the rows are hidden, not when they are built.
+    /// RowCount and friends can be rebound later, and a placeholder nobody is
+    /// looking at has no business keeping a 60fps ticker.
+    /// </summary>
+    protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        base.OnPropertyChanged(propertyName);
+
+        if (propertyName == IsVisibleProperty.PropertyName)
+            UpdatePulse();
+    }
+
+    protected override void OnHandlerChanged()
+    {
+        base.OnHandlerChanged();
+
+        if (Handler is null)
+            SkeletonPulse.Stop(this);
+    }
+
+    /// <summary>
+    /// One decision, three callers: a pulse runs only while the rows are both
+    /// visible and allowed to animate.
+    /// </summary>
+    private void UpdatePulse()
+    {
+        if (Animate && IsVisible)
+            SkeletonPulse.Start(this);
+        else
+            SkeletonPulse.Stop(this);
     }
 
     private void Rebuild()
@@ -119,7 +153,7 @@ public partial class SkeletonView : ContentView
 
         // Rebuilding mid-animation would leave the old animation attached to
         // elements that are about to be detached.
-        this.AbortAnimation(PulseName);
+        SkeletonPulse.Stop(this);
         Opacity = 1;
 
         RowsHost.Spacing = RowSpacing;
@@ -130,8 +164,7 @@ public partial class SkeletonView : ContentView
             RowsHost.Add(BuildRow(i));
         }
 
-        if (Animate)
-            StartPulse();
+        UpdatePulse();
     }
 
     private View BuildRow(int index)
@@ -171,21 +204,5 @@ public partial class SkeletonView : ContentView
 
         card.Content = layout;
         return card;
-    }
-
-    private const string PulseName = "skeleton-pulse";
-
-    private void StartPulse()
-    {
-        if (!Animate || RowCount == 0)
-            return;
-
-        var animation = new Animation(
-            value => Opacity = value,
-            0.55,
-            1.0,
-            Easing.CubicInOut);
-
-        animation.Commit(this, PulseName, length: 850, easing: Easing.SinInOut, finished: null, repeat: () => true);
     }
 }
