@@ -1,10 +1,17 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
 using Microsoft.Maui.Controls.Shapes;
+using static FinanceApp.Mobile.Views.Controls.SkeletonShapes;
 
 /// <summary>
-/// Categories: a short row per category with a leading initial tile and a trailing
-/// toggle, which is what distinguishes this list from the others.
+/// Categories: header, the Expenses/Income switcher, then category rows and the
+/// Add Category button.
+/// <para>
+/// The trailing control used to be drawn as a switch, on the strength of an
+/// assumption in this file's own comment. The page has no toggle - it opens a
+/// circular overflow menu. The rows also carry an optional "Inactive" caption,
+/// so the detail column is ragged rather than a fixed pair of lines.
+/// </para>
 /// </summary>
 public class SkeletonCategories : SkeletonPage
 {
@@ -15,42 +22,44 @@ public class SkeletonCategories : SkeletonPage
 
     protected override void Populate()
     {
-        for (var i = 0; i < 7; i++)
+        Host.Children.Add(SkeletonShapes.PageHeader(
+            trailing: SkeletonShapes.ActionPill(60, 34),
+            titleWidth: 96,
+            subtitleWidth: 168));
+
+        Host.Children.Add(SkeletonShapes.SegmentedTabs(count: 2, segmentHeight: 46, activeIndex: 0, labelWidth: 68));
+
+        var rows = SkeletonShapes.VStack(16);
+        for (var i = 0; i < 6; i++)
         {
-            Host.Children.Add(BuildRow(i));
+            rows.Add(BuildRow(i));
         }
+
+        Host.Children.Add(rows);
+
+        Host.Children.Add(SkeletonShapes.ActionButton(56));
     }
 
+    /// <summary>
+    /// The row is 46 of icon inside 12 of padding, and the page's trailing
+    /// control is a 35pt rounded overflow button.
+    /// </summary>
     private static View BuildRow(int index)
     {
-        var content = SkeletonShapes.HStack(12,
-            SkeletonShapes.Slab(38, width: 38, radius: 12),
-            SkeletonShapes.Filling(
-                SkeletonShapes.Bar(190, 12, width: index % 3 == 1 ? 108 : 142),
-                SkeletonShapes.Bar(190, 10, width: index % 2 == 0 ? 66 : 88)),
-            BuildSwitch(index % 4 != 0));
+        // The detail column is the category name plus, for a deactivated row, a
+        // warning caption - so some rows are two lines and some are one.
+        var details = index % 3 == 0
+            ? SkeletonShapes.Filling(4,
+                SkeletonShapes.Bar(190, 15, width: index % 2 == 0 ? 96 : 74),
+                SkeletonShapes.Bar(190, 12, width: 66))
+            : SkeletonShapes.Filling(4,
+                SkeletonShapes.Bar(190, 15, width: index % 2 == 0 ? 112 : 88));
 
-        return SkeletonShapes.Row(72, 16, content);
-    }
+        var overflow = Slab(35, width: 38, fill: SkeletonPalette.Block, radius: 12);
+        overflow.VerticalOptions = LayoutOptions.Center;
 
-    /// <summary>A pill track with its knob pushed to one side, as the page's Switch renders.</summary>
-    private static View BuildSwitch(bool isOn)
-    {
-        var track = new Border
-        {
-            WidthRequest = 46,
-            HeightRequest = 26,
-            BackgroundColor = SkeletonPalette.Block,
-            StrokeThickness = 0,
-            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(13) },
-            VerticalOptions = LayoutOptions.Center
-        };
+        var content = SkeletonShapes.HStack(14, SkeletonShapes.IconDisc(46), details, overflow);
 
-        var knob = SkeletonShapes.Circle(20);
-        knob.VerticalOptions = LayoutOptions.Center;
-        knob.HorizontalOptions = isOn ? LayoutOptions.End : LayoutOptions.Start;
-        knob.Margin = new Thickness(isOn ? 0 : 3, 0, isOn ? 3 : 0, 0);
-
-        return SkeletonShapes.HStack(0, track, knob);
+        return SkeletonShapes.Row(70, 22, content, padding: 14);
     }
 }

@@ -1,9 +1,14 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
 /// <summary>
-/// Wallet: a total-balance card across the top, then account rows that carry a
-/// trailing balance. The page's history view is a separate tab, so the skeleton
-/// is for the account list.
+/// Accounts: header, the shared balance hero, the Accounts/History switcher,
+/// then account rows and the Add Account button.
+/// <para>
+/// This one started a whole hero's worth of content too high, because the
+/// placeholder opened on the hero card - skipping both the 46pt header above it
+/// and the pill switcher below it - and its rows were 11pt shorter than the
+/// page's. Every dimension here is taken from AccountsPage.xaml.
+/// </para>
 /// </summary>
 public class SkeletonWallet : SkeletonPage
 {
@@ -14,38 +19,43 @@ public class SkeletonWallet : SkeletonPage
 
     protected override void Populate()
     {
-        Host.Children.Add(BuildTotalCard());
+        Host.Children.Add(SkeletonShapes.PageHeader(
+            trailing: null,
+            titleWidth: 104,
+            subtitleWidth: 176));
 
-        for (var i = 0; i < 5; i++)
+        Host.Children.Add(SkeletonShapes.BalanceHero());
+
+        Host.Children.Add(SkeletonShapes.SegmentedTabs(count: 2, segmentHeight: 41, activeIndex: 0, labelWidth: 74));
+
+        var rows = SkeletonShapes.VStack(8);
+        for (var i = 0; i < 4; i++)
         {
-            Host.Children.Add(BuildRow(i));
+            rows.Add(BuildRow(i));
         }
+
+        Host.Children.Add(rows);
+
+        Host.Children.Add(SkeletonShapes.ActionButton(56));
     }
 
-    private static View BuildTotalCard()
-    {
-        // Dark, because the balance card it stands in for is dark - a light
-        // placeholder made the page change colour when loading finished.
-        var card = SkeletonShapes.DarkCard(168, 24,
-            SkeletonShapes.Bar(190, 11, width: 54, fill: SkeletonPalette.Ink),
-            SkeletonShapes.Bar(190, 26, width: 168, fill: SkeletonPalette.Ink),
-            SkeletonShapes.Bar(190, 12, width: 112, fill: SkeletonPalette.Ink));
-
-        return card;
-    }
-
+    /// <summary>
+    /// A row is the 52pt icon beside a three-line name/type/balance column
+    /// (19 + 3 + 14 + 3 + 20 = 59, which wins), inside 14 of padding.
+    /// </summary>
     private static View BuildRow(int index)
     {
-        var content = SkeletonShapes.HStack(12,
-            // The page uses a rounded square account badge, not a circle.
-            SkeletonShapes.Slab(44, width: 44, radius: 14),
-            SkeletonShapes.Filling(
-                SkeletonShapes.Bar(190, 12, width: index % 3 == 2 ? 112 : 146),
-                SkeletonShapes.Bar(190, 10, width: index % 2 == 0 ? 74 : 96)),
-            SkeletonShapes.Trailing(
-                SkeletonShapes.Bar(190, 12, width: 72),
-                SkeletonShapes.Bar(190, 9, width: 52)));
+        var details = SkeletonShapes.Filling(3,
+            SkeletonShapes.Bar(190, 15, width: index % 2 == 0 ? 74 : 58),
+            SkeletonShapes.Bar(190, 11, width: 52),
+            SkeletonShapes.Bar(190, 16, width: index % 3 == 0 ? 96 : 82));
 
-        return SkeletonShapes.Row(76, 18, content);
+        // The page's trailing control is a circular overflow button, not text.
+        var actions = SkeletonShapes.Circle(38, SkeletonPalette.Surface);
+        actions.VerticalOptions = LayoutOptions.Center;
+
+        var content = SkeletonShapes.HStack(12, SkeletonShapes.IconDisc(52), details, actions);
+
+        return SkeletonShapes.Row(87, 24, content, padding: 14);
     }
 }

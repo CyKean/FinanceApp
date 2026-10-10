@@ -1,88 +1,66 @@
 namespace FinanceApp.Mobile.Views.Controls;
 
 using Microsoft.Maui.Controls.Shapes;
+using static FinanceApp.Mobile.Views.Controls.SkeletonShapes;
 
 /// <summary>
-/// Calendar: month header, weekday strip, a real seven-column grid of day cells,
+/// Calendar: header, the month stepper, the seven-column grid inside its card,
 /// then the selected day's event rows.
 /// <para>
-/// The grid is built at the real aspect rather than as a stack of bars, because
-/// the page builds its month in code the same way - a placeholder of the wrong
-/// shape here would resize more than anywhere else in the app.
+/// The grid was already built at the right shape. What was missing was
+/// everything around it: the header, the "Today" pill inside the stepper, and
+/// the card the weekday strip and grid actually sit in.
 /// </para>
 /// </summary>
 public class SkeletonCalendar : SkeletonPage
 {
     private const int Columns = 7;
     private const int Weeks = 6;
-    private const double CellHeight = 46;
+    private const double CellHeight = 42;
 
     public SkeletonCalendar()
-        : base(new VerticalStackLayout { Spacing = 12, Padding = new Thickness(18, 14, 18, 24) })
+        : base(new VerticalStackLayout { Spacing = 14, Padding = new Thickness(18, 14, 18, 24) })
     {
     }
 
     protected override void Populate()
     {
-        Host.Children.Add(BuildMonthHeader());
-        Host.Children.Add(BuildWeekdayStrip());
-        Host.Children.Add(BuildGrid());
-        Host.Children.Add(SectionHeading(132));
-        Host.Children.Add(SkeletonShapes.VStack(10, BuildEventRow(), BuildEventRow()));
+        Host.Children.Add(SkeletonShapes.PageHeader(
+            trailing: SkeletonShapes.Circle(46, SkeletonPalette.Surface),
+            titleWidth: 84,
+            subtitleWidth: 138));
+
+        Host.Children.Add(SkeletonShapes.MonthNavigator());
+
+        Host.Children.Add(BuildGridCard());
+
+        Host.Children.Add(BuildEventsCard());
     }
 
-    private static View BuildMonthHeader()
+    /// <summary>
+    /// The weekday strip and the month grid, in the bordered card the page puts
+    /// them in - 12 of padding, 4 of spacing between the two.
+    /// </summary>
+    private static View BuildGridCard()
     {
-        var grid = new Grid
-        {
-            ColumnSpacing = 12,
-            ColumnDefinitions = new ColumnDefinitionCollection
-            {
-                new(GridLength.Auto),
-                new(GridLength.Star),
-                new(GridLength.Auto)
-            }
-        };
+        var weekdays = new Grid { ColumnSpacing = 4 };
 
-        var back = SkeletonShapes.Circle(40);
-        Grid.SetColumn(back, 0);
-        grid.Add(back);
-
-        var title = SkeletonShapes.Bar(190, 18, width: 148);
-        title.VerticalOptions = LayoutOptions.Center;
-        title.HorizontalOptions = LayoutOptions.Center;
-        Grid.SetColumn(title, 1);
-        grid.Add(title);
-
-        var forward = SkeletonShapes.Circle(40);
-        Grid.SetColumn(forward, 2);
-        grid.Add(forward);
-
-        return grid;
-    }
-
-    private static View BuildWeekdayStrip()
-    {
-        var grid = new Grid { ColumnSpacing = 4 };
+        var columns = new ColumnDefinitionCollection();
+        for (var i = 0; i < Columns; i++)
+            columns.Add(new ColumnDefinition(GridLength.Star));
+        weekdays.ColumnDefinitions = columns;
 
         for (var i = 0; i < Columns; i++)
         {
-            grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
-
-            var label = SkeletonShapes.Bar(190, 10, width: 22);
+            var label = SkeletonShapes.Bar(190, 10, width: 24);
             label.HorizontalOptions = LayoutOptions.Center;
             Grid.SetColumn(label, i);
-            grid.Add(label);
+            weekdays.Add(label);
         }
 
-        return grid;
-    }
-
-    private static View BuildGrid()
-    {
         var grid = new Grid
         {
-            RowSpacing = 6,
+            RowSpacing = 4,
             ColumnSpacing = 4,
             HeightRequest = Weeks * CellHeight
         };
@@ -99,14 +77,12 @@ public class SkeletonCalendar : SkeletonPage
             {
                 var cell = new Border
                 {
-                    BackgroundColor = SkeletonPalette.Block,
+                    BackgroundColor = (r * Columns + c) % 7 is 2 or 5
+                        ? SkeletonPalette.Ink
+                        : SkeletonPalette.Block,
                     StrokeThickness = 0,
                     StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) }
                 };
-
-                // A few "has events" cells, so the grid does not read as uniform.
-                if ((r * Columns + c) % 7 is 2 or 5)
-                    cell.BackgroundColor = SkeletonPalette.Ink;
 
                 Grid.SetRow(cell, r);
                 Grid.SetColumn(cell, c);
@@ -114,16 +90,52 @@ public class SkeletonCalendar : SkeletonPage
             }
         }
 
-        return grid;
+        var body = VStack(4, weekdays, grid);
+
+        return new Border
+        {
+            BackgroundColor = SkeletonPalette.Surface,
+            Stroke = new SolidColorBrush(SkeletonPalette.Ink),
+            StrokeThickness = 1.5,
+            Padding = new Thickness(12),
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(28) },
+            Content = body
+        };
     }
 
-    private static View BuildEventRow()
+    /// <summary>The selected-day card: heading with its Add pill, rows, caption.</summary>
+    private static View BuildEventsCard()
     {
-        var content = SkeletonShapes.HStack(12,
-            SkeletonShapes.Bar(190, 12, width: 58),
-            SkeletonShapes.Filler(),
-            SkeletonShapes.Bar(190, 11, width: 64));
+        var heading = Bar(190, 16, width: 148);
+        heading.VerticalOptions = LayoutOptions.Center;
 
-        return SkeletonShapes.Row(64, 16, content);
+        var add = SkeletonShapes.ActionPill(56, 34);
+
+        var titleRow = SkeletonShapes.HStack(10, heading, SkeletonShapes.Filler(), add);
+
+        var rows = VStack(8,
+            SkeletonShapes.Row(64, 20, SkeletonShapes.HStack(12,
+                SkeletonShapes.IconDisc(40),
+                SkeletonShapes.Filling(2, Bar(190, 14, width: 76), Bar(190, 12, width: 92)),
+                Bar(190, 14, width: 74)), padding: 12),
+            SkeletonShapes.Row(64, 20, SkeletonShapes.HStack(12,
+                SkeletonShapes.IconDisc(40),
+                SkeletonShapes.Filling(2, Bar(190, 14, width: 62), Bar(190, 12, width: 74)),
+                Bar(190, 14, width: 74)), padding: 12));
+
+        var caption = Bar(190, 11, width: 176);
+        caption.HorizontalOptions = LayoutOptions.Start;
+
+        var body = VStack(12, titleRow, rows, caption);
+
+        return new Border
+        {
+            BackgroundColor = SkeletonPalette.Surface,
+            Stroke = new SolidColorBrush(SkeletonPalette.Ink),
+            StrokeThickness = 1.5,
+            Padding = new Thickness(20),
+            StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(28) },
+            Content = body
+        };
     }
 }
