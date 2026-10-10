@@ -379,4 +379,12 @@ FodyWeavers.xsd
 *.keystore
 *.jks
 *.p12
+*.bks
+*.pkcs12
 android-signing/
+
+# The signing credentials are the actual secret. A keystore can at least be
+# recognised and moved; a committed credentials.txt publishes every existing
+# install's update path. The rules above already cover it inside android-signing/,
+# so this only catches a copy that ends up somewhere else in the tree.
+credentials.txt

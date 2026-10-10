@@ -135,10 +135,52 @@ dotnet publish src/FinanceApp.Mobile/FinanceApp.Mobile.csproj -f net10.0-android
 If those variables are missing, the Release build fails on purpose rather than
 falling back to the shared debug key.
 
-Release APKs are published through GitHub Releases. To cut a release, bump
-`ApplicationDisplayVersion` and `ApplicationVersion` in
-`src/FinanceApp.Mobile/FinanceApp.Mobile.csproj`, then tag the matching commit
-`vMAJOR.MINOR.PATCH`.
+**Where the key lives.** It is kept outside the repository, under
+`%USERPROFILE%\.finora\android-signing\`:
+
+```
+finora-release.keystore
+credentials.txt      <- alias and both passwords, in plaintext
+```
+
+If you ever cannot find it, that folder is the first place to look. If the whole
+folder is genuinely gone, the app cannot be updated in place: you would have to
+change `ApplicationId` and ask every existing user to uninstall and reinstall,
+losing their local data. **Back the folder up off this machine** - cloud storage
+or a password manager, anywhere but this disk. `credentials.txt` is plaintext by
+necessity (the build has to read it), so it is worth putting a copy somewhere you
+would not mind losing the laptop.
+
+**Confirm the key before you publish.** A wrong or substituted key produces an
+APK that installs cleanly in a fresh sandbox and then refuses to update any real
+install - the failure only shows up in the field. Two certificates must match
+exactly:
+
+```
+keytool -list -v -keystore %FinoraKeyStorePath% -alias %FinoraKeyAlias% -storepass %FinoraKeyStorePassword%
+```
+
+Compare the SHA-256 it prints against the signer of the APK already published,
+which is the certificate embedded in the release's `META-INF/*.RSA`. For v1.0.0
+and v1.0.1 that value is:
+
+```
+AE:6F:A9:BD:55:8C:8C:53:92:06:D2:D3:F9:21:0C:E9:A7:7F:D3:BD:17:FC:2D:19:ED:04:91:3E:D3:AA:96:0D
+```
+
+Release APKs are published through GitHub Releases. To cut a release:
+
+1. Bump `ApplicationDisplayVersion` and `ApplicationVersion` in
+   `src/FinanceApp.Mobile/FinanceApp.Mobile.csproj`. `ApplicationVersion` must
+   increase on every release or Android refuses the install.
+2. Commit, then tag the matching commit `vMAJOR.MINOR.PATCH`.
+3. **Attach the APK to the release.** This is not optional: the app's own update
+   prompt reads the release's `.apk` asset for the download link, so a published
+   release with no APK leaves every installed copy showing "a newer version is
+   available" with a Download button that goes nowhere. Prepare a release as a
+   draft until the APK is uploaded - drafts are excluded from the
+   `/releases/latest` endpoint the app polls, so a draft is never surfaced to
+   users.
 
 ### In-app updates
 
