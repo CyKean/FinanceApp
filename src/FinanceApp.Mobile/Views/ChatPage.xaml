@@ -33,21 +33,20 @@
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnBackTapped" />
                     </Border.GestureRecognizers>
-                    <Label Text="←"
-                           FontSize="20"
-                           FontAttributes="Bold"
-                           TextColor="{DynamicResource FinoraInk}"
-                           VerticalOptions="Center"
-                           HorizontalOptions="Center" />
+                    <controls:FinoraIconView IconKey="arrowleft" Size="20" ShowBadge="False" Light="True" VerticalOptions="Center" HorizontalOptions="Center" />
                 </Border>
 
                 <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                     <Label Text="AI Assistant" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
                     <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                        <Label Text="●" FontSize="12" TextColor="{DynamicResource FinoraLimeDark}" VerticalOptions="Center"
-                               IsVisible="{Binding IsConfigured}" />
-                        <Label Text="●" FontSize="12" TextColor="{DynamicResource Error}" VerticalOptions="Center"
-                               IsVisible="{Binding IsConfigured, Converter={StaticResource InverseBoolConverter}}" />
+                        <Border WidthRequest="8" HeightRequest="8" BackgroundColor="{DynamicResource FinoraLimeDark}" StrokeThickness="0" VerticalOptions="Center"
+                               IsVisible="{Binding IsConfigured}">
+                            <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        </Border>
+                        <Border WidthRequest="8" HeightRequest="8" BackgroundColor="{DynamicResource Error}" StrokeThickness="0" VerticalOptions="Center"
+                               IsVisible="{Binding IsConfigured, Converter={StaticResource InverseBoolConverter}}">
+                            <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                        </Border>
                         <Label Text="{Binding StatusLine}" FontSize="12" TextColor="{DynamicResource FinoraMuted}" VerticalOptions="Center" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
@@ -215,7 +214,7 @@
                             BackgroundColor="Transparent"
                             VerticalOptions="Center" />
                     <Button Grid.Column="1"
-                            Text="&#x27A4;"
+                            Text="Send"
                             Command="{Binding SendDraftCommand}"
                             Style="{StaticResource PrimaryButtonStyle}"
                             WidthRequest="52"

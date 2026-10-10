@@ -33,7 +33,7 @@
                 <Border WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeTapped" /></Border.GestureRecognizers>
-                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <controls:FinoraIconView IconKey="arrowleft" Size="20" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
                 <VerticalStackLayout Grid.Column="1" Margin="10,0" VerticalOptions="Center">
                     <Label Text="Budgets" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
@@ -53,7 +53,7 @@
                     <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding PreviousMonthCommand}" /></Border.GestureRecognizers>
-                        <Label Text="←" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <controls:FinoraIconView IconKey="arrowleft" Size="18" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <Label Grid.Column="1" Text="{Binding CurrentMonth, StringFormat='{0:MMMM yyyy}'}" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" HorizontalOptions="Center" />
                     <Border Grid.Column="2" Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" Padding="12,8">
@@ -64,7 +64,7 @@
                     <Border Grid.Column="3" WidthRequest="42" HeightRequest="42" Background="{DynamicResource FinoraInk}" StrokeThickness="0">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NextMonthCommand}" /></Border.GestureRecognizers>
-                        <Label Text="→" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <controls:FinoraIconView IconKey="arrowright" Size="18" ShowBadge="False" Light="True" StrokeColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </Grid>
             </Border>
@@ -125,7 +125,10 @@
                                             <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}" FontSize="13" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                                         </VerticalStackLayout>
                                     </Grid>
-                                    <Label Text="⚠ Over Budget" FontSize="12" FontAttributes="Bold" IsVisible="{Binding IsOverBudget}" TextColor="{DynamicResource Error}" />
+                                    <HorizontalStackLayout Spacing="4" IsVisible="{Binding IsOverBudget}">
+                                        <controls:FinoraIconView IconKey="alert" Size="12" ShowBadge="False" StrokeColor="{DynamicResource Error}" VerticalOptions="Center" />
+                                        <Label Text="Over Budget" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource Error}" />
+                                    </HorizontalStackLayout>
                                 </VerticalStackLayout>
                             </Border>
                         </SwipeView>

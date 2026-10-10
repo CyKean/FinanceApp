@@ -36,8 +36,7 @@
                         VerticalOptions="Center">
                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                    <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}"
-                           HorizontalOptions="Center" VerticalOptions="Center" />
+                    <controls:FinoraIconView IconKey="arrowleft" Size="20" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
                 <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                     <Label Text="Calendar" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
@@ -53,7 +52,7 @@
                     <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding PreviousMonthCommand}" /></Border.GestureRecognizers>
-                        <Label Text="←" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <controls:FinoraIconView IconKey="arrowleft" Size="18" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <Label Grid.Column="1" Text="{Binding SelectedMonth, StringFormat='{0:MMMM yyyy}'}" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" HorizontalTextAlignment="Center" />
                     <Border Grid.Column="2" Background="{DynamicResource FinoraCream}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" Padding="12,8" VerticalOptions="Center">
@@ -64,7 +63,7 @@
                     <Border Grid.Column="3" WidthRequest="42" HeightRequest="42" Background="{DynamicResource FinoraInk}" StrokeThickness="0" VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding NextMonthCommand}" /></Border.GestureRecognizers>
-                        <Label Text="→" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <controls:FinoraIconView IconKey="arrowright" Size="18" ShowBadge="False" Light="True" StrokeColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </Grid>
             </Border>

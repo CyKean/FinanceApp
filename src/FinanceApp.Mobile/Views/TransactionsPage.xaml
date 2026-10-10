@@ -38,7 +38,7 @@
                             <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                                 <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                                 <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeTapped" /></Border.GestureRecognizers>
-                                <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                <controls:FinoraIconView IconKey="arrowleft" Size="20" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
                             <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center" Margin="10,0">
                                 <Label Text="Transactions" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
@@ -62,13 +62,19 @@
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding Summary, Converter={StaticResource NullToBoolConverter}}">
                             <Border Grid.Column="0" Style="{StaticResource FinoraLimeCardStyle}" Padding="14">
                                 <VerticalStackLayout Spacing="2">
-                                    <Label Text="↗ Income" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                    <HorizontalStackLayout Spacing="4">
+                                        <controls:FinoraIconView IconKey="trendup" Size="11" ShowBadge="False" Light="True" VerticalOptions="Center" />
+                                        <Label Text="Income" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                    </HorizontalStackLayout>
                                     <Label Text="{Binding Summary.TotalIncome.Amount, StringFormat='{0:N2}'}" FontSize="17" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                                 </VerticalStackLayout>
                             </Border>
                             <Border Grid.Column="1" Style="{StaticResource FinoraDarkCardStyle}" Padding="14">
                                 <VerticalStackLayout Spacing="2">
-                                    <Label Text="↘ Expenses" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" />
+                                    <HorizontalStackLayout Spacing="4">
+                                        <controls:FinoraIconView IconKey="trenddown" Size="11" ShowBadge="False" StrokeColor="{DynamicResource FinoraLime}" VerticalOptions="Center" />
+                                        <Label Text="Expenses" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" />
+                                    </HorizontalStackLayout>
                                     <Label Text="{Binding Summary.TotalExpense.Amount, StringFormat='{0:N2}'}" FontSize="17" FontAttributes="Bold" TextColor="White" />
                                 </VerticalStackLayout>
                             </Border>
@@ -120,9 +126,11 @@
                                     <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
                                         <Label Text="{Binding Amount, Converter={StaticResource MoneyConverter}}"
                                                FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalTextAlignment="End" />
-                                        <Label Text="{Binding SyncStatus, Converter={StaticResource SyncStatusIconConverter}}"
-                                               FontSize="11" FontAttributes="Bold"
-                                               TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusColorConverter}}" HorizontalTextAlignment="End" />
+                                        <controls:FinoraIconView IconKey="{Binding SyncStatus, Converter={StaticResource SyncStatusIconConverter}}"
+                                                                 Size="11" ShowBadge="False"
+                                                                 HorizontalOptions="End"
+                                                                 VerticalOptions="Center"
+                                                                 StrokeColor="{Binding SyncStatus, Converter={StaticResource SyncStatusColorConverter}}" />
                                     </VerticalStackLayout>
                                 </HorizontalStackLayout>
                             </Border>

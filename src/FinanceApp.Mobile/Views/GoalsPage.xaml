@@ -39,7 +39,7 @@
                     <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5" VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <controls:FinoraIconView IconKey="arrowleft" Size="20" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                         <Label Text="Goals" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" />
@@ -54,7 +54,10 @@
                 <!-- Goal hero (earning style) -->
                 <Border Style="{StaticResource FinoraLimeCardStyle}">
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="↗ Total saved" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                        <HorizontalStackLayout Spacing="4">
+                            <controls:FinoraIconView IconKey="trendup" Size="12" ShowBadge="False" Light="True" VerticalOptions="Center" />
+                            <Label Text="Total saved" FontSize="12" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                        </HorizontalStackLayout>
                         <Label Text="{Binding Goals.Count, StringFormat='{0} goals in progress'}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                         <Label Text="Small steps every month get you there." FontSize="11" TextColor="{DynamicResource FinoraInk}" Opacity="0.75" />
                     </VerticalStackLayout>

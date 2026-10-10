@@ -189,6 +189,12 @@ public class SyncStatusToColorConverter : IValueConverter
     }
 }
 
+/// <summary>
+/// Maps a sync status to a <c>FinoraIcons</c> key, not to a character. It used
+/// to return check/up/refresh/erase/cross characters as text, which put us back
+/// on the system symbol font that is missing on some devices. Consumers bind this to
+/// <c>FinoraIconView.IconKey</c>.
+/// </summary>
 public class SyncStatusToIconConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -197,15 +203,15 @@ public class SyncStatusToIconConverter : IValueConverter
         {
             return status switch
             {
-                FinanceApp.Domain.Enums.SyncStatus.Synced => "✓",
-                FinanceApp.Domain.Enums.SyncStatus.PendingCreate => "↑",
-                FinanceApp.Domain.Enums.SyncStatus.PendingUpdate => "↻",
-                FinanceApp.Domain.Enums.SyncStatus.PendingDelete => "⌫",
-                FinanceApp.Domain.Enums.SyncStatus.Failed => "✗",
-                _ => "?"
+                FinanceApp.Domain.Enums.SyncStatus.Synced => "check",
+                FinanceApp.Domain.Enums.SyncStatus.PendingCreate => "plus",
+                FinanceApp.Domain.Enums.SyncStatus.PendingUpdate => "sync",
+                FinanceApp.Domain.Enums.SyncStatus.PendingDelete => "trash",
+                FinanceApp.Domain.Enums.SyncStatus.Failed => "close",
+                _ => "alertCircle"
             };
         }
-        return "?";
+        return "alertCircle";
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -536,6 +542,11 @@ public class PredictionConfidenceToBoolConverter : IValueConverter
     }
 }
 
+/// <summary>
+/// Maps a spending trend to a <c>FinoraIcons</c> key. Returning emoji here put
+/// them on the same unreliable system-font path as the old sync-status glyphs;
+/// consumers bind the result to <c>FinoraIconView.IconKey</c>.
+/// </summary>
 public class TrendToIconConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
@@ -544,13 +555,12 @@ public class TrendToIconConverter : IValueConverter
         {
             return trend switch
             {
-                FinanceApp.Domain.Enums.SpendingTrend.Increasing => "📈",
-                FinanceApp.Domain.Enums.SpendingTrend.Decreasing => "📉",
-                FinanceApp.Domain.Enums.SpendingTrend.Stable => "➡️",
-                _ => "➡️"
+                FinanceApp.Domain.Enums.SpendingTrend.Increasing => "trendup",
+                FinanceApp.Domain.Enums.SpendingTrend.Decreasing => "trenddown",
+                _ => "arrowright"
             };
         }
-        return "➡️";
+        return "arrowright";
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)

@@ -54,8 +54,7 @@
                             VerticalOptions="Center">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}"
-                               HorizontalOptions="Center" VerticalOptions="Center" />
+                        <controls:FinoraIconView IconKey="arrowleft" Size="20" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
                         <Label Text="Forecasts" FontSize="18" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
@@ -109,8 +108,11 @@
                         <Border Background="{Binding ExpensePrediction.Confidence, Converter={StaticResource PredictionConfidenceColorConverter}}"
                                 Padding="12" IsVisible="{Binding ExpensePrediction.Confidence, Converter={StaticResource PredictionConfidenceToBoolConverter}, ConverterParameter=InsufficientData}">
                             <Border.StrokeShape><RoundRectangle CornerRadius="8" /></Border.StrokeShape>
-                            <Label Text="📊 Insufficient data for reliable predictions. Add more transactions to improve accuracy."
-                                   TextColor="White" FontSize="13" />
+                            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                    <controls:FinoraIconView IconKey="chart" Size="16" ShowBadge="False" StrokeColor="White" VerticalOptions="Center" />
+                                    <Label Text="Insufficient data for reliable predictions. Add more transactions to improve accuracy."
+                                           TextColor="White" FontSize="13" />
+                                </HorizontalStackLayout>
                         </Border>
                     </VerticalStackLayout>
                 </Border>
@@ -168,8 +170,8 @@
                                             <controls:FinoraIconView Icon="{Binding CategoryIcon}" Name="{Binding CategoryName}" Size="40" VerticalOptions="Center" />
                                             <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="Fill">
                                                 <Label Text="{Binding CategoryName}" Style="{StaticResource CategoryNameLabelStyle}" />
-                                                <Label Text="{Binding Trend, Converter={StaticResource TrendToIconConverter}}" Style="{StaticResource TrendIconStyle}"
-                                                       TextColor="{Binding Trend, Converter={StaticResource TrendToColorConverter}}" />
+                                                <controls:FinoraIconView IconKey="{Binding Trend, Converter={StaticResource TrendToIconConverter}}" Size="13" ShowBadge="False" HorizontalOptions="Start"
+                                                                                StrokeColor="{Binding Trend, Converter={StaticResource TrendToColorConverter}}" />
                                             </VerticalStackLayout>
                                             <VerticalStackLayout Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
                                                 <Label Text="{Binding ChangePercentage, StringFormat='{0:+0.0;-0.0;0}%'}"
@@ -222,14 +224,16 @@
                                                         Background="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
                                                         Stroke="Transparent" StrokeThickness="0">
                                                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                                    <Label Text="{Binding CategoryIcon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="18" />
+                                                    <controls:FinoraIconView Icon="{Binding CategoryIcon}" Name="{Binding BudgetName}" Size="18" ShowBadge="False"
+                                                                                Accent="{Binding CategoryColor, Converter={StaticResource ColorConverter}}"
+                                                                                VerticalOptions="Center" HorizontalOptions="Center" />
                                                 </Border>
                                                 <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
                                                     <Label Text="{Binding BudgetName}" Style="{StaticResource BudgetCategoryNameLabelStyle}" />
                                                     <ProgressBar Progress="{Binding PercentageUsed, Converter={StaticResource PercentageConverter}}"
                                                                  ProgressColor="{Binding PercentageUsed, Converter={StaticResource PercentageColorConverter}}" HeightRequest="8" />
                                                 </VerticalStackLayout>
-                                                <Label Text="{Binding WillExceedBudget, Converter={StaticResource BoolToStringConverter}, ConverterParameter='⚠ Will Exceed|✓ On Track'}"
+                                                <Label Text="{Binding WillExceedBudget, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Will Exceed|On Track'}"
                                                        Style="{StaticResource BudgetPercentageLabelStyle}"
                                                        TextColor="{Binding WillExceedBudget, Converter={StaticResource BoolToColorConverter}, ConverterParameter=Red|Green}" />
                                             </HorizontalStackLayout>

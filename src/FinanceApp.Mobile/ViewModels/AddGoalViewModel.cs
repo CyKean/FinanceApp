@@ -214,13 +214,13 @@ public partial class AddGoalViewModel : BaseViewModel
         var changes = new List<string>();
 
         if (_originalName != null && !string.Equals(_originalName, Name, StringComparison.Ordinal))
-            changes.Add($"Name: {_originalName} → {Name}");
+            changes.Add($"Name: {_originalName} -> {Name}");
 
         if (_originalTargetAmount is { } originalTarget && originalTarget.Amount != TargetAmount.Amount)
-            changes.Add($"Target: {originalTarget} → {TargetAmount}");
+            changes.Add($"Target: {originalTarget} -> {TargetAmount}");
 
         if (_originalTargetDate is { } originalDate && originalDate.Date != TargetDate.Date)
-            changes.Add($"Date: {originalDate:MMM dd, yyyy} → {TargetDate:MMM dd, yyyy}");
+            changes.Add($"Date: {originalDate:MMM dd, yyyy} -> {TargetDate:MMM dd, yyyy}");
 
         return changes.Count == 0 ? null : string.Join("; ", changes);
     }

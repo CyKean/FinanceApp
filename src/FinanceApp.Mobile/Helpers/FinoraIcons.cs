@@ -192,8 +192,39 @@ public static class FinoraIcons
         ["alertCircle"] = "M 2 12 A 10 10 0 1 0 22 12 A 10 10 0 1 0 2 12 M 12 8 L 12 12 M 12 16 L 12.01 16",
         ["sparkle"] = "M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z",
         ["lock"] = "M7 11V7a5 5 0 0 1 10 0v4 M 5 11 H 19 A 2 2 0 0 1 21 13 V 20 A 2 2 0 0 1 19 22 H 5 A 2 2 0 0 1 3 20 V 13 A 2 2 0 0 1 5 11 Z",
-        ["arrowright"] = "M5 12h14 m7 -5 7 7-7 7",
+        // The arrow head is a separate subpath whose corner must land exactly on
+        // the shaft end, otherwise the head detaches and floats clear of the
+        // line. Both horizontal arrows were built that way and looked broken.
+        ["arrowright"] = "M4 12H20M13 5 20 12 13 19",
+
+        // Glyphs that used to be typed as characters in a Label. Every one of them
+        // is absent from all four bundled fonts, so each was relying on whatever
+        // symbol font the device happened to ship - which is why the arrows came
+        // out as tofu boxes on one phone and rendered fine on another. Drawing
+        // them removes the font fallback entirely.
+        ["arrowleft"] = "M20 12H4M11 5 4 12 11 19",
+        ["arrowupright"] = "M7 17 17 7 M7 7h10v10",
+        ["arrowdownright"] = "M7 7 17 17 M17 7v10H7",
+        ["close"] = "M18 6 6 18 M6 6l12 12",
+
+        // The peso sign is not in any bundled font either, and it sits on the
+        // hero card of every balance the app shows. Rather than draw a lookalike,
+        // this is the genuine U+20B1 outline lifted from a system font and
+        // normalised onto the 24x24 grid, so it is the real character.
+        //
+        // It is a FILLED outline, not a centreline - see FilledKeys. Stroking it
+        // traces both edges of every stroke and fills in the counters, which
+        // turned it into an unreadable smudge.
+        ["peso"] = "M2.56 4.55L5.07 4.55L5.07 0L11.43 0L15.96 1.16L18.56 4.55L21.44 4.55L21.44 6.91L19.03 6.91L19.08 7.83L19.05 8.52L19 9.19L21.44 9.19L21.44 11.53L18.38 11.53L17.18 13.51L15.47 15L13.33 15.94L10.81 16.27L7.88 16.27L7.88 24L5.07 24L5.07 11.53L2.56 11.53L2.56 9.19L5.07 9.19L5.07 6.91L2.56 6.91ZM16.08 6.91L7.88 6.91L7.88 9.19L16.05 9.19L16.11 8.6L16.13 7.97ZM13.51 13.15L15.28 11.53L7.88 11.53L7.88 13.72L10.66 13.72ZM7.88 4.55L15.35 4.55L13.7 3.07L10.96 2.54L7.88 2.54Z",
     };
+
+    /// <summary>
+    /// Icons whose path is a closed outline rather than a centreline, so they
+    /// must be filled instead of stroked. Stroking an outline doubles every
+    /// edge and floods the counters.
+    /// </summary>
+    public static readonly HashSet<string> FilledKeys =
+        new(StringComparer.OrdinalIgnoreCase) { "peso" };
 
     /// <summary>
     /// Freshly parsed geometry for an icon key (falls back to "tag").

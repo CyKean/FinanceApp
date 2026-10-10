@@ -35,7 +35,7 @@
                     <Border WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                         <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                         <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnHomeTapped" /></Border.GestureRecognizers>
-                        <Label Text="←" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <controls:FinoraIconView IconKey="arrowleft" Size="20" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                     <VerticalStackLayout Grid.Column="1" Margin="10,0" VerticalOptions="Center">
                         <Label Text="Accounts" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
@@ -62,7 +62,7 @@
                                     <Label Text="VISA" FontSize="13" FontAttributes="Bold" TextColor="White" Opacity="0.85" CharacterSpacing="3" VerticalOptions="Center" />
                                     <Label Text="Total Balance" FontSize="12" TextColor="White" Opacity="0.65" Margin="0,10,0,0" />
                                     <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
-                                        <Label Text="₱" FontSize="16" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="White" Opacity="0.9" VerticalOptions="End" Margin="0,0,0,3" />
+                                        <controls:FinoraIconView IconKey="peso" Size="20" ShowBadge="False" Light="False" Opacity="0.9" VerticalOptions="End" Margin="0,0,0,3" />
                                         <Label Text="{Binding TotalBalance.Amount, StringFormat='{0:N2}'}" FontSize="26" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="White" LineBreakMode="NoWrap" VerticalOptions="End" />
                                     </HorizontalStackLayout>
                                     <Label Text="**** **** ****  7281" FontSize="13" FontAttributes="Bold" TextColor="White" Opacity="0.9" CharacterSpacing="1" Margin="0,10,0,0" />
@@ -149,7 +149,10 @@
                                                     <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                                                     <Border Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1" Padding="8,2" VerticalOptions="Center" IsVisible="{Binding IsDefault}">
                                                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                                                        <Label Text="✓ Default" FontSize="10" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                                        <HorizontalStackLayout Spacing="4">
+                                                                <controls:FinoraIconView IconKey="check" Size="10" ShowBadge="False" Light="True" VerticalOptions="Center" />
+                                                                <Label Text="Default" FontSize="10" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                                            </HorizontalStackLayout>
                                                     </Border>
                                                 </HorizontalStackLayout>
                                                 <Label Text="{Binding Type}" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraMuted}" />
@@ -160,7 +163,7 @@
                                                 <Border.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding Source={x:Reference AccountsPageView}, Path=BindingContext.AccountActionsCommand}" CommandParameter="{Binding .}" />
                                                 </Border.GestureRecognizers>
-                                                <Label Text="⋮" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                                <controls:FinoraIconView IconKey="dots" Size="16" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                                             </Border>
                                         </Grid>
                                     </Border>

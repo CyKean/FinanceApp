@@ -37,6 +37,10 @@ public partial class FinoraIconView : ContentView
         BindableProperty.Create(nameof(Accent), typeof(Color), typeof(FinoraIconView), null,
             propertyChanged: (b, _, _) => ((FinoraIconView)b).Refresh());
 
+    public static readonly BindableProperty StrokeColorProperty =
+        BindableProperty.Create(nameof(StrokeColor), typeof(Color), typeof(FinoraIconView), null,
+            propertyChanged: (b, _, _) => ((FinoraIconView)b).Refresh());
+
     /// <summary>Raw stored icon (usually an emoji) used for key resolution.</summary>
     public string? Icon
     {
@@ -90,6 +94,19 @@ public partial class FinoraIconView : ContentView
         set => SetValue(AccentProperty, value);
     }
 
+    /// <summary>
+    /// Explicit glyph stroke. Needed whenever the bare glyph has to match a
+    /// sibling text colour - a red "Over Budget" warning, a lime figure on the
+    /// dark expense card. <see cref="Accent"/> cannot cover that case because it
+    /// recolours the badge and then derives the glyph from contrast, which is
+    /// only Ink or White.
+    /// </summary>
+    public Color? StrokeColor
+    {
+        get => (Color?)GetValue(StrokeColorProperty);
+        set => SetValue(StrokeColorProperty, value);
+    }
+
     public FinoraIconView()
     {
         InitializeComponent();
@@ -121,7 +138,22 @@ public partial class FinoraIconView : ContentView
         }
 
         var accent = Accent;
-        Glyph.Stroke = accent is not null ? ContrastOn(accent) : Light ? Ink : Colors.White;
+        var colour = StrokeColor ?? (accent is not null ? ContrastOn(accent) : (Light ? Ink : Colors.White));
+
+        // A closed outline has to be filled; stroking it draws both edges of
+        // every stroke and floods the counters (this is what ruined the peso).
+        if (key is not null && FinoraIcons.FilledKeys.Contains(key))
+        {
+            Glyph.Stroke = Colors.Transparent;
+            Glyph.StrokeThickness = 0;
+            Glyph.Fill = colour;
+        }
+        else
+        {
+            Glyph.Fill = Colors.Transparent;
+            Glyph.Stroke = colour;
+            Glyph.StrokeThickness = 1.8;
+        }
 
         var size = Size <= 0 ? 46 : Size;
         // Explicit glyph size, exactly like the (working) tab bar pattern.

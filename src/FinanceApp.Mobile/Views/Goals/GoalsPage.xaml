@@ -4,6 +4,7 @@
              xmlns:viewmodels="clr-namespace:FinanceApp.Mobile.ViewModels"
              xmlns:dtos="clr-namespace:FinanceApp.Application.DTOs;assembly=FinanceApp.Application"
              xmlns:converters="clr-namespace:FinanceApp.Mobile.Converters"
+xmlns:controls="clr-namespace:FinanceApp.Mobile.Views.Controls"
              x:Class="FinanceApp.Mobile.Views.Goals.GoalsPage"
              x:DataType="viewmodels:GoalsViewModel"
              Title="{Binding Title}"
@@ -57,7 +58,9 @@
                                                 Background="{Binding Color, Converter={StaticResource ColorConverter}}"
                                                 Stroke="Transparent" StrokeThickness="0">
                                              <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                             <Label Text="{Binding Icon}" VerticalOptions="Center" HorizontalOptions="Center" FontSize="20" />
+                                             <controls:FinoraIconView Icon="{Binding Icon}" Name="{Binding Name}" Size="20" ShowBadge="False"
+                                                                    Accent="{Binding Color, Converter={StaticResource ColorConverter}}"
+                                                                    VerticalOptions="Center" HorizontalOptions="Center" />
                                          </Border>
                                          <VerticalStackLayout Spacing="4" VerticalOptions="Center" HorizontalOptions="Fill">
                                              <Label Text="{Binding Name}" Style="{StaticResource GoalNameLabelStyle}" />
@@ -95,7 +98,7 @@
                  </CollectionView.ItemTemplate>
                  <CollectionView.EmptyView>
                      <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center" Padding="20">
-                         <Label Text="🎯" FontSize="48" />
+                         <controls:FinoraIconView IconKey="target" Size="48" ShowBadge="False" StrokeColor="{DynamicResource FinoraMuted}" HorizontalOptions="Center" />
                          <Label Text="No goals yet" Style="{StaticResource EmptyStateLabelStyle}" />
                          <Label Text="Create a financial goal to start saving" Style="{StaticResource EmptyStateSubLabelStyle}" />
                      </VerticalStackLayout>

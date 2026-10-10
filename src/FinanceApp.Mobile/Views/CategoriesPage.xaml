@@ -43,12 +43,7 @@
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnBackTapped" />
                         </Border.GestureRecognizers>
-                        <Label Text="←"
-                               FontSize="20"
-                               FontAttributes="Bold"
-                               TextColor="{DynamicResource FinoraInk}"
-                               VerticalOptions="Center"
-                               HorizontalOptions="Center" />
+                        <controls:FinoraIconView IconKey="arrowleft" Size="20" ShowBadge="False" Light="True" VerticalOptions="Center" HorizontalOptions="Center" />
                     </Border>
 
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
@@ -136,10 +131,9 @@
                                         <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
                                             <HorizontalStackLayout Spacing="6">
                                                 <Label Text="{Binding Name}" Style="{StaticResource CategoryNameLabelStyle}" />
-                                                <Label Text="&#x1F512;"
-                                                       FontSize="12"
-                                                       IsVisible="{Binding IsSystem}"
-                                                       VerticalOptions="Center" />
+                                                <controls:FinoraIconView IconKey="lock" Size="12" ShowBadge="False" Light="True"
+                                                                        IsVisible="{Binding IsSystem}"
+                                                                        VerticalOptions="Center" />
                                             </HorizontalStackLayout>
                                             <Label Text="Inactive"
                                                    Style="{StaticResource InactiveLabelStyle}"
@@ -158,12 +152,10 @@
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.CategoryActionsCommand}"
                                                                       CommandParameter="{Binding .}" />
                                             </Border.GestureRecognizers>
-                                            <Label Text="&#x22EE;"
-                                                   FontSize="18"
-                                                   FontAttributes="Bold"
-                                                   TextColor="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}"
-                                                   VerticalOptions="Center"
-                                                   HorizontalOptions="Center" />
+                                            <controls:FinoraIconView IconKey="dots" Size="18" ShowBadge="False"
+                                                                    StrokeColor="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}"
+                                                                    VerticalOptions="Center"
+                                                                    HorizontalOptions="Center" />
                                         </Border>
                                     </Grid>
                                 </Border>
@@ -208,10 +200,9 @@
                                         <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
                                             <HorizontalStackLayout Spacing="6">
                                                 <Label Text="{Binding Name}" Style="{StaticResource CategoryNameLabelStyle}" />
-                                                <Label Text="&#x1F512;"
-                                                       FontSize="12"
-                                                       IsVisible="{Binding IsSystem}"
-                                                       VerticalOptions="Center" />
+                                                <controls:FinoraIconView IconKey="lock" Size="12" ShowBadge="False" Light="True"
+                                                                        IsVisible="{Binding IsSystem}"
+                                                                        VerticalOptions="Center" />
                                             </HorizontalStackLayout>
                                             <Label Text="Inactive"
                                                    Style="{StaticResource InactiveLabelStyle}"
@@ -230,12 +221,10 @@
                                                 <TapGestureRecognizer Command="{Binding Source={x:Reference CategoriesPageView}, Path=BindingContext.CategoryActionsCommand}"
                                                                       CommandParameter="{Binding .}" />
                                             </Border.GestureRecognizers>
-                                            <Label Text="&#x22EE;"
-                                                   FontSize="18"
-                                                   FontAttributes="Bold"
-                                                   TextColor="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}"
-                                                   VerticalOptions="Center"
-                                                   HorizontalOptions="Center" />
+                                            <controls:FinoraIconView IconKey="dots" Size="18" ShowBadge="False"
+                                                                    StrokeColor="{AppThemeBinding Light={DynamicResource OnSurfaceVariant}, Dark={DynamicResource OnSurfaceVariantDark}}"
+                                                                    VerticalOptions="Center"
+                                                                    HorizontalOptions="Center" />
                                         </Border>
                                     </Grid>
                                 </Border>

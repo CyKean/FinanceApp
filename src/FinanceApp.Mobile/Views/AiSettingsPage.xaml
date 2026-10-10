@@ -34,12 +34,7 @@
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnBackTapped" />
                         </Border.GestureRecognizers>
-                        <Label Text="←"
-                               FontSize="20"
-                               FontAttributes="Bold"
-                               TextColor="{DynamicResource FinoraInk}"
-                               VerticalOptions="Center"
-                               HorizontalOptions="Center" />
+                        <controls:FinoraIconView IconKey="arrowleft" Size="20" ShowBadge="False" Light="True" VerticalOptions="Center" HorizontalOptions="Center" />
                     </Border>
 
                     <VerticalStackLayout Grid.Column="1" Spacing="0" VerticalOptions="Center">
@@ -134,15 +129,24 @@
                 <Border Style="{StaticResource CardFrameStyle}" Padding="16">
                     <VerticalStackLayout Spacing="6">
                         <Label Text="What you get" Style="{StaticResource SectionHeaderStyle}" />
-                        <Label Text="&#x2705; Budget, spending, balance and savings answers work offline"
-                               Style="{StaticResource MutedLabelStyle}"
-                               LineBreakMode="WordWrap" />
-                        <Label Text="&#x2705; General finance topics answered from built-in guidance"
-                               Style="{StaticResource MutedLabelStyle}"
-                               LineBreakMode="WordWrap" />
-                        <Label Text="&#x1F4A1; With a key: open-ended questions answered by a large language model with your financial snapshot for context"
-                               Style="{StaticResource MutedLabelStyle}"
-                               LineBreakMode="WordWrap" />
+                        <HorizontalStackLayout Spacing="8">
+                            <controls:FinoraIconView IconKey="check" Size="14" ShowBadge="False" StrokeColor="{DynamicResource Success}" VerticalOptions="Center" />
+                            <Label Text="Budget, spending, balance and savings answers work offline"
+                                   Style="{StaticResource MutedLabelStyle}"
+                                   LineBreakMode="WordWrap" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="8">
+                            <controls:FinoraIconView IconKey="check" Size="14" ShowBadge="False" StrokeColor="{DynamicResource Success}" VerticalOptions="Center" />
+                            <Label Text="General finance topics answered from built-in guidance"
+                                   Style="{StaticResource MutedLabelStyle}"
+                                   LineBreakMode="WordWrap" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="8">
+                            <controls:FinoraIconView IconKey="bulb" Size="14" ShowBadge="False" StrokeColor="{DynamicResource Primary}" VerticalOptions="Center" />
+                            <Label Text="With a key: open-ended questions answered by a large language model with your financial snapshot for context"
+                                   Style="{StaticResource MutedLabelStyle}"
+                                   LineBreakMode="WordWrap" />
+                        </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>

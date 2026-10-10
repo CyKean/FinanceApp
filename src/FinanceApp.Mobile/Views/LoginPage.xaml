@@ -25,7 +25,7 @@
             </Border>
             <Label Text="Finora" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
             <Label Text="Finance Mobile App" FontSize="12" TextColor="{DynamicResource FinoraInk}" Opacity="0.7" VerticalOptions="Center" />
-            <Label Text="● ● ●" FontSize="10" TextColor="{DynamicResource FinoraInk}" Opacity="0.5" VerticalOptions="Center" />
+            <Label Text="" FontSize="10" TextColor="{DynamicResource FinoraInk}" Opacity="0.5" VerticalOptions="Center" />
         </HorizontalStackLayout>
 
         <ScrollView Grid.Row="1">
@@ -95,7 +95,9 @@
                             <VerticalStackLayout Spacing="10" VerticalOptions="Center">
                                 <Border WidthRequest="24" HeightRequest="24" Background="{DynamicResource FinoraInk}" StrokeThickness="0">
                                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                                    <Label Text="○" TextColor="{DynamicResource FinoraLime}" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Border WidthRequest="12" HeightRequest="12" BackgroundColor="{DynamicResource FinoraLime}" StrokeThickness="0" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                                    </Border>
                                 </Border>
                                 <BoxView HeightRequest="2" WidthRequest="44" Color="{DynamicResource FinoraInk}" />
                             </VerticalStackLayout>
@@ -110,7 +112,7 @@
                     <Label Text="Made for" FontSize="38" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
                     <Border Background="{DynamicResource FinoraInk}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1" Padding="16,8" VerticalOptions="Center">
                         <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                        <Label Text="→" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <controls:FinoraIconView IconKey="arrowright" Size="20" ShowBadge="False" Light="True" StrokeColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
                 </HorizontalStackLayout>
                 <Label Text="Digital Users" FontSize="38" FontAttributes="Bold" FontFamily="SpaceGroteskBold" TextColor="{DynamicResource FinoraInk}" />
@@ -126,7 +128,7 @@
                             <Label Text="Create account" IsVisible="{Binding IsRegisterMode}" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Fill" VerticalOptions="Center" />
                             <Border Background="{DynamicResource FinoraLime}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.2" Padding="10,5" VerticalOptions="Center">
                                 <Border.StrokeShape><RoundRectangle CornerRadius="100" /></Border.StrokeShape>
-                                <Label Text="● Secure" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
+                                <Label Text="Secure" FontSize="11" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" />
                             </Border>
                         </HorizontalStackLayout>
                         <Label Text="Login to continue" IsVisible="{Binding IsRegisterMode, Converter={StaticResource InverseBoolConverter}}" FontSize="13" TextColor="{DynamicResource FinoraMuted}" />
@@ -174,8 +176,8 @@
 
                         <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabelStyle}" IsVisible="{Binding HasError}" />
 
-                        <Button Text="Login →" Command="{Binding SubmitCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" IsVisible="{Binding IsRegisterMode, Converter={StaticResource InverseBoolConverter}}" Style="{StaticResource PrimaryButtonStyle}" />
-                        <Button Text="Create Account →" Command="{Binding SubmitCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" IsVisible="{Binding IsRegisterMode}" Style="{StaticResource PrimaryButtonStyle}" />
+                        <Button Text="Login" Command="{Binding SubmitCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" IsVisible="{Binding IsRegisterMode, Converter={StaticResource InverseBoolConverter}}" Style="{StaticResource PrimaryButtonStyle}" />
+                        <Button Text="Create Account" Command="{Binding SubmitCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}" IsVisible="{Binding IsRegisterMode}" Style="{StaticResource PrimaryButtonStyle}" />
 
                         <HorizontalStackLayout Spacing="12" VerticalOptions="Center" Margin="0,2">
                             <BoxView Style="{StaticResource DividerStyle}" VerticalOptions="Center" HorizontalOptions="Fill" />

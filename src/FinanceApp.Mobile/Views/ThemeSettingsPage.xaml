@@ -16,12 +16,14 @@
                 <Border WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
                     <Border.GestureRecognizers><TapGestureRecognizer Tapped="OnBackTapped" /></Border.GestureRecognizers>
-                    <Label Text="&#8592;" FontSize="20" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <controls:FinoraIconView IconKey="arrowleft" Size="20" ShowBadge="False" Light="True" HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
                 <Label Grid.Column="1" Text="Theme" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" HorizontalOptions="Center" VerticalOptions="Center" />
                 <Border Grid.Column="2" WidthRequest="46" HeightRequest="46" Background="{DynamicResource FinoraCard}" Stroke="{DynamicResource FinoraInk}" StrokeThickness="1.5">
                     <Border.StrokeShape><Ellipse /></Border.StrokeShape>
-                    <Label Text="&#9679;" FontSize="14" TextColor="{DynamicResource FinoraLime}" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <Border WidthRequest="14" HeightRequest="14" BackgroundColor="{DynamicResource FinoraLime}" StrokeThickness="0" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Border.StrokeShape><Ellipse /></Border.StrokeShape>
+                </Border>
                 </Border>
             </Grid>
 
@@ -76,7 +78,7 @@
                                             </Border>
                                         </HorizontalStackLayout>
                                         <Label Grid.Column="1" Text="{Binding Name}" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
-                                        <Label Grid.Column="2" Text="&#10003;" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" IsVisible="{Binding IsSelected}" VerticalOptions="Center" />
+                                        <controls:FinoraIconView Grid.Column="2" IconKey="check" Size="16" ShowBadge="False" Light="True" IsVisible="{Binding IsSelected}" VerticalOptions="Center" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -89,7 +91,7 @@
                         </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="*,Auto">
                             <Label Text="Follow system light/dark" FontSize="14" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="&#10003;" FontSize="16" FontAttributes="Bold" TextColor="{DynamicResource FinoraInk}" IsVisible="{Binding IsSystemSelected}" VerticalOptions="Center" />
+                            <controls:FinoraIconView Grid.Column="1" IconKey="check" Size="16" ShowBadge="False" Light="True" IsVisible="{Binding IsSystemSelected}" VerticalOptions="Center" />
                         </Grid>
                     </Border>
                 </VerticalStackLayout>
