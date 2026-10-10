@@ -27,7 +27,7 @@
         <!-- Category rows carry a trailing toggle. -->
         <controls:SkeletonCategories IsVisible="{Binding IsInitialLoading}" />
 
-        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing, Mode=OneWay}"
                       IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
             <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
 

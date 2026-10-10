@@ -253,10 +253,7 @@ public partial class BudgetSuggestionsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task RefreshAsync()
-    {
-        await LoadAsync();
-    }
+    private Task RefreshAsync() => RunRefreshAsync(LoadAsync);
 
     /// <summary>
     /// Validation failures come from FluentValidation, not the domain, so

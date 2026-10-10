@@ -19,7 +19,7 @@
     </ContentPage.Resources>
 
     <Grid>
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing, Mode=OneWay}">
         <ScrollView>
             <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
                 <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">

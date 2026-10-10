@@ -89,11 +89,7 @@ public partial class AnalyticsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task RefreshAsync()
-    {
-        InvalidateLoad();
-        await LoadAsync();
-    }
+    private Task RefreshAsync() => RunRefreshAsync(LoadAsync);
 
     [RelayCommand]
     private async Task ChangePeriodAsync(string period)

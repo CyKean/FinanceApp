@@ -22,7 +22,7 @@
          </ResourceDictionary>
      </ContentPage.Resources>
 
-     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
+     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing, Mode=OneWay}">
          <VerticalStackLayout Spacing="16" Padding="16">
              <!-- Goals List -->
              <CollectionView ItemsSource="{Binding Goals}" SelectionMode="None">

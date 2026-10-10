@@ -247,8 +247,5 @@ public partial class PredictionsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task RefreshAsync()
-    {
-        await LoadAsync();
-    }
+    private Task RefreshAsync() => RunRefreshAsync(LoadAsync);
 }

@@ -34,6 +34,24 @@ public partial class BaseViewModel : ObservableObject
     /// <summary>Set once a load has finished, successfully or not.</summary>
     private bool _hasLoadedOnce;
 
+    /// <summary>
+    /// The pull-to-refresh spinner.
+    /// <para>
+    /// Deliberately not <see cref="IsBusy"/>. <c>RefreshView.IsRefreshing</c> is a
+    /// two-way property, so the moment the user pulls, the platform writes the
+    /// gesture straight back into whatever it is bound to. Binding it to IsBusy
+    /// meant a pull set IsBusy <i>before</i> the refresh command ran, so the load
+    /// hit its own "already busy" guard and returned - leaving the spinner up
+    /// forever and reloading nothing.
+    /// </para>
+    /// <para>
+    /// Pages bind this with <c>Mode=OneWay</c> so the platform can only ever be
+    /// told about the spinner, never set it.
+    /// </para>
+    /// </summary>
+    [ObservableProperty]
+    private bool _isRefreshing;
+
     /// <summary>The <see cref="SyncNotifications.Version"/> this view model's data came from.</summary>
     private int _loadedVersion = -1;
 
@@ -94,6 +112,45 @@ public partial class BaseViewModel : ObservableObject
     /// by pull-to-refresh, which is an explicit request to re-read.
     /// </summary>
     protected void InvalidateLoad() => _loadedVersion = -1;
+
+    /// <summary>
+    /// Runs a reload the user asked for by pulling, and always takes the spinner
+    /// away afterwards - including when the reload throws or never starts.
+    /// <para>
+    /// This is the only thing that should set <see cref="IsRefreshing"/>. The
+    /// spinner used to be bound to <see cref="IsBusy"/>, which had two problems:
+    /// the platform's two-way write set IsBusy before the refresh command ran, so
+    /// the load bailed on its own busy guard and nothing reloaded; and three
+    /// pages called their load without invalidating first, so they skipped the
+    /// refresh entirely.
+    /// </para>
+    /// </summary>
+    /// <param name="reload">
+    /// The page's own load. It manages <see cref="IsBusy"/>; this only owns the
+    /// refresh indicator.
+    /// </param>
+    protected async Task RunRefreshAsync(Func<Task> reload)
+    {
+        // A pull is already running. Its own finally clears the spinner, so
+        // returning here is what stops a second pull from ending it early.
+        if (IsRefreshing)
+            return;
+
+        try
+        {
+            IsRefreshing = true;
+
+            // A pull is an explicit request to re-read, so it must not be
+            // short-circuited by the still-current data check.
+            InvalidateLoad();
+
+            await reload();
+        }
+        finally
+        {
+            IsRefreshing = false;
+        }
+    }
 
     /// <summary>
     /// Runs a database read on a worker thread, against its own DI scope.

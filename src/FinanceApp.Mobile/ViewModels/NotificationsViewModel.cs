@@ -78,11 +78,7 @@ public partial class NotificationsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task RefreshAsync()
-    {
-        InvalidateLoad();
-        await LoadAsync();
-    }
+    private Task RefreshAsync() => RunRefreshAsync(LoadAsync);
 
     [RelayCommand]
     private void MarkAllRead()

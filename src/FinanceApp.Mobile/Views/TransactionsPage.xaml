@@ -26,7 +26,7 @@
         <!-- Rows carry a trailing amount column, matching the transaction row template. -->
         <controls:SkeletonTransactions IsVisible="{Binding IsInitialLoading}" />
 
-        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing, Mode=OneWay}"
                       IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
             <CollectionView ItemsSource="{Binding Transactions}"
                             SelectionMode="None"

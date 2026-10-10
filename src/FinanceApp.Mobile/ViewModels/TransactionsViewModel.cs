@@ -252,9 +252,5 @@ public partial class TransactionsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task RefreshAsync()
-    {
-        InvalidateLoad();
-        await LoadAsync();
-    }
+    private Task RefreshAsync() => RunRefreshAsync(LoadAsync);
 }

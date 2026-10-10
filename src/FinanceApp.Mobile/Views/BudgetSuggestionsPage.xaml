@@ -28,7 +28,7 @@
              suggestion list is a BindableLayout (a CollectionView cannot live
              inside a RefreshView without gesture conflicts), so the content is
              wrapped in a ScrollView to make the whole page scroll. -->
-        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+        <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing, Mode=OneWay}"
                       IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
             <ScrollView>
             <VerticalStackLayout Spacing="16" Padding="20,16,20,28">

@@ -139,11 +139,7 @@ public partial class CalendarViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task RefreshAsync()
-    {
-        InvalidateLoad();
-        await LoadAsync();
-    }
+    private Task RefreshAsync() => RunRefreshAsync(LoadAsync);
 
     partial void OnSelectedMonthChanged(DateTime value)
     {

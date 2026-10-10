@@ -254,10 +254,7 @@ public partial class SettingsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task RefreshAsync()
-    {
-        await LoadAsync();
-    }
+    private Task RefreshAsync() => RunRefreshAsync(LoadAsync);
 
     /// <summary>
     /// Ignores the automatic check's cache and asks GitHub right now.

@@ -41,7 +41,7 @@
          fixed HeightRequest, which is what clipped the lists. -->
     <controls:SkeletonForecasts IsVisible="{Binding IsInitialLoading}" />
 
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}"
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing, Mode=OneWay}"
                   IsVisible="{Binding IsInitialLoading, Converter={StaticResource InverseBoolConverter}}">
         <ScrollView>
             <VerticalStackLayout Spacing="14" Padding="18,14,18,24">
