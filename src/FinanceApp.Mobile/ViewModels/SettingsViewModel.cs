@@ -198,8 +198,9 @@ public partial class SettingsViewModel : BaseViewModel
 
         try
         {
-            await _syncService.ForceSyncAsync(userId.Value);
-            var result = await _syncService.SyncAsync(userId.Value);
+            // ForceSyncAsync returns the result of the single sync it runs; calling
+            // SyncAsync again here would repeat the whole pipeline for nothing.
+            var result = await _syncService.ForceSyncAsync(userId.Value);
             SyncStatus = await _syncService.GetStatusAsync(userId.Value);
 
             if (result.Success)

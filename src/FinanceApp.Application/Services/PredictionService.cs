@@ -42,13 +42,29 @@ public class PredictionService : BaseService, IPredictionService
 
     public async Task<PredictionResultDto> GeneratePredictionAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        // Computed once and shared: ForecastBudgetsAsync needs the same category
-        // prediction, and recomputing it doubled every query on this page.
-        var expensePrediction = await PredictExpensesAsync(userId, 1, cancellationToken);
-        var trends = await AnalyzeTrendsAsync(userId, cancellationToken);
+        var today = DateTime.Today;
+
+        // One transaction load for the whole run.
+        //
+        // Each of the four analyses below used to fetch its own window, and three
+        // of those windows were strict subsets of the widest one - so a single
+        // dashboard visit pulled the user's expense history four times over. This
+        // runs on every dashboard appearance, at startup, and on a five-minute
+        // poll, so that redundancy was the most-repeated query in the app.
+        var expenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
+            userId, TransactionType.Expense, today.AddMonths(-ForecastHistoryMonths), today, cancellationToken);
+
+        // Each analysis still gets exactly the window it asked for before - only
+        // the database round-trip is shared. Widening the trend window to 12
+        // months, for instance, would silently change its "older average" from a
+        // 3-month baseline to a 9-month one.
+        var expensePrediction = await PredictExpensesCoreAsync(userId, expenses, today, cancellationToken);
+        var trends = await AnalyzeTrendsCoreAsync(
+            userId, InRange(expenses, today.AddMonths(-TrendHistoryMonths), today), cancellationToken);
         var budgetForecasts = await ForecastBudgetsCoreAsync(userId, expensePrediction, cancellationToken);
-        var insights = await GenerateInsightsAsync(userId, cancellationToken);
-        var anomalies = await DetectAnomaliesAsync(userId, cancellationToken);
+        var insights = await GenerateInsightsCoreAsync(userId, expenses, today, cancellationToken);
+        var anomalies = await DetectAnomaliesCoreAsync(
+            userId, InRange(expenses, today.AddMonths(-3), today), cancellationToken);
 
         return new PredictionResultDto(
             expensePrediction,
@@ -59,14 +75,29 @@ public class PredictionService : BaseService, IPredictionService
             DateTime.Now);
     }
 
+    /// <summary>
+    /// Rows inside a window, using the same predicate as
+    /// <see cref="ITransactionRepository.GetByTypeAndDateRangeAsync"/> so that
+    /// slicing a shared load selects exactly the rows a dedicated query would have.
+    /// </summary>
+    private static List<Transaction> InRange(IReadOnlyList<Transaction> rows, DateTime startDate, DateTime endDate) =>
+        rows.Where(t => t.Date >= startDate.Date && t.Date <= endDate.Date).ToList();
+
     public async Task<ExpensePredictionDto> PredictExpensesAsync(Guid userId, int monthsAhead, CancellationToken cancellationToken = default)
     {
         var today = DateTime.Today;
-        var startDate = today.AddMonths(-ForecastHistoryMonths);
-
         var expenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
-            userId, TransactionType.Expense, startDate, today, cancellationToken);
+            userId, TransactionType.Expense, today.AddMonths(-ForecastHistoryMonths), today, cancellationToken);
 
+        return await PredictExpensesCoreAsync(userId, expenses, today, cancellationToken);
+    }
+
+    private async Task<ExpensePredictionDto> PredictExpensesCoreAsync(
+        Guid userId,
+        IReadOnlyList<Transaction> expenses,
+        DateTime today,
+        CancellationToken cancellationToken)
+    {
         var activeExpenses = expenses.Where(e => !e.IsDeleted).ToList();
 
         if (!HasSufficientData(activeExpenses))
@@ -133,11 +164,17 @@ public class PredictionService : BaseService, IPredictionService
     public async Task<IReadOnlyList<SpendingTrendDto>> AnalyzeTrendsAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var today = DateTime.Today;
-        var startDate = today.AddMonths(-TrendHistoryMonths);
-
         var expenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
-            userId, TransactionType.Expense, startDate, today, cancellationToken);
+            userId, TransactionType.Expense, today.AddMonths(-TrendHistoryMonths), today, cancellationToken);
 
+        return await AnalyzeTrendsCoreAsync(userId, expenses, cancellationToken);
+    }
+
+    private async Task<IReadOnlyList<SpendingTrendDto>> AnalyzeTrendsCoreAsync(
+        Guid userId,
+        IReadOnlyList<Transaction> expenses,
+        CancellationToken cancellationToken)
+    {
         var activeExpenses = expenses.Where(e => !e.IsDeleted).ToList();
         var categories = await _categoryRepository.GetActiveByTypeAsync(userId, CategoryType.Expense, cancellationToken);
         var trends = new List<SpendingTrendDto>();
@@ -236,8 +273,21 @@ public class PredictionService : BaseService, IPredictionService
 
     public async Task<IReadOnlyList<SmartInsightDto>> GenerateInsightsAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var insights = new List<SmartInsightDto>();
         var today = DateTime.Today;
+        var startOfMonth = new DateTime(today.Year, today.Month, 1);
+        var expenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
+            userId, TransactionType.Expense, startOfMonth.AddMonths(-1), today, cancellationToken);
+
+        return await GenerateInsightsCoreAsync(userId, expenses, today, cancellationToken);
+    }
+
+    private async Task<IReadOnlyList<SmartInsightDto>> GenerateInsightsCoreAsync(
+        Guid userId,
+        IReadOnlyList<Transaction> expenses,
+        DateTime today,
+        CancellationToken cancellationToken)
+    {
+        var insights = new List<SmartInsightDto>();
         var startOfMonth = new DateTime(today.Year, today.Month, 1);
         var prevMonthStart = startOfMonth.AddMonths(-1);
 
@@ -247,10 +297,10 @@ public class PredictionService : BaseService, IPredictionService
         var daysElapsed = today.Day;
         var prevMonthComparableEnd = prevMonthStart.AddDays(daysElapsed - 1);
 
-        var currentMonthExpenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
-            userId, TransactionType.Expense, startOfMonth, today, cancellationToken);
-        var prevMonthExpenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
-            userId, TransactionType.Expense, prevMonthStart, prevMonthComparableEnd, cancellationToken);
+        // Both windows are slices of the caller's shared load rather than two
+        // further queries.
+        var currentMonthExpenses = InRange(expenses, startOfMonth, today);
+        var prevMonthExpenses = InRange(expenses, prevMonthStart, prevMonthComparableEnd);
 
         var currentTotal = currentMonthExpenses.Where(e => !e.IsDeleted).Sum(e => e.Amount.Amount);
         var prevTotal = prevMonthExpenses.Where(e => !e.IsDeleted).Sum(e => e.Amount.Amount);
@@ -313,8 +363,10 @@ public class PredictionService : BaseService, IPredictionService
             }
         }
 
-        var savingsRate = await CalculateSavingsRateAsync(userId, startOfMonth, today, cancellationToken);
-        var prevSavingsRate = await CalculateSavingsRateAsync(userId, prevMonthStart, prevMonthComparableEnd, cancellationToken);
+        var savingsRate = await CalculateSavingsRateAsync(
+            userId, startOfMonth, today, ExpenseTotal(expenses, startOfMonth, today), cancellationToken);
+        var prevSavingsRate = await CalculateSavingsRateAsync(
+            userId, prevMonthStart, prevMonthComparableEnd, ExpenseTotal(expenses, prevMonthStart, prevMonthComparableEnd), cancellationToken);
 
         if (prevSavingsRate > 0 && savingsRate > prevSavingsRate)
         {
@@ -348,11 +400,18 @@ public class PredictionService : BaseService, IPredictionService
     public async Task<IReadOnlyList<AnomalyDetectionDto>> DetectAnomaliesAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         var today = DateTime.Today;
-        var startDate = today.AddMonths(-3);
-        var anomalies = new List<AnomalyDetectionDto>();
-
         var expenses = await _transactionRepository.GetByTypeAndDateRangeAsync(
-            userId, TransactionType.Expense, startDate, today, cancellationToken);
+            userId, TransactionType.Expense, today.AddMonths(-3), today, cancellationToken);
+
+        return await DetectAnomaliesCoreAsync(userId, expenses, cancellationToken);
+    }
+
+    private async Task<IReadOnlyList<AnomalyDetectionDto>> DetectAnomaliesCoreAsync(
+        Guid userId,
+        IReadOnlyList<Transaction> expenses,
+        CancellationToken cancellationToken)
+    {
+        var anomalies = new List<AnomalyDetectionDto>();
 
         var activeExpenses = expenses.Where(e => !e.IsDeleted).ToList();
         var categoryStats = activeExpenses
@@ -511,13 +570,27 @@ public class PredictionService : BaseService, IPredictionService
         _ => amount.Amount
     };
 
-    private async Task<decimal> CalculateSavingsRateAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+    private static decimal ExpenseTotal(IReadOnlyList<Transaction> expenses, DateTime startDate, DateTime endDate) =>
+        InRange(expenses, startDate, endDate)
+            .Where(e => !e.IsDeleted)
+            .Sum(e => e.Amount.Amount);
+
+    /// <summary>
+    /// Income still needs its own query, but the expense half comes from the
+    /// caller's already-loaded rows - so the savings comparison costs two queries
+    /// instead of the four it used to.
+    /// </summary>
+    private async Task<decimal> CalculateSavingsRateAsync(
+        Guid userId,
+        DateTime startDate,
+        DateTime endDate,
+        decimal expenseTotal,
+        CancellationToken cancellationToken)
     {
         var income = await _transactionRepository.GetTotalByTypeAsync(userId, TransactionType.Income, startDate, endDate, cancellationToken);
-        var expense = await _transactionRepository.GetTotalByTypeAsync(userId, TransactionType.Expense, startDate, endDate, cancellationToken);
 
         if (income.Amount == 0) return 0;
 
-        return Math.Round(((income.Amount - expense.Amount) / income.Amount) * 100, 2);
+        return Math.Round(((income.Amount - expenseTotal) / income.Amount) * 100, 2);
     }
 }

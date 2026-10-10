@@ -14,6 +14,10 @@ public class TransactionRepository : BaseRepository<Transaction>, ITransactionRe
 
     public async Task<IReadOnlyList<Transaction>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
     {
+        // Deliberately tracked. SyncDeduplicationService rewrites AccountId and
+        // CategoryId on these rows and retires the spares, then relies on
+        // SaveChanges seeing them - untracking here silently made every duplicate
+        // merge a no-op.
         return await DbSet
             .Where(t => t.UserId == userId)
             .OrderByDescending(t => t.Date)
@@ -41,7 +45,10 @@ public class TransactionRepository : BaseRepository<Transaction>, ITransactionRe
 
     public async Task<IReadOnlyList<Transaction>> GetByDateRangeAsync(Guid userId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
     {
+        // Untracked: the only caller (DashboardService) aggregates these rows in
+        // memory and never writes them back.
         return await DbSet
+            .AsNoTracking()
             .Where(t => t.UserId == userId && t.Date >= startDate.Date && t.Date <= endDate.Date)
             .OrderByDescending(t => t.Date)
             .ThenByDescending(t => t.CreatedAt)
@@ -59,7 +66,11 @@ public class TransactionRepository : BaseRepository<Transaction>, ITransactionRe
 
     public async Task<IReadOnlyList<Transaction>> GetByTypeAndDateRangeAsync(Guid userId, TransactionType type, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
     {
+        // Untracked: PredictionService groups and sums these rows and never writes
+        // them back, and it now shares one load across four analyses - so tracking
+        // it would multiply the change-tracker entries on the hottest read path.
         return await DbSet
+            .AsNoTracking()
             .Where(t => t.UserId == userId && t.Type == type && t.Date >= startDate.Date && t.Date <= endDate.Date)
             .OrderByDescending(t => t.Date)
             .ThenByDescending(t => t.CreatedAt)

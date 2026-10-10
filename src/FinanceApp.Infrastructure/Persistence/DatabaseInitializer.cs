@@ -1,6 +1,7 @@
 namespace FinanceApp.Infrastructure.Persistence;
 
 using System.Collections.Concurrent;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,8 @@ public static class DatabaseInitializer
     private static readonly object s_extraColumnsLock = new();
     private static bool s_localUsersTableEnsured;
     private static readonly object s_localUsersTableLock = new();
+    private static readonly ConcurrentDictionary<string, bool> s_schemaEnsured = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly object s_schemaLock = new();
 
     public static async Task InitializeAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
@@ -43,6 +46,78 @@ public static class DatabaseInitializer
             logger.LogError(ex, "Error initializing database");
             throw;
         }
+    }
+
+    /// <summary>
+    /// Creates the schema for a database that has no tables yet.
+    /// <para>
+    /// EF does not cache <c>EnsureCreated</c>: every call probes sqlite_master.
+    /// This context is Scoped, and the app creates a scope per query (see
+    /// BaseViewModel.QueryOffUiThreadAsync) and per sync tick, so leaving the
+    /// probe in the constructor meant paying it on every single database access.
+    /// </para>
+    /// <para>
+    /// The result is cached against a data source, but only when that data source
+    /// identifies a private file on disk. ":memory:" and shared-cache connections
+    /// all report the same data source string while being entirely separate
+    /// databases - two SQLite connections to ":memory:" cannot even see each
+    /// other's tables - so caching against those would leave every database after
+    /// the first one without a schema. The file check also means a deleted
+    /// database is recreated rather than assumed present.
+    /// </para>
+    /// </summary>
+    public static void EnsureSchema(FinanceAppDbContext context)
+    {
+        var dataSource = context.Database.GetDbConnection().DataSource;
+
+        if (!IsCacheableDataSource(dataSource))
+        {
+            context.Database.EnsureCreated();
+            return;
+        }
+
+        lock (s_schemaLock)
+        {
+            if (s_schemaEnsured.ContainsKey(dataSource) && File.Exists(dataSource))
+                return;
+
+            s_schemaEnsured[dataSource] = true;
+        }
+
+        try
+        {
+            context.Database.EnsureCreated();
+        }
+        catch
+        {
+            // A later resolution has to be able to retry: a database that could
+            // not be created is not one that needs creating again.
+            lock (s_schemaLock)
+            {
+                s_schemaEnsured.TryRemove(dataSource, out _);
+            }
+
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Whether a data source names a private file that can be used as a cache
+    /// key. Anything the SQLite connection string can make resolve to a shared or
+    /// transient database is excluded.
+    /// </summary>
+    private static bool IsCacheableDataSource(string? dataSource)
+    {
+        if (string.IsNullOrWhiteSpace(dataSource))
+            return false;
+
+        if (dataSource.Contains(';') || dataSource.Contains('=', StringComparison.Ordinal))
+            return false;
+
+        if (dataSource.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        return !dataSource.Equals(":memory:", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>

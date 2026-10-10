@@ -15,11 +15,12 @@ public class FinanceAppDbContext : DbContext
         // to create the schema on every platform, so ensure it before first use.
         // Idempotent - a no-op when tables already exist.
         //
-        // Deliberately not memoised behind a "once per process" flag. This is a
-        // metadata probe costing microseconds, and a process-wide guard silently
-        // skips schema creation for any second database in the same process -
-        // which is exactly how "no such table" regressions happen.
-        Database.EnsureCreated();
+        // All three are guarded per data source, so this costs one probe per
+        // database for the process's lifetime rather than a connection open and a
+        // sqlite_master query on every resolution. That matters because this
+        // context is Scoped and the app builds a scope per query and per sync
+        // tick. See DatabaseInitializer.EnsureSchema for the reasoning.
+        DatabaseInitializer.EnsureSchema(this);
         // Adds tables/columns introduced after v1 (EnsureCreated never alters an
         // existing database).
         DatabaseInitializer.EnsureExtraColumns(this);

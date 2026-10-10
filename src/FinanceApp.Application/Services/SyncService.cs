@@ -224,7 +224,7 @@ public class SyncService : BaseService, ISyncService, IDisposable
         }
     }
 
-    public async Task ForceSyncAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<SyncResultDto> ForceSyncAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         // Reset retry counts for failed operations to allow retry
         var failedOps = await _syncRepository.GetFailedByUserIdAsync(userId, _maxRetries, cancellationToken);
@@ -234,8 +234,12 @@ public class SyncService : BaseService, ISyncService, IDisposable
             await _syncRepository.UpdateAsync(op, cancellationToken);
         }
         await UnitOfWork.SaveChangesAsync(cancellationToken);
-        
-        await SyncAsync(userId, cancellationToken);
+
+        // The result of the one sync this actually runs. Returning it saves the
+        // caller from calling SyncAsync again straight afterwards, which was
+        // running the entire pipeline - a full outbox heal, a push and a pull -
+        // twice for a single button press.
+        return await SyncAsync(userId, cancellationToken);
     }
 
     public async Task<bool> IsSyncingAsync(Guid userId, CancellationToken cancellationToken = default)
@@ -254,6 +258,11 @@ public class SyncService : BaseService, ISyncService, IDisposable
     {
         _periodicSyncTimer?.Change(Timeout.Infinite, Timeout.Infinite);
         _currentUserId = null;
+
+        // The next sign-in may be a different account, and it gets its own heal.
+        // Dropping the record here keeps the set from growing for the life of
+        // the process across many local accounts on the same device.
+        _healedUsers.Clear();
         _logger.LogInformation("Stopped periodic sync");
     }
 
@@ -293,56 +302,49 @@ public class SyncService : BaseService, ISyncService, IDisposable
         }
     }
 
-    private async Task EnqueueMissingOperationsAsync(Guid userId, CancellationToken cancellationToken)
+    /// <summary>
+    /// Users whose outbox has already been healed in this process.
+    /// <para>
+    /// The heal exists to repair a database written before the outbox existed, or
+    /// one whose rows arrived via seeding or an identity migration. Once a user's
+    /// outbox is whole it stays whole, because every user-driven write queues its
+    /// own operation inside the same SaveChanges (see
+    /// FinanceAppDbContext.EnqueueSyncOperations). Re-running the scan on every
+    /// tick could only ever re-verify a database it had just finished repairing.
+    /// </para>
+    /// </summary>
+    private readonly HashSet<Guid> _healedUsers = new();
+
+    private async Task EnqueueMissingOperationsAsync(Guid userId, CancellationToken cancellationToken, bool force = false)
     {
-// Fetched once and consulted in memory below. It used to be a query per
-        // entity, so every sync run cost one round-trip per row the user owns, on
-        // a loop that runs every minute.
-        var tracked = await _syncRepository.GetTrackedEntitiesAsync(userId, cancellationToken);
-        var changed = false;
+        if (!force && !_healedUsers.Add(userId))
+            return;
 
-        changed |= await EnqueueMissingAsync("Account", await _accountRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
-        changed |= await EnqueueMissingAsync("Category", await _categoryRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
-        changed |= await EnqueueMissingAsync("Transaction", await _transactionRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
-        changed |= await EnqueueMissingAsync("Budget", await _budgetRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
-        changed |= await EnqueueMissingAsync("RecurringTransaction", await _recurringRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
-        changed |= await EnqueueMissingAsync("FinancialGoal", await _goalRepository.GetByUserIdAsync(userId, cancellationToken), userId, tracked, cancellationToken);
+        // The anti-join returns only rows that have no outbox entry at all. It
+        // used to full-load all six tables and diff them in memory, on a loop that
+        // runs every minute - so a user with a few thousand transactions paid a
+        // few thousand tracked entities per minute, while backgrounded.
+        var untracked = await _syncRepository.GetUntrackedEntitiesAsync(userId, cancellationToken)
+                          ?? new List<(string, Guid, SyncStatus)>();
 
-        // Only when something was actually queued. Saving unconditionally took
-        // SQLite's write lock on every sync tick even when the outbox was whole.
-        if (changed)
+        if (untracked.Count == 0)
+            return;
+
+        _logger.LogInformation(
+            "Outbox backfill queued {Count} operation(s) for user {UserId}", untracked.Count, userId);
+
+        foreach (var (entityType, entityId, syncStatus) in untracked)
         {
-            await UnitOfWork.SaveChangesAsync(cancellationToken);
-        }
-    }
-
-    private async Task<bool> EnqueueMissingAsync<T>(
-        string entityType,
-        IReadOnlyList<T> entities,
-        Guid userId,
-        IReadOnlySet<(string EntityType, Guid EntityId)> tracked,
-        CancellationToken cancellationToken)
-        where T : Entity
-    {
-        var changed = false;
-
-        foreach (var entity in entities)
-        {
-            if (tracked.Contains((entityType, entity.Id)))
-                continue;
-
-            var operationType = entity.SyncStatus == SyncStatus.PendingDelete
+            var operationType = syncStatus == SyncStatus.PendingDelete
                 ? SyncOperationType.Delete
                 : SyncOperationType.Create;
 
             await _syncRepository.AddAsync(
-                new SyncOperation(entityType, entity.Id, operationType, userId),
+                new SyncOperation(entityType, entityId, operationType, userId),
                 cancellationToken);
-
-            changed = true;
         }
 
-        return changed;
+        await UnitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     private async Task<IReadOnlyList<SyncOperation>> CoalesceOperationsAsync(

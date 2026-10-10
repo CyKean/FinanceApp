@@ -56,6 +56,11 @@ public class SyncServiceTests
             .ReturnsAsync(new List<SyncOperation>());
         _mockSyncRepository.Setup(x => x.GetTrackedEntitiesAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new HashSet<(string, Guid)>());
+        // The outbox heal now asks the database which rows have no operation
+        // rather than diffing a full load of every entity table. An empty result
+        // is the steady state for these tests: nothing needs queueing.
+        _mockSyncRepository.Setup(x => x.GetUntrackedEntitiesAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<(string EntityType, Guid EntityId, FinanceApp.Domain.Enums.SyncStatus SyncStatus)>());
         _mockLogger = new Mock<ILogger<SyncService>>();
 
         var mockUnitOfWork = new Mock<IUnitOfWork>();
